@@ -1,3 +1,17 @@
+ -*- mode: text -*-
+
+
+Common Lisp Stat: 
+
+After a few false starts, I (Tony Rossini) finally know how I want to
+proceed.  First, we update CLS.  Then, continue with TSL.  Separation
+is needed, so that we can make everything separate.
+
+
+
+============
+Original, dating to Oct 30, 1991.
+
 This is Lisp-Stat 1.0 Alpha 1, a first attempt at producing a Common
 Lisp version of Lisp-Stat. This version contains NO graphics, but
 should implement all the non-graphical facilities of Lisp-Stat.  
