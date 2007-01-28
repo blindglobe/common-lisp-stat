@@ -1,25 +1,40 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; lsmath -- Install vectorized arithmetic functions
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-(provide "lsmath")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(progn
-  (defpackage "LISP-STAT"
-    (:nicknames "LS" "STATS")
-    (:use "COMMON-LISP" "LISP-STAT-BASICS" "LISP-STAT-OBJECT-SYSTEM"))
 
-  (in-package lisp-stat))
-#-:CLtL2
-(in-package 'lisp-stat 
-	    :nicknames '(ls stats)
-	    :use '(lisp ls-basics lsos))
+
+;; in another world...
+;; (defpackage :lispstat-math
+;;   (:use #:common-lisp  #:lispstat-objectsystem)
+;;   (:import-from #:lispstat-basics make-rv-function make-rv-function-1)
+;;   (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+;; 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
+;; 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
+;; 	   < <= = /= >= > complex conjugate realpart imagpart phase
+;; 	   min max logand logior logxor lognot ffloor fceiling
+;; 	   ftruncate fround signum cis)
+;;   (:export ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
+;; 	   tan asin acos atan sinh cosh tanh asinh acosh atanh float random
+;; 	   truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
+;; 	   /= >= > complex conjugate realpart imagpart phase min max
+;; 	   logand logior logxor lognot ffloor fceiling ftruncate fround 
+;; 	   signum cis)
+;;   (:documentation "Vectorization of numerical functions"))
+;; (in-package :lispstat-math)
+
+
+(in-package #:lisp-stat)
 
 (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
 (shadowing-import (package-shadowing-symbols 'lisp-stat-basics))
@@ -52,33 +67,32 @@
 
 #+(and kcl fast-c-code internal-c-math)
 (progn
-(import 'ls-basics::install-rv-function)
-(import '(ls-basics::rv-expt ls-basics::rv-+ ls-basics::rv--
-	  ls-basics::rv-* ls-basics::rv-/ ls-basics::rv-mod
-	  ls-basics::rv-rem ls-basics::rv-pmin ls-basics::rv-pmax
-	  ls-basics::rv-1+ ls-basics::rv-1- ls-basics::rv-exp
-	  ls-basics::rv-log ls-basics::rv-sqrt ls-basics::rv-sin
-	  ls-basics::rv-cos ls-basics::rv-tan ls-basics::rv-atan
-	  ls-basics::rv-float ls-basics::rv-random ls-basics::rv-floor
-	  ls-basics::rv-ceiling ls-basics::rv-truncate ls-basics::rv-round
-	  ls-basics::rv-zerop ls-basics::rv-plusp ls-basics::rv-minusp
-	  ls-basics::rv-oddp ls-basics::rv-evenp ls-basics::rv-<
-	  ls-basics::rv-<= ls-basics::rv-= ls-basics::rv-/=
-	  ls-basics::rv->= ls-basics::rv-> ls-basics::rv-complex
-	  ls-basics::rv-realpart ls-basics::rv-imagpart 
-	  ls-basics::rv-conjugate))
-)
+  (import 'ls-basics::install-rv-function)
+  (import '(ls-basics::rv-expt ls-basics::rv-+ ls-basics::rv--
+			       ls-basics::rv-* ls-basics::rv-/ ls-basics::rv-mod
+			       ls-basics::rv-rem ls-basics::rv-pmin ls-basics::rv-pmax
+			       ls-basics::rv-1+ ls-basics::rv-1- ls-basics::rv-exp
+			       ls-basics::rv-log ls-basics::rv-sqrt ls-basics::rv-sin
+			       ls-basics::rv-cos ls-basics::rv-tan ls-basics::rv-atan
+			       ls-basics::rv-float ls-basics::rv-random ls-basics::rv-floor
+			       ls-basics::rv-ceiling ls-basics::rv-truncate ls-basics::rv-round
+			       ls-basics::rv-zerop ls-basics::rv-plusp ls-basics::rv-minusp
+			       ls-basics::rv-oddp ls-basics::rv-evenp ls-basics::rv-<
+			       ls-basics::rv-<= ls-basics::rv-= ls-basics::rv-/=
+			       ls-basics::rv->= ls-basics::rv-> ls-basics::rv-complex
+			       ls-basics::rv-realpart ls-basics::rv-imagpart 
+			       ls-basics::rv-conjugate)))
 
 (import '(ls-basics::base-expt ls-basics::base-log ls-basics::base-exp
-	  ls-basics::base-sqrt ls-basics::base-sin ls-basics::base-cos
-	  ls-basics::base-tan ls-basics::base-asin ls-basics::base-acos
-	  ls-basics::base-atan ls-basics::base-sinh ls-basics::base-cosh
-	  ls-basics::base-tanh ls-basics::base-asinh ls-basics::base-acosh
-	  ls-basics::base-atanh ls-basics::base-float ls-basics::base-abs
-	  ls-basics::base-phase ls-basics::base-ffloor
-	  ls-basics::base-fceiling ls-basics::base-ftruncate
-	  ls-basics::base-fround ls-basics::base-signum
-	  ls-basics::base-cis))
+			       ls-basics::base-sqrt ls-basics::base-sin ls-basics::base-cos
+			       ls-basics::base-tan ls-basics::base-asin ls-basics::base-acos
+			       ls-basics::base-atan ls-basics::base-sinh ls-basics::base-cosh
+			       ls-basics::base-tanh ls-basics::base-asinh ls-basics::base-acosh
+			       ls-basics::base-atanh ls-basics::base-float ls-basics::base-abs
+			       ls-basics::base-phase ls-basics::base-ffloor
+			       ls-basics::base-fceiling ls-basics::base-ftruncate
+			       ls-basics::base-fround ls-basics::base-signum
+			       ls-basics::base-cis))
 
 ;;;;
 ;;;; Patch up some type definitions

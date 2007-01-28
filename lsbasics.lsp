@@ -15,7 +15,9 @@
 (defpackage #:lisp-stat-basics
   (:nicknames #:ls-basics)
   (:use #:common-lisp #:lisp-stat-object-system)
-  (:shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
+  ;;(:shadow (package-shadowing-symbols 'lisp-stat-object-system))
+  ;;(:import-from packagename symbols)
+  ;;(:shadowing-import-from packagename symbols)
   (:export
    ;; lispstat-basics.lisp
    sequencep copy-vector copy-array iseq which repeat select
@@ -48,7 +50,7 @@
    ;;
    ))
 
-(in-package #:lisp-stat-basics))
+(in-package #:lisp-stat-basics)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;

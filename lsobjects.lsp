@@ -57,9 +57,9 @@
 ;;;; Package Setup
 ;;;;
 
-(defpackage #:LISP-STAT-OBJECT-SYSTEM
- (:nicknames #:LS-OBJECTS #:LSOS)
- (:use "COMMON-LISP")
+(defpackage :lisp-stat-object-system
+ (:nicknames :ls-objects :lsos)
+ (:use :common-lisp)
  (:shadow "CALL-NEXT-METHOD" "SLOT-VALUE")
  (:export ls-object objectp *object* kind-of-p make-object *message-hook*
 	  *set-slot-hook* slot-value self send call-next-method call-method

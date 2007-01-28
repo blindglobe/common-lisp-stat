@@ -4,16 +4,11 @@
 ;;;; unrestricted use.
 ;;;;
 
-(provide "compound")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
+(in-package #:lisp-stat-basics)
 
 (export '(compound-data-p map-elements compound-data-seq
 	  compound-data-length element-seq compound-data-proto))

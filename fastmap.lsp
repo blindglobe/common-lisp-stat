@@ -16,17 +16,12 @@
 ;;;; it for (A)KCL but have not yet been able to obtain a significant
 ;;;; increase in speed.
 
-(provide "fastmap")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
 
+(in-package #:lisp-stat-basics)
 
 ;;;;
 ;;;; Functions

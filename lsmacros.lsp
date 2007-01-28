@@ -19,7 +19,7 @@
 ;;;; Package Setup
 ;;;;
 
-(in-package #:lisp-stat-basics)
+(in-package :lisp-stat-basics)
 
 ;;;;
 ;;;; Floating Point Macros

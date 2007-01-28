@@ -14,7 +14,7 @@
 
 ;;; To avoid renaming everything from *.lsp to *.lisp...
 ;;; borrowed from Cyrus Harmon's work, for example for the ch-util.
-(defclass lispstat-lsp-source-file (lsp-source-file) ())
+(defclass lispstat-lsp-source-file (cl-source-file) ())
 (defparameter *fasl-directory*
    (make-pathname :directory '(:relative #+sbcl "sbcl-fasl"
 			      #+openmcl "openmcl-fasl"
@@ -44,32 +44,32 @@ Last touched 1991, then in 2005--2007."
   ;; FFI systems:
   ;; kclglue.lsp  kclpatch.lsp exclglue.lsp mclglue.lsp 
 
-  :components ((:file "lsobjects") ;; :depends-on ("lspackages"))
-	       ;;(:file "lspackages") ?? what good is this??
-	       (:file "fastmap" :depends-on ("lsobjects"))
-	       (:file "compound" :depends-on ("lsobjects" "fastmap"))
-	       (:file "lsmacros" :depends-on ("compound"))
-	       (:file "lsbasics" :depends-on ("lsobjects" "lsmacros"))
-	       (:file "dists" :depends-on ("lsbasics"))
-	       (:file "ladata" :depends-on ("lsbasics")) ;; in lisp-stat-basics
-	       (:file "linalg" :depends-on ("ladata"))
-	       (:file "matrices" :depends-on ("lsbasics"))
-	       (:file "lsfloat" :depends-on ("lsbasics")) ;; in lisp-stat-basics
-	       (:file "lsmath" :depends-on ("lsbasics"))
+  :components ((:static-file "version" :pathname #p"version.lisp-expr")
+	       (:lispstat-lsp-source-file "lspackages")
+	       (:lispstat-lsp-source-file "lsobjects" :depends-on ("lspackages"))
+	       (:lispstat-lsp-source-file "fastmap" :depends-on ("lsobjects"))
+	       (:lispstat-lsp-source-file "compound" :depends-on ("lsobjects" "fastmap"))
+	       (:lispstat-lsp-source-file "lsmacros" :depends-on ("compound"))
+	       (:lispstat-lsp-source-file "lsbasics" :depends-on ("lsobjects" "lsmacros")) 
+	       (:lispstat-lsp-source-file "dists" :depends-on ("lsbasics"))
+	       (:lispstat-lsp-source-file "ladata" :depends-on ("lsbasics")) ;; in lisp-stat-basics
+	       (:lispstat-lsp-source-file "linalg" :depends-on ("ladata")) ;; in lisp-stat-basics
+	       (:lispstat-lsp-source-file "matrices" :depends-on ("lsbasics"))
+	       (:lispstat-lsp-source-file "lsfloat" :depends-on ("lsbasics")) ;; in lisp-stat-basics
+	       (:lispstat-lsp-source-file "lsmath" :depends-on ("lsbasics"))
 	       
 	       ;; Applications
-	       (:file "regression" :depends-on ("lsobjects"))
-	       (:file "nonlin" :depends-on ("lsobjects" "regression"))
-	       (:file "statistics" :depends-on ("lsobjects"))
-	       (:file "maximize" :depends-on ("lsobjects"))
-	       (:file "bayes" :depends-on ("lsobjects"
+	       (:lispstat-lsp-source-file "regression" :depends-on ("lsobjects"))
+	       (:lispstat-lsp-source-file "nonlin" :depends-on ("lsobjects" "regression"))
+	       (:lispstat-lsp-source-file "statistics" :depends-on ("lsobjects"))
+	       (:lispstat-lsp-source-file "maximize" :depends-on ("lsobjects"))
+	       (:lispstat-lsp-source-file "bayes" :depends-on ("lsobjects"
 					   "dists")) ; in lisp-stat
 	       
-	       (:file "numlib")
-	       (:file "defsys")
-	       (:file "lspackages")
-	       (:file "lstoplevel")
+	       (:lispstat-lsp-source-file "numlib")
+	       (:lispstat-lsp-source-file "defsys")
+	       (:lispstat-lsp-source-file "lstoplevel")
 
 	       ;; Testing comes last!
-	       ;; (:file "unittests" :depends-on ("lsobjects"))
+	       ;; (:lispstat-lsp-source-file "unittests" :depends-on ("lsobjects"))
 	       ))

@@ -1,18 +1,28 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
+;;;
+;;; what this should do:
+;;; #1 - use CFFI (and possibly Verazanno) to import C/C++.
+;;; #2 - what to do for Fortran?  Possibly: C <-> bridge, or CLapack? 
+;;;      problem: would be better to have access to Fortran.  For
+;;;      example, think of Doug Bates comment on reverse-calls (as
+;;;      distinct from callbacks).  It would be difficult if we don't
+;;;      -- however, has anyone run Lapack or similar through F2CL?
+;;;      Answer: yes, Matlisp does this.
+
+
 ;;;; linalg -- Lisp-Stat interface to basic linear algebra routines.
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-(provide "linalg")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
+(in-package #:lisp-stat-basics)
 
 (export '(chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
 	  qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
@@ -29,7 +39,9 @@
 ;;;; Lisp to/from C sequence and matrix conversion and checking
 ;;;;
 
-(defun is-cons (a) (if (consp a) 1 0))
+(defun is-cons (a)
+  "FIXME:AJR this is not used anywhere?"
+  (if (consp a) 1 0))
 
 (defun check-fixnum (a)
   (if (/= 0 (la-data-mode a)) (error "not an integer sequence - ~s" a)))
@@ -56,9 +68,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;
-;;;; Cholesky Decomposition
-;;;;
+;;; FIXME: use dpbt[f2|rf], dpbstf, dpot[f2|rf]; dpptrf, zpbstf, zpbt[f2|rf]
+;;; remember: factorization = decomposition, depending on training.
 
 (defun chol-decomp (a &optional (maxoffl 0.0))
 "Args: (a)
@@ -84,9 +95,14 @@ positive definite. Returns a list (L (max D))."
 	(la-free-vector dp)))
     (list result (second dpars))))
 
-;;;;
-;;;; LU Decomposition
-;;;;
+
+;;; REPLACE with
+;;;         (matlisp:lu M)
+;;; i.e. result use by:
+;;;         (setf (values (lu-out1 lu-out2 lu-out3)) (matlisp:lu my-matrix))
+;;; for solution, ...
+;;; for lu-solve:
+;;;         (matlisp:gesv a b &opt ipivot)
 
 (defun lu-decomp (a)
 "Args: (a)
@@ -111,7 +127,7 @@ Used bu LU-SOLVE."
 	    (la-matrix-to-data mat n n mode (first result))
 	    (la-vector-to-data iv n mode-in (second result))
 	    (setf (third result) (la-get-double d 0))
-	    (setf (fourth result) (if (= singular 0) nil t)))
+	    (setf (fourth result) (if (= singular 0.0) nil t)))
 	(la-free-matrix mat n)
 	(la-free-vector iv)
 	(la-free-vector d)))
@@ -146,7 +162,7 @@ singular."
 	  (la-free-matrix a n)
 	  (la-free-vector indx)
 	  (la-free-vector b))
-	(if (/= 0 singular) (error "matrix is (numerically) singular"))
+	(if (/= 0.0 singular) (error "matrix is (numerically) singular"))
 	result))))
 
 (defun determinant (a)
@@ -226,7 +242,7 @@ if the algorithm converged, NIL otherwise."
 	    (la-matrix-to-data mat m n mode (first result))
 	    (la-vector-to-data w n mode (second result))
 	    (la-matrix-to-data v n n mode (third result))
-	    (setf (fourth result) (if (/= 0 converged) t nil)))
+	    (setf (fourth result) (if (/= 0.0 converged) t nil)))
 	(la-free-matrix mat m)
 	(la-free-vector w)
 	(la-free-matrix v n))
@@ -444,7 +460,7 @@ can be a sequence of points at which to interpolate. WIDTH specifies the
 window width. TYPE specifies the lernel and should be one of the symbols G, T,
 U or B for gaussian, triangular, uniform or bisquare. The default is B."
   (check-one-real width)
-  (with-smoother-data (x nil xvals nil)
+  (with-smoother-data (x nil xvals nil) ;; warning about deleting unreachable code is TRUE -- 2nd arg=nil!
     (let ((code (kernel-type-code type))
 	  (error 0))
       (setf error (kernel-dens-front px n width pxs pys ns code))
@@ -461,8 +477,76 @@ U or B for Gaussian, triangular, uniform or bisquare. The default is B."
   (with-smoother-data (x y xvals t)
     (let ((code (kernel-type-code type))
           (error 0))
-      (kernel-smooth-front px py n width pxs pys ns code)
+      ;;(kernel-smooth-front px py n width pxs pys ns code)
+      (kernel-smooth-Cport px py n width pxs pys ns code)
       (if (/= 0 error) (error "bad kernel density data")))))
+
+(defun kernel-smooth-Cport (px py n width ;;wts wds ;; see above for mismatch?
+			    xs ys ns ktype)
+  "Port of kernel_smooth (Lib/kernel.c) to Lisp.
+FIXME:kernel-smooth-Cport"
+  (cond ((< n 1) 1.0)
+	((and (< n 2) (<= width 0)) 1.0)
+	(t (let* ((xmin (min px))
+		  (xmax (max px))
+		  (width (/ (- xmax xmin) (+ 1.0 (log n)))))
+	     (dotimes  (i (- ns 1))
+	       (setf (aref ys i)
+		     (let ((wsum 0.0)
+			   (ysum 0.0))
+		       (dotimes (j (- n 1))
+			 (let* ;; FIXME!?
+			     ((lwidth (if wds (* width (aref wds j)) width))
+			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
+				      (if wts (aref wts j) 1.0))))
+			   (setf wsum (+ wsum lwt))
+			   (setf ysum (if py (+ ysum (* lwt (aref py j))))))) ;; py? y?
+		       (if py
+			   (if (> wsum 0.0) 
+			       (/ ysum wsum)
+			       0.0)
+			   (/ wsum n)))))
+	     (values ys)))))
+
+(defun kernel-Cport (x y w ktype)
+  "Port of kernel() (Lib/kernel.c) to Lisp.
+x,y,w are doubles, type is an integer"
+  (if (<= w 0.0)
+      0.0
+      (let ((z (- x y)))
+	(cond ((eq ktype "B") 
+	       (let* ((w (* w 2.0))
+		      (z (* z 0.5)))
+		 (if (and (> z -0.5)
+			  (< z 0.5))
+		     (/ (/ (* 15.0 (* (- 1.0 (* 4 z z))  ;; k/w
+				      (- 1.0 (* 4 z z)))) ;; k/w
+			   8.0)
+			w)
+		     0)))
+	      ((eq ktype "G")
+	       (let* ((w (* w 0.25))
+		      (z (* z 4.0))
+		      (k (/ (exp (* -0.5 z z))
+			    (sqrt (* 2 PI)))))
+		 (/ k w)))
+	      ((eq ktype "U")
+	       (let* ((w (* 1.5 w))
+		      (z (* z 0.75))
+		      (k (if (< (abs z) 0.5)
+			     1.0
+			     0.0)))
+		 (/ k w)))
+	      ((eq ktype "T")
+	       (cond ((and (> z -1.0)
+			   (< z 0.0))
+		      (+ 1.0 z))  ;; k
+		     ((and (> z 0.0)
+			   (< z 1.0))
+		      (- 1.0 z))  ;; k
+		     (t 0.0)))
+	      (t (values 0.0))))))
+		
 
 ;;;;
 ;;;; Lowess Smoother Interface
@@ -564,10 +648,12 @@ LVAL xssurface_contour()
 }
 |#
 
-;;;;
-;;;; FFT
-;;;;
-
+;;;
+;;; FFT
+;;;
+;;; FIXME:ajr
+;;; replace with matlisp:fft  and matlisp:ifft (the latter for inverse mapping)
+;;;
 (defun fft (x &optional inverse)
 "Args: (x &optional inverse)
 Returns unnormalized Fourier transform of X, or inverse transform if INVERSE
@@ -587,9 +673,9 @@ is true."
 	(la-free-vector work))
       result)))
 
-;;;;
-;;;; SWEEP Operator
-;;;;
+;;;
+;;; SWEEP Operator: FIXME: use matlisp
+;;;
 
 (defun make-sweep-front (x y w n p mode has_w x_mean result)
   (declare (fixnum n p mode has_w))
@@ -609,8 +695,10 @@ is true."
 	(dy_mean 0.0)
 	(has-w (if (/= 0 has_w) t nil))
 	(RE 1))
-    (declare-double val dxi dyi dv dw sum_w dxik dxjk dyj
-		    dx_meani dx_meanj dy_mean)
+    (declare (long-float val dxi dyi dv dw sum_w dxik dxjk dyj
+		    dx_meani dx_meanj dy_mean))
+;;    (declare-double val dxi dyi dv dw sum_w dxik dxjk dyj
+;;		    dx_meani dx_meanj dy_mean)
   
     (if (> mode RE) (error "not supported for complex data yet"))
 
@@ -698,8 +786,10 @@ is true."
       (incf val dv))
     (setf (aref result_data (+ (* (+ p 1) (+ p 2)) (+ p 1))) val)))
 
+;;; FIXME: use matlisp
 (defun sweep-in-place-front (a rows cols mode k tol)
-  (declare-double tol)
+  "Sweep algorithm for linear regression."
+  (declare (long-float tol))
   (declare (fixnum rows cols mode k))
   (let ((data nil)
 	(pivot 0.0)
@@ -708,7 +798,7 @@ is true."
 	(akj 0.0)
 	(akk 0.0)
 	(RE 1))
-    (declare-double pivot aij aik akj akk)
+    (declare (long-float pivot aij aik akj akk))
   
     (if (> mode RE) (error "not supported for complex data yet"))
     (if (or (< k 0) (>= k rows) (>= k cols)) (error "index out of range"))
@@ -750,6 +840,7 @@ is true."
       1)
      (t 0))))
 
+;;; FIXME: use matlisp
 (defun make-sweep-matrix (x y &optional w)
 "Args: (x y &optional weights)
 X is a matrix, Y and WEIGHTS are sequences. Returns the sweep matrix for the
@@ -808,15 +899,17 @@ element is larger than the corresponding element of TOLERANCES."
 	    (setf swept-columns (cons col swept-columns))))))
 
 
-;;;;
-;;;; AX+Y
-;;;;
+;;;
+;;; AX+Y
+;;;
 
-;;;*** this could probably be made more efficient ***
+;;; matlisp:axpy
+;;;
 (defun ax+y (a x y &optional lower)
 "Args (a x y &optional lower)
 Returns (+ (matmult A X) Y). If LOWER is not nil, A is taken to be lower
-triangular."
+triangular.
+This could probably be made more efficient."
   (check-square-matrix a)
   (check-sequence x)
   (check-sequence y)
@@ -1006,6 +1099,7 @@ Computes the numerical Hessian matrix of F at X."
       internals)))
 
 (defun minfo-maximize (internals &optional verbose)
+  "This function does what?"
   (let* ((f (aref internals 0))
 	 (x (aref internals 3))
 	 (fvals (aref internals 5))
@@ -1027,7 +1121,7 @@ Computes the numerical Hessian matrix of F at X."
 	     (pdp (la-data-to-vector dp mode-re)))
 	(unwind-protect
 	    (progn
-	      (base-minfo-maximize px pfvals pscale pip pdp v))
+	      (base-minfo-maximize px pfvals pscale pip pdp v)) ;; access to C
 	  (la-vector-to-data px n mode-re x)
 	  (la-vector-to-data pfvals (+ 1 n (* n n)) mode-re fvals)
 	  (la-vector-to-data pip (length ip) mode-in ip)
@@ -1071,4 +1165,3 @@ Example: (split-list '(1 2 3 4 5 6) 2) returns ((1 2 3) (4 5 6))"
                 (t 
                  (setf (rest end) c-sub)
                  (setf end (rest end)))))))))
-          
