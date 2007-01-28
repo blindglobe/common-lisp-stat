@@ -51,8 +51,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(provide "lsobjects")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
@@ -60,12 +58,12 @@
 (defpackage :lisp-stat-object-system
  (:nicknames :ls-objects :lsos)
  (:use :common-lisp)
- (:shadow "CALL-NEXT-METHOD" "SLOT-VALUE")
+ (:shadow call-next-method slot-value)
  (:export ls-object objectp *object* kind-of-p make-object *message-hook*
 	  *set-slot-hook* slot-value self send call-next-method call-method
 	  defmeth defproto instance-slots proto-name))
 
-(in-package #:LISP-STAT-OBJECT-SYSTEM)
+(in-package :lisp-stat-object-system)
 
 (defun use-lsos ()
   (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))

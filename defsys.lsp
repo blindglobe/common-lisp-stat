@@ -1,3 +1,5 @@
+;;; -*- mode: lisp -*-
+
 ;;;; defsys -- System setup for CL version of Lisp-Stat
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
