@@ -1,3 +1,8 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -52,26 +57,15 @@
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(progn
-  (defpackage "LISP-STAT-OBJECT-SYSTEM" 
-    (:nicknames "LS-OBJECTS" "LSOS")
-    (:use "COMMON-LISP")
-    (:shadow "CALL-NEXT-METHOD" "SLOT-VALUE"))
-
-  (in-package lisp-stat-object-system))
-
-#-:CLtL2
-(progn
-  (in-package 'lisp-stat-object-system 
-              :nicknames '(ls-objects lsos)
-              :use '(lisp))
-
-  (shadow '(call-next-method slot-value)))
-
-(export '(ls-object objectp *object* kind-of-p make-object *message-hook*
+(defpackage #:LISP-STAT-OBJECT-SYSTEM
+ (:nicknames #:LS-OBJECTS #:LSOS)
+ (:use "COMMON-LISP")
+ (:shadow "CALL-NEXT-METHOD" "SLOT-VALUE")
+ (:export ls-object objectp *object* kind-of-p make-object *message-hook*
 	  *set-slot-hook* slot-value self send call-next-method call-method
 	  defmeth defproto instance-slots proto-name))
+
+(in-package #:LISP-STAT-OBJECT-SYSTEM)
 
 (defun use-lsos ()
   (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
@@ -97,10 +91,11 @@
   (send object :print stream))
 
 (setf (documentation 'objectp 'function)
-"Args: (x)
+  "Args: (x)
 Returns T if X is an object, NIL otherwise.")
 
-(defvar *object* (make-object-structure))
+(defvar *object* (make-object-structure)
+  "*object* is the global root object.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -108,11 +103,15 @@ Returns T if X is an object, NIL otherwise.")
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; special variable to hold current value of SELF
+;;; special variable to hold current value of SELF.  Assign to current
+;;; object that we are working with.  AJR:FIXME:Is this going to cause
+;;; issues with concurrency?  (need to appropriately handle
+;;; interrupts).
 (defvar *self* nil)
 
 (defun get-self ()
-  (if (not (objectp *self*)) (error "not in a method"))
+  (if (not (objectp *self*))
+      (error "not in a method"))
   *self*)
 
 (defun has-duplicates (list)
@@ -120,8 +119,8 @@ Returns T if X is an object, NIL otherwise.")
       ((not (consp next)) nil)
     (if (member (first next) (rest next)) (return t))))
 
-;;; version of assoc using eq -- should be faster than regular assoc
 (defun assoc-eq (item alist)
+  "Version of assoc using eq -- should be faster than regular assoc."
   (declare (inline car eq))
   (dolist (i alist)
     (if (eq (car i) item) (return i))))
@@ -151,56 +150,57 @@ Returns T is X and Y are objects and X inherits from Y, NIL otherwise."
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; find set of object and ancestors
 (defun find-SC (object)
+  "find set of object and ancestors. (diff from this and find-S?)"
   (copy-list (ls-object-preclist (check-object object))))
 
-;;;; find set of object and ancestors
 (defun find-S (object)
+  "find set of object and ancestors. (diff from this and find-SC?)"
   (do ((result nil)
        (parents (ls-object-parents object) (cdr parents)))
       ((not (consp parents)) 
        (delete-duplicates (cons object result)))
     (setf result (nconc (find-SC (first parents)) result))))
 
-;;;; find local precedence ordering
 (defun find-RC (object)
+  "find local precedence ordering."
   (let ((list (copy-list (ls-object-parents (check-object object)))))
     (do ((next list (rest next)))
         ((not (consp next)) list)
       (setf (first  next) (cons object (first next)))
       (setf object (rest (first next))))))
 
-;;;; find partial precedence ordering
 (defun find-R (S)
+  "find partial precedence ordering."
   (do ((result nil)
        (S S (rest S)))
       ((not (consp S)) 
        (delete-duplicates result))
     (setf result (nconc result (find-RC (first S))))))
 
-;;;; check if x has a predecessor according to R
 (defun has-predecessor (x R)
+  "check if x has a predecessor according to R."
   (dolist (cell R nil)
     (if (and (consp cell) (eq x (rest cell))) (return t))))
 
-;;;; find list of objects in S without predecessors, by R
 (defun find-no-predecessor-list (S R)
+  "find list of objects in S without predecessors, by R."
   (let ((result nil))
     (dolist (x S result)
       (unless (has-predecessor x R) (setf result (cons x result))))))
 
-;;;; find the position of child, if any, of x in P, the list found so far
 (defun child-position (x P)
+"find the position of child, if any, of x in P, the list found so
+far." 
   (let ((count 0))
     (declare (fixnum count))
     (dolist (next P -1)
       (if (member x (ls-object-parents next)) (return count))
       (incf count))))
 
-;;;; find the next object in the precedence list from objects with no
-;;;; predecessor and current list.
 (defun next-object (no-preds P)
+"find the next object in the precedence list from objects with no
+predecessor and current list."
   (cond
    ((not (consp no-preds)) nil)
    ((not (consp (rest no-preds))) (first no-preds))
@@ -215,15 +215,17 @@ Returns T is X and Y are objects and X inherits from Y, NIL otherwise."
             (setf result x)
             (setf count tcount))))))))
 
-;;;; remove object x from S
-(defun trim-S (x S) (delete x S))
+(defun trim-S (x S)
+  "Remove object x from S."
+  (delete x S))
 
-;;;; remove all pairs containing x from R. x is assumed to have no
-;;;; predecessors, so only the first position is checked.
-(defun trim-R (x R) (delete x R :key #'first))
+(defun trim-R (x R) 
+  "Remove all pairs containing x from R. x is assumed to have no
+predecessors, so only the first position is checked."
+(delete x R :key #'first))
 
-;;;; calculat the object's precedence list
 (defun precedence-list (object)
+  "Calculate the object's precedence list."
   (do* ((S (find-S object))
         (R (find-R S))
         (P nil)
@@ -244,6 +246,7 @@ Returns T is X and Y are objects and X inherits from Y, NIL otherwise."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun calculate-preclist (object)
+  "Return the precedence list for the object."
   (let ((parents (ls-object-parents (check-object object))))
     (if (not (consp parents)) (error "bad parent list - ~s" parents))
     (if (consp (rest parents)) 
@@ -256,7 +259,8 @@ Returns T is X and Y are objects and X inherits from Y, NIL otherwise."
    ((or (null parents) (objectp parents)) parents)
    ((consp parents)
     (dolist (x parents) (check-object x))
-    (if (has-duplicates parents) (error "parents may not contain duplicates")))
+    (if (has-duplicates parents)
+	(error "parents may not contain duplicates")))
    (t (error "bad parents - ~s" parents))))
 
 (defun make-basic-object (parents object)
@@ -274,9 +278,8 @@ Returns T is X and Y are objects and X inherits from Y, NIL otherwise."
   object)
 
 (defun make-object (&rest parents)
-"Args: (&rest parents)
-Returns a new object with parents PARENTS. If PARENTS is NIL,
-(list *OBJECT*) is used."
+  "Args: (&rest parents)
+Returns a new object with parents PARENTS. If PARENTS is NIL, (list *OBJECT*) is used." 
   (make-basic-object parents NIL))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -286,23 +289,25 @@ Returns a new object with parents PARENTS. If PARENTS is NIL,
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (pushnew :constrainthooks *features*)
-#+:constrainthooks (defvar *message-hook* nil)
-#+:constrainthooks (defvar *set-slot-hook* nil)
 
 #+:constrainthooks
-(defun check-constraint-hooks (object sym slot)
-  (let ((hook (if slot *set-slot-hook* *message-hook*)))
-    (if hook
-      (if slot
-        (let ((*set-slot-hook* nil))
-          (funcall hook object sym))
-        (let ((*message-hook* nil))
-          (funcall hook object sym))))))
+(progn
+  (defvar *message-hook* nil)
+  (defvar *set-slot-hook* nil)
+
+  (defun check-constraint-hooks (object sym slot)
+    (let ((hook (if slot *set-slot-hook* *message-hook*)))
+      (if hook
+	  (if slot
+	      (let ((*set-slot-hook* nil))
+		(funcall hook object sym))
+	      (let ((*message-hook* nil))
+		(funcall hook object sym)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                     Slot Access Functions
-;;;;
+;;;
+;;;                     Slot Access Functions
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun make-slot-entry (x y) (cons x y))
@@ -548,9 +553,11 @@ the value of OBJECT and installs DOC in OBJECTS's documentation."
     
   (if (and doc (stringp doc))
     (add-documentation object 'proto doc))
-    
-  (if set (set name object)))
+  (if set (setf (symbol-value name) object)))
 
+;; FIXME: name needs to be defvar'd somewhere?!  CL compilers don't like it otherwise.
+;; FIXME: above is not true.  SBCL doesn't like it, but CMUCL likes it.  Need to see what CLISP sez.
+;; almost creating a new variable -- is it a macro-expansion vs. other issue?
 (defmacro defproto (name &optional ivars cvars parents doc)
 "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
 Makes a new object prototype with instance variables IVARS, 'class'
@@ -563,11 +570,20 @@ a list of objects. IVARS and CVARS must be lists."
        (let* ((,namesym ',name)
               (,parsym ,parents)
               (,obsym (make-basic-object (if (listp ,parsym) 
-                                           ,parsym 
-                                           (list ,parsym))
+					     ,parsym 
+					     (list ,parsym)) ;; should this be ,@parsym ? 
                                          nil)))
          (make-prototype ,obsym ,namesym ,ivars ,cvars ,doc t)
-        ,namesym))))
+	 ,namesym))))
+
+
+;; recall: 
+;; , => turn on evaluation again (not macro substitution)
+;; ` => 
+;; ' => regular quote (not special in this context).
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -578,6 +594,9 @@ a list of objects. IVARS and CVARS must be lists."
 (setf (ls-object-preclist *object*) (list *object*))
 (add-slot *object* 'instance-slots nil)
 (add-slot *object* 'proto-name '*object*)
+(add-slot *object* 'documentation nil)  ; AJR - for SBCL compiler
+					; issues about macro with
+					; unknown slot  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -776,7 +795,8 @@ Retrieves or sets object documentation for topic."
 "Method args: (topic)
 Deletes object documentation for TOPIC."
   (setf (slot-value 'documentation)
-        (remove :title nil :test #'(lambda (x y) (eql x (first y)))))
+        ;;(remove :title nil :test #'(lambda (x y) (eql x (first y)))) ;; original
+	(remove topic (send self :documentation) :test #'(lambda (x y) (eql x (first y))))) ;; AJR:PROBLEM?
   nil)
 
 (defmeth *object* :help (&optional topic)
