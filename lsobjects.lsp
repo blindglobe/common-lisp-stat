@@ -78,9 +78,9 @@
 (defvar *object-serial* 0)
 
 (defstruct (ls-object
-            (:constructor make-object-structure)
+            (:constructor make-object-structure) ;; why not make-ls-object? 
             (:print-function print-object-structure)
-            (:predicate objectp))
+            (:predicate objectp))  ;; why not ls-object-p?
   slots
   methods 
   parents 
@@ -109,6 +109,7 @@ Returns T if X is an object, NIL otherwise.")
 ;;; interrupts).
 (defvar *self* nil)
 
+;;; FIXME: better as macro?  maybe not?
 (defun get-self ()
   (if (not (objectp *self*))
       (error "not in a method"))
@@ -500,7 +501,8 @@ a method."
 (defun get-documentation (x sym)
   (check-object x)
   (dolist (object (ls-object-preclist x))
-    (let ((doc-entry (find-documentation x sym nil)))
+;;    (let ((doc-entry (find-documentation x sym nil))) ;; shouldn't object be here somewhere?
+    (let ((doc-entry (find-documentation object sym nil))) ;; FIXME: verify
       (if doc-entry (return (rest doc-entry))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

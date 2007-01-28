@@ -7,6 +7,9 @@ After a few false starts, I (Tony Rossini) finally know how I want to
 proceed.  First, we update CLS.  Then, continue with TSL.  Separation
 is needed, so that we can make everything separate.
 
+We are working with SBCL and CLISP implementations to keep a wide
+range of target platforms.
+
 
 
 ============

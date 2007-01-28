@@ -1,33 +1,54 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; lsbasics -- Low level Lisp-Stat functions
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-(provide "lsbasics")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(progn
-  (defpackage "LISP-STAT-BASICS"
-    (:nicknames "LS-BASICS")
-    (:use "COMMON-LISP" "LISP-STAT-OBJECT-SYSTEM"))
+(defpackage #:lisp-stat-basics
+  (:nicknames #:ls-basics)
+  (:use #:common-lisp #:lisp-stat-object-system)
+  (:shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
+  (:export
+   ;; lispstat-basics.lisp
+   sequencep copy-vector copy-array iseq which repeat select
+   permute-array sum prod count-elements mean if-else sample sort-data
+   order rank
+   ;; matrices.lisp
+   matrixp num-rows num-cols matmult identity-matrix diagonal row-list
+   column-list inner-product outer-product cross-product transpose
+   bind-columns bind-rows
+   ;; linalg.lisp
+   chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
+   qr-decomp rcondest make-rotation 
+   fft make-sweep-matrix sweep-operator ax+y numgrad numhess
+   split-list eigen
+   ;; in linalg.lisp, possibly not supported by matlisp
+   spline kernel-dens kernel-smooth
+   ;; lispstat-macros
+   make-rv-function make-rv-function-1 
+   ;; lispstat-float
+   #:*stat-float-typing* #:*stat-cfloat-typing* #:*stat-float-template*
+   #:machine-epsilon  
+   ;; dists
+   log-gamma uniform-rand normal-cdf normal-quant normal-dens
+   normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
+   cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
+   chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
+   beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
+   f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
+   binomial-cdf binomial-quant binomial-pmf binomial-rand
+   ;;
+   ))
 
-  (in-package lisp-stat-basics))
-#-:CLtL2
-(in-package 'lisp-stat-basics 
-	    :nicknames '(ls-basics)
-	    :use '(lisp lsos))
-
-(shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
-
-(use-package 'lisp-stat-object-system)
-
-(export '(sequencep copy-vector copy-array iseq which repeat select 
-	  permute-array sum prod count-elements mean if-else
-	  sample sort-data order rank))
+(in-package #:lisp-stat-basics))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -99,14 +120,16 @@ Returns T if X is a fixnum; NIL otherwise."
 (defun array-data-vector (a)
 "Args: (a)
 Displaces array A to a vector"
-  (make-array (array-total-size a) :displaced-to a
+  (make-array (array-total-size a)
+	      :displaced-to a
 	      :element-type (array-element-type a)))
 
 (defun vector-to-array (v dims)
 "Args: (v dims)
 Displaces vector V to array with dimensions DIMS"
-  (make-array dims :displaced-to v :element-type (array-element-type v)))
-
+  (make-array dims
+	      :displaced-to v
+	      :element-type (array-element-type v)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -130,8 +153,8 @@ Returns a copy of the vector X"
 (defun copy-array (a)
 "Args: (a)
 Returns a copy of the array A"
-  (vector-to-array (copy-seq (array-data-vector a)) (array-dimensions a)))
-
+  (vector-to-array (copy-seq (array-data-vector a))
+		   (array-dimensions a)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -269,7 +292,7 @@ Examples: (repeat 2 5)                 returns (2 2 2 2 2)
               values
               (make-sequence (if (listp x) 'list 'vector) rlen)))
 
-    ;; get or set the sequence elements */
+    ;; get or set the sequence elements 
     (if set-values
       (do ((nextx x)
            (cr (make-next-element result))
@@ -316,10 +339,9 @@ Examples: (repeat 2 5)                 returns (2 2 2 2 2)
   
     result))
 
-;;;; translate row major index in resulting subarray to row major index
-;;;; in the original array
-;;;;*** is the floor in this function really needed???
 (defun old-rowmajor-index (index indices dim olddim)
+  "translate row major index in resulting subarray to row major index
+in the original array."
   (declare (fixnum index))
   (let ((rank (length dim))
         (face 1)
@@ -337,13 +359,12 @@ Examples: (repeat 2 5)                 returns (2 2 2 2 2)
       (setf face (/ face (aref dim i)))
       (setf oldface (/ oldface (aref olddim i)))
       (incf oldindex
-	    (* oldface (aref (aref indices i) (floor (/ index face)))))
+	    (* oldface (aref (aref indices i) (floor (/ index face))))) ;;*** is this floor really needed???
       (setf index (rem index face)))
-
     oldindex))
 
-;;;; extract or set subarray for the indices from a displaced array
 (defun subarray-select (a indexlist &optional (values nil set_values))
+  "extract or set subarray for the indices from a displaced array." 
   (let ((indices nil)
         (index)
         (dim)
@@ -458,10 +479,11 @@ submatrix of A is returned. SELECT can be used in setf."
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; permute x into y using perm; all should be vectors; If check is TRUE
-;;;; the routine will check to make sure no indices are reused, but x
-;;;; will be destroyed.
 (defun permute-indices (x y perm check) 
+  "Args: (x y perm check).
+permute x into y using perm; all should be vectors; If check is TRUE
+the routine will check to make sure no indices are reused, but x
+will be destroyed."
   (let ((rank (length x)))
     (declare (fixnum rank))
     (dotimes (i rank)
@@ -474,8 +496,9 @@ submatrix of A is returned. SELECT can be used in setf."
 	;; to insure dimensions are not re-used
         (if check (setf (aref x k) NIL))))))
 
-;;;; compute indices in a from rowmajor index k, put in vector result
 (defun indices-from-rowmajor (a k result)
+  "Args: (a k result).
+Compute indices in a from rowmajor index k, put in vector result."
   (declare (fixnum k))
 
   (if (not (arrayp a)) (error "not an array - ~a" a))
@@ -485,41 +508,33 @@ submatrix of A is returned. SELECT can be used in setf."
         (rank (array-rank a))
         (dim (array-dimensions a)))
     (declare (fixnum face rank))
-
     (let ((cdim (make-next-element dim)))
       (dotimes (i rank)
         (declare (fixnum i))
         (setf face (* face (get-next-element cdim i)))))
-
     (let ((cdim (make-next-element dim)))
       (dotimes (i rank)
         (setf face (/ face (get-next-element cdim i)))
         (setf (aref result i) (floor (/ k face)))
         (setf k (rem k face))))))
 
-;;;; Translate row major index in original array to row major index in new
-;;;; array. Use indices vectors and ilist for temporary storage.
 (defun translate-index (i result x perm indices oldindices ilist)
+  "Args: (i result x perm indices oldindices ilist).
+Translate row major index in original array to row major index in new
+array. Use indices vectors and ilist for temporary storage."
   (declare (fixnum i))
   (let ((rank (array-rank x)))
     (declare (fixnum rank))
-
     (indices-from-rowmajor x i oldindices)
     (permute-indices oldindices indices perm nil)
-
     (do ((next ilist (rest next))
          (k 0 (+ k 1)))
         ((not (and (< k rank) (consp next))))
       (setf (first next) (aref indices k)))
-
     (apply #'array-row-major-index result ilist)))
 
-;;;;
-;;;; PERMUTE-ARRAY function
-;;;;
-
 (defun permute-array (x perm)
-"Args: (a p)
+  "Args: (a p)
 Returns a copy of the array A permuted according to the permutation P."
   (if (not (arrayp x)) (error "not an array - ~a" x))
   (check-sequence perm)
@@ -530,10 +545,8 @@ Returns a copy of the array A permuted according to the permutation P."
          (dim (make-array rank))
          (olddim (coerce (array-dimensions x) 'vector)))
     (declare (fixnum rank))
-
     ;; construct new dimension vector
     (permute-indices olddim dim perm t)
-
     ;; make result array and the index vectors and lists */
     (let* ((result (make-array (coerce dim 'list)))
           (indices (make-array rank))
@@ -543,11 +556,9 @@ Returns a copy of the array A permuted according to the permutation P."
           (result_data (compound-data-seq result))
           (n (length data)))
       (declare (fixnum n))
-
       (dotimes (i rank)
         (declare (fixnum i))
         (setf (aref oldindices i) (list nil)))
-
       ;; fill in the result
       (if (/= n (length result_data)) (error "bad data"))
       (dotimes (i n result)
@@ -678,6 +689,8 @@ or strings X in order."
       (let ((sorted-seq (stable-sort (map type #'entry seq) #'less)))
 	(map type #'second sorted-seq)))))
 
+;; this isn't destructive -- do we document destructive only, or any
+;; variant?
 (defun rank (x)
 "Args (x)
 Returns a sequence with the elements of the list or array of numbers or

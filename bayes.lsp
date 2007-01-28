@@ -1,14 +1,15 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+;;; File moved from XLISP-STAT to CommonLispStat by Luke, note the following: 
+
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 
-(provide "bayes")
-
-#+:CLtL2
-(in-package lisp-stat)
-#-:CLtL2
-(in-package 'lisp-stat)
+(in-package #:lisp-stat)
 
 (export '(bayes-model bayes-model-proto bayes-internals))
 

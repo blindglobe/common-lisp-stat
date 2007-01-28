@@ -1,10 +1,13 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; lsmacros -- Various macros
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 ;;;;
-
-(provide "lsmacros")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -16,17 +19,7 @@
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(progn
-  (defpackage "LISP-STAT-BASICS"
-    (:nicknames "LS-BASICS")
-    (:use "COMMON-LISP" "LISP-STAT-OBJECT-SYSTEM"))
-
-  (in-package lisp-stat-basics))
-#-:CLtL2
-(in-package 'lisp-stat-basics 
-	    :nicknames '(ls-basics)
-	    :use '(lisp lsos))
+(in-package #:lisp-stat-basics)
 
 ;;;;
 ;;;; Floating Point Macros
@@ -44,7 +37,12 @@
 
 (defmacro fixup-vectorized-doc-list (sym)
   `(let ((doc (documentation ',sym 'function)))
-     (if doc (list (format nil "~s~%Vectorized.")))))
+    (if doc (list (format nil "~s~%Vectorized." ,sym))))) ;; AJR: newvers
+;;    (if doc (list (format nil "~s~%Vectorized.")))))  ;; 
+
+
+;;; Exported
+;;; recursively vectorizes (rv) functions in dists and lispstat-math. 
 
 (defmacro make-rv-function (sym fcn &rest args)
   (cond

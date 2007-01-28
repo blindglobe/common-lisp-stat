@@ -44,18 +44,17 @@ Last touched 1991, then in 2005--2007."
   ;; FFI systems:
   ;; kclglue.lsp  kclpatch.lsp exclglue.lsp mclglue.lsp 
 
-  :components (
-	       (:file "lsobjects") ;; :depends-on ("lspackages"))
+  :components ((:file "lsobjects") ;; :depends-on ("lspackages"))
 	       ;;(:file "lspackages") ?? what good is this??
 	       (:file "fastmap" :depends-on ("lsobjects"))
 	       (:file "compound" :depends-on ("lsobjects" "fastmap"))
 	       (:file "lsmacros" :depends-on ("compound"))
 	       (:file "lsbasics" :depends-on ("lsobjects" "lsmacros"))
 	       (:file "dists" :depends-on ("lsbasics"))
-	       (:file "ladata" :depends-on ("lsbasics"))
+	       (:file "ladata" :depends-on ("lsbasics")) ;; in lisp-stat-basics
 	       (:file "linalg" :depends-on ("ladata"))
 	       (:file "matrices" :depends-on ("lsbasics"))
-	       (:file "lsfloat" :depends-on ("lsbasics"))
+	       (:file "lsfloat" :depends-on ("lsbasics")) ;; in lisp-stat-basics
 	       (:file "lsmath" :depends-on ("lsbasics"))
 	       
 	       ;; Applications
@@ -64,7 +63,7 @@ Last touched 1991, then in 2005--2007."
 	       (:file "statistics" :depends-on ("lsobjects"))
 	       (:file "maximize" :depends-on ("lsobjects"))
 	       (:file "bayes" :depends-on ("lsobjects"
-					   "dists"))
+					   "dists")) ; in lisp-stat
 	       
 	       (:file "numlib")
 	       (:file "defsys")

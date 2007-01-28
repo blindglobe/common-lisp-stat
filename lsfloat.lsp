@@ -1,3 +1,8 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; lsfloat -- Floating point specs and transcendental functions
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
@@ -33,19 +38,21 @@
 ;;;; defined.
 ;;;;
 
-(provide "lsfloat")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
+(in-package #:lisp-stat-basics)
 
 (export '(*stat-float-type* *stat-cfloat-type* *stat-float-template*
           machine-epsilon))
+
+;; This should technically be conditionalized to the Lisp
+;; implementation, i.e. 
+#+sbcl(pushnew :stat-float-is-double-float *features*)
+#+cmu(pushnew :stat-float-is-double-float *features*)
+#+clisp(pushnew :stat-float-is-double-float *features*)
+;; etc... the above need to be verified!
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -56,20 +63,42 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconstant *stat-float-type* 'long-float)
-(defconstant *stat-cfloat-type* '(complex long-float))
-(defconstant *stat-float-template* 0.d0)
+;; Why do we do this instead of defparameter?  mostly to allow for doc
+;; defs as well as to minimize dereferencing mistakes. 
+(defmacro define-constant (name value &optional doc)
+  `(defparameter ,name (if (boundp ',name) (symbol-value ',name) ,value)
+    ,@(when doc (list doc))))
 
-(deftype stat-float () 'long-float)
-(deftype stat-cfloat () '(complex long-float))
+;(define-constant +stat-float-typing+ 'long-float)
+;(define-constant +stat-cfloat-typing+ '(complex long-float))
+;(define-constant +stat-float-template+ 0.d0)
 
-(defconstant machine-epsilon
-  (do ((epsilon (float 1.0 *stat-float-template*) (/ epsilon 2.0)))
+(defparameter +stat-float-typing+ 'long-float)
+(defparameter +stat-cfloat-typing+ '(complex long-float))
+(defparameter +stat-float-template+ 0.d0)
+
+(deftype stat-float () +stat-float-typing+)
+(deftype stat-cfloat () +stat-cfloat-typing+)
+
+(defparameter machine-epsilon
+  (do ((epsilon (float 1.0 +stat-float-template+) (/ epsilon 2.0)))
       ((= (+ 1.0 (/ epsilon 2.0)) 1.0) epsilon)))
 
 (defmacro declare-double (&rest vars) `(declare (long-float ,@vars)))
 
-(setf *read-default-float-format* *stat-float-type*)
+(setf *read-default-float-format* +stat-float-typing+)
+
+;;; FIX-BASE-DOC adds note about modification to the end of the
+;;; documentation string argument.
+(defmacro fix-base-doc (doc)
+  `(format nil
+    "~a~%Modified to coerce arguments(s) to stat-float or stat-cfloat."
+    ,doc))
+
+;;; FIX-BASE-FUN-DOC fixes documentation of SYM and installs in BASE-SYM
+(defun fix-base-fun-doc (sym base-sym)
+  (let ((doc (documentation sym 'function)))
+    (if doc (setf (documentation base-sym 'function) (fix-base-doc doc)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -81,23 +110,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; FFIX - coerces its arguments to standard real or complex floating
-;;; point number
+;;; point number if needed.
 #-:stat-float-is-double-float
 (defmacro ffix (x)
   `(if (complexp ,x) 
-       (coerce ,x ',*stat-cfloat-type*)
-       (float ,x ',*stat-float-template*)))
+    (coerce ,x ',+stat-cfloat-typing+)
+    (float ,x ',+stat-float-template+)))
 
 #+:stat-float-is-double-float
 (defmacro ffix (x) x)
 
-;;; MAKEDOUBLE coerces its argument to the standard floating point type
+;;; MAKEDOUBLE coerces its argument to the standard floating point
+;;; type specified by +stat-float-template+
 
-(defun makedouble (x) (float x *stat-float-template*))
+(defun makedouble (x) (float x +stat-float-template+))
 
 #+:stat-float-is-double-float
 (eval-when (compile)
-	   (proclaim '(function makedouble (t) long-float)))
+  (proclaim '(function makedouble (t) long-float)))
 
 ;;;
 ;;; MAKE-BASE-TRANS-FUN Macro for re-defining one argument transcendental
@@ -163,7 +193,7 @@
 ;;; BASE-FLOAT
 #-:stat-float-is-double-float
 (progn
-  (defun base-float (x &optional (y *stat-float-template*)) (float x y))
+  (defun base-float (x &optional (y +stat-float-template+)) (float x y))
   (fix-base-fun-doc 'float 'base-float))
 
 #+:stat-float-is-double-float
