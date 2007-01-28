@@ -1,0 +1,13 @@
+(load "defsys")
+(ls::load-stats)
+(ls::use-stats)
+
+(setf *default-path* "./")
+
+;; *** should force a gc here?
+
+(dumplisp :name "cls"
+          :checkpoint nil
+          :restart-actions (append (copy-list *restart-actions*)
+                                   (list (cons :eval '(ls::ls-top-level)))))
+

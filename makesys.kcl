@@ -1,0 +1,11 @@
+(load "defsys")
+(ls::load-stats)
+(ls::use-stats)
+
+(defun si:top-level ()
+  (in-package 'system::user)
+  (incf system::*ihs-top* 2)
+  (si:error-set (ls::ls-top-level)))
+
+(gbc nil)
+(si:save-system "saved_kcls")

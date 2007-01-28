@@ -1,0 +1,50 @@
+To build Lisp-Stat under Macintosh CL, 
+
+	Put the files in a mac folder with the lib, Examples and Data
+	files in subfolders and	rename all .lsp files to have .lisp 
+	endings
+
+	Edit the MPW library specifications in mclglue.lisp if necessary
+
+	Use MPW to build clib.o in the lib folder with the makefile
+	clib.make
+
+	Start up MCL and from with in MCL
+
+	Load defsys.lisp using the load menu command
+
+	In the listener execute
+
+		(ls::compile-stats)
+
+This sets up fasl files for all the lisp files. You can then run the system
+by 
+
+	Starting up MCL
+
+	Loading defsys.lisp with the load menu item
+
+	In the listener executing
+
+		(ls::load-stats)
+		(ls::use-stats)
+
+Up to now I have not figured out the right way to write a modified top
+level that restores the history mechanism and behaves properly in the
+interactive enviroonment. I have also not been able to figure out how
+to save an application or image that contains the C code. If anyone
+has any hints I would be glad to hear them. Since this part of MCL is
+still listed as under development it may be best not to spend too much
+time on this until they come out with a proper release.
+
+The result seems to work but is very unstable on a Mac SE30 with 5M
+and system 6.0.7. I don't think the problem is with the C interface
+code itself, since it is essentially the same code as for Allegro. I
+think the problem is a combination of lack of memory and heap
+fragmentation. I have not yet worked out if there ae parameters in mcl
+that let you tinker with heap allocation and memory management in
+general. If so, these need to be adjusted. More memory would also
+help. Finally, it would probably help to write local versions of
+calloc/realloc/free that do more heap compacting and garbage
+collecting.
+
