@@ -1,18 +1,18 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; ladata -- Data handling functions for linear algebra interface
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-(provide "ladata")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
+(in-package #:lisp-stat-basics)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -24,16 +24,16 @@
 ;;;; These constants need to be redefined if IN, RE or CX in linalg.h
 ;;;; are changed.
 ;;;;
-(defconstant mode-in 0)
-(defconstant mode-re 1)
-(defconstant mode-cx 2)
+(defparameter +mode-in+ 0)
+(defparameter +mode-re+ 1)
+(defparameter +mode-cx+ 2)
 
 (defun mode-of (x) 
   (etypecase x
-	     (fixnum mode-in)
-	     (rational mode-re)
-	     (float mode-re)
-	     (complex mode-cx)))
+	     (fixnum +mode-in+)
+	     (rational +mode-re+)
+	     (float +mode-re+)
+	     (complex +mode-cx+)))
 
 (defun la-data-mode (data)
   (let ((data (compound-data-seq data))
@@ -84,7 +84,7 @@
 (defun la-free-vector (v) (la-free v))
 
 (defun la-matrix (n m mode)
-  (let ((matrix (la-allocate n (la-mode-size mode-in))))
+  (let ((matrix (la-allocate n (la-mode-size +mode-in+))))
     (dotimes (i n)
       (la-put-pointer matrix i (la-allocate m (la-mode-size mode))))
     matrix))
@@ -108,15 +108,15 @@
 	 (d (make-next-element data)))
     (declare (fixnum n))
     (cond
-     ((= mode mode-in)
+     ((= mode +mode-in+)
       (dotimes (i n) 
         (declare (fixnum i))
 	(la-put-integer vec i (get-next-element d i))))
-     ((= mode mode-re)
+     ((= mode +mode-re+)
       (dotimes (i n) 
         (declare (fixnum i))
 	(la-put-double vec i (get-next-element d i))))
-      ((= mode mode-cx)
+      ((= mode +mode-cx+)
        (dotimes (i n) 
          (declare (fixnum i))
 	 (let ((x (get-next-element d i)))
@@ -130,19 +130,19 @@
 	 (mat (la-matrix n m mode)))
     (declare (fixnum n m))
     (cond
-     ((= mode mode-in)
+     ((= mode +mode-in+)
       (dotimes (i n)
         (declare (fixnum i))
 	(let ((vec (la-get-pointer mat i)))
 	  (dotimes (j m)
 	    (la-put-integer vec j (aref data i j))))))
-      ((= mode mode-re)
+      ((= mode +mode-re+)
        (dotimes (i n) 
          (declare (fixnum i))
 	 (let ((vec (la-get-pointer mat i)))
 	   (dotimes (j m)
 	     (la-put-double vec j (aref data i j))))))
-      ((= mode mode-cx)
+      ((= mode +mode-cx+)
        (dotimes (i n) 
          (declare (fixnum i))
 	 (let ((vec (la-get-pointer mat i)))
@@ -156,9 +156,9 @@
   (check-sequence data)
   (let ((d (make-next-element data))
 	(gf (cond
-	      ((= mode mode-in) #'la-get-integer)
-	      ((= mode mode-re) #'la-get-double)
-	      ((= mode mode-cx) #'la-get-complex))))
+	      ((= mode +mode-in+) #'la-get-integer)
+	      ((= mode +mode-re+) #'la-get-double)
+	      ((= mode +mode-cx+) #'la-get-complex))))
     (dotimes (i n)
       (declare (fixnum i))
       (set-next-element d i (funcall gf vec i))))
@@ -168,9 +168,9 @@
   (declare (fixnum n m))
   (check-matrix result)
   (let ((gf (cond
-	      ((= mode mode-in) #'la-get-integer)
-	      ((= mode mode-re) #'la-get-double)
-	      ((= mode mode-cx) #'la-get-complex))))
+	      ((= mode +mode-in+) #'la-get-integer)
+	      ((= mode +mode-re+) #'la-get-double)
+	      ((= mode +mode-cx+) #'la-get-complex))))
     (dotimes (i n)
       (declare (fixnum i))
       (let ((vec (la-get-pointer mat i)))
