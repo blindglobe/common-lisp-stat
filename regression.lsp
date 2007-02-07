@@ -1,3 +1,10 @@
+;;; -*- mode: lisp -*-
+;;;
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
+;;; Common Lisp.  
+
 ;;;;
 ;;;; regression.lsp XLISP-STAT regression model proto and methods
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
@@ -9,13 +16,7 @@
 ;;;; Incorporates modifications suggested by Sandy Weisberg.
 ;;;;
 
-
-(provide "regression")
-
-#+:CLtL2
-(in-package lisp-stat)
-#-:CLtL2
-(in-package 'lisp-stat)
+(in-package :lisp-stat)
 
 (export '(regression-model regression-model-proto x y intercept sweep-matrix
 	  basis weights included total-sum-of-squares residual-sum-of-squares

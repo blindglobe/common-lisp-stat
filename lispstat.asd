@@ -73,10 +73,9 @@ Last touched 1991, then in 2005--2007."
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("lsobjects"))
+					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "nonlin"
-					  :depends-on ("lsobjects"
-						       "regression"))
+					  :depends-on ("regression"))
 	       (:lispstat-lsp-source-file "statistics"
 					  :depends-on ("lsobjects"))
 	       (:lispstat-lsp-source-file "maximize"

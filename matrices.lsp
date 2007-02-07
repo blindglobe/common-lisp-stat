@@ -1,3 +1,10 @@
+;;; -*- mode: lisp -*-
+;;;
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
+;;; Common Lisp.  
+
 ;;;; matrices -- Basic matrix operations
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
@@ -9,10 +16,7 @@
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
+(in-package :lisp-stat-basics)
 
 (export '(matrixp num-rows num-cols matmult identity-matrix diagonal
 	  row-list column-list inner-product outer-product cross-product

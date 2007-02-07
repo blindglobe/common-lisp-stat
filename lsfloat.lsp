@@ -111,13 +111,13 @@
 
 ;;; FFIX - coerces its arguments to standard real or complex floating
 ;;; point number if needed.
-#-:stat-float-is-double-float
+#-stat-float-is-double-float
 (defmacro ffix (x)
   `(if (complexp ,x) 
     (coerce ,x ',+stat-cfloat-typing+)
     (float ,x ',+stat-float-template+)))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (defmacro ffix (x) x)
 
 ;;; MAKEDOUBLE coerces its argument to the standard floating point
@@ -125,7 +125,7 @@
 
 (defun makedouble (x) (float x +stat-float-template+))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (eval-when (compile)
   (proclaim '(function makedouble (t) long-float)))
 
@@ -133,7 +133,7 @@
 ;;; MAKE-BASE-TRANS-FUN Macro for re-defining one argument transcendental
 ;;; functions
 ;;;
-#-:stat-float-is-double-float
+#-stat-float-is-double-float
 (defmacro make-base-trans-fun (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function))
@@ -143,7 +143,7 @@
      (declare (inline ,sym coerce float))
      (,sym (ffix x)))))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (defmacro make-base-trans-fun (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function)))
@@ -154,7 +154,7 @@
 ;;; MAKE-BASE-TRANS-FUN-2 Macro for re-defining transcendental functions
 ;;; with an optional second argument
 ;;;
-#-:stat-float-is-double-float
+#-stat-float-is-double-float
 (defmacro make-base-trans-fun-2 (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function))
@@ -164,7 +164,7 @@
      (declare (inline ,sym coerce float))
      (if y (,sym (ffix x) (ffix y)) (,sym (ffix x))))))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (defmacro make-base-trans-fun-2 (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function)))
@@ -191,16 +191,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; BASE-FLOAT
-#-:stat-float-is-double-float
+#-stat-float-is-double-float
 (progn
   (defun base-float (x &optional (y +stat-float-template+)) (float x y))
   (fix-base-fun-doc 'float 'base-float))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (make-base-trans-fun float)
 
 ;;; BASE-EXPT
-#-:stat-float-is-double-float
+#-stat-float-is-double-float
 (progn
   (defun base-expt (x y)
     (declare (inline expt coerce float integerp))
@@ -208,7 +208,7 @@
 
   (fix-base-fun-doc 'expt 'base-expt))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (make-base-trans-fun expt)
 
 ;;; Others

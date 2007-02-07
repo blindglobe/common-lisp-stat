@@ -7,10 +7,8 @@
 ;;;; Package Setup
 ;;;;
 
-#+:CLtL2
-(in-package lisp-stat-basics)
-#-:CLtL2
-(in-package 'lisp-stat-basics)
+
+(in-package :lisp-stat-basics)
 
 (export '(log-gamma uniform-rand normal-cdf normal-quant normal-dens
 	  normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
