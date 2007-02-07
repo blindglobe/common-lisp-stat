@@ -11,11 +11,7 @@
 
 (in-package #:lisp-stat)
 
-(export '(bayes-model bayes-model-proto bayes-internals))
-
-;;;;
-;;;; Objects Representing Functions
-;;;;
+;;; Objects Representing Functions
 
 ;; Generic C2 Functions
 
