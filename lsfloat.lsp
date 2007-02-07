@@ -44,8 +44,8 @@
 
 (in-package #:lisp-stat-basics)
 
-(export '(*stat-float-type* *stat-cfloat-type* *stat-float-template*
-          machine-epsilon))
+;;(export '(+stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
+;;          machine-epsilon))
 
 ;; This should technically be conditionalized to the Lisp
 ;; implementation, i.e. 
