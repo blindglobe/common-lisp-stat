@@ -1,3 +1,8 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; fastmap -- Fast version of MAP
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
@@ -20,16 +25,25 @@
 ;;;; Package Setup
 ;;;;
 
+(defpackage :lisp-stat-fastmap
+  (:use :common-lisp)
+  (:export fastmap))
 
-(in-package #:lisp-stat-basics)
+(in-package #:lisp-stat-fastmap)
 
 ;;;;
 ;;;; Functions
 ;;;;
 
+(defun sequencep (x) 
+"Args: (x)
+Returns NIL unless X is a list or vector."
+  (or (listp x) (vectorp x)))
+
 (defun cdr-lists (args)
-  (do ((list args (cdr list))) ((null list))
-      (if (consp (car list)) (rplaca list (cdar list)))))
+  (do ((list args (cdr list)))
+      ((null list))
+    (if (consp (car list)) (rplaca list (cdar list)))))
 
 (defun get-result-size (args)
   (macrolet ((any-nulls (ls) `(dolist (x ,ls) (if (null x) (return t)))))
