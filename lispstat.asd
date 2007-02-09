@@ -47,18 +47,23 @@ Last touched 1991, then in 2005--2007."
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "fastmap")
-	       (:lispstat-lsp-source-file "lspackages"
-					  :depends-on ("fastmap"
-						       "lsobjects"))
 	       ;; ls-basisc
 	       (:lispstat-lsp-source-file "compound" 
 					  :depends-on ("lsobjects"
 						       "fastmap"))
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
+
+	       (:lispstat-lsp-source-file "lsfloat")
+;;					  :depends-on ("lsbasics")) ;; in lisp-stat-basics
+	       (:lispstat-lsp-source-file "lsmath"
+					  :depends-on ("lsbasics"
+						       "lsmacros"
+						       "lsfloat"))
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
-						       "lsmacros")) 
+						       "lsmacros"
+						       "lsfloat")) 
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
@@ -67,10 +72,12 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("ladata")) ;; in lisp-stat-basics
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("lsbasics"))
-	       (:lispstat-lsp-source-file "lsfloat"
-					  :depends-on ("lsbasics")) ;; in lisp-stat-basics
-	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("lsbasics"))
+
+	       (:lispstat-lsp-source-file "lspackages"
+					  :depends-on ("fastmap"
+						       "lsobjects"
+						       "lsmath"
+						       "lsfloat"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"

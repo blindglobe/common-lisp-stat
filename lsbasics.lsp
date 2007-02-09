@@ -40,9 +40,6 @@
    spline kernel-dens kernel-smooth
    ;; lispstat-macros
    make-rv-function make-rv-function-1 
-   ;; lispstat-float
-   #:*stat-float-typing* #:*stat-cfloat-typing* #:*stat-float-template*
-   #:machine-epsilon  
    ;; dists
    log-gamma uniform-rand normal-cdf normal-quant normal-dens
    normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens

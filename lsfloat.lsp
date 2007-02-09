@@ -38,17 +38,23 @@
 ;;;; defined.
 ;;;;
 
-;;;;
-;;;; Package Setup
-;;;;
+;;; Package Setup
+
 
 (defpackage :lisp-stat-float
-  (:use :common-lisp))
+  (:use :common-lisp)
+  (:export +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
+	   machine-epsilon
+
+	   make-base-trans-fun-2 make-base-trans-fun 
+
+	   BASE-LOG BASE-EXP BASE-EXPT BASE-SQRT BASE-SIN BASE-COS
+	   BASE-TAN BASE-ASIN BASE-ACOS BASE-ATAN BASE-SINH
+	   BASE-COSH BASE-TANH BASE-ASINH BASE-ACOSH BASE-ATANH
+	   BASE-ABS BASE-PHASE BASE-FFLOOR BASE-FCEILING BASE-FTRUNCATE
+	   BASE-FROUND BASE-SIGNUM BASE-CIS))
 
 (in-package #:lisp-stat-float)
-
-;;(export '(+stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
-;;          machine-epsilon))
 
 ;; This should technically be conditionalized to the Lisp
 ;; implementation, i.e. 

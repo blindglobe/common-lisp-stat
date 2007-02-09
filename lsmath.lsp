@@ -8,62 +8,38 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;;;
-;;;; Package Setup
-;;;;
-
-
+;;; Package Setup
 
 ;; in another world...
-;; (defpackage :lispstat-math
-;;   (:use #:common-lisp  #:lispstat-objectsystem)
-;;   (:import-from #:lispstat-basics make-rv-function make-rv-function-1)
-;;   (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-;; 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
-;; 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
-;; 	   < <= = /= >= > complex conjugate realpart imagpart phase
-;; 	   min max logand logior logxor lognot ffloor fceiling
-;; 	   ftruncate fround signum cis)
-;;   (:export ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
-;; 	   tan asin acos atan sinh cosh tanh asinh acosh atanh float random
-;; 	   truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
-;; 	   /= >= > complex conjugate realpart imagpart phase min max
-;; 	   logand logior logxor lognot ffloor fceiling ftruncate fround 
-;; 	   signum cis)
-;;   (:documentation "Vectorization of numerical functions"))
-;; (in-package :lispstat-math)
+(defpackage :lisp-stat-math
+   (:use :common-lisp
+	 :lisp-stat-object-system
+	 :lisp-stat-macros
+	 :lisp-stat-float)
+   ;; Shadow the symbols in the lisp package that will be redefined
+   (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+ 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
+ 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
+ 	   < <= = /= >= > complex conjugate realpart imagpart phase
+ 	   min max logand logior logxor lognot ffloor fceiling
+ 	   ftruncate fround signum cis)
+   (:export ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
+ 	   tan asin acos atan sinh cosh tanh asinh acosh atanh float random
+ 	   truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
+ 	   /= >= > complex conjugate realpart imagpart phase min max
+ 	   logand logior logxor lognot ffloor fceiling ftruncate fround 
+ 	   signum cis)
+   (:documentation "Vectorization of numerical functions"))
 
+(in-package :lisp-stat-math)
 
-(in-package #:lisp-stat)
+;; (in-package #:lisp-stat)
+;; (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
+;; (shadowing-import (package-shadowing-symbols 'lisp-stat-basics))
+;; (use-package 'lisp-stat-object-system)
+;; (use-package 'lisp-stat-basics)
 
-(shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
-(shadowing-import (package-shadowing-symbols 'lisp-stat-basics))
-(use-package 'lisp-stat-object-system)
-(use-package 'lisp-stat-basics)
-
-;;;
-;;; Shadow the symbols in the lisp package that will be redefined
-;;;
-
-(shadow '(expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-	  asin acos atan sinh cosh tanh asinh acosh atanh float random
-	  truncate floor ceiling round minusp zerop plusp evenp oddp 
-	  < <= = /= >= > complex conjugate realpart imagpart phase
-	  min max logand logior logxor lognot ffloor fceiling
-	  ftruncate fround signum cis))
-
-(export '(^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
-          tan asin acos atan sinh cosh tanh asinh acosh atanh float random
-	  truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
-	  /= >= > complex conjugate realpart imagpart phase min max
-	  logand logior logxor lognot ffloor fceiling ftruncate fround 
-	  signum cis))
-
-;;;;
-;;;; Import some symbols
-;;;;
-
-(import '(ls-basics::make-rv-function ls-basics::make-rv-function-1))
+;;; Import some symbols
 
 #+(and kcl fast-c-code internal-c-math)
 (progn
@@ -83,23 +59,23 @@
 			       ls-basics::rv-realpart ls-basics::rv-imagpart 
 			       ls-basics::rv-conjugate)))
 
-(import '(ls-basics::base-expt ls-basics::base-log ls-basics::base-exp
-			       ls-basics::base-sqrt ls-basics::base-sin ls-basics::base-cos
-			       ls-basics::base-tan ls-basics::base-asin ls-basics::base-acos
-			       ls-basics::base-atan ls-basics::base-sinh ls-basics::base-cosh
-			       ls-basics::base-tanh ls-basics::base-asinh ls-basics::base-acosh
-			       ls-basics::base-atanh ls-basics::base-float ls-basics::base-abs
-			       ls-basics::base-phase ls-basics::base-ffloor
-			       ls-basics::base-fceiling ls-basics::base-ftruncate
-			       ls-basics::base-fround ls-basics::base-signum
-			       ls-basics::base-cis))
+;; found in lisp-stat-float
+;; (import '(ls-basics::base-expt ls-basics::base-log ls-basics::base-exp
+;; 			       ls-basics::base-sqrt ls-basics::base-sin ls-basics::base-cos
+;; 			       ls-basics::base-tan ls-basics::base-asin ls-basics::base-acos
+;; 			       ls-basics::base-atan ls-basics::base-sinh ls-basics::base-cosh
+;; 			       ls-basics::base-tanh ls-basics::base-asinh ls-basics::base-acosh
+;; 			       ls-basics::base-atanh ls-basics::base-float ls-basics::base-abs
+;; 			       ls-basics::base-phase ls-basics::base-ffloor
+;; 			       ls-basics::base-fceiling ls-basics::base-ftruncate
+;; 			       ls-basics::base-fround ls-basics::base-signum
+;; 			       ls-basics::base-cis))
 
-;;;;
-;;;; Patch up some type definitions
-;;;;
 
-(deftype float () 'lisp:float)
-(deftype complex () 'lisp:complex)
+;;; Patch up some type definitions
+
+(deftype float () 'common-lisp:float)
+(deftype complex () 'common-lisp:complex)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -111,17 +87,17 @@
 (make-rv-function ** base-expt x y)
 (make-rv-function expt base-expt x y)
 
-(make-rv-function + lisp:+)
-(make-rv-function-1 - lisp:-)
-(make-rv-function * lisp:*)
-(make-rv-function-1 / lisp:/)
-(make-rv-function mod lisp:mod x y)
-(make-rv-function rem lisp:rem x y)
-(make-rv-function-1 pmin lisp:min)
-(make-rv-function-1 pmax lisp:max)
+(make-rv-function + common-lisp:+)
+(make-rv-function-1 - common-lisp:-)
+(make-rv-function * common-lisp:*)
+(make-rv-function-1 / common-lisp:/)
+(make-rv-function mod common-lisp:mod x y)
+(make-rv-function rem common-lisp:rem x y)
+(make-rv-function-1 pmin common-lisp:min)
+(make-rv-function-1 pmax common-lisp:max)
 (make-rv-function abs base-abs x)
-(make-rv-function 1+ lisp:1+ x)
-(make-rv-function 1- lisp:1- x)
+(make-rv-function 1+ common-lisp:1+ x)
+(make-rv-function 1- common-lisp:1- x)
 
 (make-rv-function-1 log base-log)
 (make-rv-function exp base-exp x)
@@ -141,30 +117,30 @@
 (make-rv-function atanh base-atanh x)
 
 (make-rv-function-1 float base-float)
-(make-rv-function-1 random lisp:random)
+(make-rv-function-1 random common-lisp:random)
 
-(make-rv-function-1 floor lisp:floor)
-(make-rv-function-1 ceiling lisp:ceiling)
-(make-rv-function-1 truncate lisp:truncate)
-(make-rv-function-1 round lisp:round)
+(make-rv-function-1 floor common-lisp:floor)
+(make-rv-function-1 ceiling common-lisp:ceiling)
+(make-rv-function-1 truncate common-lisp:truncate)
+(make-rv-function-1 round common-lisp:round)
 
-(make-rv-function zerop lisp:zerop x)
-(make-rv-function plusp lisp:plusp x)
-(make-rv-function minusp lisp:minusp x)
-(make-rv-function oddp lisp:oddp x)
-(make-rv-function evenp lisp:evenp x)
+(make-rv-function zerop common-lisp:zerop x)
+(make-rv-function plusp common-lisp:plusp x)
+(make-rv-function minusp common-lisp:minusp x)
+(make-rv-function oddp common-lisp:oddp x)
+(make-rv-function evenp common-lisp:evenp x)
 
-(make-rv-function-1 < lisp:<)
-(make-rv-function-1 <= lisp:<=)
-(make-rv-function-1 = lisp:=)
-(make-rv-function-1 /= lisp:/=)
-(make-rv-function-1 >= lisp:>=)
-(make-rv-function-1 > lisp:>)
+(make-rv-function-1 < common-lisp:<)
+(make-rv-function-1 <= common-lisp:<=)
+(make-rv-function-1 = common-lisp:=)
+(make-rv-function-1 /= common-lisp:/=)
+(make-rv-function-1 >= common-lisp:>=)
+(make-rv-function-1 > common-lisp:>)
 
-(make-rv-function-1 complex lisp:complex)
-(make-rv-function realpart lisp:realpart x)
-(make-rv-function imagpart lisp:imagpart x)
-(make-rv-function conjugate lisp:conjugate x)
+(make-rv-function-1 complex common-lisp:complex)
+(make-rv-function realpart common-lisp:realpart x)
+(make-rv-function imagpart common-lisp:imagpart x)
+(make-rv-function conjugate common-lisp:conjugate x)
 (make-rv-function phase base-phase x)
 
 (defun min-1 (x)
@@ -176,18 +152,18 @@
       (if (consp seq)
         (dolist (x (rest seq) result)
           (let ((r (if (numberp x) x (min-1 x))))
-            (if (lisp:< r result) (setf result r))))
+            (if (common-lisp:< r result) (setf result r))))
         (let ((n (length seq)))
           (declare (fixnum n))
           (dotimes (i n result)
             (declare (fixnum i))
             (let* ((x (aref seq i))
                    (r (if (numberp x) x (min-1 x))))
-              (if (lisp:< r result) (setf result r)))))))))
+              (if (common-lisp:< r result) (setf result r)))))))))
 
 (defun min (x &optional (y nil has-y) &rest args)
   (if (and (null args) (numberp x) (numberp y))
-    (lisp:min x y)
+    (common-lisp:min x y)
     (if has-y (min-1 (cons x (cons y args))) (min-1 x))))
 
 (defun max-1 (x)
@@ -199,24 +175,24 @@
       (if (consp seq)
         (dolist (x (rest seq) result)
           (let ((r (if (numberp x) x (max-1 x))))
-            (if (lisp:> r result) (setf result r))))
+            (if (common-lisp:> r result) (setf result r))))
         (let ((n (length seq)))
           (declare (fixnum n))
           (dotimes (i n result)
             (declare (fixnum i))
             (let* ((x (aref seq i))
                    (r (if (numberp x) x (max-1 x))))
-              (if (lisp:> r result) (setf result r)))))))))
+              (if (common-lisp:> r result) (setf result r)))))))))
 
 (defun max (x &optional (y nil has-y) &rest args)
   (if (and (null args) (numberp x) (numberp y))
-    (lisp:max x y)
+    (common-lisp:max x y)
     (if has-y (max-1 (cons x (cons y args))) (max-1 x))))
 
-(make-rv-function logand lisp:logand)
-(make-rv-function logior lisp:logior)
-(make-rv-function logxor lisp:logxor)
-(make-rv-function lognot lisp:lognot x)
+(make-rv-function logand common-lisp:logand)
+(make-rv-function logior common-lisp:logior)
+(make-rv-function logxor common-lisp:logxor)
+(make-rv-function lognot common-lisp:lognot x)
 
 (make-rv-function-1 ffloor base-ffloor)
 (make-rv-function-1 fceiling base-fceiling)

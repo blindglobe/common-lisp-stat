@@ -23,66 +23,32 @@
   (:nicknames :ls :stats)
   (:use ;; :common-lisp
 	;; :lisp-stat-object-system
+        :lisp-stat-float
+        :lisp-stat-math
 	:lisp-stat-basics)
   (:shadowing-import-from :lisp-stat-object-system slot-value call-next-method)
 
-  ;; (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
-  ;; (shadowing-import (package-shadowing-symbols 'lisp-stat-basics))
+;;    ;; statistics.lsp
 
-  (:import-from :ls-basics
+;;    |base-lowess|
 
-   ;; lsmath.lsp
-   ;; install-rv-function
+;;    ;; maximize.lsp
+;;    new-minfo-internals minfo-maximize
 
-   rv-expt rv-+ rv--
-   rv-* rv-/ rv-mod
-   rv-rem rv-pmin rv-pmax
-   rv-1+ rv-1- rv-exp
-   rv-log rv-sqrt rv-sin
-   rv-cos rv-tan rv-atan
-   rv-float rv-random rv-floor
-   rv-ceiling rv-truncate rv-round
-   rv-zerop rv-plusp rv-minusp
-   rv-oddp rv-evenp rv-<
-   rv-<= rv-= rv-/=
-   rv->= rv-> rv-complex
-   rv-realpart rv-imagpart 
-   rv-conjugate
+;;    )
 
-   base-expt base-log base-exp
-   base-sqrt base-sin base-cos
-   base-tan base-asin base-acos
-   base-atan base-sinh base-cosh
-   base-tanh base-asinh base-acosh
-   base-atanh base-float base-abs
-   base-phase base-ffloor
-   base-fceiling base-ftruncate
-   base-fround base-signum
-   base-cis
+;;   (:shadow
 
-   make-rv-function make-rv-function-1
+;;    ;; lsmath.lsp
 
-   ;; statistics.lsp
+;;    expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+;;    asin acos atan sinh cosh tanh asinh acosh atanh float random
+;;    truncate floor ceiling round minusp zerop plusp evenp oddp 
+;;    < <= = /= >= > complex conjugate realpart imagpart phase
+;;    min max logand logior logxor lognot ffloor fceiling
+;;    ftruncate fround signum cis
 
-   |base-lowess|
-
-   ;; maximize.lsp
-   new-minfo-internals minfo-maximize
-
-   )
-
-  (:shadow
-
-   ;; lsmath.lsp
-
-   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-   asin acos atan sinh cosh tanh asinh acosh atanh float random
-   truncate floor ceiling round minusp zerop plusp evenp oddp 
-   < <= = /= >= > complex conjugate realpart imagpart phase
-   min max logand logior logxor lognot ffloor fceiling
-   ftruncate fround signum cis
-
-   )
+;;    )
 
   (:export
 
@@ -119,13 +85,12 @@
 
    ))
 
-;;(in-package :lisp-stat)
 
+;;; Lisp-stat-user package
 
-;;;;
-;;;; lstoplevel.lsp
-;;;;
+(defpackage :lisp-stat-user
+  (:use :common-lisp
+	:lisp-stat))
 
-#+:kcl
-(import '(si::*quit-tag* si::*eof* si::*lisp-initialized* 
-			 si::reset-stack-limits si::break-current))
+(in-package :lisp-stat-user)
+

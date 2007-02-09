@@ -1,3 +1,8 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
 ;;;; compound -- Compound data and element-wise mapping functions
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
@@ -8,10 +13,21 @@
 ;;;; Package Setup
 ;;;;
 
-(in-package #:lisp-stat-basics)
+(defpackage :lisp-stat-compound-data
+  (:use :common-lisp
+	:lisp-stat-object-system)
+  (:shadowing-import-from :lisp-stat-object-system
+			  slot-value
+			  call-next-method
+			  call-method))
 
-(export '(compound-data-p map-elements compound-data-seq
-	  compound-data-length element-seq compound-data-proto))
+(in-package :lisp-stat-compound-data)
+
+
+; (in-package #:lisp-stat-basics)
+
+; (export '(compound-data-p map-elements compound-data-seq
+; 	  compound-data-length element-seq compound-data-proto))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
