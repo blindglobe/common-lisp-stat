@@ -45,15 +45,16 @@ Last touched 1991, then in 2005--2007."
   ;; kclglue.lsp  kclpatch.lsp exclglue.lsp mclglue.lsp 
 
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
-	       (:lispstat-lsp-source-file "lspackages")
-	       (:lispstat-lsp-source-file "lsobjects"
-					  :depends-on ("lspackages"))
-	       (:lispstat-lsp-source-file "fastmap"
-					  :depends-on ("lsobjects"))
-	       (:lispstat-lsp-source-file "compound"
+	       (:lispstat-lsp-source-file "lsobjects")
+	       (:lispstat-lsp-source-file "fastmap")
+	       (:lispstat-lsp-source-file "lspackages"
+					  :depends-on ("fastmap"
+						       "lsobjects"))
+	       ;; ls-basisc
+	       (:lispstat-lsp-source-file "compound" 
 					  :depends-on ("lsobjects"
 						       "fastmap"))
-	       (:lispstat-lsp-source-file "lsmacros"
+	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
@@ -84,6 +85,6 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
 	       
-	       (:lispstat-lsp-source-file "numlib")
+	       ;;(:lispstat-lsp-source-file "numlib") ;; do we need this?
 	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "lstoplevel")))

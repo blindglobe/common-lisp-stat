@@ -42,7 +42,10 @@
 ;;;; Package Setup
 ;;;;
 
-(in-package #:lisp-stat-basics)
+(defpackage :lisp-stat-float
+  (:use :common-lisp))
+
+(in-package #:lisp-stat-float)
 
 ;;(export '(+stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
 ;;          machine-epsilon))
@@ -125,9 +128,10 @@
 
 (defun makedouble (x) (float x +stat-float-template+))
 
-#+stat-float-is-double-float
-(eval-when (compile)
-  (proclaim '(function makedouble (t) long-float)))
+;; Why doesn't this optimization work?
+;; #+stat-float-is-double-float
+;; (eval-when (compile)
+;;   (proclaim '(function makedouble (t) long-float)))
 
 ;;;
 ;;; MAKE-BASE-TRANS-FUN Macro for re-defining one argument transcendental
@@ -170,25 +174,10 @@
          (doc (documentation sym 'function)))
     `(progn (setf (symbol-function ',base-sym) (symbol-function ',sym))
             (if ,doc (setf (documentation ',base-sym 'function) ,doc)))))
+;;;
+;;;  Modified base functions to coerce to standard floating point type
+;;;
 
-;;; FIX-BASE-DOC adds note about modification to documentation string argument
-(defmacro fix-base-doc (doc)
-  `(format nil
-	   "~a~%Modified to coerce arguments(s) to stat-float or stat-cfloat."
-	   ,doc))
-
-;;; FIX-BASE-FUN-DOC fixes documentation of SYM and installs in BASE-SYM
-(defun fix-base-fun-doc (sym base-sym)
-  (let ((doc (documentation sym 'function)))
-    (if doc (setf (documentation base-sym 'function) (fix-base-doc doc)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;  Modified base functions to coerce to standard floating point type
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; BASE-FLOAT
 #-stat-float-is-double-float

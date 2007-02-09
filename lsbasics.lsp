@@ -12,14 +12,18 @@
 ;;;; Package Setup
 ;;;;
 
-(defpackage #:lisp-stat-basics
+(defpackage :lisp-stat-basics
   (:nicknames #:ls-basics)
-  (:use #:common-lisp #:lisp-stat-object-system)
+  (:use ;;:common-lisp
+	:lisp-stat-object-system
+	:lisp-stat-fastmap
+	:lisp-stat-float
+	:lisp-stat-macros)
   ;;(:shadow (package-shadowing-symbols 'lisp-stat-object-system))
   ;;(:import-from packagename symbols)
   ;;(:shadowing-import-from packagename symbols)
   (:export
-   ;; lispstat-basics.lisp
+   ;; lsbasics.lisp
    sequencep copy-vector copy-array iseq which repeat select
    permute-array sum prod count-elements mean if-else sample sort-data
    order rank
@@ -49,6 +53,65 @@
    binomial-cdf binomial-quant binomial-pmf binomial-rand
    ;;
    ))
+
+
+;; (defpackage :lisp-stat-basics
+;;   (:nicknames :ls-basics)
+;;   (:use ;; :common-lisp
+;; 	:lisp-stat-object-system
+;;         :lisp-stat-fastmap
+;; 	:lisp-stat-macros)
+;;   ;;(:shadowing-import-from (package-shadowing-symbols #:lisp-stat-object-system))
+;;   (:export
+
+;;    ;; lsbasics.lsp
+;;    sequencep copy-vector copy-array iseq which repeat select 
+;;    permute-array sum prod count-elements mean if-else
+;;    sample sort-data order rank
+
+;;    ;; kclpatch.lsp
+;;    ;; #+  kcl (export '(function-lambda-expression realp fixnump))
+
+;;    ;; compound.lsp
+
+;;    compound-data-p map-elements compound-data-seq
+;;    compound-data-length element-seq compound-data-proto
+
+;;    ;; dists.lsp
+;;    log-gamma uniform-rand normal-cdf normal-quant normal-dens
+;;    normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
+;;    cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
+;;    chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
+;;    beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
+;;    f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
+;;    binomial-cdf binomial-quant binomial-pmf binomial-rand
+
+;;    ;; linalg.lsp
+
+;;    chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
+;;    qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
+;;    fft make-sweep-matrix sweep-operator ax+y numgrad numhess
+;;    split-list eigen
+
+;;    ;; matrices.lsp
+;;    matrixp num-rows num-cols matmult identity-matrix diagonal
+;;    row-list column-list inner-product outer-product cross-product
+;;    transpose bind-columns bind-rows
+
+;;    ;; lsfloat.lsp
+
+;;    +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
+;;    machine-epsilon
+
+;;    ;; mclglue.lsp
+;;    ;; #+:mcl
+;;    ;; (import '(ccl:def-logical-directory ccl:ff-load ccl:deffcfun ccl:defccallable))
+
+;;    ))
+
+;; ;;(in-package #:lisp-stat-basics)
+
+
 
 (in-package #:lisp-stat-basics)
 

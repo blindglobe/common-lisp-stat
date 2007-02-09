@@ -13,6 +13,32 @@ range of target platforms.
 
 
 ============
+
+File Dependencies from 9 Feb 2007
+
+Package lisp-stat-object-system
+   self contained
+
+Package lisp-stat-fastmap
+   self contained, new.
+
+Package lisp-stat-basics:
+   lsbasics
+   compound
+   lsmacros
+   dists
+   ladata
+   linalg
+   matrices
+   lsfloat
+   lsmath
+
+
+
+
+
+
+============
 Original, dating to Oct 30, 1991.
 
 This is Lisp-Stat 1.0 Alpha 1, a first attempt at producing a Common

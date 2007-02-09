@@ -58,7 +58,7 @@
 (defpackage :lisp-stat-object-system
  (:nicknames :ls-objects :lsos)
  (:use :common-lisp)
- (:shadow call-next-method slot-value)
+ (:shadow :call-method :call-next-method :slot-value)
  (:export ls-object objectp *object* kind-of-p make-object *message-hook*
 	  *set-slot-hook* slot-value self send call-next-method call-method
 	  defmeth defproto instance-slots proto-name))
@@ -464,11 +464,17 @@ used in a method."
   (sendmsg *self* *current-selector* (rest *current-preclist*) args))
          
 ;;;; call-method - call method belonging to another object on current object
+
+;; ugly cruft, need better solution for SBCL packagelocks
+;; #+sbcl(declare (sb-ext:disable-package-locks ls-objects:call-method))
+
 (defun call-method (object selector &rest args)
 "Args (object selector &rest args)
 Funcalls method for SELECTOR found in OBJECT to SELF. Can only be used in 
 a method."
   (sendmsg *self* selector (ls-object-preclist object) args))
+
+;; #+sbcl(declare (sb-ext:enable-package-locks ls-objects:call-method))
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;

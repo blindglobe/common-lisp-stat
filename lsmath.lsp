@@ -67,7 +67,7 @@
 
 #+(and kcl fast-c-code internal-c-math)
 (progn
-  (import 'ls-basics::install-rv-function)
+  ;;  (import 'ls-basics::install-rv-function)
   (import '(ls-basics::rv-expt ls-basics::rv-+ ls-basics::rv--
 			       ls-basics::rv-* ls-basics::rv-/ ls-basics::rv-mod
 			       ls-basics::rv-rem ls-basics::rv-pmin ls-basics::rv-pmax

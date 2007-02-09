@@ -19,7 +19,11 @@
 ;;;; Package Setup
 ;;;;
 
-(in-package :lisp-stat-basics)
+(defpackage :lisp-stat-macros
+  (:use :common-lisp)
+  (:export make-rv-function make-rv-function-1))
+
+(in-package :lisp-stat-macros)
 
 ;;;;
 ;;;; Floating Point Macros
@@ -37,11 +41,12 @@
 
 (defmacro fixup-vectorized-doc-list (sym)
   `(let ((doc (documentation ',sym 'function)))
-    (if doc (list (format nil "~s~%Vectorized." ,sym))))) ;; AJR: newvers
-;;    (if doc (list (format nil "~s~%Vectorized.")))))  ;; 
+    (if doc (list (format nil "~s~%Vectorized." ,sym))))) ;; AJR: new version
+;;    (if doc (list (format nil "~s~%Vectorized.")))))
 
 
 ;;; Exported
+
 ;;; recursively vectorizes (rv) functions in dists and lispstat-math. 
 
 (defmacro make-rv-function (sym fcn &rest args)

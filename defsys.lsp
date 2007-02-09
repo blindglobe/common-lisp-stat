@@ -10,8 +10,8 @@
   (if (symbolp f)
       (pushnew (intern (symbol-name f) 'keyword) *features*)))
 
-#-:mcl (require "lspackages")
-#-:mcl (require "lsmacros")
+#-:mcl(require :lspackages)
+#-:mcl(require :lsmacros)
 
 ;;;;
 ;;;; Macintosh CL
