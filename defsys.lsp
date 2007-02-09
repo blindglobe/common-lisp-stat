@@ -5,12 +5,6 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;;;
-;;;; CLtL, 2nd Edition, essentially requires that features be keyword
-;;;; symbols. To allow for this, the folloing code puts keyword versions
-;;;; of all feature symbols on the features list.
-;;;;
-
 #+kcl
 (dolist (f *features*)
   (if (symbolp f)
@@ -62,10 +56,7 @@
 #+:mcl (load "lspackages")
 #+:mcl (load "lsmacros")
 
-#+:CLtL2
-(in-package lisp-stat)
-#-:CLtL2
-(in-package 'lisp-stat)
+(in-package :lisp-stat)
 
 (export '(*default-path* debug nodebug))
 
