@@ -36,7 +36,71 @@
 ;;;; to fix (A)KCL in files c/num_sfun.c and lsp/numlib.lsp. If these
 ;;;; fixes are applied, the feature :stat-float-is-double-float should be
 ;;;; defined.
-;;;;
+
+
+;;; ======== From the CLHS ==========
+;;
+;; Type SHORT-FLOAT, SINGLE-FLOAT, DOUBLE-FLOAT, LONG-FLOAT 
+;;
+;; Supertypes:
+;;
+;; short-float: short-float, float, real, number, t 
+;;
+;;
+;; single-float: single-float, float, real, number, t 
+;;
+;; double-float: double-float, float, real, number, t 
+;;
+;; long-float: long-float, float, real, number, t 
+;;
+;; Description: For the four defined subtypes of type float, it is true
+;; that intermediate between the type short-float and the type long-float
+;; are the type single-float and the type double-float. The precise
+;; definition of these categories is implementation-defined. The
+;; precision (measured in ``bits'', computed as p log 2b) and the
+;; exponent size (also measured in ``bits,'' computed as log 2(n+1),
+;; where n is the maximum exponent value) is recommended to be at least
+;; as great as the values in the next figure. Each of the defined
+;; subtypes of type float might or might not have a minus zero.
+;;
+;;
+;; Format  Minimum Precision  Minimum Exponent Size  
+;; ----------
+;; Short   13 bits            5 bits                 
+;; Single  24 bits            8 bits                 
+;; Double  50 bits            8 bits                 
+;; Long    50 bits            8 bits                 
+;;
+;; Figure 12-12. Recommended Minimum Floating-Point Precision and Exponent Size 
+;;
+;;  There can be fewer than four internal representations for floats. If
+;; there are fewer distinct representations, the following rules apply:
+;;
+;;  If there is only one, it is the type single-float. In this
+;; representation, an object is simultaneously of types single-float,
+;; double-float, short-float, and long-float.
+;;
+;;  Two internal representations can be arranged in either of the
+;; following ways:
+;;
+;;  Two types are provided: single-float and short-float. An object is
+;; simultaneously of types single-float, double-float, and long-float.
+;;
+;;  Two types are provided: single-float and double-float. An object is
+;; simultaneously of types single-float and short-float, or double-float
+;; and long-float.
+;;
+;;  Three internal representations can be arranged in either of the
+;; following ways:
+;;
+;;  Three types are provided: short-float, single-float, and
+;; double-float. An object can simultaneously be of type double-float and
+;; long-float.
+;;
+;;  Three types are provided: single-float, double-float, and
+;; long-float. An object can simultaneously be of types single-float and
+;; short-float.
+
 
 ;;; Package Setup
 
@@ -120,13 +184,13 @@
 
 ;;; FFIX - coerces its arguments to standard real or complex floating
 ;;; point number if needed.
-#-stat-float-is-double-float
+#-:stat-float-is-double-float
 (defmacro ffix (x)
   `(if (complexp ,x) 
     (coerce ,x ',+stat-cfloat-typing+)
     (float ,x ',+stat-float-template+)))
 
-#+stat-float-is-double-float
+#+:stat-float-is-double-float
 (defmacro ffix (x) x)
 
 ;;; MAKEDOUBLE coerces its argument to the standard floating point
@@ -143,7 +207,7 @@
 ;;; MAKE-BASE-TRANS-FUN Macro for re-defining one argument transcendental
 ;;; functions
 ;;;
-#-stat-float-is-double-float
+#-:stat-float-is-double-float
 (defmacro make-base-trans-fun (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function))
@@ -153,7 +217,7 @@
      (declare (inline ,sym coerce float))
      (,sym (ffix x)))))
 
-#+stat-float-is-double-float
+#+:stat-float-is-double-float
 (defmacro make-base-trans-fun (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function)))
@@ -164,7 +228,7 @@
 ;;; MAKE-BASE-TRANS-FUN-2 Macro for re-defining transcendental functions
 ;;; with an optional second argument
 ;;;
-#-stat-float-is-double-float
+#-:stat-float-is-double-float
 (defmacro make-base-trans-fun-2 (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function))
@@ -174,7 +238,7 @@
      (declare (inline ,sym coerce float))
      (if y (,sym (ffix x) (ffix y)) (,sym (ffix x))))))
 
-#+stat-float-is-double-float
+#+:stat-float-is-double-float
 (defmacro make-base-trans-fun-2 (sym)
   (let* ((base-sym (intern (string-upcase (format nil "BASE-~s" sym))))
          (doc (documentation sym 'function)))
@@ -186,16 +250,16 @@
 
 
 ;;; BASE-FLOAT
-#-stat-float-is-double-float
+#-:stat-float-is-double-float
 (progn
   (defun base-float (x &optional (y +stat-float-template+)) (float x y))
   (fix-base-fun-doc 'float 'base-float))
 
-#+stat-float-is-double-float
+#+:stat-float-is-double-float
 (make-base-trans-fun float)
 
 ;;; BASE-EXPT
-#-stat-float-is-double-float
+#-:stat-float-is-double-float
 (progn
   (defun base-expt (x y)
     (declare (inline expt coerce float integerp))
@@ -203,7 +267,7 @@
 
   (fix-base-fun-doc 'expt 'base-expt))
 
-#+stat-float-is-double-float
+#+:stat-float-is-double-float
 (make-base-trans-fun expt)
 
 ;;; Others
