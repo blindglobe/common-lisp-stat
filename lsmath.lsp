@@ -17,6 +17,8 @@
 	 :lisp-stat-macros
 	 :lisp-stat-float)
    ;; Shadow the symbols in the lisp package that will be redefined
+   (:shadowing-import-from :lisp-stat-object-system
+			   slot-value call-method call-next-method)
    (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
  	   asin acos atan sinh cosh tanh asinh acosh atanh float random
  	   truncate floor ceiling round minusp zerop plusp evenp oddp 

@@ -69,12 +69,13 @@ Last touched 1991, then in 2005--2007."
 						       "lsfloat")) 
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
+	       (:lispstat-lsp-source-file "matrices"
+					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("lsbasics")) ;; in lisp-stat-basics
 	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("ladata")) ;; in lisp-stat-basics
-	       (:lispstat-lsp-source-file "matrices"
-					  :depends-on ("lsbasics"))
+					  :depends-on ("ladata"
+						       "matrices")) ;; in lisp-stat-basics
 
 	       (:lispstat-lsp-source-file "lspackages"
 					  :depends-on ("fastmap"

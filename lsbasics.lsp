@@ -13,11 +13,13 @@
 ;;;;
 
 (defpackage :lisp-stat-basics
-  (:use ;;:common-lisp
+  (:use :common-lisp
 	:lisp-stat-object-system
 	:lisp-stat-fastmap
 	:lisp-stat-float
 	:lisp-stat-macros)
+  (:shadowing-import-from :lisp-stat-object-system
+			  slot-value call-method call-next-method)
   (:export
    ;; lsbasics.lisp
    sequencep copy-vector copy-array iseq which repeat select

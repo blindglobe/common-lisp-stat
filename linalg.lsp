@@ -22,12 +22,17 @@
 ;;;; Package Setup
 ;;;;
 
-(in-package #:lisp-stat-basics)
+(defpackage :lisp-stat-linalg
+  (:use :common-lisp
+	:lisp-stat-matrix)
+  (:export chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
+	   qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
+	   fft make-sweep-matrix sweep-operator ax+y numgrad numhess
+	   split-list eigen))
 
-(export '(chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
-	  qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
-	  fft make-sweep-matrix sweep-operator ax+y numgrad numhess
-	  split-list eigen))
+
+;; (in-package #:lisp-stat-basics)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -481,6 +486,8 @@ U or B for Gaussian, triangular, uniform or bisquare. The default is B."
       (kernel-smooth-Cport px py n width pxs pys ns code)
       (if (/= 0 error) (error "bad kernel density data")))))
 
+
+
 (defun kernel-smooth-Cport (px py n width ;;wts wds ;; see above for mismatch?
 			    xs ys ns ktype)
   "Port of kernel_smooth (Lib/kernel.c) to Lisp.
@@ -494,13 +501,13 @@ FIXME:kernel-smooth-Cport"
 	       (setf (aref ys i)
 		     (let ((wsum 0.0)
 			   (ysum 0.0))
-		       (dotimes (j (- n 1))
-			 (let* ;; FIXME!?
-			     ((lwidth (if wds (* width (aref wds j)) width))
-			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
-				      (if wts (aref wts j) 1.0))))
-			   (setf wsum (+ wsum lwt))
-			   (setf ysum (if py (+ ysum (* lwt (aref py j))))))) ;; py? y?
+		       (dotimes (j (- n 1))   ) ;;remove for the following
+;;;			 (let* ;; FIXME!?
+;;;			     ((lwidth (if wds (* width (aref wds j)) width))
+;;;			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
+;;;				      (if wts (aref wts j) 1.0))))
+;;;			   (setf wsum (+ wsum lwt))
+;;;			   (setf ysum (if py (+ ysum (* lwt (aref py j))))))) ;; py? y?
 		       (if py
 			   (if (> wsum 0.0) 
 			       (/ ysum wsum)
