@@ -51,8 +51,7 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "compound" 
 					  :depends-on ("lsobjects"
 						       "fastmap"))
-
-	       (:lispstat-lsp-source-file "sequence" 
+	       (:lispstat-lsp-source-file "sequence"
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
@@ -66,6 +65,7 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
 						       "lsmacros"
+						       "sequence"
 						       "lsfloat")) 
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
