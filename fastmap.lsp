@@ -29,7 +29,7 @@
   (:use :common-lisp)
   (:export fastmap))
 
-(in-package #:lisp-stat-fastmap)
+(in-package :lisp-stat-fastmap)
 
 ;;;;
 ;;;; Functions

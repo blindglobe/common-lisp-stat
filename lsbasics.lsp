@@ -13,15 +13,11 @@
 ;;;;
 
 (defpackage :lisp-stat-basics
-  (:nicknames #:ls-basics)
   (:use ;;:common-lisp
 	:lisp-stat-object-system
 	:lisp-stat-fastmap
 	:lisp-stat-float
 	:lisp-stat-macros)
-  ;;(:shadow (package-shadowing-symbols 'lisp-stat-object-system))
-  ;;(:import-from packagename symbols)
-  ;;(:shadowing-import-from packagename symbols)
   (:export
    ;; lsbasics.lisp
    sequencep copy-vector copy-array iseq which repeat select
@@ -106,10 +102,6 @@
 
 ;;    ))
 
-;; ;;(in-package #:lisp-stat-basics)
-
-
-
 (in-package #:lisp-stat-basics)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,7 +111,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun fixnump (x)
-"Args: (x)
+  "Args: (x)
 Returns T if X is a fixnum; NIL otherwise."
   (declare (inline typep))
   (typep x 'fixnum))
@@ -131,24 +123,17 @@ Returns T if X is a fixnum; NIL otherwise."
   (if (not (fixnump x)) (error "not a fixnum - ~a" x)))
 
 (defun check-one-real (a)
-  (if (not (or (rationalp a) (floatp a))) (error "not a real number ~s" a)))
+  (if (not (or (rationalp a) (floatp a)))
+      (error "not a real number ~s" a)
+    t))
 
 (defun check-one-number (a)
-  (if (not (numberp a)) (error "not a number ~s" a)))
+  (if (not (numberp a))
+      (error "not a number ~s" a)
+    t))
 
 (defun check-sequence (a)
   (if (not (or (vectorp a) (consp a))) (error "not a sequence - ~s" a)))
-
-(defun check-matrix (a)
-  (if (not (and (arrayp a) (= (array-rank a) 2)))
-      (error "not a matrix - ~s" a)))
-
-(defun check-square-matrix (a)
-  (check-matrix a)
-  (let ((m (array-dimension a 0))
-	(n (array-dimension a 1)))
-    (if (/= n m) (error "not a square matrix - ~s" a))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -157,12 +142,13 @@ Returns T if X is a fixnum; NIL otherwise."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun get-next-element (x i)
-  (let ((seq (first x)))
-    (if (consp seq)
-        (let ((elem (first seq)))
-          (setf (first x) (rest seq))
+  "Get element i from seq x.  FIXME: not really??"
+  (let ((myseq (first x)))
+    (if (consp myseq)
+        (let ((elem (first myseq)))
+          (setf (first x) (rest myseq))
           elem)
-        (aref seq i))))
+      (aref myseq i))))
 
 (defun set-next-element (x i v)
   (let ((seq (first x)))

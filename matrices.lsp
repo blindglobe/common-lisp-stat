@@ -10,17 +10,38 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-(provide "matrices")
+;;(provide "matrices")
 
 ;;;;
 ;;;; Package Setup
 ;;;;
 
-(in-package :lisp-stat-basics)
+;;(in-package :lisp-stat-basics)
 
-(export '(matrixp num-rows num-cols matmult identity-matrix diagonal
-	  row-list column-list inner-product outer-product cross-product
-	  transpose bind-columns bind-rows))
+(defpackage :lisp-stat-matrix
+  (:use :common-lisp
+	:lisp-stat-sequence)
+  (:export 
+
+;;(export '(
+   matrixp num-rows num-cols matmult identity-matrix diagonal
+   row-list column-list inner-product outer-product cross-product
+   transpose bind-columns bind-rows))
+
+(in-package :lisp-stat-matrix)
+
+(deftype matrix () 'array)  ;; temp fix
+
+(defun check-matrix (a)
+  (if (not (and (arrayp a) (= (array-rank a) 2)))
+      (error "not a matrix - ~s" a)
+    t))
+
+(defun check-square-matrix (a)
+  (if (and (check-matrix a)
+	   (/= (array-dimension a 0) (array-dimension a 1))
+	   (error "matrix not square - ~s" a))
+      t))
 
 (defun matrixp (x)
 "Args: (x)
