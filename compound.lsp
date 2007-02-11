@@ -25,12 +25,6 @@
 
 (in-package :lisp-stat-compound-data)
 
-
-; (in-package #:lisp-stat-basics)
-
-; (export '(compound-data-p map-elements compound-data-seq
-; 	  compound-data-length element-seq compound-data-proto))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;                    Internal Support Functions
