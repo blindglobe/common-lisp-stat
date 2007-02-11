@@ -142,19 +142,20 @@
   `(defparameter ,name (if (boundp ',name) (symbol-value ',name) ,value)
     ,@(when doc (list doc))))
 
-;(define-constant +stat-float-typing+ 'long-float)
-;(define-constant +stat-cfloat-typing+ '(complex long-float))
-;(define-constant +stat-float-template+ 0.d0)
+(define-constant +stat-float-typing+ 'long-float)
+(define-constant +stat-cfloat-typing+ '(complex long-float))
+(define-constant +stat-float-template+ 0.d0)
 
-(defparameter +stat-float-typing+ 'long-float)
-(defparameter +stat-cfloat-typing+ '(complex long-float))
-(defparameter +stat-float-template+ 0.d0)
+;(defparameter +stat-float-typing+ 'long-float)
+;(defparameter +stat-cfloat-typing+ '(complex long-float))
+;(defparameter +stat-float-template+ 0.d0)
 
 (deftype stat-float () +stat-float-typing+)
 (deftype stat-cfloat () +stat-cfloat-typing+)
 
 (defparameter machine-epsilon
-  (do ((epsilon (float 1.0 +stat-float-template+) (/ epsilon 2.0)))
+  (do ((epsilon (float 1.0 +stat-float-template+)
+		(/ epsilon 2.0)))
       ((= (+ 1.0 (/ epsilon 2.0)) 1.0) epsilon)))
 
 (defmacro declare-double (&rest vars) `(declare (long-float ,@vars)))
@@ -184,13 +185,13 @@
 
 ;;; FFIX - coerces its arguments to standard real or complex floating
 ;;; point number if needed.
-#-:stat-float-is-double-float
+#-stat-float-is-double-float
 (defmacro ffix (x)
   `(if (complexp ,x) 
-    (coerce ,x ',+stat-cfloat-typing+)
-    (float ,x ',+stat-float-template+)))
+    (coerce ,x +stat-cfloat-typing+)
+    (float ,x +stat-float-template+)))
 
-#+:stat-float-is-double-float
+#+stat-float-is-double-float
 (defmacro ffix (x) x)
 
 ;;; MAKEDOUBLE coerces its argument to the standard floating point
