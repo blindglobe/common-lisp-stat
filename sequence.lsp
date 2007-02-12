@@ -18,10 +18,16 @@
 
 (in-package #:lisp-stat-sequence)
 
+;;; Sequences are part of ANSI CL, being a supertype of vector and
+;;; list (ordered set of things).
+
 ;;;                      Type Checking Functions
 
 (defun check-sequence (a)
   (if (not (or (vectorp a) (consp a))) (error "not a sequence - ~s" a)))
+
+
+
 
 ;;;                       Sequence Element Access
 

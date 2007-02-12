@@ -213,35 +213,6 @@ Returns a copy of the array A"
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;
-;;; sequence predicate SEQUENCEP
-;;;
-
-(defun sequencep (x) 
-"Args: (x)
-Returns NIL unless X is a list or vector."
-  (or (listp x) (vectorp x)))
-
-;;;
-;;; ISEQ - generate a sequence of consecutive integers from a to b
-;;;
-
-(defun iseq (a &optional b)
-"Args: (n &optional m)
-With one argumant returns a list of consecutive integers from 0 to N - 1.
-With two returns a list of consecutive integers from N to M.
-Examples: (iseq 4) returns (0 1 2 3)
-          (iseq 3 7)  returns (3 4 5 6 7)
-          (iseq 3 -3) returns (3 2 1 0 -1 -2 -3)"
-  (if b
-      (let ((n (+ 1 (abs (- b a))))
-	    (x nil))
-	(dotimes (i n x)
-		 (setq x (cons (if (< a b) (- b i) (+ b i)) x))))
-      (cond 
-       ((= 0 a) nil)
-       ((< a 0) (iseq (+ a 1) 0))
-       ((< 0 a) (iseq 0 (- a 1))))))
 
 ;;;;
 ;;;; WHICH function
