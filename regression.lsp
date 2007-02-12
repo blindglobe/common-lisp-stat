@@ -16,11 +16,6 @@
 ;;;; Incorporates modifications suggested by Sandy Weisberg.
 ;;;;
 
-;;(in-package :lisp-stat)
-;;(export '(regression-model regression-model-proto x y intercept sweep-matrix
-;;	  basis weights included total-sum-of-squares residual-sum-of-squares
-;;	  predictor-names response-name case-labels))
-
 (defpackage :lisp-stat-regression
   (:use :common-lisp
 	:lisp-stat-object-system
