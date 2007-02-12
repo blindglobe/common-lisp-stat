@@ -12,6 +12,8 @@ range of target platforms.
 
 
 
+
+
 ============
 
 File Dependencies from 9 Feb 2007
@@ -32,9 +34,21 @@ Package lisp-stat-basics:
    matrices
    lsfloat
    lsmath
+   lisp-stat-sequence
 
+ lisp-stat-matrix  (matrices)
+   lisp-stat-sequence (sequence)
 
+ lisp-stat-sequence (sequence)
+   lisp-stat-compound-data (compound)
 
+ lisp-stat-compound-data (compound)
+   common-lisp
+   lisp-stat-object-system (lsobject
+   lisp-stat-fastmap
+ 
+lisp-stat-fastmap
+   common-lisp   
 
 
 

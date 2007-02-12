@@ -31,20 +31,20 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Predicate to determine if argument is compound. Most common
-;;; non-compound types are checked first.
 (defun cmpndp (x)
+  "Predicate to determine if argument is compound. Most common
+non-compound types are checked first."
   (declare (inline numberp symbolp stringp consp arrayp array-total-size))
   (cond ((or (numberp x) (symbolp x) (stringp x)) nil)
          ((or (consp x) (and (arrayp x) (< 0 (array-total-size x)))) t)
          (t (compound-object-p x))))
 
-;;; Returns first compound data item in LIST or NIL if there is none.
 (defun find-compound-data (list)
+  "Returns first compound data item in LIST or NIL if there is none."
   (dolist (x list) (if (cmpndp x) (return x))))
 
-;;; Checks for a compound element
 (defun any-compound-elements (seq)
+  "Checks for a compound element."
   (cond ((consp seq) (dolist (x seq) (if (cmpndp x) (return x))))
 	((vectorp seq)
 	 (let ((n (length seq)))
@@ -55,9 +55,8 @@
 	       (if (cmpndp x) (return x))))))
 	(t (error "argument must be a list or vector"))))
 
-
-;;; Returns sequence of data values for X.
 (defun compound-data-sequence (x)
+  "Returns sequence of data values for X."
   (declare (inline consp vectorp arrayp make-array array-total-size))
   (cond
    ((or (consp x) (vectorp x)) x)
@@ -66,8 +65,9 @@
 
 (defmacro sequence-type (x) `(if (consp ,x) 'list 'vector))
 
-;;;; Construct a compound data item to match the shape of the first argument.
 (defun make-compound-data (shape sequence)
+"Construct a compound data item to match the shape of the first
+argument." 
   (let ((n (length (compound-data-sequence shape))))
     (if (/= n (length sequence)) (error "compound data not the same shape"))
     (cond
@@ -79,15 +79,15 @@
 		  :displaced-to (coerce sequence 'vector)))
      (t (send shape :make-data sequence)))))
 
-;;; Make a circular list of one element
 (defun make-circle (x)
+  "Make a circular list of one element."
   (declare (inline cons rplacd))
   (let ((x (cons x nil)))
     (rplacd x x)
     x))
 
-;;; Signals an error if X is not compound
 (defun check-compound (x)
+  "Signals an error if X is not compound."
   (if (not (cmpndp x)) (error "not a compound data item - ~a" x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -155,27 +155,23 @@ for second level of compounding and use base-fcn if there is none."
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; COMPOUND-DATA-P function
 (defun compound-data-p (x)
 "Args: (x)
 Returns T if X is a compound data item, NIL otherwise."
   (cmpndp x))
 
-;;; COMPOUND-DATA-SEQ function
 (defun compound-data-seq (x)
 "Args (x)
 Returns data sequence in X."
   (check-compound x)
   (compound-data-sequence x))
 
-;;; COMPOUND-DATA-LENGTH function
 (defun compound-data-length (x)
 "Args (x)
 Returns length of data sequence in X."
   (check-compound x)
   (length (compound-data-sequence x)))
 
-;;; ELEMENT-SEQ function
 (defun element-list (x)
   (cond 
    ((compound-data-p x)

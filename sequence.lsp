@@ -4,7 +4,7 @@
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
+;;;; unrestricted use.  (though Luke never had this file).
 
 ;;;;
 ;;;; Package Setup

@@ -51,9 +51,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;
-;;;; Package Setup
-;;;;
+
+;;; Package Setup
 
 (defpackage :lisp-stat-object-system
  (:nicknames :ls-objects :lsos)
@@ -66,12 +65,11 @@
 (in-package :lisp-stat-object-system)
 
 (defun use-lsos ()
+  "Formerly set up to import lisp-stat-object-system into current package."
   (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
   (use-package 'lisp-stat-object-system))
 
-;;;;
-;;;; Structure Implementation of Lisp-Stat Object System
-;;;;
+;;; Structure Implementation of Lisp-Stat Object System
 
 (defvar *object-serial* 0)
 
@@ -86,6 +84,7 @@
   (serial (incf *object-serial*)))
 
 (defun print-object-structure (object stream depth)
+  (if nil (princ "~a : ~a : ~a" object stream depth)) ;warning avoidance
   (send object :print stream))
 
 (setf (documentation 'objectp 'function)
@@ -397,6 +396,7 @@ named SLOT."
           (if method-entry (return method-entry)))))))
 
 (defun add-lsos-method (x selector value)
+  "x = object; selector = name of method; value = method."
   (check-object x)
   (check-non-nil-symbol selector)
   (let ((method-entry (find-own-method x selector)))
@@ -516,9 +516,10 @@ a method."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro defmeth (object name arglist first &rest body)
-"Syntax: (defmeth object name lambda-list [doc] {form}*)
+"Syntax: (defmeth object method-name lambda-list [doc] {form}*)
 OBJECT must evaluate to an existing object. Installs a method for NAME in
-the value of OBJECT and installs DOC in OBJECTS's documentation."
+the value of OBJECT and installs DOC in OBJECTS's documentation.
+RETURNS: method-name."
   (if (and body (stringp first))
     `(progn
        (add-lsos-method ,object ,name

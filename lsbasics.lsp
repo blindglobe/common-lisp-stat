@@ -17,14 +17,15 @@
 	:lisp-stat-object-system
 	:lisp-stat-fastmap
 	:lisp-stat-float
-	:lisp-stat-macros)
+	:lisp-stat-macros
+	:lisp-stat-sequence)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export
    ;; lsbasics.lisp
-   sequencep copy-vector copy-array iseq which repeat select
+   copy-vector copy-array which repeat
    permute-array sum prod count-elements mean if-else sample sort-data
-   order rank
+   
    ;; matrices.lisp
    matrixp num-rows num-cols matmult identity-matrix diagonal row-list
    column-list inner-product outer-product cross-product transpose
