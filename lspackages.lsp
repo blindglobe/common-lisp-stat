@@ -21,11 +21,12 @@
 
 (defpackage :lisp-stat
   (:nicknames :ls :stats)
-  (:use ;; :common-lisp
-	;; :lisp-stat-object-system
+  (:use :common-lisp
+	:lisp-stat-object-system
         :lisp-stat-float
         :lisp-stat-math
-	:lisp-stat-basics)
+	:lisp-stat-basics
+	:lisp-stat-regression-linear)
   (:shadowing-import-from :lisp-stat-object-system slot-value call-next-method)
 
 ;;    ;; statistics.lsp

@@ -77,15 +77,11 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("ladata"
 						       "matrices")) ;; in lisp-stat-basics
 
-	       (:lispstat-lsp-source-file "lspackages"
-					  :depends-on ("fastmap"
-						       "lsobjects"
-						       "lsmath"
-						       "lsfloat"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("lsbasics"))
+					  :depends-on ("lsbasics"
+						       "lsobjects"))
 	       (:lispstat-lsp-source-file "nonlin"
 					  :depends-on ("regression"))
 	       (:lispstat-lsp-source-file "statistics"
@@ -98,4 +94,11 @@ Last touched 1991, then in 2005--2007."
 	       
 	       ;;(:lispstat-lsp-source-file "numlib") ;; do we need this?
 	       (:lispstat-lsp-source-file "defsys")
-	       (:lispstat-lsp-source-file "lstoplevel")))
+	       (:lispstat-lsp-source-file "lstoplevel")
+
+	       (:lispstat-lsp-source-file "lspackages"
+					  :depends-on ("lstoplevel"
+						       "fastmap"
+						       "lsobjects"
+						       "lsmath"
+						       "lsfloat"))))

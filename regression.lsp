@@ -16,7 +16,7 @@
 ;;;; Incorporates modifications suggested by Sandy Weisberg.
 ;;;;
 
-(defpackage :lisp-stat-regression
+(defpackage :lisp-stat-regression-linear
   (:use :common-lisp
 	:lisp-stat-object-system
 	:lisp-stat-basics)
