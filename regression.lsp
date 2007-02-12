@@ -16,17 +16,24 @@
 ;;;; Incorporates modifications suggested by Sandy Weisberg.
 ;;;;
 
-(in-package :lisp-stat)
+;;(in-package :lisp-stat)
+;;(export '(regression-model regression-model-proto x y intercept sweep-matrix
+;;	  basis weights included total-sum-of-squares residual-sum-of-squares
+;;	  predictor-names response-name case-labels))
 
-(export '(regression-model regression-model-proto x y intercept sweep-matrix
-	  basis weights included total-sum-of-squares residual-sum-of-squares
-	  predictor-names response-name case-labels))
+(defpackage :lisp-stat-regression
+  (:use :common-lisp
+	:lisp-stat-object-system
+	:lisp-stat-basics)
+  (:shadowing-import-from :lisp-stat-object-system
+			  slot-value call-method call-next-method)
+  (:export regression-model regression-model-proto x y intercept sweep-matrix
+	   basis weights included total-sum-of-squares residual-sum-of-squares
+	   predictor-names response-name case-labels))
 
-;;;;
-;;;;
-;;;; Regresion Model Prototype
-;;;;
-;;;;
+(in-package :lisp-stat-regression-linear)
+
+;;; Regresion Model Prototype
 
 (defproto regression-model-proto
           '(x y intercept sweep-matrix basis weights 
@@ -40,8 +47,6 @@
           *object*
           "Normal Linear Regression Model")
 
-;; The doc for this function string is at the limit of XLISP's string 
-;; constant size - making it longer may cause problems
 (defun regression-model (x y &key 
                            (intercept T) 
                            (print T) 
@@ -57,23 +62,21 @@ Y           - dependent variable.
 INTERCEPT   - T to include (default), NIL for no intercept
 PRINT       - if not NIL print summary information
 WEIGHTS     - if supplied should be the same length as Y; error variances are
-               assumed to be inversely proportional to WEIGHTS
-PREDICTOR-NAMES
-RESPONSE-NAME
-CASE-LABELS - sequences of strings or symbols.
+              assumed to be inversely proportional to WEIGHTS
+PREDICTOR-NAMES, RESPONSE-NAME, CASE-LABELS
+            - sequences of strings or symbols.
 INCLUDED    - if supplied should be the same length as Y, with elements nil
               to skip a in computing estimates (but not in residual analysis). 
 Returns a regression model object. To examine the model further assign the
 result to a variable and send it messages.
 Example (data are in file absorbtion.lsp in the sample data directory/folder):
   (def m (regression-model (list iron aluminum) absorbtion))
-  (send m :help)
-  (send m :plot-residuals)"
+  (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
-             ((matrixp x) x)
-             ((vectorp x) (list x))
-             ((and (consp x) (numberp (car x))) (list x))
-             (t x)))
+	    ((matrixp x) x)
+	    ((vectorp x) (list x))
+	    ((and (consp x) (numberp (car x))) (list x))
+	    (t x)))
         (m (send regression-model-proto :new)))
     (send m :x (if (matrixp x) x (apply #'bind-columns x)))
     (send m :y y)
@@ -86,7 +89,8 @@ Example (data are in file absorbtion.lsp in the sample data directory/folder):
     (if print (send m :display))
     m))
 
-(defmeth regression-model-proto :isnew () (send self :needs-computing t))
+(defmeth regression-model-proto :isnew ()
+  (send self :needs-computing t))
 
 (defmeth regression-model-proto :save ()
 "Message args: ()
@@ -100,9 +104,7 @@ Returns an expression that will reconstruct the regression model."
                      :response-name ',(send self :response-name)
                      :case-labels ',(send self :case-labels)))
                        
-;;;
 ;;; Computing and Display Methods
-;;;
 
 (defmeth regression-model-proto :compute ()
 "Message args: ()
@@ -168,9 +170,7 @@ are marked as aliased."
     (format t "Degrees of freedom:    ~10d~%" (send self :df))
     (format t "~%")))
 
-;;;
 ;;; Slot accessors and mutators
-;;;
 
 (defmeth regression-model-proto :x (&optional new-x)
 "Message args: (&optional new-x)
