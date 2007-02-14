@@ -44,7 +44,7 @@ Package lisp-stat-basics:
 
  lisp-stat-compound-data (compound)
    common-lisp
-   lisp-stat-object-system (lsobject
+   lisp-stat-object-system (lsobject)
    lisp-stat-fastmap
  
 lisp-stat-fastmap
