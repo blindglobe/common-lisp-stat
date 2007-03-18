@@ -2,3 +2,4 @@
 *.fasl
 semantic.cache
 fasl
+*.so
