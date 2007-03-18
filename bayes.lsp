@@ -9,7 +9,13 @@
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 
-(in-package #:lisp-stat)
+
+(defpackage :lisp-stat-bayes
+  (:use :lisp-stat-object-system
+	:lisp-stat-basics))
+
+(in-package :lisp-stat-bayes)
+
 
 ;;; Objects Representing Functions
 

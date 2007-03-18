@@ -19,7 +19,10 @@
 (defpackage :lisp-stat-regression-linear
   (:use :common-lisp
 	:lisp-stat-object-system
-	:lisp-stat-basics)
+	:lisp-stat-basics
+	:lisp-stat-compound-data
+	:lisp-stat-matrix
+	:lisp-stat-sequence)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export regression-model regression-model-proto x y intercept sweep-matrix

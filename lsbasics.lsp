@@ -18,6 +18,7 @@
 	:lisp-stat-fastmap
 	:lisp-stat-float
 	:lisp-stat-macros
+	:lisp-stat-compound-data
 	:lisp-stat-sequence)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
@@ -25,6 +26,7 @@
    ;; lsbasics.lisp
    copy-vector copy-array which repeat
    permute-array sum prod count-elements mean if-else sample sort-data
+   select
    
    ;; matrices.lisp
    matrixp num-rows num-cols matmult identity-matrix diagonal row-list

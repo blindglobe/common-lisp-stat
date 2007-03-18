@@ -7,6 +7,18 @@ default:
 	@echo "   clisp - build using CLISP"
 	@echo "        "
 
+## Workspace cleanup
+
+clean:
+	(cd lib; make clean)
+	rm -f *.o *.fasl kclcmplr *~
+
+cleanall:
+	(cd lib; make cleanall)
+	rm -f *.o *.fasl kclcmplr saved_kcls kcls cls
+
+## C compilation
+
 #
 # Modify according to your system's needs for dynamic loading
 #
@@ -23,25 +35,22 @@ lib/clib.a:
 lib/exclglue.o:
 	(cd lib; make CFLAGS="${CFLAGS}" exclglue.o)
 
-clean:
-	(cd lib; make clean)
-	rm -f *.o *.fasl kclcmplr *~
 
-cleanall:
-	(cd lib; make cleanall)
-	rm -f *.o *.fasl kclcmplr saved_kcls kcls cls
+## Lisp targets and compilation
 
-#
-# This lets you use 'make objects' to make .o files for changed .lsp
-# files for kcl. If you use this approach, use 'cat makesys.kcl | kcl'
-# to make the executable.
-#
+sbcl : 
 
-OBJECTS=bayes.o compound.o dists.o fastmap.o kclglue.o \
-	kclpatch.o ladata.o linalg.o lsbasics.o lsfloat.o lsmath.o \
-	lsobjects.o lstoplevel.o matrices.o maximize.o nonlin.o \
-	regression.o statistics.o
 
-.lsp.o:
-	./kclcmplr ./ $*.lsp $*.lsp S1000
+clisp : 
+
+
+## Debugging/Building
+
+
+sbcl-debug :
+
+
+clisp-debug : 
+
+
 
