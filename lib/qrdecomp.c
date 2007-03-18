@@ -4,9 +4,8 @@
 
 #define SIGN(a, b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-static double NORM2(i, j, n, x)
-     int i, j, n;
-     double **x;
+static double
+NORM2(int i, int j, int n, double **x)
 {
   int k;
   double maxx, sum, temp;
@@ -25,9 +24,8 @@ static double NORM2(i, j, n, x)
   }
 }
 
-static double DOT(i, j, k, n, x)
-     int i, j, k;
-     double **x;
+static double
+DOT(int i, int j, int k, int n, double **x)
 {
   int l;
   double sum;
@@ -36,25 +34,27 @@ static double DOT(i, j, k, n, x)
   return(sum);
 }
 
-static AXPY(i, j, k, n, a, x)
-     int i, j, k, n;
-     double a, **x;
+static void
+AXPY(int i, int j, int k, int n,
+     double a, double **x)
 {
   int l;
-  for (l = i; l < n; l++) x[l][k] = a * x[l][j] + x[l][k];
+  for (l = i; l < n; l++) {
+    x[l][k] = a * x[l][j] + x[l][k];
+  }
 }
 
-static SCALE(i, j, n, a, x)
-     int i, j, n;
-     double a, **x;
+static void
+SCALE(int i, int j, int n, double a, double **x)
 {
   int k;
-  for (k = i; k < n; k++) x[k][j] *= a;
+  for (k = i; k < n; k++) {
+    x[k][j] *= a;
+  }
 }
 
-static SWAP(i, j, n, a)
-  int i, j, n;
-  double **a;
+static void
+SWAP(int i, int j, int n, double **a)
 {
   int k;
   double temp;
@@ -65,16 +65,17 @@ static SWAP(i, j, n, a)
   }
 }
 
-qrdecomp(x,n,p,v,jpvt,pivot)
-     int n, p, pivot;
-     int *jpvt;
-     double **x, **v;
+void
+qrdecomp(double **x, int n, int p,
+	 double **v, int *jpvt, int pivot)
 {
   int i,j,k,jp,l,lp1,lup,maxj;
   double maxnrm,tt,*qraux,*work;
   double nrmxl,t;
 
-  if (n < 0) return;
+  if (n < 0) {
+    return;
+  }
   work = v[0];
   qraux = rvector(p);
 
@@ -181,6 +182,5 @@ qrdecomp(x,n,p,v,jpvt,pivot)
       }
     }
   }
-
   free_vector(qraux);
 }

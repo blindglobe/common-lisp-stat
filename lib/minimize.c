@@ -10,17 +10,52 @@
  * Equations."
  */
 
-#ifdef SBAYES
-# include <math.h>
-static char buf[200];
+#include <stdio.h>
+#include "xmath.h"
+extern char buf[200];
 #define PRINTSTR(s) printf(s)
-#else
-# include "xmath.h"
-extern char buf[];
-#define PRINTSTR(s) stdputstr(s)
-#endif SBAYES
+
+typedef struct {
+  int n, k;
+  void (*ffun)(), (*gfun)();
+  double f, typf, new_f;
+  double crit, new_crit;
+  double *x, *new_x, *sx, *delf, *new_delf, *qnstep, *F;
+  double **hessf, **H, **L, **new_delg;
+  double gradtol, steptol, maxstep;
+  int itncount, itnlimit, maxtaken, consecmax, retcode, termcode;
+  int use_line_search, verbose, values_supplied, change_sign;
+  double diagadd;
+} Iteration;
+
 
 extern double macheps();
+
+
+extern double choldecomp();
+static void eval_gradient(Iteration *);
+static void eval_next_gradient(Iteration *);
+
+
+/* 
+This is a little more advanced section on functions, but is very useful. Take this for example: 
+  int applyeqn(int F(int), int max, int min) {
+    int itmp;
+    
+    itmp = F(int) + min;
+    itmp = itmp - max;
+    return itmp;
+  }
+
+ What does this function do if we call it with applyeqn(square(x),
+ y, z);? What happens is that the int F(int) is a reference to the
+ function that is passed in as a parameter. Thus inside applyeqn where
+ there is a call to F, it actually is a call to square! This is very
+ useful if we have one set function, but wish to vary the input
+ according to a particular function. So if we had a different function
+ called cube we could change how we call applyeqn by calling the
+ function by applyeqn(cube(x), y, z);.  */
+
 
 /************************************************************************/
 /**                                                                    **/
@@ -44,18 +79,6 @@ extern double macheps();
 
 typedef double **RMatrix, *RVector;
 
-typedef struct {
-  int n, k;
-  int (*ffun)(), (*gfun)();
-  double f, typf, new_f;
-  double crit, new_crit;
-  RVector x, new_x, sx, delf, new_delf, qnstep, F;
-  RMatrix hessf, H, L, new_delg;
-  double gradtol, steptol, maxstep;
-  int itncount, itnlimit, maxtaken, consecmax, retcode, termcode;
-  int use_line_search, verbose, values_supplied, change_sign;
-  double diagadd;
-} Iteration;
 
 static char *termcodes[] = {"not yet terminated",
                             "gradient size is less than gradient tolerance",
@@ -88,11 +111,38 @@ static double Min(a, b)
 /**                                                                    **/
 /************************************************************************/
 
+
+/* solve Ly = b for y */
+static void
+lsolve(int n, double *b, double **L, double *y)
+{
+  int i, j;
+
+  for (i = 0; i < n; i++) {
+    y[i] = b[i];
+    for (j = 0; j < i; j++) y[i] -= L[i][j] * y[j];
+    if (L[i][i] != 0) y[i] /= L[i][i];
+  }
+}
+
+/* solve (L^T)x = y for x */
+static void
+ltsolve(int n, double *y, double **L, double *x)
+{
+  int i, j;
+
+  for (i = n - 1; i >= 0; i--) {
+    x[i] = y[i];
+    for (j = i + 1; j < n; j++) x[i] -= L[j][i] * x[j];
+    if (L[i][i] != 0) x[i] /= L[i][i];
+  }
+}
+
 /* solve (L L^T) s = -g for s */
-static cholsolve(n, g, L, s)
-     int n;
-     RVector g, s;
-     RMatrix L;
+static void
+cholsolve(int n,
+	  double *g, double **L,
+	  double *s)
 {
   int i;
 
@@ -105,41 +155,8 @@ static cholsolve(n, g, L, s)
   for (i = 0; i < n; i++) s[i] = -s[i];
 }
 
-/* solve Ly = b for y */
-static lsolve(n, b, L, y)
-     int n;
-     RVector b, y;
-     RMatrix L;
-{
-  int i, j;
-
-  for (i = 0; i < n; i++) {
-    y[i] = b[i];
-    for (j = 0; j < i; j++) y[i] -= L[i][j] * y[j];
-    if (L[i][i] != 0) y[i] /= L[i][i];
-  }
-}
-
-/* solve (L^T)x = y for x */
-static ltsolve(n, y, L, x)
-     int n;
-     RVector y, x;
-     RMatrix L;
-{
-  int i, j;
-
-  for (i = n - 1; i >= 0; i--) {
-    x[i] = y[i];
-    for (j = i + 1; j < n; j++) x[i] -= L[j][i] * x[j];
-    if (L[i][i] != 0) x[i] /= L[i][i];
-  }
-}
-
-static modelhess(n, sx, H, L, diagadd)
-     int n;
-     RVector sx;
-     RMatrix H, L;
-     double *diagadd;
+static void 
+modelhess(int n, double *sx, double **H, double **L, double *diagadd)
 {
   int i, j;
   double sqrteps, maxdiag, mindiag, maxoff, maxoffl, maxposdiag, mu,
@@ -232,13 +249,12 @@ static modelhess(n, sx, H, L, diagadd)
 /**                                                                    **/
 /************************************************************************/
 
-static double gradsize(iter, new)
-     Iteration *iter;
-     int new;
+static double
+gradsize(Iteration *iter, int new)
 {
   int n, i;
   double size, term, crit, typf;
-  RVector x, delf, sx;
+  double *x, *delf, *sx;
 
   n = iter->n + iter->k;
   crit = iter->crit; 
@@ -254,12 +270,12 @@ static double gradsize(iter, new)
   return(size);
 }
 
-static double incrsize(iter)
-     Iteration *iter;
+static double
+incrsize(Iteration *iter)
 {
   int n, i;
   double size, term;
-  RVector x, new_x, sx;
+  double *x, *new_x, *sx;
 
   new_x = iter->new_x;
   n = iter->n + iter->k;
@@ -273,8 +289,8 @@ static double incrsize(iter)
   return(size);
 }
 
-static stoptest0(iter)
-     Iteration *iter;
+static int /* AJR:TESTME guess! */
+stoptest0(Iteration *iter)
 {
   iter->consecmax = 0;
 
@@ -285,8 +301,8 @@ static stoptest0(iter)
   return(iter->termcode);
 }
 
-static stoptest(iter)
-     Iteration *iter;
+static int
+stoptest(Iteration *iter)
 {
   int termcode, retcode, itncount, itnlimit, maxtaken, consecmax;
   double gradtol, steptol;
@@ -322,8 +338,8 @@ static stoptest(iter)
 /**                                                                    **/
 /************************************************************************/
 
-static eval_funval(iter)
-     Iteration *iter;
+static void 
+eval_funval(Iteration *iter)
 {
   int i;
 
@@ -336,8 +352,8 @@ static eval_funval(iter)
   }
 }
 
-static eval_next_funval(iter)
-     Iteration *iter;
+static void 
+eval_next_funval(Iteration *iter)
 {
   int i;
 
@@ -350,8 +366,8 @@ static eval_next_funval(iter)
   }
 }
 
-static eval_gradient(iter)
-     Iteration *iter;
+static void
+eval_gradient(Iteration *iter)
 {
   int i, j, n, k;
 
@@ -373,8 +389,8 @@ static eval_gradient(iter)
   }
 }
 
-static eval_next_gradient(iter)
-     Iteration *iter;
+static void 
+eval_next_gradient(Iteration *iter)
 {
   int i, j, n, k;
 
@@ -391,8 +407,7 @@ static eval_next_gradient(iter)
   }
 }
 
-static eval_hessian(iter)
-     Iteration *iter;
+static void eval_hessian(Iteration *iter)
 {
   int i, j, n, k;
 
@@ -409,14 +424,14 @@ static eval_hessian(iter)
 /**                                                                    **/
 /************************************************************************/
 
-static linesearch(iter)
-     Iteration *iter;
+static void 
+linesearch(Iteration *iter)
 {
   int i, n;
   double newtlen, maxstep, initslope, rellength, lambda, minlambda, 
     lambdatemp, lambdaprev, a, b, disc, critprev, f1, f2, a11, a12, a21, a22, 
     del;
-  RVector qnstep, delf, x, new_x, sx;
+  double *qnstep, *delf, *x, *new_x, *sx;
 
   n = iter->n + iter->k;
   if (! iter->use_line_search) {
@@ -510,8 +525,8 @@ static linesearch(iter)
 /**                                                                    **/
 /************************************************************************/
 
-static print_header(iter)
-     Iteration *iter;
+static void
+print_header(Iteration *iter)
 {
   if (iter->verbose > 0) {
     sprintf(buf, "Iteration %d.\n", iter->itncount);
@@ -519,8 +534,8 @@ static print_header(iter)
   }
 }
 
-static print_status(iter)
-     Iteration *iter;
+static void
+print_status(Iteration *iter)
 {
   int i, j;
 
@@ -566,8 +581,8 @@ static print_status(iter)
 /**                                                                    **/
 /************************************************************************/
 
-static findqnstep(iter)
-     Iteration *iter;
+static void
+findqnstep(Iteration *iter)
 {
   int i, j, N, l;
 
@@ -589,8 +604,7 @@ static findqnstep(iter)
   }
 }
 
-static iterupdate(iter)
-     Iteration *iter;
+static void iterupdate(Iteration *iter)
 {
   int i, j, n, k;
   
@@ -610,8 +624,8 @@ static iterupdate(iter)
   }
 }
 
-static mindriver(iter)
-     Iteration *iter;
+static void
+mindriver(Iteration *iter)
 {
   iter->consecmax = 0;
   iter->itncount = 0;
@@ -646,8 +660,8 @@ static mindriver(iter)
 
 static Iteration myiter;
 
-minworkspacesize(n, k)
-     int n, k;
+int 
+minworkspacesize(int n, int k)
 {
   int size;
   
@@ -664,19 +678,19 @@ minworkspacesize(n, k)
   return(size);
 }
 
-char *minresultstring(code)
-     int code;
+char *
+minresultstring(int code)
 {
   if (code <= 0) return("bad input data");
   else if (code <= 5) return(termcodes[code]);
   else return("unknown return code");
 }
   
-minsetup(n, k, ffun, gfun, x, typf, typx, work)
-     int n, k, (*ffun)(), (*gfun)();
-     RVector x, typx;
-     double typf;
-     char *work;
+void
+minsetup(int n, int k,
+	 void (*ffun)(), void (*gfun)(),
+	 double *x, double typf, double *typx, char *work)
+     /*     int  (*ffun)(), (*gfun)();*/
 {
   Iteration *iter = &myiter;
   int i, j;
@@ -687,16 +701,16 @@ minsetup(n, k, ffun, gfun, x, typf, typx, work)
 
   iter->n = n;
   iter->k = k;
-  iter->ffun = ffun;
+  iter->ffun = ffun; /* FIXME:AJR */
   iter->gfun = gfun;
 
-  iter->x = (RVector) work; work += sizeof(double) * (n + k);
-  iter->new_x = (RVector) work; work += sizeof(double) * (n + k);
-  iter->sx = (RVector) work; work += sizeof(double) * (n + k);
-  iter->delf = (RVector) work; work += sizeof(double) * (n + k);
-  iter->new_delf = (RVector) work; work += sizeof(double) * (n + k);
-  iter->qnstep = (RVector) work; work += sizeof(double) * (n + k);
-  iter->F = (RVector) work; work += sizeof(double) * (n + k);
+  iter->x = (double *) work; work += sizeof(double) * (n + k);
+  iter->new_x = (double *) work; work += sizeof(double) * (n + k);
+  iter->sx = (double *) work; work += sizeof(double) * (n + k);
+  iter->delf = (double *) work; work += sizeof(double) * (n + k);
+  iter->new_delf = (double *) work; work += sizeof(double) * (n + k);
+  iter->qnstep = (double *) work; work += sizeof(double) * (n + k);
+  iter->F = (double *) work; work += sizeof(double) * (n + k);
   for (i = 0; i < n; i++) {
     iter->x[i] = x[i];
     iter->sx[i] = (typx != nil && typx[i] > 0.0) ? 1.0 / typx[i] : 1.0;
@@ -706,28 +720,28 @@ minsetup(n, k, ffun, gfun, x, typf, typx, work)
     iter->sx[n + i] = 1.0;
   }
 
-  iter->hessf = (RMatrix) work; work += sizeof(double *) * (n + k);
+  iter->hessf = (double **) work; work += sizeof(double *) * (n + k);
   for (i = 0; i < n + k; i++) {
-    iter->hessf[i] = (RVector) work;
+    iter->hessf[i] = (double *) work;
     work += sizeof(double) * (n + k);
   }
   for (i = 0; i < n + k; i++)
     for (j = 0; j < n + k; j++) iter->hessf[i][j] = 0.0;
-  iter->L = (RMatrix) work; work += sizeof(double *) * (n + k);
+  iter->L = (double **) work; work += sizeof(double *) * (n + k);
   for (i = 0; i < n + k; i++) {
-    iter->L[i] = (RVector) work;
+    iter->L[i] = (double *) work;
     work += sizeof(double) * (n + k);
   }
-  iter->H = (RMatrix) work; work += sizeof(double *) * (n + k);
+  iter->H = (double **) work; work += sizeof(double *) * (n + k);
   for (i = 0; i < n + k; i++) {
-    iter->H[i] = (RVector) work;
+    iter->H[i] = (double *) work;
     work += sizeof(double) * (n + k);
   }
 
-  iter->new_delg = (k > 0) ? (RMatrix) work : nil;
+  iter->new_delg = (k > 0) ? (double **) work : nil;
   work += sizeof(double *) * k;
   for (i = 0; i < k; i++) {
-    iter->new_delg[i] = (RVector) work;
+    iter->new_delg[i] = (double *) work;
     work += sizeof(double) * n;
   }
 
@@ -747,9 +761,9 @@ minsetup(n, k, ffun, gfun, x, typf, typx, work)
   iter->values_supplied = FALSE;
 }
 
-minsetoptions(gradtol, steptol, maxstep, itnlimit, verbose, use_search, change_sign)
-     double gradtol, steptol, maxstep;
-     int itnlimit, verbose, use_search, change_sign;
+void
+minsetoptions(double gradtol, double steptol, double maxstep,
+	      int itnlimit, int verbose, int use_search, int change_sign)
 {
   Iteration *iter = &myiter;
 
@@ -762,10 +776,9 @@ minsetoptions(gradtol, steptol, maxstep, itnlimit, verbose, use_search, change_s
   iter->change_sign = change_sign;
 }
 
-minsupplyvalues(f, delf, hessf, g, delg)
-     double f;
-     RVector delf, g;
-     RMatrix hessf, delg;
+void
+minsupplyvalues(double f, double *delf, double **hessf,
+		double *g, double **delg)
 {
   Iteration *iter = &myiter;
   int i, j, n, k;
@@ -795,13 +808,15 @@ minsupplyvalues(f, delf, hessf, g, delg)
   iter->values_supplied = TRUE;
 }
 
-minimize() { mindriver(&myiter); }
+void 
+minimize() 
+{
+  mindriver(&myiter);
+}
 
-minresults(x, pf, pcrit, delf, hessf, g, delg, pcount, ptermcode, diagadd)
-     RVector x, delf, g;
-     double *pf, *pcrit, *diagadd;
-     RMatrix hessf, delg;
-     int *pcount, *ptermcode;
+void
+minresults(double *x, double *pf, double *pcrit, double *delf, double **hessf,
+	   double *g, double **delg, int *pcount, int *ptermcode, double *diagadd)
 {
   Iteration *iter = &myiter;
   int i, j, n, k;
@@ -827,10 +842,8 @@ minresults(x, pf, pcrit, delf, hessf, g, delg, pcount, ptermcode, diagadd)
   if (diagadd != nil) *diagadd = iter->diagadd;
 }
 
-#ifdef SBAYES
-double pdlogdet(n, H)
-     int n;
-     RMatrix H;
+
+double pdlogdet(int n, double **H)
 {
   int i;
   double logdet, maxadd;
@@ -839,10 +852,17 @@ double pdlogdet(n, H)
   for (i = 0, logdet = 0.0; i < n; i++) logdet += 2.0 * log(H[i][i]);
   return(logdet);
 }
-#endif /* SBAYES */
-#ifdef TODO
-return amount added to make pos definite
-scaling for constraints
-alternate global strategies
-callback function for verbose mode
-#endif TODO
+
+
+/*
+  TODO
+  
+  return amount added to make pos definite
+  
+  scaling for constraints
+   
+  alternate global strategies
+
+  callback function for verbose mode
+*/
+

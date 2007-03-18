@@ -28,16 +28,14 @@ choldecomp(a, n)
 }
 */
 
-static double Max(a, b)
-	double a, b;
+static double
+Max(double a, double b)
 {
   return(a > b ? a : b);
 }
 
-choldecomp(a, n, maxoffl, maxadd)
-	RMatrix a;
-	int n;
-	double maxoffl, *maxadd;
+void
+choldecomp(double **a, int n, double maxoffl, double *maxadd)
 {
   double minl, minljj, minl2;
   int i, j, k;

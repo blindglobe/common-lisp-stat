@@ -1,3 +1,6 @@
+#include <malloc.h>
+#include <string.h>
+
 #include "linalg.h"
 
 typedef char *PTR;
@@ -16,31 +19,44 @@ extern int poissonquant(), poissonrand();
 extern double binomialcdf(), binomialpmf();
 extern int binomialquant(), binomialrand();
 
+void xlfail(char *);
+
+extern int chol_decomp_front();
+extern int lu_decomp_front();
+extern int lu_solve_front();
+extern int lu_inverse_front();
+extern int sv_decomp_front();
+extern int qr_decomp_front();
+extern int rcondest_front();
+extern int make_rotation_front();
+extern int eigen_front();
+extern int range_to_rseq();
+extern int spline_front();
+extern int kernel_dens_front();
+extern int kernel_smooth_front();
+extern int base_lowess_front();
+extern int fft_front();
+extern int numgrad_front();
+extern int numhess_front();
+extern int minfo_maximize();
+
 /***********************************************************************/
-/***********************************************************************/
-/****                                                               ****/
 /****                        Basic Utilities                        ****/
-/****                                                               ****/
-/***********************************************************************/
 /***********************************************************************/
 
 /***********************************************************************/
-/**                                                                   **/
 /**                    Callback Support Functions                     **/
-/**                                                                   **/
 /***********************************************************************/
 
 static int ccl_integer_value;
 static double ccl_double_value;
 static PTR ccl_ptr_value;
-ccl_store_integer(x) int x; { ccl_integer_value = x; }
-ccl_store_double(x) double x; { ccl_double_value = x; }
-ccl_store_ptr(x) PTR x; { ccl_ptr_value = x; }
+void ccl_store_integer(int x)  { ccl_integer_value = x; }
+void ccl_store_double(double x)  { ccl_double_value = x; }
+void ccl_store_ptr(PTR x) { ccl_ptr_value = x; }
 
 /***************************************************************************/
-/**                                                                       **/
 /**                       Lisp-Managed Calloc/Free                        **/
-/**                                                                       **/
 /***************************************************************************/
 
 #ifdef DODO
@@ -70,7 +86,7 @@ void free(p)
 {
   (*free_ptr)(p);
 }
-#endif DODO
+#endif /* DODO*/
 
 /***************************************************************************/
 /**                                                                       **/
@@ -78,23 +94,23 @@ void free(p)
 /**                                                                       **/
 /***************************************************************************/
 
-PTR la_base_allocate(n, m)
-	unsigned n, m;
+PTR
+la_base_allocate(unsigned n, unsigned m)
 {
   char *p = calloc(n, m);
   if (p == nil) xlfail("allocation failed");
   return((PTR) p);
 }
 
-int la_base_free_alloc(p)
-	PTR p;
+int
+la_base_free_alloc(PTR p)
 {
   if (p) free((char *) p);
   return(0);
 }
 
-int la_mode_size(mode)
-	int mode;
+int
+la_mode_size(int mode)
 {
   switch (mode) {
   case IN: return(sizeof(int));
@@ -112,18 +128,18 @@ int la_mode_size(mode)
 
 int (*ccl_la_allocate)(), (*ccl_la_free_alloc)();
 
-register_la_allocate(f) int (*f)(); { ccl_la_allocate = f; }
-register_la_free_alloc(f) int (*f)(); { ccl_la_free_alloc = f; }
+void register_la_allocate(f) int (*f)(); { ccl_la_allocate = f; }
+void register_la_free_alloc(f) int (*f)(); { ccl_la_free_alloc = f; }
 
-PTR la_allocate(n, m)
-     int n, m;
+PTR
+la_allocate(int n, int m)
 {
   (*ccl_la_allocate)(n, m);
   return(ccl_ptr_value);
 }
 
-la_free_alloc(p)
-     PTR p;
+void
+la_free_alloc(PTR p)
 {
   (*ccl_la_free_alloc)(p);
 }
@@ -134,39 +150,34 @@ la_free_alloc(p)
 /**                                                                       **/
 /***************************************************************************/
 
-int la_get_integer(p, i)
-     PTR p;
-     int i;
+int
+la_get_integer(PTR p, int i)
 {
   return(*(((int *) p) + i));
 }
 
-double la_get_double(p, i)
-     PTR p;
-     int i;
+double
+la_get_double(PTR p, int i)
 {
   return(*(((double *) p) + i));
 }
 
-double la_get_complex_real(p, i)
-     PTR p;
-     int i;
+double
+la_get_complex_real(PTR p, int i)
 {
   Complex *c = ((Complex *) p) + i;
   return(c->real);
 }
 
-double la_get_complex_imag(p, i)
-     PTR p;
-     int i;
+double
+la_get_complex_imag(PTR p, int i)
 {
   Complex *c = ((Complex *) p) + i;
   return(c->imag);
 }
 
-PTR la_get_pointer(p, i)
-     PTR p;
-	 int i;
+PTR
+la_get_pointer(PTR p, int i)
 {
   return(*(((PTR *) p) + i));
 }
@@ -177,27 +188,21 @@ PTR la_get_pointer(p, i)
 /**                                                                       **/
 /***************************************************************************/
 
-int la_put_integer(p, i, x)
-     PTR p;
-     int i, x;
+int
+la_put_integer(PTR p, int i, int x)
 {
   *(((int *) p) + i) = x;
   return(0);
 }
 
-int la_put_double(p, i, x)
-     PTR p;
-     int i;
-     double x;
+int la_put_double(PTR p, int i, double x)
 {
   *(((double *) p) + i) = x;
   return(0);
 }
 
-int la_put_complex(p, i, x, y)
-     PTR p;
-     int i;
-     double x, y;
+int
+la_put_complex(PTR p, int i, double x, double y)
 {
   Complex *c = ((Complex *) p) + i;
   c->real = x;
@@ -205,9 +210,8 @@ int la_put_complex(p, i, x, y)
   return(0);
 }
 
-int la_put_pointer(p, i, x)
-     PTR p, x;
-	 int i;
+int
+la_put_pointer(PTR p, int i, PTR x)
 {
   *(((PTR *) p) + i) = x;
   return(0);
@@ -222,19 +226,23 @@ int la_put_pointer(p, i, x)
 char buf[1000];
 
 static int (*ccl_set_buf_char_fptr)();
-register_set_buf_char(f) int (*f)(); { ccl_set_buf_char_fptr = f; }
-set_buf_char(n, c) int n, c; { (*ccl_set_buf_char_fptr)(n, c); }
+void register_set_buf_char(f) int (*f)(); { ccl_set_buf_char_fptr = f; }
+void set_buf_char(int n, int c)  { (*ccl_set_buf_char_fptr)(n, c); }
 
 static int (*ccl_print_buffer)();
-register_print_buffer(f) int (*f)(); { ccl_print_buffer = f; }
-print_buffer(n, m) int n, m; { (*ccl_print_buffer)(n, m); }
+void register_print_buffer(f) int (*f)(); { ccl_print_buffer = f; }
+void print_buffer(int n, int m) { (*ccl_print_buffer)(n, m); }
 
 static int bufpos = 0;
  
-static resetbuf() { bufpos = 0; }
+static void
+resetbuf()
+{
+  bufpos = 0;
+}
 
-static prbuf(s)
-    char *s;
+static void
+prbuf(char *s)
 {
   int i, n;
   
@@ -243,174 +251,156 @@ static prbuf(s)
   set_buf_char(bufpos, 0);
 }
 
-xlfail(s)
-	char *s;
+void
+xlfail(char *s)
 {
   resetbuf();
   prbuf(s);
   print_buffer(bufpos, 1);
 }
 
-stdputstr(s)
-	char *s;
+void
+stdputstr(char *s)
 {
   resetbuf();
   prbuf(s);
   print_buffer(bufpos, 0);
 }
 
-bufputstr(s)
-	char *s;
+void
+bufputstr(char *s)
 {
   resetbuf();
   prbuf(s);
 }
 
 /***************************************************************************/
-/***************************************************************************/
 /****                                                                   ****/
 /*****             Lisp Interfaces to Linear Algebra Routines           ****/
 /****                                                                   ****/
 /***************************************************************************/
-/***************************************************************************/
 
-ccl_chol_decomp_front(mat, n, dpars)
-     PTR mat, dpars;
-     int n;
+int
+ccl_chol_decomp_front(PTR mat, int n, PTR dpars)
 {
   return(chol_decomp_front(mat, n, dpars));
 }
 
-ccl_lu_decomp_front(mat, n, iv, mode, dp)
-     PTR mat, iv, dp;
-     int n, mode;
+int
+ccl_lu_decomp_front(PTR mat, int n, PTR iv, int mode, PTR dp)
 {
   return(lu_decomp_front(mat, n, iv, mode, dp));
 }
 
-ccl_lu_solve_front(a, n, indx, b, mode)
-     PTR a, indx, b;
-     int n, mode;
+int
+ccl_lu_solve_front(PTR a, int n, PTR indx, PTR b, int mode)
 {
   return(lu_solve_front(a, n, indx, b, mode));
 }
 
-ccl_lu_inverse_front(pmat, n, piv, pv, mode, pinv)
-     PTR pmat, piv, pv, pinv;
-     int n, mode;
+int
+ccl_lu_inverse_front(PTR pmat, int n, PTR piv, PTR pv, int mode, PTR pinv)
 {
   return(lu_inverse_front(pmat, n, piv, pv, mode, pinv));
 }
 
-ccl_sv_decomp_front(mat, m, n, w, v)
-     PTR mat, w, v;
-     int m, n;
+int 
+ccl_sv_decomp_front(PTR mat, int m, int n, PTR w, PTR v)
 {
   return(sv_decomp_front(mat, m, n, w, v));
 }
 
-ccl_qr_decomp_front(mat, m, n, v, jpvt, pivot)
-     PTR mat, v, jpvt;
-     int m, n, pivot;
+
+int
+ccl_qr_decomp_front(PTR mat, int m, int n, PTR v, PTR jpvt, int pivot)
 {
   return(qr_decomp_front(mat, m, n, v, jpvt, pivot));
 }
 
-double ccl_rcondest_front(mat, n)
-     PTR mat;
-     int n;
+double
+ccl_rcondest_front(PTR mat, int n)
 {
   return(rcondest_front(mat, n));
 }
 
-ccl_make_rotation_front(n, rot, x, y, use_alpha, alpha)
-     int n, use_alpha;
-     PTR rot, x, y;
-     double alpha;
+int
+ccl_make_rotation_front(int n, PTR rot, PTR x, PTR y, int use_alpha, double alpha)
 {
   return(make_rotation_front(n, rot, x, y, use_alpha, alpha));
 }
 
-ccl_eigen_front(a, n, w, z, fv1)
-     PTR a, w, z, fv1;
-     int n;
+int
+ccl_eigen_front(PTR a, int n, PTR w, PTR z, PTR fv1)
 {
   return(eigen_front(a, n, w, z, fv1));
 }
 
-ccl_range_to_rseq(n, px, ns, pxs)
-     int n, ns;
-     PTR px, pxs;
+int
+ccl_range_to_rseq(int n, PTR px, int ns, PTR pxs)
 {
   return(range_to_rseq(n, px, ns, pxs));
 }
 
-ccl_spline_front(n, x, y, ns, xs, ys, work)
-     PTR x, y, xs, ys, work;
-     int n, ns;
+int
+ccl_spline_front(int n, PTR x, PTR y, int ns, PTR xs, PTR ys, PTR work)
 {
   return(spline_front(n, x, y, ns, xs, ys, work));
 }
 
-ccl_kernel_dens_front(x, n, width, xs, ys, ns, code)
-     PTR x, xs, ys;
-     int n, ns, code;
-     double width;
+int 
+ccl_kernel_dens_front(PTR x, int n, double width, PTR xs, PTR ys, int ns, int code)
 {
   return(kernel_dens_front(x, n, width, xs, ys, ns, code));
 }
 
-ccl_kernel_smooth_front(x, y, n, width, xs, ys, ns, code)
-     PTR x, y, xs, ys;
-     int n, ns, code;
-     double width;
+int 
+ccl_kernel_smooth_front(PTR x, PTR y, int n, double width, PTR xs, PTR ys, int ns, int code)
 {
   return(kernel_smooth_front(x, y, n, width, xs, ys, ns, code));
 }
 
-ccl_base_lowess_front(x, y, n, f, nsteps, delta, ys, rw, res)
-     PTR x, y, ys, rw, res;
-     int n, nsteps;
-     double f, delta;
+int
+ccl_base_lowess_front(PTR x, PTR y, int n, double f,
+		      int nsteps, double delta, PTR ys, PTR rw, PTR res)
 {
   return(base_lowess_front(x, y, n, f, nsteps, delta, ys, rw, res));
 }
 
-ccl_fft_front(n, x, work, isign)
-     int n, isign;
-     PTR x, work;
+int
+ccl_fft_front(int n, PTR x, PTR work, int isign)
 {
   return(fft_front(n, x, work, isign));
 }
 
 static int (*ccl_maximize_callback)();
-register_maximize_callback(f) int (*f)(); { ccl_maximize_callback = f; }
-maximize_callback(n, px, pfval, pgrad, phess, pderivs)
-     int n;
-     PTR px, pfval, pgrad, phess, pderivs;
+
+void
+register_maximize_callback(f)
+     int (*f)();
+{
+  ccl_maximize_callback = f;
+}
+
+void
+maximize_callback(int n, PTR px, PTR pfval, PTR pgrad, PTR phess, PTR pderivs)
 {
   (*ccl_maximize_callback)(n, px, pfval, pgrad, phess, pderivs);
 }
 
-ccl_numgrad_front(n, px, pgrad, h, pscale)
-     int n;
-     PTR px, pgrad, pscale;
-     double h;
+int 
+ccl_numgrad_front(int n, PTR px, PTR pgrad, double h, PTR pscale)
 {
   return(numgrad_front(n, px, pgrad, h, pscale));
 }
 
-ccl_numhess_front(n, px, pf, pgrad, phess, h, pscale)
-     int n;
-     PTR px, pf, pgrad, phess, pscale;
-     double h;
+int 
+ccl_numhess_front(int n, PTR px, PTR pf, PTR pgrad, PTR phess, double h, PTR pscale)
 {
   return(numhess_front(n, px, pf, pgrad, phess, h, pscale));
 }
 
-ccl_minfo_maximize(px, pfvals, pscale, pip, pdp, verbose)
-     PTR px, pfvals, pscale, pip, pdp;
-     int verbose;
+int 
+ccl_minfo_maximize(PTR px, PTR pfvals, PTR pscale, PTR pip, PTR pdp, int verbose)
 {
   return(minfo_maximize(px, pfvals, pscale, pip, pdp, verbose));
 }
@@ -424,53 +414,55 @@ ccl_minfo_maximize(px, pfvals, pscale, pip, pdp, verbose)
 /***********************************************************************/
 
 static int (*ccl_uni_fptr)();
-register_uni(f) int (*f)(); { ccl_uni_fptr = f; }
+void register_uni(f) int (*f)(); { ccl_uni_fptr = f; }
 double uni() { (*ccl_uni_fptr)(); return(ccl_double_value); }
 
-double ccl_gamma(x) double x; { return(gamma(x)); }
+double ccl_gamma(double x) { return(gamma(x)); }
 
-double ccl_normalcdf(x) double x; { return(normalcdf(x)); }
-double ccl_normalquant(x) double x; { return(normalquant(x)); }
-double ccl_normaldens(x) double x; { return(normaldens(x)); }
+double ccl_normalcdf(double x)  { return(normalcdf(x)); }
+double ccl_normalquant(double x) { return(normalquant(x)); }
+double ccl_normaldens(double x) { return(normaldens(x)); }
 double ccl_normalrand() { return(normalrand()); }
-double ccl_bnormcdf(x, y, z) double x, y, z; { return(bnormcdf(x,y,z)); }
+double ccl_bnormcdf(double x, double y, double z)  {
+  return(bnormcdf(x,y,z));
+}
 
-double ccl_cauchycdf(x) double x; { return(cauchycdf(x)); }
-double ccl_cauchyquant(x) double x; { return(cauchyquant(x)); }
-double ccl_cauchydens(x) double x; { return(cauchydens(x)); }
+double ccl_cauchycdf(double x)  { return(cauchycdf(x)); }
+double ccl_cauchyquant(double x)  { return(cauchyquant(x)); }
+double ccl_cauchydens(double x)  { return(cauchydens(x)); }
 double ccl_cauchyrand() { return(cauchyrand()); }
 
-double ccl_gammacdf(x, y) double x, y; { return(gammacdf(x, y)); }
-double ccl_gammaquant(x, y) double x, y; { return(gammaquant(x, y)); }
-double ccl_gammadens(x, y) double x, y; { return(gammadens(x, y)); }
-double ccl_gammarand(x) double x; { return(gammarand(x)); }
+double ccl_gammacdf(double x, double y)  { return(gammacdf(x, y)); }
+double ccl_gammaquant(double x, double y)  { return(gammaquant(x, y)); }
+double ccl_gammadens(double x, double y)  { return(gammadens(x, y)); }
+double ccl_gammarand(double x)  { return(gammarand(x)); }
 
-double ccl_chisqcdf(x, y) double x, y; { return(chisqcdf(x, y)); }
-double ccl_chisqquant(x, y) double x, y; { return(chisqquant(x, y)); }
-double ccl_chisqdens(x, y) double x, y; { return(chisqdens(x, y)); }
-double ccl_chisqrand(x) double x; { return(chisqrand(x)); }
+double ccl_chisqcdf(double x, double y)  { return(chisqcdf(x, y)); }
+double ccl_chisqquant(double x, double y)  { return(chisqquant(x, y)); }
+double ccl_chisqdens(double x, double y)  { return(chisqdens(x, y)); }
+double ccl_chisqrand(double x)  { return(chisqrand(x)); }
 
-double ccl_betacdf(x, y, z) double x, y, z; { return(betacdf(x, y, z)); }
-double ccl_betaquant(x, y, z) double x, y, z; { return(betaquant(x, y, z)); }
-double ccl_betadens(x, y, z) double x, y, z; { return(betadens(x, y, z)); }
-double ccl_betarand(x, y) double x, y; { return(betarand(x, y)); }
+double ccl_betacdf(double x, double y, double z)  { return(betacdf(x, y, z)); }
+double ccl_betaquant(double x, double y, double z)  { return(betaquant(x, y, z)); }
+double ccl_betadens(double x, double y, double z)  { return(betadens(x, y, z)); }
+double ccl_betarand(double x, double y)  { return(betarand(x, y)); }
 
-double ccl_tcdf(x, y) double x, y; { return(tcdf(x, y)); }
-double ccl_tquant(x, y) double x, y; { return(tquant(x, y)); }
-double ccl_tdens(x, y) double x, y; { return(tdens(x, y)); }
-double ccl_trand(x) double x; { return(trand(x)); }
+double ccl_tcdf(double x, double y)  { return(tcdf(x, y)); }
+double ccl_tquant(double x, double y)  { return(tquant(x, y)); }
+double ccl_tdens(double x, double y)  { return(tdens(x, y)); }
+double ccl_trand(double x)  { return(trand(x)); }
 
-double ccl_fcdf(x, y, z) double x, y, z; { return(fcdf(x, y, z)); }
-double ccl_fquant(x, y, z) double x, y, z; { return(fquant(x, y, z)); }
-double ccl_fdens(x, y, z) double x, y, z; { return(fdens(x, y, z)); }
-double ccl_frand(x, y) double x, y; { return(frand(x, y)); }
+double ccl_fcdf(double x, double y, double z)  { return(fcdf(x, y, z)); }
+double ccl_fquant(double x, double y, double z)  { return(fquant(x, y, z)); }
+double ccl_fdens(double x, double y, double z)  { return(fdens(x, y, z)); }
+double ccl_frand(double x, double y)  { return(frand(x, y)); }
 
-double ccl_poissoncdf(x, y) double x, y; { return(poissoncdf(x, y)); }
-int ccl_poissonquant(x, y) double x, y; { return(poissonquant(x, y)); }
-double ccl_poissonpmf(x, y) int x; double y; { return(poissonpmf(x, y)); }
-int ccl_poissonrand(x) double x; { return(poissonrand(x)); }
+double ccl_poissoncdf(double x, double y)  { return(poissoncdf(x, y)); }
+int ccl_poissonquant(double x, double y)  { return(poissonquant(x, y)); }
+double ccl_poissonpmf(int x, double y)  { return(poissonpmf(x, y)); }
+int ccl_poissonrand(double x)  { return(poissonrand(x)); }
 
-double ccl_binomialcdf(x, y, z) double x, z; int y; { return(binomialcdf(x, y, z)); }
-int ccl_binomialquant(x, y, z) double x, z; int y; { return(binomialquant(x, y, z)); }
-double ccl_binomialpmf(x, y, z) int x, y; double z; { return(binomialpmf(x, y, z)); }
-int ccl_binomialrand(x, y) int x; double y; { return(binomialrand(x, y)); }
+double ccl_binomialcdf(double x, int y, double z) { return(binomialcdf(x, y, z)); }
+int ccl_binomialquant(double x, int y, double z) { return(binomialquant(x, y, z)); }
+double ccl_binomialpmf(int x, int y, double z)  { return(binomialpmf(x, y, z)); }
+int ccl_binomialrand(int x, double y)  { return(binomialrand(x, y)); }

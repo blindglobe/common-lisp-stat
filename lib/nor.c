@@ -41,8 +41,8 @@
 #define SQRT2 1.414213562373095049
 #define SQRTPI 1.772453850905516027
 
-normbase(x, phi)
-double *x, *phi;
+void
+normbase(double *x, double *phi)
 {
   int sn;
   double R1, R2, y, y2, y3, y4, y5, y6, y7, erf, erfc, z, z2, z3, z4;
@@ -51,8 +51,9 @@ double *x, *phi;
   if (y < 0) { 
     y = -y;
     sn = -1;
+  } else {
+    sn = 1;
   }
-  else sn = 1;
   y2 = y * y;
   y4 = y2 * y2;
   y6 = y4 * y2;
@@ -61,30 +62,39 @@ double *x, *phi;
     R1 = P10 + P11 * y2 + P12 * y4 + P13 * y6;
     R2 = Q10 + Q11 * y2 + Q12 * y4 + Q13 * y6;
     erf = y * R1 / R2;
-    if(sn == 1) *phi = 0.5 + 0.5*erf;
-    else *phi = 0.5 - 0.5*erf;
-  }
-  else if(y < 4.0) {
-    y3 = y2 * y;
-    y5 = y4 * y;
-    y7 = y6 * y;
-    R1 = P20 + P21 * y + P22 * y2 + P23 * y3 + P24 * y4 + P25 * y5 
-       + P26 * y6 + P27 * y7;
-    R2 = Q20 + Q21 * y + Q22 * y2 + Q23 * y3 + Q24 * y4 + Q25 * y5
-       + Q26 * y6 + Q27 * y7;
-    erfc = exp(-y2) * R1 / R2;
-    if(sn == 1) *phi = 1.0 - 0.5*erfc;
-    else *phi = 0.5*erfc;
-  }
-  else {
-    z = y4;
-    z2 = z * z;
-    z3 = z2 * z;
-    z4 = z2 * z2;
-    R1 = P30 + P31 * z + P32 * z2 + P33 * z3 + P34 * z4;
-    R2 = Q30 + Q31 * z + Q32 * z2 + Q33 * z3 + Q34 * z4;
-    erfc = (exp(-y2)/y) * (1.0 / SQRTPI + R1 / (R2 * y2));
-    if(sn == 1) *phi = 1.0 - 0.5*erfc;
-    else *phi = 0.5*erfc;
+    if(sn == 1) {
+      *phi = 0.5 + 0.5*erf;
+    } else {
+      *phi = 0.5 - 0.5*erf;
+    }
+  } else {
+    if(y < 4.0) {
+      y3 = y2 * y;
+      y5 = y4 * y;
+      y7 = y6 * y;
+      R1 = P20 + P21 * y + P22 * y2 + P23 * y3 + P24 * y4 + P25 * y5 +
+	P26 * y6 + P27 * y7;
+      R2 = Q20 + Q21 * y + Q22 * y2 + Q23 * y3 + Q24 * y4 + Q25 * y5 +
+	Q26 * y6 + Q27 * y7;
+      erfc = exp(-y2) * R1 / R2;
+      if (sn == 1) {
+	*phi = 1.0 - (0.5 * erfc);
+      } else {
+	*phi = 0.5 * erfc;
+      }
+    }  else {
+      z = y4;
+      z2 = z * z;
+      z3 = z2 * z;
+      z4 = z2 * z2;
+      R1 = P30 + P31 * z + P32 * z2 + P33 * z3 + P34 * z4;
+      R2 = Q30 + Q31 * z + Q32 * z2 + Q33 * z3 + Q34 * z4;
+      erfc = (exp(-y2)/y) * (1.0 / SQRTPI + R1 / (R2 * y2));
+      if(sn == 1) { 
+	*phi = 1.0 - ( 0.5 * erfc);
+      } else {
+	*phi = (0.5 * erfc);
+      }
+    }
   }
 }

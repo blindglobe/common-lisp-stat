@@ -2,7 +2,7 @@
 # include "xlisp.h"
 # include "complex.h"
 
-extern char *calloc();
+extern void *calloc(); /*conflict?  was (char *) */
 extern double macheps();
 
 #define nil 0L
@@ -24,3 +24,4 @@ extern IMatrix imatrix();
 extern RMatrix rmatrix();
 extern CMatrix cmatrix();
 
+extern void free_vector(double *);

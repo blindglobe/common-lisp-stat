@@ -1,5 +1,14 @@
 #include "xmath.h"
 
+extern void normbase(double *,double *);
+extern void gammabase(double *,double *, double *);
+extern void studentbase(double *,double *, double *);
+extern void betabase(double *, double *,double *,int *, int *,double *);
+extern double max(double, double);
+extern double min(double, double);
+
+extern void xlfail(char *);
+
 extern double ppnd(), gamma(), bivnor(), uni(), ppgamma(), ppbeta(),
   ppstudent();
 
@@ -8,7 +17,7 @@ extern double tdens();
 
 #ifndef PI
 #define PI 3.14159265358979323846
-#endif PI
+#endif /* PI*/
 #define TRUE 1
 #define FALSE 0
 
@@ -36,57 +45,61 @@ double floor(x)
 #endif
 #endif
 
-static checkflag(flag)
-     int flag;
+static void
+checkflag(int flag)
 {
   /* do nothing for now */
 }
 
-static checkexp(a)
-     double a;
+static void 
+checkexp(double a)
 {
-  if (a <= 0.0) xlfail("non-positive gamma or beta exponent");
+  if (a <= 0.0) {
+    xlfail("non-positive gamma or beta exponent");
+  }
 }
 
-static checkdf(df)
-     double df;
+static void
+checkdf(double df)
 {
-  if (df <= 0.0) xlfail("non-positive degrees of freedom");
+  if (df <= 0.0) { 
+    xlfail("non-positive degrees of freedom");
+  }
 }
 
-static checkprob(p, zerostrict, onestrict)
-     double p;
-     int zerostrict, onestrict;
+static void 
+checkprob(double p, int zerostrict, int onestrict)
 {
   if (zerostrict) {
     if (p <= 0.0) xlfail("non-positive probability argument");
-  }
-  else {
+  } else {
     if (p < 0.0) xlfail("negative probability argument");
   }
   if (onestrict) {
     if (p >= 1.0) xlfail("probability argument not less than one");
-  }
-  else {
+  } else {
     if (p > 1.0) xlfail("probability argument greater than one");
   }
 }
 
-static checkrho(r)
-     double r;
+static void
+checkrho(double r)
 {
-  if (r < -1 || r > 1) xlfail("correlation out of range");
+  if (r < -1 || r > 1) {
+    xlfail("correlation out of range");
+  }
 }
 
-static checkpoisson(L)
-     double L;
+static void
+checkpoisson(double L)
 {
-  if (L < 0.0) xlfail("negative Poisson mean");
+  if (L < 0.0) { 
+    xlfail("negative Poisson mean");
+  }
 }
 
-static checkbinomial(n, p)
-     int n;
-     double p;
+static void
+checkbinomial(int n, double p)
 {
   if (p < 0.0 || p > 1.0) xlfail("binomial p out of range");
   if (n < 1) xlfail("non-positive binomial n");
@@ -182,30 +195,28 @@ double bnormcdf(x, y, r)
 /*****************************************************************************/
 /*****************************************************************************/
 
-/* Cauchy cdf */
-double cauchycdf(dx)
-     double dx;
+double
+cauchycdf(double dx)
 {
   return((atan(dx) + PI / 2) / PI);
 }
 
-/* Cauchy quantile function */
-double cauchyquant(p)
-     double p;
+double
+cauchyquant(double p)
 {
   checkprob(p, TRUE, TRUE);
   return(tan(PI * (p - 0.5)));
 }
 
-/* cauchy density */
-double cauchydens(dx)
-     double dx;
+double
+cauchydens(double dx)
 {
   return(tdens(dx, 1.0));
 }
 
 /* cauchy generator */
-double cauchyrand()
+double
+cauchyrand()
 {
   double u1, u2, v1, v2;
    
@@ -220,16 +231,13 @@ double cauchyrand()
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                           Gamma Distribution                            **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
-/* gamma cdf */
-double gammacdf(x, a)
-     double x, a;
+double 
+gammacdf(double x, double a)
 {
   double p;
 
@@ -239,8 +247,8 @@ double gammacdf(x, a)
   return(p);
 }
 
-double gammaquant(p, a)
-     double p, a;
+double 
+gammaquant(double p, double a)
 {
   int flag;
   double x;
@@ -253,20 +261,22 @@ double gammaquant(p, a)
 }
 
 /* gamma density */
-double gammadens(x, a)
-     double x, a;
+double gammadens(double x, double a)
 {
   double dens;
 
   checkexp(a);
-  if (x <= 0.0) dens = 0.0;
-  else dens = exp(log(x) * (a - 1) - x - gamma(a));
+  if (x <= 0.0) { 
+    dens = 0.0; 
+  } else {
+    dens = exp(log(x) * (a - 1) - x - gamma(a));
+  }
   return(dens);
 }
 
 /* gamma generator */
-double gammarand(a)
-     double a;
+double
+gammarand(double a)
 {
   double x, u0, u1, u2, v, w, c, c1, c2, c3, c4, c5;
   static double e = -1.0;
@@ -315,27 +325,28 @@ double gammarand(a)
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                        Chi-Square Distribution                          **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
-double chisqcdf(x, df)
-     double x, df;
+double chisqcdf(double x, double df)
 {
   double p, a;
 
   checkdf(df);
-  a = 0.5 * df; x = 0.5 * x;
-  if (x <= 0.0) p = 0.0;
-  else gammabase(&x, &a, &p);
+  a = 0.5 * df;
+  x = 0.5 * x;
+  if (x <= 0.0) {
+    p = 0.0;
+  } else {
+    gammabase(&x, &a, &p);
+  }
   return(p);
 }
 
-double chisqquant(p, df)
-     double p, df;
+double
+chisqquant(double p, double df)
 {
   double x, a;
   int flag;
@@ -348,9 +359,8 @@ double chisqquant(p, df)
   return(x);
 }
 
-/* chi-square density */
-double chisqdens(dx, da)
-     double dx, da;
+double
+chisqdens(double dx, double da)
 {
   checkdf(da);
   da = 0.5 * da;
@@ -358,51 +368,55 @@ double chisqdens(dx, da)
   return(0.5 * gammadens(dx, da));
 }
 
-/* chi-square generator */
-double chisqrand(df)
-     double df;
+double
+chisqrand(double df)
 {
   checkdf(df);
   return(2.0 * gammarand(df / 2.0));
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                           Beta Distribution                             **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
-double betacdf(x, a, b)
-     double x, a, b;
+double
+betacdf(double x, double a, double b)
 {
   double p;
   int ia, ib;
   
   checkexp(a); checkexp(b);
   ia = a; ib = b;
-  if (x <= 0.0) p = 0.0;
-  else if (x >= 1.0) p = 1.0;
-  else betabase(&x, &a, &b, &ia, &ib, &p);
+  if (x <= 0.0) {
+    p = 0.0;
+  } else {
+    if (x >= 1.0) {
+      p = 1.0;
+    } else {
+      betabase(&x, &a, &b, &ia, &ib, &p);
+    }
+  }
   return(p);
 }
 
-double betaquant(p, a, b)
-     double p, a, b;
+double
+betaquant(double p, double a, double b)
 {
   double x;
   int flag;
 
-  checkexp(a); checkexp(b);
+  checkexp(a);
+  checkexp(b);
   checkprob(p, FALSE, FALSE);
   x = ppbeta(p, a, b, &flag);
   checkflag(flag);
   return(x);
 }
   
-static double logbeta(a, b)
-     double a, b;
+static double
+logbeta(double a, double b)
 {
   static double da = 0.0, db = 0.0, lbeta = 0.0;
   
@@ -414,21 +428,24 @@ static double logbeta(a, b)
 }
 
 /* beta density */
-double betadens(x, a, b)
-     double x, a, b;
+double
+betadens(double x, double a, double b)
 {
   double dens;
   
   checkexp(a);
   checkexp(b);
-  if (x <= 0.0 || x >= 1.0) dens = 0.0;
-  else dens = exp(log(x) * (a - 1) + log(1 - x) * (b - 1) - logbeta(a, b));
+  if (x <= 0.0 || x >= 1.0) {
+    dens = 0.0;
+  } else { 
+    dens = exp(log(x) * (a - 1) + log(1 - x) * (b - 1) - logbeta(a, b));
+  }
   return(dens);
 }
 
 /* beta generator */
-double betarand(a, b)
-     double a, b;
+double
+betarand(double a, double b)
 {
   double x, y;
 
@@ -440,16 +457,14 @@ double betarand(a, b)
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                            t Distribution                               **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
 /* t cdf */
-double tcdf(x, df)
-     double x, df;
+double
+tcdf(double x, double df)
 {
   double p;
   
@@ -458,9 +473,8 @@ double tcdf(x, df)
   return(p);
 }
 
-/* t quantile function */
-double tquant(p, df)
-     double p, df;
+double
+tquant(double p, double df)
 {
   double x;
   int flag;
@@ -472,9 +486,8 @@ double tquant(p, df)
   return(x);
 }
 
-/* t density */
-double tdens(x, a)
-     double x, a;
+double
+tdens(double x, double a)
 {
   double dens;
   
@@ -485,42 +498,35 @@ double tdens(x, a)
   return(dens);
 }
 
-/* t generator */
-double trand(df)
-     double df;
+double trand(double df)
 {
   checkdf(df);
   return(normalrand() / sqrt(chisqrand(df) / df));
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                            F Distribution                               **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
-/* f cdf */
-double fcdf(x, ndf, ddf)
-     double x, ndf, ddf;
+double fcdf(double x, double ndf, double ddf)
 {
   double p, a, b;
 
   checkdf(ndf); checkdf(ddf);
   a = 0.5 * ddf;
   b = 0.5 * ndf;
-  if (x <= 0.0) p = 0.0;
-  else {
+  if (x <= 0.0) {
+    p = 0.0;
+  } else {
     x = a / (a + b * x);
     p = 1.0 - betacdf(x, a, b);
   }
   return(p);
 }
 
-/* f quantile function */
-double fquant(p, ndf, ddf)
-     double p, ndf, ddf;
+double fquant(double p, double ndf, double  ddf)
 {
   double x, a, b;
   int flag;
@@ -529,8 +535,9 @@ double fquant(p, ndf, ddf)
   checkprob(p, FALSE, TRUE);
   a = 0.5 * ddf;
   b = 0.5 * ndf;
-  if (p == 0.0) x = 0.0;
-  else {
+  if (p == 0.0) {
+    x = 0.0;
+  } else {
     p = 1.0 - p;
     x = ppbeta(p, a, b, &flag);
     checkflag(flag);
@@ -539,25 +546,26 @@ double fquant(p, ndf, ddf)
   return(x);
 }
 
-/* f density */
-double fdens(dx, da, db)
-     double dx, da, db;
+double
+fdens(double dx, double da, double db)
 {
   double dens;
 
   checkdf(da);
   checkdf(db);
-  if (dx <= 0.0) dens = 0.0;
-  else dens = exp(0.5 * da * log(da) + 0.5 * db *log(db)
-		  + (0.5 * da - 1.0) * log(dx)
-		  - logbeta(0.5 * da, 0.5 * db)
-		  - 0.5 * (da + db) * log(db + da * dx));
+  if (dx <= 0.0) {
+    dens = 0.0;
+  } else {
+    dens = exp(0.5 * da * log(da) + 0.5 * db *log(db)
+	       + (0.5 * da - 1.0) * log(dx)
+	       - logbeta(0.5 * da, 0.5 * db)
+	       - 0.5 * (da + db) * log(db + da * dx));
+  }
   return(dens);
 }
 
 /* f generator */
-double frand(ndf, ddf)
-     double ndf, ddf;
+double frand(double ndf, double ddf)
 {
   checkdf(ndf);
   checkdf(ddf);
@@ -565,39 +573,39 @@ double frand(ndf, ddf)
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                         Poisson Distribution                            **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
-static double poisson_cdf(k, L)
-     int k;
-     double L;
+static double
+poisson_cdf(int k, double L)
 {
   double dp, dx;
 
-  if (k < 0) dp = 0.0;
-  else if (L == 0.0) dp = (k < 0) ? 0.0 : 1.0;
-  else {
-    dx = k + 1.0;
-    gammabase(&L, &dx, &dp);
-    dp = 1.0 - dp;
+  if (k < 0) {
+    dp = 0.0;
+  } else {
+    if (L == 0.0) {
+      dp = (k < 0) ? 0.0 : 1.0;
+    } else {
+      dx = k + 1.0;
+      gammabase(&L, &dx, &dp);
+      dp = 1.0 - dp;
+    }
   }
   return(dp);
 }
 
-double poissoncdf(k, L)
-     double k;
-     double L;
+double
+poissoncdf(double k, double L)
 {
   checkpoisson(L);  
   return(poisson_cdf((int) floor(k), L));
 }
 
-int poissonquant(x, L)
-     double x, L;
+int
+poissonquant(double x, double L)
 {
   int k, k1, k2, del, ia;
   double m, s, p1, p2, pk;
@@ -608,15 +616,22 @@ int poissonquant(x, L)
   s = sqrt(L);
   del = max(1, (int) (0.2 * s));
   
-  if (x == 0.0) k = 0.0;
-  else k = m + s * ppnd(x, &ia);
-  k1 = k; k2 = k;
+  if (x == 0.0) {
+    k = 0.0;
+  } else {
+    k = m + s * ppnd(x, &ia);
+  }
+  k1 = k;
+  k2 = k;
   
   do {
     k1 = k1 - del; k1 = max(0, k1);
     p1 = poisson_cdf(k1, L);
   } while (k1 > 0 && p1 > x);
-  if (k1 == 0 && p1 >= x) return(k1);
+  
+  if (k1 == 0 && p1 >= x) {
+    return(k1);
+  }
   
   do {
     k2 = k2 + del;
@@ -626,29 +641,36 @@ int poissonquant(x, L)
   while (k2 - k1 > 1) {
     k = (k1 + k2) / 2;
     pk = poisson_cdf(k, L);
-    if (pk < x) { k1 = k; p1 = pk; }
-    else { k2 = k; p2 = pk; }
+    if (pk < x) { 
+      k1 = k; p1 = pk;
+    } else { 
+      k2 = k; p2 = pk;
+    }
   }
   return(k2);
 }
 
-double poissonpmf(k, L)
-     int k;
-     double L;
+double
+poissonpmf(int k, double L)
 {
   double dx, dp;
 
   checkpoisson(L);
   dx = k;
-  if (L == 0.0) dp = (k == 0) ? 1.0 : 0.0;
-  else if (dx < 0.0) dp = 0.0;
-  else dp = exp(dx * log(L) - L - gamma(dx + 1.0));
+  if (L == 0.0) {
+    dp = (k == 0) ? 1.0 : 0.0;
+  }  else {
+    if (dx < 0.0) {
+      dp = 0.0;
+    } else {
+      dp = exp(dx * log(L) - L - gamma(dx + 1.0));
+    }
+  }
   return(dp);
 }
 
 /* poisson random generator from Numerical Recipes */
-int poissonrand(xm)
-     double xm;
+int poissonrand(double xm)
 {
   static double sqrt2xm, logxm, expxm, g, oldxm = -1.0;
   double t, y;
@@ -663,8 +685,7 @@ int poissonrand(xm)
       k++;
       t *= uni();
     } while (t > expxm);
-  }
-  else {
+  } else {
     if (xm != oldxm) {
       oldxm = xm;
       sqrt2xm = sqrt(2.0 * xm);
@@ -683,46 +704,52 @@ int poissonrand(xm)
 }
 
 /*****************************************************************************/
-/*****************************************************************************/
 /**                                                                         **/
 /**                        Binomial Distribution                            **/
 /**                                                                         **/
 /*****************************************************************************/
-/*****************************************************************************/
 
-static double binomial_cdf(k, n, p)
-     int k, n;
-     double p;
+static double
+binomial_cdf(int k, int n, double p)
 {
   double da, db, dp;
   int ia, ib;
 
-  if (k < 0) dp = 0.0;
-  else if (k >= n) dp = 1.0;
-  else if (p == 0.0) dp = (k < 0) ? 0.0 : 1.0;
-  else if (p == 1.0) dp = (k < n) ? 0.0 : 1.0;
-  else {
-    da = k + 1.0;
-    db = n - k;
-    ia = floor(da); ib = floor(db);
-    betabase(&p, &da, &db, &ia, &ib, &dp);
-    dp = 1.0 - dp;
+  if (k < 0) {
+    dp = 0.0;
+  } else {
+    if (k >= n) {
+      dp = 1.0;
+    } else {
+      if (p == 0.0) {
+	dp = (k < 0) ? 0.0 : 1.0;
+      } else {
+	if (p == 1.0) {
+	  dp = (k < n) ? 0.0 : 1.0;
+	} else {
+	  da = k + 1.0;
+	  db = n - k;
+	  ia = floor(da);
+	  ib = floor(db);
+	  betabase(&p, &da, &db, &ia, &ib, &dp);
+	  dp = 1.0 - dp;
+	}
+      }
+    }
   }
   return(dp);
 }
 
-double binomialcdf(k, n, p)
-     double k, p;
-     int n;
+double
+binomialcdf(double k, int n, double p)
 {
   checkbinomial(n, p);
   return(binomial_cdf((int) floor(k), n, p));
 
 }
 
-int binomialquant(x, n, p)
-	double x, p;
-	int n;
+int
+binomialquant(double x, int n, double p)
 {
   int k, k1, k2, del, ia;
   double m, s, p1, p2, pk;

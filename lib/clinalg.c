@@ -11,8 +11,31 @@ typedef char *PTR;
 
 extern double rcondest();
 
-int min (x, y) int x, y; { return((x < y) ? x : y); }
-int max (x, y) int x, y; { return((x > y) ? x : y); }
+extern void choldecomp();
+extern int crludcmp();
+extern int crlubksb();
+extern int svdcmp();
+extern void qrdecomp();
+extern void make_rotation();
+extern void eigen();
+extern void cfft();
+extern int lowess();
+extern int fit_spline();
+extern int kernel_smooth();
+
+
+
+int
+min (int x, int y)
+{
+  return((x < y) ? x : y); 
+}
+
+int
+max (int x, int y)
+{
+  return((x > y) ? x : y);
+}
 
 /************************************************************************/
 /**                                                                    **/
@@ -37,31 +60,27 @@ double macheps()
 /**                                                                    **/
 /************************************************************************/
 
-chol_decomp_front(mat, n, dpars)
-     PTR mat, dpars;
-     int n;
+void
+chol_decomp_front(PTR mat, int n, PTR dpars)
 {
   double *dp = (double *) dpars;
   choldecomp((double **) mat, n, *dp, dp + 1);
 }
 
-int lu_decomp_front(mat, n, iv, mode, dp)
-     PTR mat, iv, dp;
-     int n, mode;
+int
+lu_decomp_front(PTR mat, int n, PTR iv, int mode, PTR dp)
 {
   return(crludcmp((char **) mat, n, (int *) iv, mode, (double *) dp));
 }
 
-int lu_solve_front(a, n, indx, b, mode)
-     PTR a, indx, b;
-     int n, mode;
+int
+lu_solve_front(PTR a, int n, PTR indx, PTR b, int mode)
 {
   return(crlubksb((char **) a, n, (int *) indx, (char *) b, mode));
 }
 
-int lu_inverse_front(pmat, n, piv, pv, mode, pinv)
-     PTR pmat, piv, pv, pinv;
-     int n, mode;
+int
+lu_inverse_front(PTR pmat, int n, PTR piv, PTR pv, int mode, PTR pinv)
 {
   Matrix mat = (Matrix) pmat, inv = (Matrix) pinv;
   IVector iv = (IVector) piv;
@@ -98,38 +117,32 @@ int lu_inverse_front(pmat, n, piv, pv, mode, pinv)
   return(singular);
 }
 
-sv_decomp_front(mat, m, n, w, v)
-     PTR mat, w, v;
-     int m, n;
+int
+sv_decomp_front(PTR mat, int m, int n, PTR w, PTR v)
 {
   return(svdcmp((char **) mat, m, n, (char *) w, (char **) v));
 }
 
-qr_decomp_front(mat, m, n, v, jpvt, pivot)
-     PTR mat, v, jpvt;
-     int m, n, pivot;
+void
+qr_decomp_front(PTR mat, int m, int n, PTR v, PTR jpvt, int pivot)
 {
   qrdecomp((char **) mat, m, n, (char **) v, (char *) jpvt, pivot);
 }
 
-double rcondest_front(mat, n)
-     PTR mat;
-     int n;
+double
+rcondest_front(PTR mat, int n)
 {
   return(rcondest((char **) mat, n));
 }
 
-make_rotation_front(n, rot, x, y, use_alpha, alpha)
-     int n, use_alpha;
-     PTR rot, x, y;
-     double alpha;
+void
+make_rotation_front(int n, PTR rot, PTR x, PTR y, int use_alpha, double alpha)
 {
   make_rotation(n, (char **) rot, (char *) x, (char *) y, use_alpha, alpha);
 }
 
-int eigen_front(a, n, w, z, fv1)
-     PTR a, w, z, fv1;
-     int n;
+int
+eigen_front(PTR a, int n, PTR w, PTR z, PTR fv1)
 {
   int ierr;
 
@@ -137,25 +150,22 @@ int eigen_front(a, n, w, z, fv1)
   return(ierr);
 }
 
-fft_front(n, x, work, isign)
-     int n, isign;
-     PTR x, work;
+void
+fft_front(int n, PTR x, PTR work, int isign)
 {
   cfft(n, (char *) x, (char *) work, isign);
 }
 
-int base_lowess_front(x, y, n, f, nsteps, delta, ys, rw, res)
-     PTR x, y, ys, rw, res;
-     int n, nsteps;
-     double f, delta;
+int
+base_lowess_front(PTR x, PTR y, int n, double f,
+		  int nsteps, double delta, PTR  ys, PTR rw, PTR res)
 {
   return(lowess((char *) x, (char *) y, n, f, nsteps, delta,
 		(char *) ys, (char *) rw, (char *) res));
 }
 
-range_to_rseq(n, px, ns, pxs)
-     int n, ns;
-     PTR px, pxs;
+void
+range_to_rseq(int n, PTR px, int ns, PTR pxs)
 {
   int i;
   double xmin, xmax, *x, *xs;
@@ -170,18 +180,16 @@ range_to_rseq(n, px, ns, pxs)
     xs[i] = xmin + (xmax - xmin) * ((double) i) / ((double) (ns - 1));
 }
 
-int spline_front(n, x, y, ns, xs, ys, work)
-     PTR x, y, xs, ys, work;
-     int n, ns;
+int
+spline_front(int n, PTR x, PTR y, int ns,
+	     PTR xs, PTR ys, PTR work)
 {
   return(fit_spline(n, (char *) x, (char *) y, 
 		    ns, (char *) xs, (char *) ys, (char *) work));
 }
 
-kernel_dens_front(x, n, width, xs, ys, ns, code)
-     PTR x, xs, ys;
-     int n, ns, code;
-     double width;
+int
+kernel_dens_front(PTR x, int n, double width, PTR xs, PTR ys, int ns, int code)
 {
   int ktype;
 
@@ -194,10 +202,9 @@ kernel_dens_front(x, n, width, xs, ys, ns, code)
 		       (char *) xs, (char *) ys, ns, ktype));
 }
 
-int kernel_smooth_front(x, y, n, width, xs, ys, ns, code)
-     PTR x, y, xs, ys;
-     int n, ns, code;
-     double width;
+int
+kernel_smooth_front(PTR x, PTR y, int n, double width,
+		    PTR xs, PTR ys, int ns, int code)
 {
   int ktype;
 

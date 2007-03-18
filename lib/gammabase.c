@@ -3,18 +3,19 @@
 #define TRUE 1
 #define FALSE 0
 
+extern void normbase(double *,double *);
 extern double gamma(), ppnd();
 static double gammp(), gser(), gcf(), gnorm(), ppchi2();
 
-gammabase(x, a, p)
-     double *x, *a, *p;
+
+void 
+gammabase(double *x, double *a, double *p)
 {
   *p = gammp(*a, *x);
 }
 
-double ppgamma(p, a, ifault)
-     double p, a;
-     int *ifault;
+double
+ppgamma(double p, double a, int *ifault)
 {
   double x, v, g;
 

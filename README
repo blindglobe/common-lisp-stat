@@ -8,7 +8,11 @@ proceed.  First, we update CLS.  Then, continue with TSL.  Separation
 is needed, so that we can make everything separate.
 
 We are working with SBCL and CLISP implementations to keep a wide
-range of target platforms.
+range of target platforms, as well as to challenge the system by the
+two more common CL implementations (compiled, and byte-compiled).
+
+This is done to provide a point of comparison as well as a means for
+building upon.
 
 
 

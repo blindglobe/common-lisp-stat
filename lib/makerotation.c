@@ -18,11 +18,8 @@ static double inner_product(n, x, y)
   
 #define NORM(n, x) (sqrt(inner_product(n, x, x)))
 
-make_rotation(n, rot, x, y, use_alpha, alpha)
-	int n, use_alpha;
-	RMatrix rot;
-	RVector x, y;
-	double alpha;
+void 
+make_rotation(int n, double **rot, double *x, double *y, int use_alpha, double alpha)
 {
   double nx, ny, xy, c, s;
   int i, j;

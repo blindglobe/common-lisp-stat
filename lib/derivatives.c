@@ -7,17 +7,15 @@
 # include "xmath.h"
 extern double macheps();
 
-typedef double **RMatrix, *RVector;
-
 # define nil 0L
 # define FALSE 0
 # define TRUE 1
 
-numergrad(n, x, grad, fsum, ffun, h, typx)
-     int n;
-     RVector x, grad, fsum, typx;
-     int (*ffun)();
-     double h;
+void
+numergrad(int n, double *x, double *grad, double *fsum,
+	  int ffun(double *, double *, double *, double **),
+	  double h, double *typx)
+     /*     int (*ffun)();*/
 {
   int i;
   double old_xi, f1, f2, hi;
@@ -35,12 +33,10 @@ numergrad(n, x, grad, fsum, ffun, h, typx)
   }
 }
 
-numerhess(n, x, hess, f, fsum, ffun, h, typx)
-     int n;
-     RVector x, fsum, typx;
-     RMatrix hess;
-     int (*ffun)();
-     double h, f;
+void
+numerhess(int n, double *x, double **hess, double f, double *fsum,
+	  int *ffun(double *, double *, double *, double *),
+	  double h, double *typx)
 {
   int i, j;
   double old_xi, old_xj, f1, f2, hi, hj;

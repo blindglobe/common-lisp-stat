@@ -9,7 +9,10 @@ typedef int PTR;
 typedef char *PTR;
 #endif
 
-extern PTR la_allocate();
+extern PTR la_allocate(int, int);
+extern void la_free_alloc(PTR);
+extern void xlfail(char *);
+
 
 /************************************************************************/
 /**                                                                    **/
@@ -17,30 +20,30 @@ extern PTR la_allocate();
 /**                                                                    **/
 /************************************************************************/
 
-static char *allocate(n, m)
-	unsigned n, m;
+static char 
+*allocate(unsigned n, unsigned m)
 {
   char *p = (char *) la_allocate(n, m);
   if (p == nil) xlfail("allocation failed");
   return(p);
 }
 
-static free_alloc(p)
-	char *p;
+static void
+free_alloc(char *p)
 {
   if (p != nil) la_free_alloc((PTR) p);
 }
 
-IVector ivector(n)
-	unsigned n;
+IVector
+ivector(unsigned n)
 {
   return((IVector) allocate(n, sizeof(int)));
 }
 
-RVector rvector(n)
-	unsigned n;
+double
+*rvector(unsigned n)
 {
-  return((RVector) allocate(n, sizeof(double)));
+  return((double *) allocate(n, sizeof(double)));
 }
 
 CVector cvector(n)
@@ -49,10 +52,13 @@ CVector cvector(n)
   return((CVector) allocate(n, sizeof(Complex)));
 }
 
-free_vector(v) Vector v; { free_alloc(v); }
+void
+free_vector(double *v)
+{
+  free_alloc((char *)v);
+}
 
-IMatrix imatrix(n, m)
-	unsigned n, m;
+IMatrix imatrix(unsigned n, unsigned m)
 {
   int i;
   IMatrix mat = (IMatrix) allocate(n, sizeof(IVector));
@@ -60,8 +66,8 @@ IMatrix imatrix(n, m)
   return(mat);
 }
 
-RMatrix rmatrix(n, m)
-	unsigned n, m;
+RMatrix
+rmatrix(unsigned n, unsigned m)
 {
   int i;
   RMatrix mat = (RMatrix) allocate(n, sizeof(RVector));
@@ -69,8 +75,8 @@ RMatrix rmatrix(n, m)
   return(mat);
 }
 
-CMatrix cmatrix(n, m)
-	unsigned n, m;
+CMatrix
+cmatrix(unsigned n, unsigned m)
 {
   int i;
   CMatrix mat = (CMatrix) allocate(n, sizeof(CVector));
@@ -78,12 +84,11 @@ CMatrix cmatrix(n, m)
   return(mat);
 }
 
-free_matrix(mat, n)
-	Matrix mat;
-	int n;
+void
+free_matrix(double **mat, int n) /* Matrix?? Not RMatrix?? */
 {
   int i;
   
-  if (mat != nil) for (i = 0; i < n; i++) free_alloc(mat[i]);
-  free_alloc(mat);
+  if (mat != nil) for (i = 0; i < n; i++) free_alloc((char *)mat[i]);
+  free_alloc((char *)mat);
 }

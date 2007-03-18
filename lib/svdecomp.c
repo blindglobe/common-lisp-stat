@@ -20,10 +20,9 @@ static double PYTHAG(a, b)
 
 #define SWAPD(a, b) (temp = (a), (a) = (b), (b) = temp)
 
-static sort_sv(m, n, k, a, w, v)
-	int m, n, k;
-	RMatrix a, v;
-	RVector w;
+static void 
+sort_sv(int m, int n, int k,
+	double **a, double *w, double **v)
 {
   int i, j;
   double temp;
@@ -39,10 +38,8 @@ static double maxarg1, maxarg2;
 #define Max(a, b) (maxarg1 = (a), maxarg2 = (b), (maxarg1) > (maxarg2) ? (maxarg1) : (maxarg2))
 #define SIGN(a, b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-svdcmp(a, m, n, w, v)
-	RMatrix a, v;
-	RVector w;
-	int m, n;
+int
+svdcmp(double **a, int m, int n, double *w, double **v)
 {
   int flag, i, its, j, jj, k, l, nm;
   double c, f, h, s, x, y, z;
@@ -173,8 +170,8 @@ svdcmp(a, m, n, w, v)
             w[i] = h; 
             if (h == 0.0) {
               char s[100];
-              sprintf(s, "h = %f, f = %f, g = %f\n", f, g);
-              stdputstr(s);
+              sprintf(s, "h = %f, f = %f, g = %f\n", h, f, g);
+              fprintf(stdout,"%s",s);
             }
             h = 1.0 / h;
             c = g * h;

@@ -1,6 +1,7 @@
 /* cbayes - Lisp interface to laplace approximation stuff              */
 /* Copyright (c) 1990, by Luke Tierney                                 */
- 
+
+#include <stdlib.h>  /* for calloc/realloc */
 #include "linalg.h"
 
 #ifdef INTPTR
@@ -9,7 +10,12 @@ typedef int PTR;
 typedef char *PTR;
 #endif
 
-extern char *calloc(), *realloc();
+extern void maximize_callback(int, PTR, PTR, PTR, PTR, PTR);
+extern void evalfront(char **, int *, double *, double *, double *,
+		      double *, double *, double *);
+
+extern void maxfront();
+extern void bufputstr(char *);
 
 /************************************************************************/
 /**                                                                    **/
@@ -46,9 +52,10 @@ typedef struct {
 /**                                                                    **/
 /************************************************************************/
 
-static meminit() 
+static void 
+meminit() 
 {
-  static inited = FALSE;
+  static int inited = FALSE;
   int i;
 
   if (! inited) {
@@ -59,39 +66,23 @@ static meminit()
   memcount = 0;
 }
 
-static makespace(pptr, size)
-     char **pptr;
-     int size;
+static int
+makespace(void **pptr, int size) /* why are we using **char? */
 {
-  if (size <= 0) return;
-  if (*pptr == nil) *pptr = calloc(size, 1);
-  else *pptr = realloc(*pptr, size);
-  if (size > 0 && *pptr == nil) xlfail("memory allocation failed");
+  if (size <= 0) {
+    return(1); /* we've done, by default, what we asked for. */
+  }
+  if (*pptr == nil) {
+    *pptr = calloc(size, 1);
+  } else {
+    *pptr = realloc(*pptr, size);
+  }
+  if (size > 0 && *pptr == nil) {
+    return(0); /* xlfail("memory allocation failed"); FIXME:AJR xlfail redef.   */
+  } 
+  return(1);
 }
 
-call_S(fun, narg, args, mode, length, names, nvals, values)
-     char *fun, **args, **mode, **names, **values;
-     long narg, nvals, *length;
-{
-  int n = length[0], derivs;
-  static double *fval = nil, *grad = nil, *hess = nil;
-
-  makespace(&fval, 1 * sizeof(double));
-  makespace(&grad, n * sizeof(double));
-  makespace(&hess, n * n * sizeof(double));
-
-  callLminfun(n, args[0], fval, grad, hess, &derivs);
-  
-  values[0] = (char *) fval;
-  values[1] = (derivs > 0) ? (char *) grad : nil;
-  values[2] = (derivs > 1) ? (char *) hess : nil;
-}
-
-Recover(s, w)
-     char *s, *w;
-{
-  xlfail(s);
-}
 
 /************************************************************************/
 /**                                                                    **/
@@ -99,14 +90,43 @@ Recover(s, w)
 /**                                                                    **/
 /************************************************************************/
 
-static callLminfun(n, x, fval, grad, hess, derivs)
-     int n, *derivs;
-     RVector x, grad, hess;
-     double *fval;
+static void
+callLminfun(int n,
+	    double *x, double *fval, double *grad, double *hess,
+	    int *derivs)
 {
   maximize_callback(n, (PTR) x, 
 		    (PTR) fval, (PTR) grad, (PTR) hess, (PTR) derivs);
-}	   
+}
+
+void
+call_S(char *fun, long narg, char **args, char **mode, long *length,char **names,
+       long nvals, char **values)
+{
+  int n = length[0], derivs;
+  static double *fval = nil, *grad = nil, *hess = nil;
+
+  makespace((void **)&fval, 1 * sizeof(double)); /* probably should test the
+					   result of this and the next
+					   2 to make sure that they are 
+					   appropriate */ 
+  makespace((void **)&grad, n * sizeof(double));
+  makespace((void **)&hess, n * n * sizeof(double));
+
+  callLminfun(n,(double *)args[0], fval, grad, hess, &derivs);
+  
+  values[0] = (char *) fval;
+  values[1] = (derivs > 0) ? (char *) grad : nil;
+  values[2] = (derivs > 1) ? (char *) hess : nil;
+}
+
+void
+Recover(s, w)
+     char *s, *w;
+{
+  /* FIXME:AJR: xlfail(s); */
+  return;
+}
   
 /************************************************************************/
 /**                                                                    **/
@@ -114,6 +134,7 @@ static callLminfun(n, x, fval, grad, hess, derivs)
 /**                                                                    **/
 /************************************************************************/
 
+void
 numgrad_front(n, px, pgrad, h, pscale)
      int n;
      PTR px, pgrad, pscale;
@@ -122,10 +143,11 @@ numgrad_front(n, px, pgrad, h, pscale)
   LVAL f = nil;
   double fval;
 
-  evalfront(&f, &n, (double *) px,
+  evalfront((char **)&f, &n, (double *) px,
 	    &fval, (double *) pgrad, nil, &h, (double *) pscale);
 }
 
+void
 numhess_front(n, px, pf, pgrad, phess, h, pscale)
      int n;
      PTR px, pf, pgrad, phess, pscale;
@@ -133,7 +155,7 @@ numhess_front(n, px, pf, pgrad, phess, h, pscale)
 {
   LVAL f = nil;
 
-  evalfront(&f, &n, (double *) px,
+  evalfront((char **)&f, &n, (double *) px,
 	    (double *) pf, (double *) pgrad, (double *) phess,
 	    &h, (double *) pscale);
 }
@@ -196,6 +218,7 @@ static MaxDPars getMaxDPars(dpars)
   return(dp);
 }
 
+void
 minfo_maximize(px, pfvals, pscale, pip, pdp, verbose)
      PTR px, pfvals, pscale, pip, pdp;
      int verbose;

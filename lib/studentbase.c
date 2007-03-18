@@ -4,12 +4,15 @@
 #define HALF_PI 1.5707963268
 #define EPSILON .000001
 
+extern void betabase(double *, double *, double *,int *, int *,double *);
+extern void normbase(double *,double *);
+
 extern double ppnd(), ppbeta();
 
 /* CACM Algorithm 395, by G. W. Hill */
 
-studentbase(x, df, cdf)
-        double *x, *df, *cdf;
+void
+studentbase(double *x, double *df, double *cdf)
 {
   double t, y, b, a, z, j, n;
 
@@ -28,10 +31,11 @@ studentbase(x, df, cdf)
       dx = db / (db + da * t);
       betabase(&dx, &db, &da, &ib, &ia, &dp);
       *cdf = (*x >= 0) ? 1.0 - .5 * dp : .5 * dp;
-    }
-    else {
+    } else {
       /* asymptotic series for large or non-integer df */
-      if(y > EPSILON) y = log(b);
+      if(y > EPSILON) {
+	y = log(b);
+      }
       a = n - 0.5;
       b = 48.0 * a * a;
       y = a * y;
@@ -42,14 +46,12 @@ studentbase(x, df, cdf)
       normbase(&y, cdf);
       if (*x > 0.0) *cdf = 1.0 - *cdf;
     }
-  }
-  else {
+  } else {
     /* nested summation of cosine series */
     if (n < 20 && t < 4.0) {
       a = y = sqrt(y);
       if(n == 1.0) a = 0.0;
-    }
-    else {
+    } else {
       a = sqrt(b);
       y = a * n;
       for(j = 2; fabs(a - z) > EPSILON; j += 2.0) {
@@ -64,8 +66,11 @@ studentbase(x, df, cdf)
     for(n = n - 2.0; n > 1.0; n -= 2.0) a = ((n - 1.0) / (b * n)) * a + y;
     a = (fabs(n) < EPSILON) ? a/sqrt(b) : TWOVRPI * (atan(y) + a / b);
     *cdf = z - a;
-    if(*x > 0.0) *cdf = 1.0 - 0.5 * *cdf;
-    else *cdf = 0.5 * *cdf;
+    if(*x > 0.0) {
+      *cdf = 1.0 - 0.5 * *cdf;
+    } else {
+      *cdf = 0.5 * *cdf;
+    }
   }
 }
 

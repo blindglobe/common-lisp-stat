@@ -3,9 +3,9 @@
 /* natural cubic spline interpolation based on Numerical Recipes in C */
 
 /* calculate second derivatives; assumes strictly increasing x values */
-static find_spline_derivs(x, y, n, y2, u)
-     double *x, *y, *y2, *u;
-     int n;
+static void
+find_spline_derivs(double *x, double *y, int n,
+		   double *y2, double *u)
 {
   int i, k;
   double p, sig;
@@ -36,9 +36,9 @@ static find_spline_derivs(x, y, n, y2, u)
 }
 
 /* interpolate or extrapolate value at x using results of find_spline_derivs */
-static spline_interp(xa, ya, y2a, n, x, y)
-     double *xa, *ya, *y2a, x, *y;
-     int n;
+static void 
+spline_interp(double *xa, double *ya, double *y2a,
+	      int n, double x, double *y)
 {
   int klo, khi, k;
   double h, b, a;
@@ -82,9 +82,9 @@ static spline_interp(xa, ya, y2a, n, x, y)
   }
 }
 
-fit_spline(n, x, y, ns, xs, ys, work)
-     int n, ns;
-     double *x, *y, *xs, *ys, *work;
+int
+fit_spline(int n, double *x, double *y,
+	   int ns, double *xs, double *ys, double *work)
 {
   int i;
   double *y2, *u;

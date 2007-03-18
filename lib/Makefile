@@ -1,3 +1,5 @@
+LISPSTAT-SO = liblispstat.so
+
 CDISTOBJS = betabase.o bivnor.o cdists.o gamln.o gammabase.o nor.o ppnd.o \
 	studentbase.o
 
@@ -7,18 +9,27 @@ CLINALGOBJS = cholesky.o linalgdata.o ludecomp.o complex.o svdecomp.o \
 
 CBAYESOBJS = cbayes.o functions.o derivatives.o minimize.o
 
-CFLAGS = -O -G 0 -DINTPTR
+CGLUE = cffi-glue.o
+
+CFLAGS = -g -DINTPTR -fPIC -Wall
+
+cffi : $(LISPSTAT-SO)
+
+sbcl : clib.a
 
 kcl: clib.a
 
 excl: clib.a exclglue.o
 
-clib.a: ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS}
-	ar rcv clib.a ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS}
+clib.a: ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE)
+	ar rcv clib.a ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE)
 	ranlib clib.a
 
+$(LISPSTAT-SO) :${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE)
+	gcc -shared -o $(LISPSTAT-SO)  ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS}  $(CGLUE)
+
 clean:
-	rm -f ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} *~
+	rm -f ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE) *~
 
 cleanall:
 	make clean

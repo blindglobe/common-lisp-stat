@@ -9,16 +9,13 @@ extern double macheps(), gamma();
 /* forward declarations */
 static double logbeta(), betai(), xinbta();
 
-betabase(x, a, b, gia, gib, cdf)
-     int *gia, *gib;
-     double *x, *a, *b, *cdf;
+void
+betabase(double *x, double *a, double *b, int *gia, int *gib, double *cdf)
 {
   *cdf = betai(*x, *a, *b);
 }
 
-double ppbeta(p, a, b, ifault)
-     double p, a, b;
-     int *ifault;
+double ppbeta(double p, double a, double b, int *ifault)
 {
   double lbeta;
 

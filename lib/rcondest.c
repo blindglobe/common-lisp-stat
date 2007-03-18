@@ -6,15 +6,42 @@
  
 #include "linalg.h"
 
-static double Max(a, b)
-	double a, b;
+static
+double Max(double a, double b)
 {
   return(a > b ? a : b);
 }
 
-double rcondest(a, n)
-	RMatrix a;
-	int n;
+
+void
+backsolve(double **a, double *b, int n, int mode)
+{
+  int i, j;
+  RMatrix ra = (RMatrix) a;
+  RVector rb = (RVector) b;
+  CMatrix ca = (CMatrix) a;
+  CVector cb = (CVector) b;
+  
+  switch (mode) {
+  case RE:
+    for (i = n - 1; i >= 0; i--) {
+      if (ra[i][i] != 0.0) rb[i] = rb[i] / ra[i][i];
+      for (j = i + 1; j < n; j++) rb[i] -= ra[i][j] * rb[j];
+    }
+    break;
+  case CX:
+    for (i = n - 1; i >= 0; i--) {
+      if (modulus(ca[i][i]) != 0.0) cb[i] = cdiv(cb[i], ca[i][i]);
+      for (j = i + 1; j < n; j++) 
+        cb[i] = csub(cb[i], cmul(ca[i][j], cb[j]));
+    }
+    break;
+  }
+}
+
+/** Exported function **/
+
+double rcondest(double **a, int n)
 {
   RVector p, pm, x;
   double est, xp, xm, temp, tempm, xnorm;
@@ -71,30 +98,3 @@ double rcondest(a, n)
   return(est);
 }
 
-backsolve(a, b, n, mode)
-	Matrix a;
-	Vector b;
-	int n;
-{
-  int i, j;
-  RMatrix ra = (RMatrix) a;
-  RVector rb = (RVector) b;
-  CMatrix ca = (CMatrix) a;
-  CVector cb = (CVector) b;
-  
-  switch (mode) {
-  case RE:
-    for (i = n - 1; i >= 0; i--) {
-      if (ra[i][i] != 0.0) rb[i] = rb[i] / ra[i][i];
-      for (j = i + 1; j < n; j++) rb[i] -= ra[i][j] * rb[j];
-    }
-    break;
-  case CX:
-    for (i = n - 1; i >= 0; i--) {
-      if (modulus(ca[i][i]) != 0.0) cb[i] = cdiv(cb[i], ca[i][i]);
-      for (j = i + 1; j < n; j++) 
-        cb[i] = csub(cb[i], cmul(ca[i][j], cb[j]));
-    }
-    break;
-  }
-}

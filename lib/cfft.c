@@ -3,161 +3,8 @@
 #include "xmath.h"
 
 /*
-  Public Routine
-*/
-
-/*
- * cfft computes the forward or backward complex discrete fourier transform. 
- *
- * Input Parameters:
- *
- * n      The length of the complex sequence c. The method is
- *        more efficient when n is the product of small primes.
- *
- * c      A complex array of length n which contains the sequence
- *
- * wsave  a real work array which must be dimensioned at least 4n+15
- *        in the program that calls cfft.
- * isign  1 for transform, -1 for inverse transform.
- *        A call of cfft with isign = 1 followed by a call of cfft with 
- *        isign = -1 will multiply the sequence by n.
- *
- * Output Parameters:
- *
- * c      For j=1,...,n
- *
- *             c(j)=the sum from k=1,...,n of
- *
- *                   c(k)*exp(-isign*i*(j-1)*(k-1)*2*pi/n)
- *
- *                         where i=sqrt(-1)
- */
-
-int cfft(n, c, wsave, isign)
-     int n;
-     double *c, *wsave;
-     int isign;
-{
-  int iw1, iw2;
-  
-  /* Parameter adjustments */
-  --c;
-  --wsave;
-
-  /* Function Body */
-  if (n != 1) {
-    iw1 = n + n + 1;
-    iw2 = iw1 + n + n;
-    cffti1_(&n, &wsave[iw1], &wsave[iw2]);
-    cfft1_(&n, &c[1], &wsave[1], &wsave[iw1], &wsave[iw2], &isign);
-  }
-  return 0;
-}
-
-/*
   Internal Routines
 */
-
-static int cfft1_(n, c, ch, wa, ifac, isign)
-     int *n;
-     double *c, *ch, *wa;
-     int *ifac;
-     int *isign;
-{
-  /* System generated locals */
-  int i_1;
-
-  /* Local variables */
-  int idot;
-  int i, k1, l1, l2, n2, na, nf, ip, iw, ix2, ix3, ix4, nac, ido, idl1;
-
-  /* Parameter adjustments */
-  --c;
-  --ch;
-  --wa;
-  --ifac;
-  
-  /* Function Body */
-  nf = ifac[2];
-  na = 0;
-  l1 = 1;
-  iw = 1;
-  i_1 = nf;
-  for (k1 = 1; k1 <= i_1; ++k1) {
-    ip = ifac[k1 + 2];
-    l2 = ip * l1;
-    ido = *n / l2;
-    idot = ido + ido;
-    idl1 = idot * l1;
-    if (ip == 4) {
-      ix2 = iw + idot;
-      ix3 = ix2 + idot;
-      if (na == 0) {
-	pass4_(&idot, &l1, &c[1], &ch[1], &wa[iw], &wa[ix2], &wa[ix3], isign);
-      }
-      else {
-	pass4_(&idot, &l1, &ch[1], &c[1], &wa[iw], &wa[ix2], &wa[ix3], isign);
-      }
-      na = 1 - na;
-    }
-    else if (ip == 2) {
-      if (na == 0) {
-	pass2_(&idot, &l1, &c[1], &ch[1], &wa[iw], isign);
-      }
-      else {
-	pass2_(&idot, &l1, &ch[1], &c[1], &wa[iw], isign);
-      }
-      na = 1 - na;
-    }
-    else if (ip == 3) {
-      ix2 = iw + idot;
-      if (na == 0) {
-	pass3_(&idot, &l1, &c[1], &ch[1], &wa[iw], &wa[ix2], isign);
-      }
-      else {
-	pass3_(&idot, &l1, &ch[1], &c[1], &wa[iw], &wa[ix2], isign);
-      }
-      na = 1 - na;
-    }
-    else if (ip == 5) {
-      ix2 = iw + idot;
-      ix3 = ix2 + idot;
-      ix4 = ix3 + idot;
-      if (na == 0) {
-	pass5_(&idot, &l1, &c[1], &ch[1], &wa[iw], &wa[ix2], &wa[ix3], 
-	       &wa[ix4], isign);
-      }
-      else {
-	pass5_(&idot, &l1, &ch[1], &c[1], &wa[iw], &wa[ix2], &wa[ix3], 
-	       &wa[ix4], isign);
-      }
-      na = 1 - na;
-    }
-    else {
-      if (na == 0) {
-	pass_(&nac, &idot, &ip, &l1, &idl1, &c[1], &c[1], &c[1], &ch[1], 
-	      &ch[1], &wa[iw], isign);
-      }
-      else {
-	pass_(&nac, &idot, &ip, &l1, &idl1, &ch[1], &ch[1], &ch[1], &c[1], 
-	      &c[1], &wa[iw], isign);
-      }
-      if (nac != 0) {
-	na = 1 - na;
-      }
-    }
-    l1 = l2;
-    iw += (ip - 1) * idot;
-  }
-  if (na != 0) {
-    n2 = *n + *n;
-    i_1 = n2;
-    for (i = 1; i <= i_1; ++i) {
-      c[i] = ch[i];
-    }
-  }
-  return 0;
-}
 
 static int cffti1_(n, wa, ifac)
      int *n;
@@ -822,6 +669,160 @@ static int pass5_(ido, l1, cc, ch, wa1, wa2, wa3, wa4, isign)
 	  - *isign * wa4[i] * dr5;
       }
     }
+  }
+  return 0;
+}
+
+
+/*static */
+int 
+cfft1_(int *n, double *c, double *ch, double *wa,
+       double /* int??*/  *ifac, int *isign)
+{
+  /* System generated locals */
+  int i_1;
+
+  /* Local variables */
+  int idot;
+  int i, k1, l1, l2, n2, na, nf, ip, iw, ix2, ix3, ix4, nac, ido, idl1;
+
+  /* Parameter adjustments */
+  --c;
+  --ch;
+  --wa;
+  --ifac;
+  
+  /* Function Body */
+  nf = ifac[2];
+  na = 0;
+  l1 = 1;
+  iw = 1;
+  i_1 = nf;
+  for (k1 = 1; k1 <= i_1; ++k1) {
+    ip = ifac[k1 + 2];
+    l2 = ip * l1;
+    ido = *n / l2;
+    idot = ido + ido;
+    idl1 = idot * l1;
+    if (ip == 4) {
+      ix2 = iw + idot;
+      ix3 = ix2 + idot;
+      if (na == 0) {
+	pass4_(&idot, &l1, &c[1], &ch[1], &wa[iw], &wa[ix2], &wa[ix3], isign);
+      }
+      else {
+	pass4_(&idot, &l1, &ch[1], &c[1], &wa[iw], &wa[ix2], &wa[ix3], isign);
+      }
+      na = 1 - na;
+    }
+    else if (ip == 2) {
+      if (na == 0) {
+	pass2_(&idot, &l1, &c[1], &ch[1], &wa[iw], isign);
+      }
+      else {
+	pass2_(&idot, &l1, &ch[1], &c[1], &wa[iw], isign);
+      }
+      na = 1 - na;
+    }
+    else if (ip == 3) {
+      ix2 = iw + idot;
+      if (na == 0) {
+	pass3_(&idot, &l1, &c[1], &ch[1], &wa[iw], &wa[ix2], isign);
+      }
+      else {
+	pass3_(&idot, &l1, &ch[1], &c[1], &wa[iw], &wa[ix2], isign);
+      }
+      na = 1 - na;
+    }
+    else if (ip == 5) {
+      ix2 = iw + idot;
+      ix3 = ix2 + idot;
+      ix4 = ix3 + idot;
+      if (na == 0) {
+	pass5_(&idot, &l1, &c[1], &ch[1], &wa[iw], &wa[ix2], &wa[ix3], 
+	       &wa[ix4], isign);
+      }
+      else {
+	pass5_(&idot, &l1, &ch[1], &c[1], &wa[iw], &wa[ix2], &wa[ix3], 
+	       &wa[ix4], isign);
+      }
+      na = 1 - na;
+    }
+    else {
+      if (na == 0) {
+	pass_(&nac, &idot, &ip, &l1, &idl1, &c[1], &c[1], &c[1], &ch[1], 
+	      &ch[1], &wa[iw], isign);
+      }
+      else {
+	pass_(&nac, &idot, &ip, &l1, &idl1, &ch[1], &ch[1], &ch[1], &c[1], 
+	      &c[1], &wa[iw], isign);
+      }
+      if (nac != 0) {
+	na = 1 - na;
+      }
+    }
+    l1 = l2;
+    iw += (ip - 1) * idot;
+  }
+  if (na != 0) {
+    n2 = *n + *n;
+    i_1 = n2;
+    for (i = 1; i <= i_1; ++i) {
+      c[i] = ch[i];
+    }
+  }
+  return 0;
+}
+
+
+/*
+  Public Routine
+*/
+
+/*
+ * cfft computes the forward or backward complex discrete fourier transform. 
+ *
+ * Input Parameters:
+ *
+ * n      The length of the complex sequence c. The method is
+ *        more efficient when n is the product of small primes.
+ *
+ * c      A complex array of length n which contains the sequence
+ *
+ * wsave  a real work array which must be dimensioned at least 4n+15
+ *        in the program that calls cfft.
+ * isign  1 for transform, -1 for inverse transform.
+ *        A call of cfft with isign = 1 followed by a call of cfft with 
+ *        isign = -1 will multiply the sequence by n.
+ *
+ * Output Parameters:
+ *
+ * c      For j=1,...,n
+ *
+ *             c(j)=the sum from k=1,...,n of
+ *
+ *                   c(k)*exp(-isign*i*(j-1)*(k-1)*2*pi/n)
+ *
+ *                         where i=sqrt(-1)
+ */
+
+int cfft(n, c, wsave, isign)
+     int n;
+     double *c, *wsave;
+     int isign;
+{
+  int iw1, iw2;
+  
+  /* Parameter adjustments */
+  --c;
+  --wsave;
+
+  /* Function Body */
+  if (n != 1) {
+    iw1 = n + n + 1;
+    iw2 = iw1 + n + n;
+    cffti1_(&n, &wsave[iw1], &wsave[iw2]);
+    cfft1_(&n, &c[1], &wsave[1], &wsave[iw1], &wsave[iw2], &isign);
   }
   return 0;
 }

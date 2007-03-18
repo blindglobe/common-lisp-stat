@@ -7,11 +7,8 @@
  
 #include "linalg.h"
 
-crludcmp(mat, n, indx, mode, d)
-	Matrix mat;
-	IVector indx;
-	int n, mode;
-	double *d;
+int
+crludcmp(Matrix mat, int n, IVector indx, int mode, double *d)
 {
   int i, imax, j, k, singular = FALSE;
   double big, temp;
@@ -107,11 +104,8 @@ crludcmp(mat, n, indx, mode, d)
   return(singular);
 }
 
-crlubksb(a, n, indx, b, mode)
-	Matrix a;
-	IVector indx;
-	Vector b;
-	int n, mode;
+int 
+crlubksb(double **a, int n, int *indx, double *b, int mode)
 {
   int i, ii, ip, j, singular = FALSE;
   CMatrix ca = (CMatrix) a;

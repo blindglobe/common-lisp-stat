@@ -1,11 +1,16 @@
 /* complex - Complex number functions                                  */
 /* Copyright (c) 1990, by Luke Tierney                                 */
 
+/* patched up and semi-ansified, (c) 2006, AJ Rossini, blindglobe@gmail.com */
+
 #include "xmath.h"
 #include "complex.h"
 
-static double phase(c)
-	Complex c;
+extern void xlfail(char *);
+
+/*static */
+double 
+phase(Complex c)
 {
   double phi;
   
@@ -13,26 +18,31 @@ static double phase(c)
     if (c.imag > 0.0) phi = PI / 2;
     else if (c.imag == 0.0) phi = 0.0;
     else phi = -PI / 2;
-  }
-  else {
+  } else {
     phi = atan(c.imag / c.real);
     if (c.real < 0.0) {
-      if (c.imag > 0.0) phi += PI;
-      else if (c.imag < 0.0) phi -= PI;
-      else phi = PI;
+      if (c.imag > 0.0) {
+	phi += PI;
+      } else { 
+	if (c.imag < 0.0) {
+	  phi -= PI;
+	} else { 
+	  phi = PI;
+	}
+      }
     }
   }
   return(phi);
 }
 
-double modulus(c)
-	Complex c;
+double 
+modulus(Complex c)
 {
   return(sqrt(c.real * c.real + c.imag * c.imag));
 }
 
-Complex cart2complex(real, imag)
-	double real, imag;
+Complex
+cart2complex(double real, double imag)
 {
   Complex val;
   val.real = real;
@@ -40,8 +50,8 @@ Complex cart2complex(real, imag)
   return(val);
 }
 
-static Complex polar2complex(mod, phi)
-	double mod, phi;
+Complex
+polar2complex(double mod, double phi) 
 {
   Complex val;
   double cs, sn;
@@ -49,42 +59,46 @@ static Complex polar2complex(mod, phi)
   if (phi == 0) {
     cs = 1.0;
     sn = 0.0;
-  }
-  else if (phi == PI / 2) {
-    cs = 0.0;
-    sn = 1.0;
-  }
-  else if (phi == PI) {
-    cs = -1.0;
-    sn = 0.0;
-  }
-  else if (phi == -PI / 2) {
-    cs = 0.0;
-    sn = -1.0;
-  }
-  else {
-    cs = cos(phi);
-    sn = sin(phi);
+  } else {
+    if (phi == PI / 2) {
+      cs = 0.0;
+      sn = 1.0;
+    } else {
+      if (phi == PI) {
+	cs = -1.0;
+	sn = 0.0;
+      } else { 
+	if (phi == -PI / 2) {
+	  cs = 0.0;
+	  sn = -1.0;
+	} else {
+	  cs = cos(phi);
+	  sn = sin(phi);
+	}
+      }
+    }
   }
   val.real = mod * cs;
   val.imag = mod * sn;
   return(val);
 }
  
-Complex cadd(c1, c2)
-	Complex c1, c2;
+Complex
+cadd(Complex c1,
+     Complex c2)
 {
   return(cart2complex(c1.real + c2.real, c1.imag + c2.imag));
 }
 
-Complex csub(c1, c2)
-	Complex c1, c2;
+Complex
+csub(Complex c1,
+     Complex c2)
 {
   return(cart2complex(c1.real - c2.real, c1.imag - c2.imag));
 }
 
-Complex cmul(c1, c2)
-	Complex c1, c2;
+Complex
+cmul(Complex c1, Complex c2) 
 {
   double m1, m2, p1, p2;
   
@@ -95,8 +109,16 @@ Complex cmul(c1, c2)
   return(polar2complex(m1 * m2, p1 + p2));
 }
 
-Complex cdiv(c1, c2)
-	Complex c1, c2;
+static void
+checkfzero(double x) 
+{
+  if (x == 0.0) {
+    xlfail("division by zero");
+  }
+}
+
+Complex
+cdiv(Complex c1, Complex c2)
 {
   double m1, m2, p1, p2;
   
@@ -106,10 +128,4 @@ Complex cdiv(c1, c2)
   p2 = phase(c2);
   checkfzero(m2);
   return(polar2complex(m1 / m2, p1 - p2));
-}
-
-static checkfzero(x)
-     double x;
-{
-  if (x == 0.0) xlfail("division by zero");
 }

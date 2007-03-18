@@ -4,17 +4,55 @@
 /* You may give out copies of this software; for conditions see the    */
 /* file COPYING included with this distribution.                       */
 
-#ifdef SBAYES
-# include <math.h>
-#define PRINTSTR(s) printf(s)
-#else
-# include "xmath.h"
-#define PRINTSTR(s) stdputstr(s)
-#endif SBAYES
+#include <stdio.h>
+#include "xmath.h"
 
-extern char *S_alloc(), *calloc(), *realloc();
+#define PRINTSTR(s) printf(s)
+
+extern void *S_alloc(), *calloc(), *realloc();
 extern double macheps();
 char *minresultstring();
+
+extern void choldecomp();
+
+extern void minsupplyvalues(double , double *, double **,
+			    double *, double **);
+extern void minimize();
+extern void minresults(double *, double *, double *, double *, double **,
+		       double *, double **, int *, int *, double *);
+extern void minsetup(int n, int k,
+		     int *ffun(), int *gfun(),
+		     double *x, double typf, double *typx, char *work);
+                         /*     int  (*ffun)(), (*gfun)();*/
+extern void minsetoptions(double , double, double, int , int , int , int);
+
+extern void choldecomp();
+
+
+
+/* next 2 from cbayes.c */
+extern void Recover(char *, char *);
+extern void call_S(char *fun, long narg, char **args, char **mode, long *length,char **names, 
+		   long nvals, char **values);
+
+/* next 2 from derivatives.c */
+/*
+extern void numergrad(int n, double *x, double *grad, double *fsum,
+		      int *ffun(), double h, double *typx);
+extern void numerhess(int n, double *x, double **hess, double f,
+		      double *fsum, void ffun(),
+		      double h, double *typx);
+*/
+extern void numergrad(int , double *, double *, double *,
+		      int ffun(double *, double *, double *, double **),
+		      double , double *);
+extern void numerhess(int , double *, double **, double ,
+		      double *,
+		      int ffun(double *, double *, double *, double **),
+		      double , double *);
+
+/* next from minimize */
+extern int minworkspacesize(int, int);
 
 /************************************************************************/
 /**                                                                    **/
@@ -22,8 +60,9 @@ char *minresultstring();
 /**                                                                    **/
 /************************************************************************/
 
+/* #define NULL 0L  already defined in stddef */ 
+
 #define nil 0L
-#define NULL 0L
 #define TRUE 1
 #define FALSE 0
 
@@ -33,7 +72,7 @@ char *minresultstring();
 #define GRADTOL_POWER 1.0 / 3.0
 #define H_POWER 1.0 / 6.0
 
-typedef double **RMatrix, *RVector;
+/*typedef double **RMatrix, *RVector;*/
 
 typedef struct{
   char *f, **sf, **g;
@@ -41,8 +80,8 @@ typedef struct{
   int change_sign, fderivs;
   int *gderivs;
   double typf, h, dflt;
-  RVector typx, fsum, cvals, ctarget;
-  RMatrix gfsum;
+  double *typx, *fsum, *cvals, *ctarget;
+  double **gfsum;
 } Fundata;
 
 static Fundata func, gfuncs, cfuncs;
@@ -59,7 +98,8 @@ static Fundata func, gfuncs, cfuncs;
 /* called repeatedly (but not recursively) from within the same call    */
 /* from S. It attempts to avoid the danger of dangling callocs.         */
 
-static makespace(pptr, size)
+void static
+makespace(pptr, size)
      char **pptr;
      int size;
 {
@@ -76,16 +116,14 @@ static makespace(pptr, size)
 /************************************************************************/
 
 /*
- * All Hessianevaluations by numerical derivatives assume the gradient is
+ * All Hessian evaluations by numerical derivatives assume the gradient is
  * evaluated first at the same location. The results are cached away.
  */
 
 /* install log posterior function */
-static install_func(f, sf, n, change_sign, typf, h, typx, dflt)
-     char *f, **sf;
-     int n;
-     double typf, h, dflt;
-     RVector typx;
+static void 
+install_func(char *f, char **sf, int n, int change_sign, /*?? */
+		    double typf, double h, double *typx, double dflt)
 {
   int i;
   static int inited = FALSE;
@@ -111,11 +149,8 @@ static install_func(f, sf, n, change_sign, typf, h, typx, dflt)
 }
 
 /* install tilt functions */
-static install_gfuncs(g, n, k, change_sign, h, typx)
-     char **g;
-     int n, k, change_sign;
-     double h;
-     RVector typx;
+static void
+install_gfuncs(char **g, int n, int k, int change_sign, double h, double *typx)
 {
   int i;
   static int inited = FALSE;
@@ -140,14 +175,12 @@ static install_gfuncs(g, n, k, change_sign, h, typx)
   for (i = 0; i < n; i++)
     gfuncs.typx[i] = (typx != nil && typx[i] > 0.0) ? typx[i] : 1.0;
   for (i = 0; i < k; i++) gfuncs.gfsum[i] = gfsumdata + i * n;
+  return;
 }
 
 /* install constraint functions */
-static install_cfuncs(g, n, k, ctarget, h, typx)
-     char **g;
-     int n, k;
-     double h;
-     RVector typx, ctarget;
+static void
+install_cfuncs(char **g, int n, int k, double *ctarget, double h, double *typx)
 {
   int i;
   static int inited = FALSE;
@@ -169,21 +202,20 @@ static install_cfuncs(g, n, k, ctarget, h, typx)
   for (i = 0; i < n; i++)
     cfuncs.typx[i] = (typx != nil && typx[i] > 0.0) ? typx[i] : 1.0;
   cfuncs.ctarget = ctarget;
+  return; 
 }
 
-/* callback to test if x is in the support of the posterior */
-static in_support(ff, n, x)
-     char **ff;
-     int n;
-     double *x;
+static int
+in_support(char **ff, int n, double *x)
 {
   char *args[1], *values[1];
   int *result;
   char *mode[1];
   long length[1];
   
-  if (ff == nil || ff[0] == nil) return(TRUE);
-  else {
+  if (ff == nil || ff[0] == nil) {
+    return(TRUE);
+  } else {
     mode[0] = "double";
     length[0] =n;
     args[0] = (char *) x;
@@ -194,10 +226,8 @@ static in_support(ff, n, x)
 }
 
 /* callback for logposterior evaluation */
-static evalfunc(x, pval, grad, hess)
-     RVector x, grad;
-     double *pval;
-     RMatrix hess;
+static int 
+evalfunc(double *x, double *pval, double *grad, double **hess)
 {
   char *args[1], *values[3];
   double *result, val;
@@ -246,21 +276,21 @@ static evalfunc(x, pval, grad, hess)
       }
     }
     return(TRUE);
-  }
-  else {
-    if (pval != nil) *pval = func.dflt;
+  } else {
+    if (pval != nil) {
+      *pval = func.dflt;
+    }
     return(FALSE);
   }
+  return(TRUE);
 }
 
 
 /* callback for tilt function evaluation */
 static int which_gfunc;
 
-static evalgfunc(x, pval, grad, hess)
-     RVector x, grad;
-     double *pval;
-     RMatrix hess;
+static int
+evalgfunc(double *x, double *pval, double *grad, double **hess)
 {
   char *args[1], *values[3];
   double *result, val;
@@ -308,15 +338,14 @@ static evalgfunc(x, pval, grad, hess)
 		gfuncs.h, gfuncs.typx);
     }
   }
+  return(TRUE);
 }
 
 /* callback for constraint function evaluation */
 static int which_cfunc;
 
-static evalcfunc(x, pval, grad, hess)
-     RVector x, grad;
-     double *pval;
-     RMatrix hess;
+static int
+evalcfunc(double *x, double *pval, double *grad, double **hess)
 {
   char *args[1], *values[3];
   double *result, val;
@@ -365,16 +394,16 @@ static evalcfunc(x, pval, grad, hess)
 		cfuncs.h, cfuncs.typx);
     }
   }
+  return(TRUE);
 }
 
 /* S front end for logposterior evaluation */
-evalfront(ff, n, x, val, grad, phess, h, typx)
-     char **ff;
-     int *n;
-     double *x, *val, *grad, *phess, *typx, *h;
+void
+evalfront(char **ff, int *n, double *x, double *val, double *grad,
+	  double *phess, double *h, double *typx) 
 {
   int i;
-  static RMatrix hess = nil;
+  static double **hess = nil;
 
   install_func(ff[0], nil, *n, FALSE, 1.0, *h, typx, 0.0);
   if (phess == nil) hess = nil;
@@ -385,12 +414,10 @@ evalfront(ff, n, x, val, grad, phess, h, typx)
   evalfunc(x, val, grad, hess);
 }
 
-#ifdef SBAYES
 /* S front end for tilt function evaluation */
-gevalfront(gg, n, m, x, h, typx, val, grad)
-     char **gg;
-     int *n, *m;
-     double *x, *h, *typx, *val, *grad;
+void
+gevalfront(char **gg, int *n, int *m, double *x, double *h,
+	   double *typx, double *val, double *grad)
 {
   int i;
 
@@ -400,6 +427,7 @@ gevalfront(gg, n, m, x, h, typx, val, grad)
     evalgfunc(x, val, grad, nil);
     if (grad != nil) grad += *n;
   }
+  return;
 }
 
 /************************************************************************/
@@ -408,32 +436,9 @@ gevalfront(gg, n, m, x, h, typx, val, grad)
 /**                                                                    **/
 /************************************************************************/
 
-static check_derivs(x, drvtol)
-     RVector x;
-     double drvtol;
-{
-  static RVector grad = nil, work = nil;
-  static RMatrix hess = nil;
-  int i, error;
-
-  grad = (RVector) S_alloc(func.n, sizeof(double));
-  hess = (RMatrix) S_alloc(func.n, sizeof(double *));
-  work = (RVector) S_alloc(func.n + func.n * func.n, sizeof(double));
-
-  for (i = 0; i < func.n; i++) {
-    hess[i] = work;
-    work += func.n;
-  }
-
-  error = derivscale(func.n, x, grad, hess, func.fsum, evalfunc, 
-		     &func.h, func.typx, drvtol, work);
-  return(error);
-}
-
-derivscalefront(ff, n, x, h, typx, tol, info)
-     char **ff;
-     int *n, *info;
-     double *x, *h, *typx, *tol;
+/*
+void 
+derivscalefront(char **ff, int *n, double *x, double *h, double *typx, double *tol, int *info)
 {
   int i;
 
@@ -444,7 +449,31 @@ derivscalefront(ff, n, x, h, typx, tol, info)
 
   *h = func.h;
   for (i = 0; i < *n; i++) typx[i] = func.typx[i];
+  return;
 }
+
+
+static int 
+check_derivs(double *x, double drvtol)
+{
+  static double *grad = nil, work = nil;
+  static double **hess = nil;
+  int i, error;
+
+  grad = (double *) S_alloc(func.n, sizeof(double));
+  hess = (double **) S_alloc(func.n, sizeof(double *));
+  work = (double *) S_alloc(func.n + func.n * func.n, sizeof(double));
+
+  for (i = 0; i < func.n; i++) {
+    hess[i] = work;
+    work += func.n;
+  }
+
+  error = derivscale(func.n, x, grad, hess, func.fsum, evalfunc, 
+		     &func.h, func.typx, drvtol, work);
+  return(error);
+}
+*/
 
 /************************************************************************/
 /**                                                                    **/
@@ -453,9 +482,8 @@ derivscalefront(ff, n, x, h, typx, tol, info)
 /************************************************************************/
 
 /* joint density of normal-cauchy mixture */
-static double dncmix(x, n, p)
-     double *x, p;
-     int n;
+static double
+dncmix(double *x, int n, double p)
 {
   int i;
   double dens;
@@ -471,10 +499,10 @@ static double dncmix(x, n, p)
  * S front end for computing sample from transformed normal-cauchy
  * mixture and importance sampling weights
  */
-samplefront(ff, sf, rf, p, n, x, ch, N, y, w)
-     char **ff, **sf, **rf;
-     int *n, *N;
-     double *p,  *x, *ch, *y, *w;
+void
+samplefront(char **ff, char **sf, char **rf,
+	    double *p, int *n,
+	    double *x, double *ch, int *N, double *y, double *w)
 {
   double val;
   int i, j, k;
@@ -505,8 +533,10 @@ samplefront(ff, sf, rf, p, n, x, ch, N, y, w)
     if (evalfunc(y, &val, nil, nil)) w[i] = exp(val - mval) * c / dens;
     else w[i] = 0.0;
   }
+  return;
 }
-#endif SBAYES
+
+
 /************************************************************************/
 /**                                                                    **/
 /**                       Maximization Routines                        **/
@@ -524,71 +554,15 @@ typedef struct {
 
 struct {
   double tilt;
-  RVector gval;
-  RMatrix  ggrad, ghess;
+  double *gval;
+  double  **ggrad, **ghess;
   int exptilt;
-  RVector tscale;
+  double *tscale;
 } tiltinfo;
 
-static set_tilt_info(n, m, tilt, exptilt, tscale)
-     int n, m;
-     double tilt, *tscale;
-     int exptilt;
-{
-  static double *hessdata = nil, *graddata = nil;
-  int i;
-  static int inited = FALSE;
-
-  if (! inited) {
-    tiltinfo.gval = nil;
-    tiltinfo.ggrad = nil;
-    tiltinfo.ghess = nil;
-    inited = TRUE;
-  }
-  makespace(&tiltinfo.gval, n * sizeof(double));
-  makespace(&tiltinfo.ggrad, m * sizeof(double *));
-  makespace(&tiltinfo.ghess, n * sizeof(double *));
-  makespace(&graddata, n * m * sizeof(double));
-  makespace(&hessdata, n * n * sizeof(double));
-
-  tiltinfo.tilt = tilt;
-  tiltinfo.exptilt = exptilt;
-  for (i = 0; i < m; i++) tiltinfo.ggrad[i] = graddata + i * n;
-  for (i = 0; i < n; i++) tiltinfo.ghess[i] = hessdata + i * n;
-  tiltinfo.tscale = tscale;
-}
-
-static minfunc(x, pval, grad, hess)
-     RVector x, grad;
-     double *pval;
-     RMatrix hess;
-{
-  int k = gfuncs.k;
-
-  if (evalfunc(x, pval, grad, hess) && (k > 0))
-    add_tilt(x, pval, grad, hess, tiltinfo.tilt, tiltinfo.exptilt);
-}
-
-constfunc(x, vals, jac, hess)
-     RVector x, vals;
-     RMatrix jac, hess;
-{
-  int i, k = cfuncs.k;
-  double *pvali, *jaci;
-
-  for (i = 0; i < k; i++) {
-    pvali = (vals != nil) ? vals + i : nil;
-    jaci = (jac != nil) ? jac[i] : nil;
-    which_cfunc = i;
-    evalcfunc(x, pvali, jaci, nil);
-  }
-}
-
-static add_tilt(x, pval, grad, hess, tilt, exptilt)
-     RVector x, grad;
-     double *pval, tilt;
-     RMatrix hess;
-     int exptilt;
+static void 
+add_tilt(double *x, double *pval, double *grad, double **hess,
+	 double tilt, int exptilt)
 {
   int i, j, k, n = func.n, m = gfuncs.k;
   double *gval, *ggrad, **ghess, etilt;
@@ -632,19 +606,68 @@ static add_tilt(x, pval, grad, hess, tilt, exptilt)
   }
 }
 
-maxfront(ff, gf, cf, x, typx, fvals, gvals, cvals, ctarget, ipars, dpars, 
-	 tscale, msg)
-     char **ff, **gf, **cf;
-     double *x, *typx, *fvals, *gvals, *cvals, *ctarget, *tscale;
-     MaxIPars *ipars;
-     MaxDPars *dpars;
-     char **msg;
+static void
+set_tilt_info(int n, int m,
+	      double tilt, int exptilt, double *tscale)
+{
+  static double *hessdata = nil, *graddata = nil;
+  int i;
+  static int inited = FALSE;
+
+  if (! inited) {
+    tiltinfo.gval = nil;
+    tiltinfo.ggrad = nil;
+    tiltinfo.ghess = nil;
+    inited = TRUE;
+  }
+  makespace(&tiltinfo.gval, n * sizeof(double));
+  makespace(&tiltinfo.ggrad, m * sizeof(double *));
+  makespace(&tiltinfo.ghess, n * sizeof(double *));
+  makespace(&graddata, n * m * sizeof(double));
+  makespace(&hessdata, n * n * sizeof(double));
+
+  tiltinfo.tilt = tilt;
+  tiltinfo.exptilt = exptilt;
+  for (i = 0; i < m; i++) tiltinfo.ggrad[i] = graddata + i * n;
+  for (i = 0; i < n; i++) tiltinfo.ghess[i] = hessdata + i * n;
+  tiltinfo.tscale = tscale;
+}
+
+
+static void 
+minfunc(double *x, double *pval, double *grad, double **hess) 
+{
+  int k = gfuncs.k;
+
+  if (evalfunc(x, pval, grad, hess) && (k > 0))
+    add_tilt(x, pval, grad, hess, tiltinfo.tilt, tiltinfo.exptilt);
+}
+
+void
+constfunc(double *x, double *vals, double **jac, double **hess)
+{
+  int i, k = cfuncs.k;
+  double *pvali, *jaci;
+
+  for (i = 0; i < k; i++) {
+    pvali = (vals != nil) ? vals + i : nil;
+    jaci = (jac != nil) ? jac[i] : nil;
+    which_cfunc = i;
+    evalcfunc(x, pvali, jaci, nil);
+  }
+}
+
+void
+maxfront(char **ff, char **gf, char **cf,
+	 double *x, double *typx, double *fvals, double *gvals, double *cvals, double *ctarget,
+	 MaxIPars *ipars, MaxDPars *dpars, 
+	 double *tscale, char **msg)
 {
   static char *work = nil;
-  static RMatrix H = nil, cJ = nil;
+  static double **H = nil, **cJ = nil;
   double *pf, *grad, *c;
   int i, n, m, k;
-  int (*cfun)();
+  void (*cfun)();
 
   if (ipars->verbose > 0) PRINTSTR("maximizing...\n");
 
@@ -671,14 +694,14 @@ maxfront(ff, gf, cf, x, typx, fvals, gvals, cvals, ctarget, ipars, dpars,
     cvals += k;
     makespace(&cJ, k * sizeof(double *));
     for (i = 0; i < k; i++) cJ[i] = cvals + i * n;
-    cfun = constfunc;
+    cfun = &constfunc; /* AJR: pointer to constfunc? */
   }
 
   install_func(ff[0], nil, n, TRUE, dpars->typf, dpars->h, typx, dpars->dflt);
   install_gfuncs(gf, n, m, TRUE, dpars->h, typx);
   install_cfuncs(cf, n, k, ctarget, dpars->h, typx);
 
-  minsetup(n, k, minfunc, cfun, x, dpars->typf, typx, work);
+  minsetup(n, k, &minfunc, &cfun, x, dpars->typf, typx, work); /* AJR: FIXME arg 3,4 */
   minsetoptions(dpars->gradtol, dpars->steptol, dpars->maxstep,
 		ipars->itnlimit, ipars->verbose, ipars->backtrack, TRUE);
 
@@ -706,17 +729,14 @@ maxfront(ff, gf, cf, x, typx, fvals, gvals, cvals, ctarget, ipars, dpars,
 /**                                                                    **/
 /************************************************************************/
 
-loglapdet(fvals, cvals, ipars, dpars, val, detonly)
-     double *fvals, *cvals;
-     MaxIPars *ipars;
-     MaxDPars *dpars;
-     double *val;
-     int *detonly;
+void
+loglapdet(double *fvals, double *cvals, MaxIPars *ipars, MaxDPars *dpars,
+	  double *val, int *detonly)
 {
   int i, j, l, n = ipars->n, k = ipars->k;
   double f = -fvals[0], *hessdata = fvals + n + 1, *cgraddata = cvals + k;
   double ldL, ldcv, maxadd;
-  static RMatrix hess = nil, cgrad = nil;
+  static double **hess = nil, **cgrad = nil;
 
   if (k >= n) Recover("too many constraints", NULL);
 
@@ -784,12 +804,12 @@ moms1front(gf, n, m, x, hessdata, mean, stdev, sigmadata, h, typx)
      double *x, *hessdata, *mean, *stdev, *sigmadata, *h, *typx;
 {
   int i, j, k;
-  RMatrix hess, sigma, delg;
+  double *hess, *sigma, *delg;
   double *delgdata, maxadd;
 
-  hess = (RMatrix) S_alloc(*n, sizeof(double *));
-  sigma = (RMatrix) S_alloc(*m, sizeof(double *));
-  delg = (RMatrix) S_alloc(*m, sizeof(double *));
+  hess = (double **) S_alloc(*n, sizeof(double *));
+  sigma = (double **) S_alloc(*m, sizeof(double *));
+  delg = (double **) S_alloc(*m, sizeof(double *));
   delgdata = (double *) S_alloc(*m * *n, sizeof(double));
 
   for (i = 0; i < *n; i++) hess[i] = hessdata + i * *n;
@@ -1097,9 +1117,15 @@ static cpmarpars(x, f, g, ip, dp, x1, f1, g1, ip1, dp1)
 }
 #endif /* SBAYES */
 
-#ifdef TODO
-get hessian from gradiant for analytical gradiants
-avoid repeated derivative calls in mimimize.
-2d margins
-use pos. definiteness info in margins
-#endif TODO
+/*
+  TODO
+
+  get hessian from gradiant for analytical gradiants
+
+  avoid repeated derivative calls in mimimize.
+
+  2d margins
+
+  use pos. definiteness info in margins
+
+*/

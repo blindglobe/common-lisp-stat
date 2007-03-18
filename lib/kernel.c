@@ -2,15 +2,14 @@
 
 #ifndef ROOT2PI
 #define ROOT2PI 2.50662827463100050241
-#endif  ROOT2PI
+#endif  /* ROOT2PI*/
 
 #ifndef nil
 #define nil 0L
-#endif  nil
+#endif  /*nil */
 
-static double kernel(x, y, w, type)
-     double x, y, w;
-     int type;
+static double
+kernel(double x, double y, double w, int type)
 {
   double z, k;
   
@@ -50,9 +49,10 @@ static double kernel(x, y, w, type)
   return(k);
 }
 
-kernel_smooth(x, y, n, width, wts, wds, xs, ys, ns, ktype)
-     double *x, *y, width, *wts, *wds, *xs, *ys;
-     int n, ns, ktype;
+int
+kernel_smooth(double *x, double *y, int n,
+	      double width, double *wts, double *wds,
+	      double *xs, double *ys, int ns, int ktype)
 {
   int i, j;
   double wsum, ysum, lwidth, lwt, xmin, xmax;

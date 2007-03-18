@@ -3,8 +3,9 @@
 #define twopi 6.283195307179587
 #define con (twopi / 2.0) * 10.0e-10
 
-double bivnor(ah, ak, r)
-     double ah, ak, r;
+extern void normbase(double *, double *);
+
+double bivnor(double ah, double ak, double r)
 {
   /*
     based on alg 4628 comm. acm oct 73
@@ -64,26 +65,28 @@ double bivnor(ah, ak, r)
 	sgn = -1;
 	t = 0;
 	if (wk!=0) {
-	  if (fabs(wk)>=1)
+	  if (fabs(wk)>=1) {
 	    if (fabs(wk)==1) {
 	      t = wk*gw*(1-gw)/2;
 	      goto label40;
-	    }
-	    else {
+	    } else {
 	      sgn = -sgn;
 	      wh = wh*wk;
 	      normbase(&wh, &g2);
 	      wk = 1/wk;
-	      if (wk<0)
+	      if (wk<0) {
 		b = b+.5;
+	      }
 	      b = b-(gw+g2)/2+gw*g2;
 	    }
+	  }
 	  h2 = wh*wh;
 	  a2 = wk*wk;
 	  h4 = h2*.5;
 	  ex = 0;
-	  if (h4<150.0)
+	  if (h4<150.0) {
 	    ex = exp(-h4);
+	  }
 	  w2 = h4*ex;
 	  ap = 1;
 	  s2 = ap-ex;

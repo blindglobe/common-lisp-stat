@@ -7,80 +7,24 @@
 #define FALSE 0
 #define TRUE 1
 
+extern int max(int, int);
+extern int min(int, int);
+
 static double pow2(x) double x; { return(x * x); }
 static double pow3(x) double x; { return(x * x * x); }
 static double fmax(x,y) double x, y; { return (x > y ? x : y); }
 
-lowess(x, y, n, f, nsteps, delta, ys, rw, res)
-     double *x, *y, f, delta, *ys, *rw, *res;
-     int n, nsteps;
+int 
+static compar(double *a, double *b)
 {
-  int iter, ns, ok, nleft, nright, i, j, last, m1, m2;
-  double d1, d2, denom, alpha, cut, cmad, c9, c1, r;
-  
-  if (n < 2) { ys[0] = y[0]; return(1); }
-  ns = max(min((int) (f * n), n), 2);  /* at least two, at most n points */
-  for(iter = 1; iter <= nsteps + 1; iter++){      /* robustness iterations */
-    nleft = 0; nright = ns - 1;
-    last = -1;        /* index of prev estimated point */
-    i = 0;   /* index of current point */
-    do {
-      while(nright < n - 1){
-	/* move nleft, nright to right if radius decreases */
-	d1 = x[i] - x[nleft];
-	d2 = x[nright + 1] - x[i];
-	/* if d1 <= d2 with x[nright+1] == x[nright], lowest fixes */
-	if (d1 <= d2) break;
-	/* radius will not decrease by move right */
-	nleft++;
-	nright++;
-      }
-      lowest(x, y, n, x[i], &ys[i], nleft, nright, res, (iter > 1), rw, &ok);
-      /* fitted value at x[i] */
-      if (! ok) ys[i] = y[i];
-      /* all weights zero - copy over value (all rw==0) */
-      if (last < i - 1) { /* skipped points -- interpolate */
-	denom = x[i] - x[last];    /* non-zero - proof? */
-	for(j = last + 1; j < i; j = j + 1){
-	  alpha = (x[j] - x[last]) / denom;
-	  ys[j] = alpha * ys[i] + (1.0 - alpha) * ys[last];
-	}
-      }
-      last = i;        /* last point actually estimated */
-      cut = x[last] + delta;     /* x coord of close points */
-      for(i=last + 1; i < n; i++) {     /* find close points */
-	if (x[i] > cut) break;     /* i one beyond last pt within cut */
-	if(x[i] == x[last]) {      /* exact match in x */
-	  ys[i] = ys[last];
-	  last = i;
-	}
-      }
-      i = max(last + 1,i - 1);
-      /* back 1 point so interpolation within delta, but always go forward */
-    } while(last < n - 1);
-    for (i = 0; i < n; i++)      /* residuals */
-      res[i] = y[i] - ys[i];
-    if (iter > nsteps) break; /* compute robustness weights except last time */
-    for (i = 0; i < n; i++) 
-      rw[i] = fabs(res[i]);
-    sort(rw,n);
-    m1 = 1 + n / 2; m2 = n - m1 + 1;
-    cmad = 3.0 * (rw[m1] + rw[m2]);      /* 6 median abs resid */
-    c9 = .999 * cmad; c1 = .001 * cmad;
-    for (i = 0; i < n; i++) {
-      r = fabs(res[i]);
-      if(r <= c1) rw[i] = 1.0;      /* near 0, avoid underflow */
-      else if(r > c9) rw[i] = 0.0;  /* near 1, avoid underflow */
-      else rw[i] = pow2(1.0 - pow2(r / cmad));
-    }
-  }
-  return(0);
+  if (*a < *b) return(-1);
+  else if (*a > *b) return(1);
+  else return(0);
 }
 
-
-static lowest(x, y, n, xs, ys, nleft, nright, w, userw, rw, ok)
-     double *x, *y, *w, *rw, xs, *ys;
-     int n, nleft, nright, userw, *ok;
+static void
+lowest(double *x, double *y, int n, double xs, double *ys, int nleft, int nright,
+       double *w, int userw, double *rw, int *ok)
 {
   double range, h, h1, h9, a, b, c, r;
   int j, nrt;
@@ -130,19 +74,87 @@ static lowest(x, y, n, xs, ys, nleft, nright, w, userw, rw, ok)
     for (j = nleft, *ys = 0.0; j <= nrt; j++) *ys += w[j] * y[j];
   }
 }
- 
-static compar(a, b)
-     double *a, *b;
-{
-  if (*a < *b) return(-1);
-  else if (*a > *b) return(1);
-  else return(0);
-}
 
-static sort(x, n)
-     double *x;
-     int n;
+static void
+sort(double *x, int n)
 {
+  extern void qsort();
+
   qsort(x, n, sizeof(double), compar);
 }
 
+
+
+int
+lowess(double *x, double *y, int n,
+       double f, int nsteps,
+       double delta, double *ys, double *rw, double *res)
+{
+  int iter, ns, ok, nleft, nright, i, j, last, m1, m2;
+  double d1, d2, denom, alpha, cut, cmad, c9, c1, r;
+  
+  if (n < 2) { ys[0] = y[0]; return(1); }
+  ns = max(min((int) (f * n), n), 2);  /* at least two, at most n points */
+  for(iter = 1; iter <= nsteps + 1; iter++){      /* robustness iterations */
+    nleft = 0; nright = ns - 1;
+    last = -1;        /* index of prev estimated point */
+    i = 0;   /* index of current point */
+    do {
+      while(nright < n - 1){
+	/* move nleft, nright to right if radius decreases */
+	d1 = x[i] - x[nleft];
+	d2 = x[nright + 1] - x[i];
+	/* if d1 <= d2 with x[nright+1] == x[nright], lowest fixes */
+	if (d1 <= d2) break;
+	/* radius will not decrease by move right */
+	nleft++;
+	nright++;
+      }
+      lowest(x, y,
+	     n, x[i],
+	     &ys[i],
+	     nleft, nright,
+	     res, (iter > 1), rw, &ok);
+      /* fitted value at x[i] */
+      if (! ok) ys[i] = y[i];
+      /* all weights zero - copy over value (all rw==0) */
+      if (last < i - 1) { /* skipped points -- interpolate */
+	denom = x[i] - x[last];    /* non-zero - proof? */
+	for(j = last + 1; j < i; j = j + 1){
+	  alpha = (x[j] - x[last]) / denom;
+	  ys[j] = alpha * ys[i] + (1.0 - alpha) * ys[last];
+	}
+      }
+      last = i;        /* last point actually estimated */
+      cut = x[last] + delta;     /* x coord of close points */
+      for(i=last + 1; i < n; i++) {     /* find close points */
+	if (x[i] > cut) break;     /* i one beyond last pt within cut */
+	if(x[i] == x[last]) {      /* exact match in x */
+	  ys[i] = ys[last];
+	  last = i;
+	}
+      }
+      i = max(last + 1,i - 1);
+      /* back 1 point so interpolation within delta, but always go forward */
+    } while(last < n - 1);
+    for (i = 0; i < n; i++)      /* residuals */
+      res[i] = y[i] - ys[i];
+    if (iter > nsteps) break; /* compute robustness weights except last time */
+    for (i = 0; i < n; i++) 
+      rw[i] = fabs(res[i]);
+    sort(rw,n);
+    m1 = 1 + n / 2; m2 = n - m1 + 1;
+    cmad = 3.0 * (rw[m1] + rw[m2]);      /* 6 median abs resid */
+    c9 = .999 * cmad; c1 = .001 * cmad;
+    for (i = 0; i < n; i++) {
+      r = fabs(res[i]);
+      if(r <= c1) rw[i] = 1.0;      /* near 0, avoid underflow */
+      else if(r > c9) rw[i] = 0.0;  /* near 1, avoid underflow */
+      else rw[i] = pow2(1.0 - pow2(r / cmad));
+    }
+  }
+  return(0);
+}
+
+
+ 
