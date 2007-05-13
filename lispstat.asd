@@ -92,13 +92,14 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
 	       
-	       ;;(:lispstat-lsp-source-file "numlib") ;; do we need this?
-	       (:lispstat-lsp-source-file "defsys")
-	       (:lispstat-lsp-source-file "lstoplevel")
+	       ;; (:lispstat-lsp-source-file "numlib") ;; do we need this?
+	       ;; (:lispstat-lsp-source-file "defsys")
+	       ;; (:lispstat-lsp-source-file "lstoplevel")
 
-	       (:lispstat-lsp-source-file "lspackages"
-					  :depends-on ("lstoplevel"
-						       "fastmap"
-						       "lsobjects"
-						       "lsmath"
-						       "lsfloat"))))
+	       ;; (:lispstat-lsp-source-file "lspackages"
+		;;			  :depends-on ("lstoplevel"
+		;;				       "fastmap"
+		;;				       "lsobjects"
+		;;				       "lsmath"
+		;;				       "lsfloat"))))
+	       ))

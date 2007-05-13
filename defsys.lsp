@@ -56,7 +56,7 @@
 #+:mcl (load "lspackages")
 #+:mcl (load "lsmacros")
 
-(in-package :lisp-stat)
+(in-package :lispstat)
 
 (export '(*default-path* debug nodebug))
 

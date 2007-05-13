@@ -35,12 +35,6 @@
 
 (in-package :lisp-stat-math)
 
-;; (in-package #:lisp-stat)
-;; (shadowing-import (package-shadowing-symbols 'lisp-stat-object-system))
-;; (shadowing-import (package-shadowing-symbols 'lisp-stat-basics))
-;; (use-package 'lisp-stat-object-system)
-;; (use-package 'lisp-stat-basics)
-
 ;;; Import some symbols
 
 #+(and kcl fast-c-code internal-c-math)

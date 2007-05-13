@@ -11,11 +11,16 @@
 
 
 (defpackage :lisp-stat-bayes
-  (:use :lisp-stat-object-system
-	:lisp-stat-basics))
+  (:use :common-lisp
+	:lisp-stat-object-system
+	:lisp-stat-basics)
+  (:shadowing-import-from :lisp-stat-object-system
+			  slot-value call-method call-next-method)
+  ;;(:export .... )
+  )
+
 
 (in-package :lisp-stat-bayes)
-
 
 ;;; Objects Representing Functions
 
