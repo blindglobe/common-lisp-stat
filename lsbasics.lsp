@@ -15,12 +15,13 @@
 (defpackage :lisp-stat-basics
   (:use :common-lisp
 	:lisp-stat-object-system
+	:lisp-stat-types
 	:lisp-stat-fastmap
 	:lisp-stat-float
 	:lisp-stat-macros
 	:lisp-stat-compound-data
-	:lisp-stat-matrix ;; ??
-	:lisp-stat-sequence)
+	:lisp-stat-sequence
+	:lisp-stat-matrix )
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export
@@ -111,36 +112,6 @@
 
 (in-package #:lisp-stat-basics)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                      Type Checking Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun fixnump (x)
-  "Args: (x)
-Returns T if X is a fixnum; NIL otherwise."
-  (declare (inline typep))
-  (typep x 'fixnum))
-
-(defun check-nonneg-fixnum (x)
-  (if (and (fixnump x) (<= 0 x)) x (error "not a non-negative fixnum")))
-
-(defun check-one-fixnum (x)
-  (if (not (fixnump x)) (error "not a fixnum - ~a" x)))
-
-(defun check-one-real (a)
-  (if (not (or (rationalp a) (floatp a)))
-      (error "not a real number ~s" a)
-    t))
-
-(defun check-one-number (a)
-  (if (not (numberp a))
-      (error "not a number ~s" a)
-    t))
-
-(defun check-sequence (a)
-  (if (not (or (vectorp a) (consp a))) (error "not a sequence - ~s" a)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -166,25 +137,6 @@ Returns T if X is a fixnum; NIL otherwise."
 
 (defun make-next-element (x) (list x))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;          Array to Row-Major Data Vector Conversion Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun array-data-vector (a)
-"Args: (a)
-Displaces array A to a vector"
-  (make-array (array-total-size a)
-	      :displaced-to a
-	      :element-type (array-element-type a)))
-
-(defun vector-to-array (v dims)
-"Args: (v dims)
-Displaces vector V to array with dimensions DIMS"
-  (make-array dims
-	      :displaced-to v
-	      :element-type (array-element-type v)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
