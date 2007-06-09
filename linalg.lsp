@@ -24,6 +24,7 @@
 
 (defpackage :lisp-stat-linalg
   (:use :common-lisp
+	:lisp-stat-types
 	:lisp-stat-matrix)
   (:export chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
 	   qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
@@ -501,13 +502,17 @@ FIXME:kernel-smooth-Cport"
 	       (setf (aref ys i)
 		     (let ((wsum 0.0)
 			   (ysum 0.0))
-		       (dotimes (j (- n 1))   ) ;;remove for the following
-;;;			 (let* ;; FIXME!?
-;;;			     ((lwidth (if wds (* width (aref wds j)) width))
-;;;			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
-;;;				      (if wts (aref wts j) 1.0))))
-;;;			   (setf wsum (+ wsum lwt))
-;;;			   (setf ysum (if py (+ ysum (* lwt (aref py j))))))) ;; py? y?
+		       (dotimes (j (- n 1))   )
+;;;possible nasty errors...
+#|
+		       (let* 
+			     ((lwidth (if wds (* width (aref wds j)) width))
+			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
+				      (if wts (aref wts j) 1.0))))
+			   (setf wsum (+ wsum lwt))
+			   (setf ysum (if py (+ ysum (* lwt (aref py j)))))) ;; py? y?
+|#
+;;; end of errors
 		       (if py
 			   (if (> wsum 0.0) 
 			       (/ ysum wsum)
@@ -659,7 +664,7 @@ LVAL xssurface_contour()
 ;;; FFT
 ;;;
 ;;; FIXME:ajr
-;;; replace with matlisp:fft  and matlisp:ifft (the latter for inverse mapping)
+;;; ??replace with matlisp:fft  and matlisp:ifft (the latter for inverse mapping)
 ;;;
 (defun fft (x &optional inverse)
 "Args: (x &optional inverse)
@@ -847,17 +852,17 @@ is true."
       1)
      (t 0))))
 
-;;; FIXME: use matlisp
+;; FIXME: use matlisp
 (defun make-sweep-matrix (x y &optional w)
-"Args: (x y &optional weights)
-X is a matrix, Y and WEIGHTS are sequences. Returns the sweep matrix for the
-(possibly weighted) regression of Y on X."
-  (check-matrix x)
-  (check-sequence y)
-  (if w (check-sequence w))
-  (let ((n (num-rows x))
-	(p (num-cols x)))
-    (if (/= n (length y)) (error "dimensions do not match"))
+  "Args: (x y &optional weights)
+ X is matrix, Y and WEIGHTS are sequences. Returns the sweep matrix of the
+ (weighted) regression of Y on X"
+   (check-matrix x)
+   (check-sequence y)
+   (if w (check-sequence w))
+   (let ((n (num-rows x))
+      	(p (num-cols x)))
+      (if (/= n (length y)) (error "dimensions do not match"))
     (if (and w (/= n (length w))) (error "dimensions do not match"))
     (let ((mode (max (la-data-mode x) 
                      (la-data-mode x) 
@@ -865,12 +870,12 @@ X is a matrix, Y and WEIGHTS are sequences. Returns the sweep matrix for the
 	  (result (make-array (list (+ p 2) (+ p 2))))
 	  (x-mean (make-array p))
 	  (y (coerce y 'vector))
-	  (w (if w (coerce w 'vector)))
+ 	  (w (if w (coerce w 'vector)))
 	  (has-w (if w 1 0)))
       (make-sweep-front x y w n p mode has-w x-mean result)
       result)))
 
-(defun sweep-in-place (a k tol)
+ (defun sweep-in-place (a k tol)
   (check-matrix a)
   (check-one-fixnum k)
   (check-one-real tol)

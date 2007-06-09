@@ -10,8 +10,6 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;(provide "matrices")
-
 ;;;;
 ;;;; Package Setup
 ;;;;
@@ -20,17 +18,38 @@
 
 (defpackage :lisp-stat-matrix
   (:use :common-lisp
+	:lisp-stat-compound-data
 	:lisp-stat-sequence)
-  (:export 
-
-;;(export '(
-   matrixp num-rows num-cols matmult identity-matrix diagonal
-   row-list column-list inner-product outer-product cross-product
-   transpose bind-columns bind-rows))
+  (:export matrixp num-rows num-cols matmult identity-matrix diagonal
+	   row-list column-list inner-product outer-product
+	   cross-product transpose bind-columns bind-rows
+	   array-data-vector vector-to-array))
 
 (in-package :lisp-stat-matrix)
 
 (deftype matrix () 'array)  ;; temp fix
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;;          Array to Row-Major Data Vector Conversion Functions
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun array-data-vector (a)
+"Args: (a)
+Displaces array A to a vector"
+  (make-array (array-total-size a)
+	      :displaced-to a
+	      :element-type (array-element-type a)))
+
+(defun vector-to-array (v dims)
+"Args: (v dims)
+Displaces vector V to array with dimensions DIMS"
+  (make-array dims
+	      :displaced-to v
+	      :element-type (array-element-type v)))
+
+;;;;
 
 (defun check-matrix (a)
   (if (not (and (arrayp a) (= (array-rank a) 2)))
