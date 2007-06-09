@@ -84,8 +84,8 @@
   (serial (incf *object-serial*)))
 
 (defun print-object-structure (object stream depth)
-  (if nil (princ "~a : ~a : ~a" object stream depth)) ;warning avoidance
-  (send object :print stream))
+  (if nil (princ (format "~a : ~a : ~a" object stream depth) stream) ;warning avoidance
+    (send object :print stream)))
 
 (setf (documentation 'objectp 'function)
   "Args: (x)
@@ -751,7 +751,7 @@ Default object printing method."
 
 (defmeth *object* :slot-value (sym &optional (val nil set))
 "Method args: (sym &optional val)
-Sets and retrieves value of slot named SYM. Sugnals an error if slot
+Sets and retrieves value of slot named SYM. Signals an error if slot
 does not exist."
   (if set (setf (slot-value sym) val))
   (slot-value sym))
