@@ -59,8 +59,10 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("compound"))
 
 	       (:lispstat-lsp-source-file "lsfloat")
+	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
+						       "lstypes"
 						       "lsmacros"
 						       "sequence"
 						       "lsfloat"

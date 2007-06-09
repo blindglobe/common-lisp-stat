@@ -32,7 +32,7 @@
 	   split-list eigen))
 
 
-;; (in-package #:lisp-stat-basics)
+(in-package #:lisp-stat-linalg)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

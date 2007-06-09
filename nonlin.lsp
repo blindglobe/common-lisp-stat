@@ -1,23 +1,34 @@
+;;; -*- mode: lisp -*-
+;;;
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
+;;; Common Lisp.  
+
+
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 
-(provide "nonlin")
-
-#+:CLtL2
-(in-package lisp-stat)
-#-:CLtL2
-(in-package 'lisp-stat)
-
-(export '(nreg-model nreg-model-proto mean-function theta-hat epsilon
+(defpackage :lisp-stat-regression-nonlin
+ (:use :common-lisp
+       :lisp-stat-object-system
+       :lisp-stat-basics
+       :lisp-stat-compound-data
+       :lisp-stat-sequence
+       :lisp-stat-matrix
+       :lisp-stat-linalg
+       :lisp-stat-regression-linear)
+ (:shadowing-import-from :lisp-stat-object-system
+			 slot-value call-method call-next-method)
+ (:export nreg-model nreg-model-proto mean-function theta-hat epsilon
 	  count-limit verbose))
 
+(in-package :lisp-stat-regression-nonlin)
 
 ;;;;
-;;;;
 ;;;; Nonlinear Regression Model Prototype
-;;;;
 ;;;;
 
 (defproto nreg-model-proto 
