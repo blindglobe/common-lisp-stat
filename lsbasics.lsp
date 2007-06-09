@@ -19,6 +19,7 @@
 	:lisp-stat-float
 	:lisp-stat-macros
 	:lisp-stat-compound-data
+	:lisp-stat-matrix ;; ??
 	:lisp-stat-sequence)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
@@ -29,9 +30,10 @@
    select
    
    ;; matrices.lisp
-   matrixp num-rows num-cols matmult identity-matrix diagonal row-list
-   column-list inner-product outer-product cross-product transpose
-   bind-columns bind-rows
+   ;;   matrixp num-rows num-cols matmult identity-matrix diagonal row-list
+   ;;   column-list inner-product outer-product cross-product transpose
+   ;;   bind-columns bind-rows
+
    ;; linalg.lisp
    chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
    qr-decomp rcondest make-rotation 

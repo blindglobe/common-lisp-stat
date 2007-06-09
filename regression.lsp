@@ -25,6 +25,7 @@
 	:lisp-stat-sequence)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
+
   (:export regression-model regression-model-proto x y intercept sweep-matrix
 	   basis weights included total-sum-of-squares residual-sum-of-squares
 	   predictor-names response-name case-labels))
