@@ -13,7 +13,7 @@
 (defpackage :lisp-stat-sequence
   (:use :common-lisp
 	:lisp-stat-compound-data)
-  (:export check-sequence compound-data-seq get-next-element
+  (:export check-sequence get-next-element ;;compound-data-seq 
 	   make-next-element sequencep iseq))
 
 (in-package #:lisp-stat-sequence)
