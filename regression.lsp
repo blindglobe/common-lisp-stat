@@ -21,8 +21,8 @@
 	:lisp-stat-object-system
 	:lisp-stat-basics
 	:lisp-stat-compound-data
-	:lisp-stat-matrix
-	:lisp-stat-sequence)
+	:lisp-stat-sequence
+	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
 
@@ -118,7 +118,8 @@ Recomputes the estimates. For internal use by other messages"
          (n (array-dimension x 1))
          (p (- (array-dimension m 0) 1))
          (tss (aref m p p))
-         (tol (* .0001 (mapcar #'standard-deviation (column-list x))))
+         (tol (* 0.001 (reduce #'* (mapcar #'standard-deviation (column-list x)))))
+	 ;; (tol (* 0.001 (apply #'* (mapcar #'standard-deviation (column-list x)))))
          (sweep-result
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
@@ -129,8 +130,7 @@ Recomputes the estimates. For internal use by other messages"
           (aref (first sweep-result) p p))
     (setf (slot-value 'basis)
           (let ((b (remove 0 (second sweep-result))))
-            (if b 
-                (- (reverse b) 1)
+            (if b (- (reduce #'- (reverse b)) 1)
                 (error "no columns could be swept"))))))
 
 (defmeth regression-model-proto :needs-computing (&optional set)
@@ -439,9 +439,13 @@ Returns a plot object."
          (low (- r d))
          (high (+ r d))
          (x-values (if x-values x-values (send self :fit-values)))
-         (p (plot-points x-values r :title "Bayes Residual Plot"
+         (p (plot-points x-values r
+			 :title "Bayes Residual Plot"
                          :point-labels (send self :case-labels))))
-    (map 'list #'(lambda (a b c d) (send p :plotline a b c d nil))
-               x-values low x-values high)
+;; AJR:FIXME
+;; the lambda needs to be something that fits into list
+;;    (map 'list
+;;	 #'(lambda (a b c d) (send p :plotline a b c d nil))
+;;	 x-values low x-values high)
     (send p :adjust-to-data)
     p))
