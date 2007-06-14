@@ -84,7 +84,7 @@
   (serial (incf *object-serial*)))
 
 (defun print-object-structure (object stream depth)
-  (if nil (princ (format "~a : ~a : ~a" object stream depth) stream) ;warning avoidance
+  (if nil (format t "~a : ~a : ~a" object stream depth) ;warning avoidance
     (send object :print stream)))
 
 (setf (documentation 'objectp 'function)

@@ -3,3 +3,5 @@
 semantic.cache
 fasl
 *.so
+*.fas
+*.lib
