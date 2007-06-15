@@ -10,13 +10,15 @@
 ;;;; Package Setup
 ;;;;
 
+(in-package :cl-user)
+
 (defpackage :lisp-stat-sequence
   (:use :common-lisp
 	:lisp-stat-compound-data)
   (:export check-sequence get-next-element ;;compound-data-seq 
 	   make-next-element sequencep iseq))
 
-(in-package #:lisp-stat-sequence)
+(in-package :lisp-stat-sequence)
 
 ;;; Sequences are part of ANSI CL, being a supertype of vector and
 ;;; list (ordered set of things).
@@ -24,10 +26,8 @@
 ;;;                      Type Checking Functions
 
 (defun check-sequence (a)
-  (if (not (or (vectorp a) (consp a))) (error "not a sequence - ~s" a)))
-
-
-
+  (if (not (or (vectorp a) (consp a)))
+      (error "not a sequence - ~s" a)))
 
 ;;;                       Sequence Element Access
 

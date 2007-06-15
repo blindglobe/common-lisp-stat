@@ -20,8 +20,7 @@
 		fastmap)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value
-			  call-next-method
-			  call-method)
+			  call-next-method call-method)
   (:export compound-data-p
 	   compound-data-seq
 	   compound-data-length

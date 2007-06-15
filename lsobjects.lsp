@@ -54,6 +54,8 @@
 
 ;;; Package Setup
 
+(in-package :cl-user)
+
 (defpackage :lisp-stat-object-system
  (:nicknames :ls-objects :lsos)
  (:use :common-lisp)
@@ -84,8 +86,8 @@
   (serial (incf *object-serial*)))
 
 (defun print-object-structure (object stream depth)
-  (if nil (format t "~a : ~a : ~a" object stream depth) ;warning avoidance
-    (send object :print stream)))
+  (declare (ignore depth))
+  (send object :print stream))
 
 (setf (documentation 'objectp 'function)
   "Args: (x)
