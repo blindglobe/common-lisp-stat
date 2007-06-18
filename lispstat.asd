@@ -50,13 +50,18 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
+	       (:lispstat-lsp-source-file "linalg"
+					  :depends-on (;;"ladata"
+						       "lstypes"
+						       "matrices"))
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
 						       "lstypes"
 						       "lsmacros"
 						       "sequence"
 						       "lsfloat"
-						       "matrices"))
+						       "matrices"
+						       "linalg"))
 
 	       (:lispstat-lsp-source-file "lsmath"
 					  :depends-on ("lsbasics"
@@ -67,9 +72,6 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("lsbasics")) ;; in lisp-stat-basics
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("ladata"
-						       "matrices")) ;; in lisp-stat-basics
 
 	       
 	       ;; Applications
