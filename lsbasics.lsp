@@ -21,9 +21,12 @@
 	:lisp-stat-macros
 	:lisp-stat-compound-data
 	:lisp-stat-sequence
-	:lisp-stat-matrix )
+	:lisp-stat-matrix
+	:lisp-stat-linalg)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
+  (:shadowing-import-from :lisp-stat-types
+			  check-sequence)
   (:export
    ;; lsbasics.lisp
    copy-vector copy-array which repeat
@@ -35,11 +38,12 @@
    ;;   column-list inner-product outer-product cross-product transpose
    ;;   bind-columns bind-rows
 
-   ;; linalg.lisp
-   chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
-   qr-decomp rcondest make-rotation 
-   fft make-sweep-matrix sweep-operator ax+y numgrad numhess
-   split-list eigen
+   ;;; linalg.lisp
+   ;; chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
+   ;; qr-decomp rcondest make-rotation 
+   ;; fft make-sweep-matrix sweep-operator ax+y numgrad numhess
+   ;; split-list eigen
+
    ;; in linalg.lisp, possibly not supported by matlisp
    spline kernel-dens kernel-smooth
    ;; lispstat-macros

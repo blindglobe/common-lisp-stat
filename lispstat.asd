@@ -5,12 +5,10 @@
 
 ;;(asdf:oos 'asdf:load-op 'cffi)
 
-
 (defpackage #:lispstat-system
   (:use :asdf :common-lisp))
 
 (in-package #:lispstat-system)
-
 
 ;;; To avoid renaming everything from *.lsp to *.lisp...
 ;;; borrowed from Cyrus Harmon's work, for example for the ch-util.
@@ -28,7 +26,6 @@
 ;;; again, thanks to Cyrus for saving me time...
 
 
-
 (defsystem "lispstat"
   :version #.(with-open-file
                  (vers (merge-pathnames "version.lisp-expr" *load-truename*))
@@ -38,28 +35,21 @@
   :description "CommonLispStat (CLS): A System for Statistical Computing with Common Lisp;
 based on CLS by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
 Last touched 1991, then in 2005--2007."
-
   :depends-on (:cffi )
-  
-  ;; FFI systems:
-  ;; kclglue.lsp  kclpatch.lsp exclglue.lsp mclglue.lsp 
-
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "fastmap")
-	       ;; ls-basisc
+	       (:lispstat-lsp-source-file "lstypes")
+	       (:lispstat-lsp-source-file "lsfloat")
 	       (:lispstat-lsp-source-file "compound" 
 					  :depends-on ("lsobjects"
 						       "fastmap"))
+	       (:lispstat-lsp-source-file "lsmacros" 
+					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "sequence"
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
-	       (:lispstat-lsp-source-file "lsmacros" 
-					  :depends-on ("compound"))
-
-	       (:lispstat-lsp-source-file "lsfloat")
-	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
 						       "lstypes"
@@ -67,6 +57,7 @@ Last touched 1991, then in 2005--2007."
 						       "sequence"
 						       "lsfloat"
 						       "matrices"))
+
 	       (:lispstat-lsp-source-file "lsmath"
 					  :depends-on ("lsbasics"
 						       "lsmacros"

@@ -1,13 +1,16 @@
-(provide "maximize")
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
-#+:CLtL2
-(in-package lisp-stat)
-#-:CLtL2
-(in-package 'lisp-stat)
+(defpackage :lisp-stat-optimize
+ (:use :common-lisp
+       :lisp-stat-object-system
+       :lisp-stat-basics)
+ (:shadowing-import-from :lisp-stat-object-system
+			 slot-value call-method call-next-method)
+ (:export newtonmax nelmeadmax))
 
-(export '(newtonmax nelmeadmax))
-
-(import '(ls-basics::new-minfo-internals ls-basics::minfo-maximize))
 
 ;;;;
 ;;;; Mode Info Prototype
@@ -324,3 +327,6 @@ control the behavior of simplex algorithm."
   (let ((best (send self :point-value (send self :best-point)))
         (worst (send self :point-value (send self :worst-point))))
     (* 2 (/ (abs (- best worst)) (+ 1 (abs best) (abs worst))))))
+
+
+

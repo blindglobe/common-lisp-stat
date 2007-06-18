@@ -1,4 +1,10 @@
-;;;;
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
+
+;;; XLisp-ism's removed to focus on Common Lisp.
+
 ;;;; statistics.lsp XLISP-STAT statistics functions
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
@@ -6,21 +12,19 @@
 ;;;; COPYING included with this distribution.
 ;;;;
 
-(provide "statistics")
-
-#+:CLtL2
-(in-package lisp-stat)
-#-:CLtL2
-(in-package 'lisp-stat)
-
-(export '(open-file-dialog read-data-file read-data-columns load-data 
-	  load-example *variables* *ask-on-redefine* def variables savevar
-	  undef standard-deviation quantile median interquartile-range
-	  fivnum covariance-matrix difference rseq matrix print-matrix solve
+(defpackage :lisp-stat
+ (:use common-lisp)
+ ;;(:import-from :lisp-stat-basics |base-lowess|)
+ (:export open-file-dialog read-data-file read-data-columns load-data 
+          load-example *variables* *ask-on-redefine* def variables savevar
+          undef standard-deviation quantile median interquartile-range
+            fivnum covariance-matrix difference rseq matrix print-matrix solve
 	  backsolve eigenvalues eigenvectors accumulate cumsum combine
 	  lowess))
 
-(import 'ls-basics::|base-lowess|)
+
+(:in-package :lisp-stat)
+
 
 ;;;;
 ;;;; Data File Reading 
@@ -323,4 +327,4 @@ to T speeds up the computation."
   (let ((x (if sorted x (sort-data x)))
         (y (if sorted y (select y (order x))))
         (delta (if (> delta 0.0) delta (/ (- (max x) (min x)) 50))))
-    (list x (|base-lowess| x y f steps delta))))
+    (list x)));; (|base-lowess| x y f steps delta))))

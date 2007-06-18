@@ -16,8 +16,7 @@
 (defpackage :lisp-stat-compound-data
   (:use :common-lisp
 	:lisp-stat-object-system)
-  (:import-from :lisp-stat-fastmap
-		fastmap)
+  (:import-from :lisp-stat-fastmap fastmap)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value
 			  call-next-method call-method)
