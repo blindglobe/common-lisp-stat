@@ -5,3 +5,4 @@ fasl
 *.so
 *.fas
 *.lib
+*.o
