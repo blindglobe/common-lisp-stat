@@ -1,3 +1,5 @@
+## -*- mode: Makefile -*-
+
 LISPSTAT-SO = liblispstat.so
 
 CDISTOBJS = betabase.o bivnor.o cdists.o gamln.o gammabase.o nor.o ppnd.o \
@@ -11,7 +13,8 @@ CBAYESOBJS = cbayes.o functions.o derivatives.o minimize.o
 
 CGLUE = cffi-glue.o
 
-CFLAGS = -g -DINTPTR -fPIC -Wall
+## CFLAGS = -g -DINTPTR -fPIC -Wall
+CFLAGS = -g -Wall
 
 cffi : $(LISPSTAT-SO)
 

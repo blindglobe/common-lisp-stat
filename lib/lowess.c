@@ -12,7 +12,7 @@ extern int min(int, int);
 
 static double pow2(x) double x; { return(x * x); }
 static double pow3(x) double x; { return(x * x * x); }
-static double fmax(x,y) double x, y; { return (x > y ? x : y); }
+/* static */ double fmax(x,y) double x, y; { return (x > y ? x : y); }
 
 int 
 static compar(double *a, double *b)

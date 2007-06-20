@@ -688,8 +688,7 @@ maxfront(char **ff, char **gf, char **cf,
     c = nil;
     cJ = nil;
     cfun = nil;
-  }
-  else {
+  } else {
     c = cvals;
     cvals += k;
     makespace(&cJ, k * sizeof(double *));
