@@ -398,7 +398,7 @@ named SLOT."
           (if method-entry (return method-entry)))))))
 
 (defun add-lsos-method (x selector value)
-  "x = object; selector = name of method; value = method."
+  "x = object; selector = name of method; value = form computing the method."
   (check-object x)
   (check-non-nil-symbol selector)
   (let ((method-entry (find-own-method x selector)))
@@ -522,13 +522,13 @@ a method."
 OBJECT must evaluate to an existing object. Installs a method for NAME in
 the value of OBJECT and installs DOC in OBJECTS's documentation.
 RETURNS: method-name."
-  (if (and body (stringp first))
-    `(progn
+  (if (and body (stringp first)) 
+    `(progn ;; first=docstring + body
        (add-lsos-method ,object ,name
                  #'(lambda (self ,@arglist) (block ,name ,@body)))
        (add-documentation ,object ,name ,first)
        ,name)
-    `(progn
+    `(progn ;; first=code + body
        (add-lsos-method ,object ,name
                    #'(lambda (self ,@arglist) (block ,name ,first ,@body)))
        ,name)))
@@ -752,9 +752,10 @@ Default object printing method."
     (t (format stream "#<Object: ~D>" (ls-object-serial self)))))
 
 (defmeth *object* :slot-value (sym &optional (val nil set))
-"Method args: (sym &optional val)
+	 "Method args: (sym &optional val)
 Sets and retrieves value of slot named SYM. Signals an error if slot
 does not exist."
+  ;;(declare (ignore self))
   (if set (setf (slot-value sym) val))
   (slot-value sym))
 

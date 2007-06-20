@@ -13,7 +13,7 @@
 ;;;;
 
 (defpackage :lisp-stat
- (:use common-lisp)
+ (:use :common-lisp)
  ;;(:import-from :lisp-stat-basics |base-lowess|)
  (:export open-file-dialog read-data-file read-data-columns load-data 
           load-example *variables* *ask-on-redefine* def variables savevar
