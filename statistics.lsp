@@ -3,14 +3,12 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
-;;; XLisp-ism's removed to focus on Common Lisp.
-
+;;; XLisp-ism's removed to focus on Common Lisp.  Original source from:
 ;;;; statistics.lsp XLISP-STAT statistics functions
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
-;;;;
 
 (defpackage :lisp-stat
  (:use :common-lisp
