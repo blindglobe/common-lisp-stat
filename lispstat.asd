@@ -87,7 +87,13 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
-	       
+	       ;; mix/match lsp vs. lisp in next 2.
+	       (:source-file "data" :depends-on ("lsobjects"))
+
+	       ;;; Top level
+	       (:source-file "ls-user" :depends-on ("statistics"
+						    "data"))
+
 	       ;; (:lispstat-lsp-source-file "numlib") ;; do we need this?
 	       ;; (:lispstat-lsp-source-file "defsys")
 	       ;; (:lispstat-lsp-source-file "lstoplevel")
