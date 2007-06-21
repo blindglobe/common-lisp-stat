@@ -16,7 +16,10 @@
   (:use :common-lisp
 	:lisp-stat-compound-data)
   (:export check-sequence get-next-element ;;compound-data-seq 
-	   make-next-element sequencep iseq))
+	   make-next-element sequencep iseq
+
+	   ;; vector differences
+	   difference rseq ))
 
 (in-package :lisp-stat-sequence)
 
@@ -244,3 +247,17 @@ strings X replaced by their ranks."
   (let ((ranked-seq (order (order x))))
     (make-compound-data (compound-data-shape x) ranked-seq)))
 
+;;;;
+;;;; Basic Sequence Operations
+;;;;
+
+(defun difference (x)
+"Args: (x)
+Returns differences for a sequence X."
+  (let ((n (length x)))
+    (- (select x (iseq 1 (1- n))) (select x (iseq 0 (- n 2))))))
+
+(defun rseq (a b num)
+"Args: (a b num)
+Returns a list of NUM equally spaced points starting at A and ending at B."
+  (+ a (* (iseq 0 (1- num)) (/ (float (- b a)) (1- num)))))

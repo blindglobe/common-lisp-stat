@@ -92,6 +92,4 @@ Last touched 1991, then in 2005--2007."
 
 	       ;;; Top level
 	       (:source-file "ls-user" :depends-on ("statistics"
-						    "data"))
-
-	       ))
+						    "data"))))

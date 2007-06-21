@@ -10,15 +10,20 @@
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 
-(defpackage :lisp-stat
+(defpackage :lisp-stat-descriptive-statistics
  (:use :common-lisp
        :lisp-stat-data)
- (:export standard-deviation quantile median interquartile-range
-	  fivnum covariance-matrix difference rseq matrix print-matrix solve
+ (:export ;; descriptive stats
+          standard-deviation quantile median interquartile-range
+	  fivnum
+
+
+	  ;; the following are more matrix-centric
+	  covariance-matrix matrix print-matrix solve
 	  backsolve eigenvalues eigenvectors accumulate cumsum combine
 	  lowess))
 
-(:in-package :lisp-stat)
+(:in-package :lisp-stat-descriptive-statistics)
 
 ;;;;
 ;;;; Basic Summary Statistics
@@ -69,20 +74,6 @@ consist of lists, vectors or matrices."
                              (- columns (mapcar #'mean columns))))
        (- (length (car columns)) 1))))
 
-;;;;
-;;;; Basic Sequence Operations
-;;;;
-
-(defun difference (x)
-"Args: (x)
-Returns differences for a sequence X."
-  (let ((n (length x)))
-    (- (select x (iseq 1 (1- n))) (select x (iseq 0 (- n 2))))))
-
-(defun rseq (a b num)
-"Args: (a b num)
-Returns a list of NUM equally spaced points starting at A and ending at B."
-  (+ a (* (iseq 0 (1- num)) (/ (float (- b a)) (1- num)))))
 
 ;;;;
 ;;;; Linear Algebra Functions
