@@ -25,15 +25,23 @@
 
 ;;; Sequences are part of ANSI CL, being a supertype of vector and
 ;;; list (ordered set of things).
+;;; 
+;;; Need to use the interenal structure when possible -- silly to be
+;;; redundant!
+
 
 ;;;                      Type Checking Functions
 
 (defun check-sequence (a)
-  (if (not (or (vectorp a) (consp a)))
+  ;; FIXME:AJR: does this handle consp as well?  (Luke had an "or"
+  ;; with consp).
+  (if (not (typep a 'sequence))
       (error "not a sequence - ~s" a)))
 
 ;;;                       Sequence Element Access
 
+
+;;; (elt x i) -- NOT.  This is more like "pop".
 (defun get-next-element (x i)
   "Get element i from seq x.  FIXME: not really??"
   (let ((myseq (first x)))
@@ -43,6 +51,7 @@
           elem)
       (aref myseq i))))
 
+;;; (setf (elt x i) v)
 (defun set-next-element (x i v)
   (let ((seq (first x)))
     (cond ((consp seq)
@@ -56,11 +65,9 @@
 ;;;                         Sequence Functions
 
 
-(defun sequencep (x) 
-"Args: (x)
-Returns NIL unless X is a list or vector."
-  (or (listp x) (vectorp x)))
-
+;; to prevent breakage.
+(defmacro sequencep (x) 
+  (typep x 'sequence))
 
 (defun iseq (a &optional b)
 "Args: (n &optional m)
