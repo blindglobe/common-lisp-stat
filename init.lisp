@@ -1,5 +1,5 @@
 ;;; Basic initialization for LispStat
-;;; Time-stamp: <2007-06-25 09:07:38 ROSSIAN6>
+;;; Time-stamp: <2007-06-25 19:54:12 ROSSIAN6>
 ;;; Created: <2007-05-30 17:09:47 ROSSIAN6>
 
 ;; Goal:
@@ -9,15 +9,28 @@
 ;; ensure appropriate tools are linked in for loading.
 ;; i.e. if features don't exist, load from particular locations in this directory structure.
 
-(defvar *lispstat-homedir* #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
-	"Value considered \"home\" for our data")
-(defvar *tony-local-lispdirstr* (namestring *tony-local-lispdir*)
+(defvar *lispstat-home-dir* #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
 	"Value considered \"home\" for our data")
 
-#+clisp
-(progn 
-  (load (pathname (concatenate 'string (namestring *tony-local-lispdir*) "asdf")))
-  (load (pathname (concatenate 'string (namestring *tony-local-lispdir*) "pcl-portable-files"))))
+(defmacro ls-dir (root-str)
+  `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))
+
+(defmacro ls-defdir (target-dir-var  root-str)
+  `(defvar ,target-dir-var (ls-dir ,root-str)))
+
+;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+;;(macroexpand-1 '(ls-dir "ASDF"))
+
+(ls-defdir *lispstat-asdf-dir* "ASDF/")
+(ls-defdir *lispstat-data-dir* "data/")
+(ls-defdir *lispstat-external-dir* "external/")
+
+
+;; Load ASDF if it isn't loaded
+#-asdf(load (pathname (concatenate 'string (namestring *lispstat-external-dir*) "asdf")))
+
+(load (pathname (concatenate 'string (namestring *tony-local-lispdir*) "pcl-portable-files"))))
 
 (progn 
   ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
