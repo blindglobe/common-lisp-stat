@@ -7,12 +7,40 @@ After a few false starts, I (Tony Rossini) finally know how I want to
 proceed.  First, we update CLS.  Then, continue with TSL.  Separation
 is needed, so that we can make everything separate.
 
-We are working with SBCL and CLISP implementations to keep a wide
-range of target platforms, as well as to challenge the system by the
-two more common CL implementations (compiled, and byte-compiled).
+We are working with SBCL and CLISP implementations so as to keep a
+wide range of target platforms as well as to maintain ANSI CL as close
+as possible.  This challenges the system by targetting two more common
+CL implementations (compiled, and byte-compiled).
 
-This is done to provide a point of comparison as well as a means for
-building upon.
+
+Design: 
+(see "orig file dependencies" below for original design docs through
+code).
+------ 
+
+lsobject :  package containing prototype object system
+
+
+data : package from which all data objects are built.  data should
+       provide compound objects, pulling from all potential data
+       structures, so that 
+
+optimization : maximization
+
+linear-algebra : merges matrix data structures, numerical linear
+                 algebra work
+
+<specialty routines>
+regression
+nonlin
+glim
+gee
+bayes-regression
+
+ls-user : 
+
+
+
 
 
 
