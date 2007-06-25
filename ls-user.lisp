@@ -20,7 +20,15 @@ should be packaged up elsewhere for reproducibility.")
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export
+
+
    ;; lsobjects.lsp
+
+   ;; data.lisp
+
+
+   ;; optimize.lsp
+   newtonmax nelmeadmax
 
    ;; lsmath.lsp
    ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
@@ -46,9 +54,6 @@ should be packaged up elsewhere for reproducibility.")
    ;; nonlin.lsp
    nreg-model nreg-model-proto mean-function theta-hat epsilon
    count-limit verbose
-
-   ;; maximize.lsp
-   newtonmax nelmeadmax
 
    ;; bayes.lsp
    bayes-model bayes-model-proto bayes-internals

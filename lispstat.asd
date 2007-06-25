@@ -87,8 +87,7 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "statistics"
 					  :depends-on ("lsobjects"
 						       "data" ))
-	       (:lispstat-lsp-source-file "maximize"
-					  :depends-on ("lsobjects"))
+	       (:file "optimize" :depends-on ("lsobjects"))
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
