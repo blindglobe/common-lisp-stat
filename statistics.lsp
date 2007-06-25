@@ -10,6 +10,8 @@
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 
+(in-package :cl-user)
+
 (defpackage :lisp-stat-descriptive-statistics
  (:use :common-lisp
        :lisp-stat-data)
@@ -17,13 +19,14 @@
           standard-deviation quantile median interquartile-range
 	  fivnum
 
+	  sample 
 
 	  ;; the following are more matrix-centric
 	  covariance-matrix matrix print-matrix solve
 	  backsolve eigenvalues eigenvectors accumulate cumsum combine
 	  lowess))
 
-(:in-package :lisp-stat-descriptive-statistics)
+(in-package :lisp-stat-descriptive-statistics)
 
 ;;;;
 ;;;; Basic Summary Statistics
@@ -74,6 +77,88 @@ consist of lists, vectors or matrices."
                              (- columns (mapcar #'mean columns))))
        (- (length (car columns)) 1))))
 
+;;;; Sampling / Resampling
+
+(defun sample (x ssize &optional replace)
+"Args: (x n &optional (replace nil))
+Returns a list of a random sample of size N from sequence X drawn with or
+without replacement."
+  (check-sequence x)
+  (let ((n (length x))
+	(x (if (consp x) (coerce x 'vector) (copy-vector x)))
+	(result nil))
+    (if (< 0 n)
+	(dotimes (i ssize result)
+		 (let ((j (if replace (random n) (+ i (random (- n i))))))
+		   (setf result (cons (aref x j) result))
+		   (unless replace     ;; swap elements i and j
+			   (let ((temp (aref x i)))
+			     (setf (aref x i) (aref x j))
+			     (setf (aref x j) temp))))))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;;                         Sorting Functions
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun sort-data (x)
+"Args: (sequence)
+Returns a sequence with the numbers or strings in the sequence X in order."
+  (flet ((less (x y) (if (numberp x) (< x y) (string-lessp x y))))
+    (stable-sort (copy-seq (compound-data-seq x)) #'less)))
+
+(defun order (x)
+"Args (x)
+Returns a sequence of the indices of elements in the sequence of numbers
+or strings X in order."
+  (let* ((seq (compound-data-seq x))
+	 (type (if (consp seq) 'list 'vector))
+	 (i -1))
+    (flet ((entry (x) (setf i (+ i 1)) (list x i))
+	   (less (a b)
+		 (let ((x (first a))
+		       (y (first b)))
+		   (if (numberp x) (< x y) (string-lessp x y)))))
+      (let ((sorted-seq (stable-sort (map type #'entry seq) #'less)))
+	(map type #'second sorted-seq)))))
+
+;; this isn't destructive -- do we document destructive only, or any
+;; variant?
+(defun rank (x)
+"Args (x)
+Returns a sequence with the elements of the list or array of numbers or
+strings X replaced by their ranks."
+  (let ((ranked-seq (order (order x))))
+    (make-compound-data (compound-data-shape x) ranked-seq)))
+
+(defun mean (x)
+"Args: (x)
+Returns the mean of the elements x. Vector reducing."
+  (let ((mean 0.0)
+        (count 0.0))
+    (labels ((add-to-mean (x)
+              (let ((count+1 (+ count 1.0)))
+                (setf mean (+ (* (/ count count+1) mean) (* (/ count+1) x)))
+                (setf count count+1)))
+             (find-mean (x)
+               (if (numberp x)
+                 (add-to-mean x)
+                 (let ((seq (compound-data-seq x)))
+                   (if (consp seq)
+                     (dolist (x seq)
+                       (if (numberp x) (add-to-mean x) (find-mean x)))
+                     (let ((n (length seq)))
+                       (dotimes (i n)
+		         (declare (fixnum i))
+                         (let ((x (aref seq i)))
+                           (if (numberp x)
+			       (add-to-mean x)
+			       (find-mean x))))))))))
+      (find-mean x)
+      mean)))
 
 ;;;;
 ;;;; Linear Algebra Functions
