@@ -60,86 +60,7 @@
    ))
 
 
-;; (defpackage :lisp-stat-basics
-;;   (:nicknames :ls-basics)
-;;   (:use ;; :common-lisp
-;; 	:lisp-stat-object-system
-;;         :lisp-stat-fastmap
-;; 	:lisp-stat-macros)
-;;   ;;(:shadowing-import-from (package-shadowing-symbols #:lisp-stat-object-system))
-;;   (:export
-
-;;    ;; lsbasics.lsp
-;;    sequencep copy-vector copy-array iseq which repeat select 
-;;    permute-array sum prod count-elements mean if-else
-;;    sample sort-data order rank
-
-;;    ;; kclpatch.lsp
-;;    ;; #+  kcl (export '(function-lambda-expression realp fixnump))
-
-;;    ;; compound.lsp
-
-;;    compound-data-p map-elements compound-data-seq
-;;    compound-data-length element-seq compound-data-proto
-
-;;    ;; dists.lsp
-;;    log-gamma uniform-rand normal-cdf normal-quant normal-dens
-;;    normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
-;;    cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
-;;    chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
-;;    beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
-;;    f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
-;;    binomial-cdf binomial-quant binomial-pmf binomial-rand
-
-;;    ;; linalg.lsp
-
-;;    chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
-;;    qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
-;;    fft make-sweep-matrix sweep-operator ax+y numgrad numhess
-;;    split-list eigen
-
-;;    ;; matrices.lsp
-;;    matrixp num-rows num-cols matmult identity-matrix diagonal
-;;    row-list column-list inner-product outer-product cross-product
-;;    transpose bind-columns bind-rows
-
-;;    ;; lsfloat.lsp
-
-;;    +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
-;;    machine-epsilon
-
-;;    ;; mclglue.lsp
-;;    ;; #+:mcl
-;;    ;; (import '(ccl:def-logical-directory ccl:ff-load ccl:deffcfun ccl:defccallable))
-
-;;    ))
-
 (in-package #:lisp-stat-basics)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                       Sequence Element Access
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun get-next-element (x i)
-  "Get element i from seq x.  FIXME: not really??"
-  (let ((myseq (first x)))
-    (if (consp myseq)
-        (let ((elem (first myseq)))
-          (setf (first x) (rest myseq))
-          elem)
-      (aref myseq i))))
-
-(defun set-next-element (x i v)
-  (let ((seq (first x)))
-    (cond ((consp seq)
-           (setf (first seq) v)
-           (setf (first x) (rest seq)))
-          (t (setf (aref seq i) v)))))
-
-(defun make-next-element (x) (list x))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -618,71 +539,10 @@ Returns the number of its arguments. Vector reducing"
               (incf count (if (compound-data-p x) (count-elements x) 1)))))))
     1))
 
-(defun mean (x)
-"Args: (x)
-Returns the mean of the elements x. Vector reducing."
-  (let ((mean 0.0)
-        (count 0.0))
-    (labels ((add-to-mean (x)
-              (let ((count+1 (+ count 1.0)))
-                (setf mean (+ (* (/ count count+1) mean) (* (/ count+1) x)))
-                (setf count count+1)))
-             (find-mean (x)
-               (if (numberp x)
-                 (add-to-mean x)
-                 (let ((seq (compound-data-seq x)))
-                   (if (consp seq)
-                     (dolist (x seq)
-                       (if (numberp x) (add-to-mean x) (find-mean x)))
-                     (let ((n (length seq)))
-                       (dotimes (i n)
-		         (declare (fixnum i))
-                         (let ((x (aref seq i)))
-                           (if (numberp x)
-			       (add-to-mean x)
-			       (find-mean x))))))))))
-      (find-mean x)
-      mean)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
-;;;;                         Sorting Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun sort-data (x)
-"Args: (sequence)
-Returns a sequence with the numbers or strings in the sequence X in order."
-  (flet ((less (x y) (if (numberp x) (< x y) (string-lessp x y))))
-    (stable-sort (copy-seq (compound-data-seq x)) #'less)))
-
-(defun order (x)
-"Args (x)
-Returns a sequence of the indices of elements in the sequence of numbers
-or strings X in order."
-  (let* ((seq (compound-data-seq x))
-	 (type (if (consp seq) 'list 'vector))
-	 (i -1))
-    (flet ((entry (x) (setf i (+ i 1)) (list x i))
-	   (less (a b)
-		 (let ((x (first a))
-		       (y (first b)))
-		   (if (numberp x) (< x y) (string-lessp x y)))))
-      (let ((sorted-seq (stable-sort (map type #'entry seq) #'less)))
-	(map type #'second sorted-seq)))))
-
-;; this isn't destructive -- do we document destructive only, or any
-;; variant?
-(defun rank (x)
-"Args (x)
-Returns a sequence with the elements of the list or array of numbers or
-strings X replaced by their ranks."
-  (let ((ranked-seq (order (order x))))
-    (make-compound-data (compound-data-shape x) ranked-seq)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                    IF-ELSE and SAMPLE Functions
+;;;;                    IF-ELSE Functions
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -692,21 +552,3 @@ Takes simple or compound data items FIRST, X and Y and returns result of
 elementswise selecting from X if FIRST is not NIL and from Y otherwise."
   (flet ((base-if-else (a x y) (if a x y)))
     (recursive-map-elements #'base-if-else #'if-else a x y)))
-
-(defun sample (x ssize &optional replace)
-"Args: (x n &optional (replace nil))
-Returns a list of a random sample of size N from sequence X drawn with or
-without replacement."
-  (check-sequence x)
-  (let ((n (length x))
-	(x (if (consp x) (coerce x 'vector) (copy-vector x)))
-	(result nil))
-    (if (< 0 n)
-	(dotimes (i ssize result)
-		 (let ((j (if replace (random n) (+ i (random (- n i))))))
-		   (setf result (cons (aref x j) result))
-		   (unless replace     ;; swap elements i and j
-			   (let ((temp (aref x i)))
-			     (setf (aref x i) (aref x j))
-			     (setf (aref x j) temp))))))))
-

@@ -26,8 +26,8 @@
   (:use :common-lisp
 	:cxml
 	:lisp-stat-object-system
-	:lisp-stat-compound
-	:lisp-stat-matrices
+	:lisp-stat-compound-data
+	:lisp-stat-matrix
 	:lisp-stat-linalg
 	:lisp-stat-sequence)
   (:shadowing-import-from :lisp-stat-object-system
@@ -46,11 +46,55 @@
 ;;; objects which could be the target for statistical modeling and
 ;;; inference.
 
-(defvar *lisp-stat-data-table* (make-hashtable)
+(defvar *lisp-stat-data-table* (make-hash-table)
   "Marks up the data the could be used by.")
 
 (defvar *lisp-stat-data-count* 0
   "number of items currently recorded.")
+
+;;; Data Types:
+;;;
+;;; Data types are the representation of data from a computer-science
+;;; perspective, i.e. what it is that they contain.  These types
+;;; include particular forms of compound types (i.e. dataframe,
+;;; relationdata are compounds of arrays of different types where the
+;;; difference is row-wise, while array is a compound of elements of
+;;; the same type.
+
+;;Examples:
+;;  (defun equidimensional (a)
+;;    (or (< (array-rank a) 2)
+;;        (apply #'= (array-dimensions a)))) =>  EQUIDIMENSIONAL
+;;  (deftype square-matrix (&optional type size)
+;;    `(and (array ,type (,size ,size))
+;;          (satisfies equidimensional))) =>  SQUARE-MATRIX
+
+(deftype dt-scalar (&optional type)
+  `(or integer double complex))
+
+(deftype dt-array (&optional type)
+  `(satisfies equal-type))
+
+(deftype dt-dataframe ()
+  `(satisfies equal-type-within-column))
+
+(deftype dt-relationdata ()
+  `(satisfies (foreach unit in relationalUnit
+	       (typep unit 'dt-dataframe)))) 
+
+
+
+
+;;; Statistical Variable Classes
+;;(deftype sv-nominal )
+;;(deftype sv-ordinal )
+;;(deftype sv-categorical (or 'sv-nominal 'sv-ordinal))
+;;(deftype sv-integer )
+;;(deftype sv-real )
+;;(deftype sv-rational )
+;;(deftype sv-complex )
+;;(deftype sv-continuous (or 'sv-integer 'sv-real 'sv-rational 'sv-complex))
+
 
 ;;; Data I/O
 
@@ -60,14 +104,14 @@
 (defparameter *lisp-stat-data-formats*
   '(csv tsv))
 
-(defgeneric data-read (srce frmt)
-  "read data from stream srce, in format frmt.")
+;; (defgeneric data-read (srce frmt)
+;;   "read data from stream srce, in format frmt.")
 
-(defgeneric data-write (srce frmt)
-  "read data from stream srce, in format frmt.")
+;; (defgeneric data-write (srce frmt)
+;;   "read data from stream srce, in format frmt.")
 
-(defmacro with-data (body)
-  "Stream-handling, maintaining I/O through object typing.")
+;; (defmacro with-data (body)
+;;   "Stream-handling, maintaining I/O through object typing.")
 
 ;; design-wise should these be replaced with a "with-data" form? 
 
@@ -81,12 +125,12 @@
 ;; the goal is to have 2 operations which can be used to create new
 ;; data formats out of old ones.
 
-(defgeneric data-subset (ds description) 
-  "Take a dataset and make it smaller.")
+;; (defgeneric data-subset (ds description) 
+;;   "Take a dataset and make it smaller.")
 
-(defgeneric data-relate (ds description) 
-  "Take 2 or more datasets, and grow them into a bigger one through
-relating them (i.e. merge is one example).")
+;; (defgeneric data-relate (ds description) 
+;;   "Take 2 or more datasets, and grow them into a bigger one through
+;; relating them (i.e. merge is one example).")
 
 ;;; Data tools from "statistics.lsp" 
 

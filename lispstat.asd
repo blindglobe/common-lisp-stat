@@ -35,6 +35,7 @@
   :description "CommonLispStat (CLS): A System for Statistical Computing with Common Lisp;
 based on CLS by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
 Last touched 1991, then in 2005--2007."
+  :serial t
   :depends-on (:cffi )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "lsobjects")
@@ -51,8 +52,7 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
 	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on (;;"ladata"
-						       "lstypes"
+					  :depends-on ("lstypes"
 						       "matrices"))
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
@@ -73,6 +73,10 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("lsbasics")) ;; in lisp-stat-basics
 
+
+	       ;; mix/match lsp vs. lisp in next 2.
+	       (:file "data" :depends-on ("lsobjects"
+					  "compound"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
@@ -81,15 +85,14 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "nonlin"
 					  :depends-on ("regression"))
 	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("lsobjects"))
+					  :depends-on ("lsobjects"
+						       "data" ))
 	       (:lispstat-lsp-source-file "maximize"
 					  :depends-on ("lsobjects"))
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
-	       ;; mix/match lsp vs. lisp in next 2.
-	       (:source-file "data" :depends-on ("lsobjects"))
 
 	       ;;; Top level
-	       (:source-file "ls-user" :depends-on ("statistics"
+	       (:file "ls-user" :depends-on ("statistics"
 						    "data"))))
