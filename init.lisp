@@ -1,5 +1,5 @@
 ;;; Basic initialization for LispStat
-;;; Time-stamp: <2007-06-25 19:54:12 ROSSIAN6>
+;;; Time-stamp: <2007-06-25 19:58:14 ROSSIAN6>
 ;;; Created: <2007-05-30 17:09:47 ROSSIAN6>
 
 ;; Goal:
@@ -26,17 +26,12 @@
 (ls-defdir *lispstat-data-dir* "data/")
 (ls-defdir *lispstat-external-dir* "external/")
 
-
 ;; Load ASDF if it isn't loaded
 #-asdf(load (pathname (concatenate 'string (namestring *lispstat-external-dir*) "asdf")))
 
-(load (pathname (concatenate 'string (namestring *tony-local-lispdir*) "pcl-portable-files"))))
-
 (progn 
   ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
-  (pushnew  (pathname (concatenate 'string (namestring *lispstat-homedir*) "ASDF"))
-	    ;;"/cygdrive/c/local/sandbox/Lisp/asdf-packages/")
-	    asdf:*central-registry*)
+  (pushnew  *lispstat-asdf-dir*  asdf:*central-registry*)
   (asdf:oos 'asdf:load-op :cffi)
   (asdf:oos 'asdf:load-op :lisp-unit)
   (asdf:oos 'asdf:load-op :cells)
