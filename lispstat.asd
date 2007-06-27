@@ -91,7 +91,7 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
-
-	       ;;; Top level
-	       (:file "ls-user" :depends-on ("statistics"
-						    "data"))))
+	       ))
+;;	       ;;; Top level
+;;	       (:file "ls-user" :depends-on ("statistics"
+;;						    "data"))))
