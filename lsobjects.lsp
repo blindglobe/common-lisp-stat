@@ -564,9 +564,6 @@ RETURNS: method-name."
     (add-documentation object 'proto doc))
   (if set (setf (symbol-value name) object)))
 
-;; FIXME: name needs to be defvar'd somewhere?!  CL compilers don't like it otherwise.
-;; FIXME: above is not true.  SBCL doesn't like it, but CMUCL likes it.  Need to see what CLISP sez.
-;; almost creating a new variable -- is it a macro-expansion vs. other issue?
 (defmacro defproto (name &optional ivars cvars parents doc)
 "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
 Makes a new object prototype with instance variables IVARS, 'class'
