@@ -20,12 +20,9 @@ should be packaged up elsewhere for reproducibility.")
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export
-
-
    ;; lsobjects.lsp
 
    ;; data.lisp
-
 
    ;; optimize.lsp
    newtonmax nelmeadmax
@@ -57,7 +54,6 @@ should be packaged up elsewhere for reproducibility.")
 
    ;; bayes.lsp
    bayes-model bayes-model-proto bayes-internals
-
    ))
 
 
