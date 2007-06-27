@@ -24,6 +24,11 @@
 ;;;; These constants need to be redefined if IN, RE or CX in linalg.h
 ;;;; are changed.
 ;;;;
+
+;;; FIXME:AJR: This is how Luke got around having appropriate
+;;; approaches for Linear Algebra.  We want to cheat and instead use
+;;; CLEM or MATLISP as the underlying linear algebra package.
+
 (defparameter +mode-in+ 0)
 (defparameter +mode-re+ 1)
 (defparameter +mode-cx+ 2)
