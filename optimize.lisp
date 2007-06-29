@@ -13,7 +13,115 @@
 			 slot-value call-method call-next-method)
  (:export newtonmax nelmeadmax))
 
+;;; FIXME:AJR: There is a need to figure out the proper symbols to
+;;; export.  more importantly should there be any specialty packages
+;;; that are exported for maximization?
+
 (in-package :lisp-stat-optimize)
+
+;;;;
+;;;; minfo basics (internal??)
+;;;;
+
+(defun init-minfo-ipar-values (n ipars)
+  (let* ((TRUE 1)
+	 (FALSE 0)
+	 (k 0)
+	 (m 0)
+	 (itnlimit -1)
+	 (backtrack TRUE)
+	 (verbose 0)
+	 (vals_suppl FALSE)
+	 (exptilt TRUE)
+	 (count 0)
+	 (termcode 0))
+    (setf (aref ipars 0) n)
+    (setf (aref ipars 1) m)
+    (setf (aref ipars 2) k)
+    (setf (aref ipars 3) itnlimit)
+    (setf (aref ipars 4) backtrack)
+    (setf (aref ipars 5) verbose)
+    (setf (aref ipars 6) vals_suppl)
+    (setf (aref ipars 7) exptilt)
+    (setf (aref ipars 8) count)
+    (setf (aref ipars 9) termcode)))
+
+(defun init-minfo-dpar-values (h dpars)
+  (let ((typf 1.0)
+	(gradtol -1.0)
+	(steptol -1.0)
+	(maxstep -1.0)
+	(dflt 0.0)
+	(tilt 0.0)
+	(newtilt 0.0)
+	(hessadd 0.0))
+    (setf (aref dpars 0) typf)
+    (setf (aref dpars 1) h)
+    (setf (aref dpars 2) gradtol)
+    (setf (aref dpars 3) steptol)
+    (setf (aref dpars 4) maxstep)
+    (setf (aref dpars 5) dflt)
+    (setf (aref dpars 6) tilt)
+    (setf (aref dpars 7) newtilt)
+    (setf (aref dpars 8) hessadd)))
+
+(defun init-minfo-internals (n h internals)
+  (let ((ipars (aref internals 8))
+	(dpars (aref internals 9)))
+    (init-minfo-ipar-values n ipars)
+    (init-minfo-dpar-values h dpars)))
+
+(defun new-minfo-internals (f x &key scale ((:derivstep h) -1.0))
+  (check-sequence x)
+  (check-real x)
+  (check-one-real h)
+  (let ((n (length x)))
+    (when scale
+	  (check-sequence scale)
+	  (check-real scale)
+	  (if (/= n (length scale)) (error "scale and x not the same length")))
+    (let ((internals (make-array 12)))
+      (setf (aref internals 0) f)
+      (setf (aref internals 3) (if (consp x) (copy-list x) (coerce x 'list)))
+      (setf (aref internals 4)
+	    (if scale (copy-seq scale) (make-array n :initial-element 1.0)))
+      (setf (aref internals 5) (make-list (+ 1 n (* n n))))
+      (setf (aref internals 8) (make-array 10))
+      (setf (aref internals 9) (make-array 9))
+      (init-minfo-internals n h internals)
+      internals)))
+
+(defun minfo-maximize (internals &optional verbose)
+  "This function does what?"
+  (let* ((f (aref internals 0))
+	 (x (aref internals 3))
+	 (fvals (aref internals 5))
+	 (n (length x))
+	 (v (if verbose (if (integerp verbose) verbose 1) -1)))
+    (setf (aref internals 3) (copy-list x))
+    (setf (aref internals 5) (copy-list fvals))
+    (let ((*maximize-callback-function* f)
+	  (*maximize-callback-arg* (make-list n)))
+      (let* ((x (aref internals 3))
+	     (scale (aref internals 4))
+	     (fvals (aref internals 5))
+	     (ip (aref internals 8))
+	     (dp (aref internals 9))
+	     (px (la-data-to-vector x mode-re))
+	     (pscale (la-data-to-vector scale mode-re))
+	     (pfvals (la-vector (length fvals) mode-re))
+	     (pip (la-data-to-vector ip mode-in))
+	     (pdp (la-data-to-vector dp mode-re)))
+	(unwind-protect
+	    (progn
+	      (base-minfo-maximize px pfvals pscale pip pdp v)) ;; access to C
+	  (la-vector-to-data px n mode-re x)
+	  (la-vector-to-data pfvals (+ 1 n (* n n)) mode-re fvals)
+	  (la-vector-to-data pip (length ip) mode-in ip)
+	  (la-vector-to-data pdp (length dp) mode-re dp))
+	(get-buf)))))
+
+
 
 ;;;;
 ;;;; Mode Info Prototype
