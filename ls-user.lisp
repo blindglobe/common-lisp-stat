@@ -20,12 +20,11 @@ should be packaged up elsewhere for reproducibility.")
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export
-   ;; lsobjects.lsp
+   ;; lsobjects.lsp : should this become a prototype object?
+   defproto defmeth send 
 
    ;; data.lisp
 
-   ;; optimize.lsp
-   newtonmax nelmeadmax
 
    ;; lsmath.lsp
    ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
@@ -43,6 +42,14 @@ should be packaged up elsewhere for reproducibility.")
    backsolve eigenvalues eigenvectors accumulate cumsum combine
    lowess
 
+;;; Here is where we have a problem -- lispstat core should be core
+;;; data management and config problems, with packages providing
+;;; specialized extensions to LispStat, i.e. regression, nonlin
+;;; regression, bayesian regression via laplace approximation, etc. 
+
+;;; The following could be considered "core packages", similar to the
+;;; idea of a recommended set.
+
    ;; regression.lsp
    regression-model regression-model-proto x y intercept sweep-matrix
    basis weights included total-sum-of-squares residual-sum-of-squares
@@ -54,6 +61,10 @@ should be packaged up elsewhere for reproducibility.")
 
    ;; bayes.lsp
    bayes-model bayes-model-proto bayes-internals
+
+   ;; optimize.lsp
+   newtonmax nelmeadmax
+
    ))
 
 
