@@ -1042,39 +1042,3 @@ Computes the numerical Hessian matrix of F at X."
 	  (la-free-vector pscale))))
     result))
 
-;;;;
-;;;; Miscellaneous Routines
-;;;;
-
-(defun split-list (x n)
-"Args: (list cols)
-Returns a list of COLS lists of equal length of the elements of LIST.
-Example: (split-list '(1 2 3 4 5 6) 2) returns ((1 2 3) (4 5 6))"
-  (check-one-fixnum n)
-  (if (/= (rem (length x) n) 0) (error "length not divisible by ~a" n))
-  (flet ((next-split ()
-           (let ((result nil)
-                 (end nil))
-             (dotimes (i n result)
-               (declare (fixnum i))
-               (let ((c-elem (list (first x))))
-                 (cond ((null result)
-                        (setf result c-elem)
-                        (setf end result))
-                       (t 
-                        (setf (rest end) c-elem)
-                        (setf end (rest end)))))
-               (setf x (rest x))))))
-    (let ((result nil)
-          (end nil)
-          (k (/ (length x) n)))
-      (declare (fixnum k))
-      (dotimes (i k result)
-        (declare (fixnum i))
-        (let ((c-sub (list (next-split))))
-          (cond ((null result)
-                 (setf result c-sub)
-                 (setf end result))
-                (t 
-                 (setf (rest end) c-sub)
-                 (setf end (rest end)))))))))
