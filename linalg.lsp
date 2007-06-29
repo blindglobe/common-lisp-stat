@@ -11,6 +11,9 @@
 ;;;      distinct from callbacks).  It would be difficult if we don't
 ;;;      -- however, has anyone run Lapack or similar through F2CL?
 ;;;      Answer: yes, Matlisp does this.
+;;;
+;;; #3 - Use a lisp-based matrix system drop-in?  (matlisp, femlisp, clem, ...?)
+;;;
 
 
 ;;;; linalg -- Lisp-Stat interface to basic linear algebra routines.
@@ -31,9 +34,7 @@
 	   fft make-sweep-matrix sweep-operator ax+y numgrad numhess
 	   split-list eigen))
 
-
 (in-package #:lisp-stat-linalg)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
