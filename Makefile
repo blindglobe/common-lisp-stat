@@ -7,6 +7,9 @@ default:
 	@echo "   clisp - build using CLISP"
 	@echo "        "
 
+git-push :
+	git push --all git+ssh://repo.or.cz/srv/git/CommonLispStat.git
+
 ## Workspace cleanup
 
 clean:
