@@ -1,5 +1,12 @@
 ;;; -*- mode: lisp -*-
 
+(defpackage :lisp-stat-config
+  (:use :common-lisp)
+  (:export *default-path* *lsos-files* *basic-files* *ls-files*
+	   ))
+
+(in-package :lisp-stat-config)
+
 ;;;; defsys -- System setup for CL version of Lisp-Stat
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
@@ -30,7 +37,7 @@
 ;;;; AKCL
 ;;;;
 
-;#+:kcl (proclaim '(optimize (safety 2) (space 3) (speed 3)))
+#+:kcl (proclaim '(optimize (safety 2) (space 3) (speed 3)))
 #+:kcl (setf *break-enable* nil)
 
 #+:kcl (allocate 'cons 600)
@@ -47,7 +54,7 @@
 ;;;; EXCL (Allegro)
 ;;;;
 
-(setf *read-default-float-format* 'double-float)
+#+excl(setf *read-default-float-format* 'double-float)
 
 ;;;;
 ;;;; Switch to Lisp-Stat package
@@ -56,9 +63,6 @@
 #+:mcl (load "lspackages")
 #+:mcl (load "lsmacros")
 
-(in-package :lispstat)
-
-(export '(*default-path* debug nodebug))
 
 (defvar *common-lisp-stat-version* "1.0 Alpha 1")
 
@@ -75,24 +79,6 @@
 (defun nodebug ()
   #+:kcl (setf *break-enable* nil)
   #+:mcl (setf *break-on-errors* nil))
-
-;;;;
-;;;; MCL definitions
-;;;;
-
-#+:mcl (setf *default-path* ":")
-
-;;;;
-;;;; AKCL definitions
-;;;;
-
-#+:kcl (setf  *clibs* 
-	      #+:mips "lib/clib.a -lm_G0 -lc_G0"
-	      #-:mips "lib/clib.a -lm -lc")
-
-;;;;
-;;;; EXCL definitions
-;;;;
 
 ;;;;
 ;;;; Compilation and Loading Utilities
