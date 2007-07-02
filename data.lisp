@@ -17,6 +17,12 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
+;;; conside    that dataa has 3 genotypic chracteristrics.  The first
+;;; would be form -- scalar, vector, array.   second would be
+;;; datarep type.  in particular integer, real, string, symbol.  The last
+;;; would be statistical type.  augmenting datarep type with use in a
+;;; statistical context, i.e. that would include nominal, ordinal,
+;;; integer, continous, interval (orderable subtypes)
 
 (in-package :cl-user)
 
@@ -24,7 +30,8 @@
   (:documentation "Data I/O, management, other data technologies.")
   (:nicknames :ls-data)
   (:use :common-lisp
-	:cxml
+	:lisp-stat-config
+	;;:cxml
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
 	:lisp-stat-matrix
@@ -39,6 +46,13 @@
           undef  ))
 
 (in-package :lisp-stat-data)
+
+;; (deftype dataformtype (list scalar vector sequence list array relation))
+;; (deftype datareptype (list integer rational real complex string symbol=
+;; (deftype stattzpe (list 
+
+
+
 
 ;;; The purpose of this package is to manage data which will be
 ;;; processed by LispStat.  In particular, it willbe importnat to
