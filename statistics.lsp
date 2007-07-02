@@ -14,8 +14,16 @@
 
 (defpackage :lisp-stat-descriptive-statistics
  (:use :common-lisp
-       :lisp-stat-data)
- (:export ;; descriptive stats
+       :lisp-stat-data
+       :lisp-stat-math)
+   (:shadowing-import-from :lisp-stat-math
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > complex conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis)
+   (:export ;; descriptive stats
           standard-deviation quantile median interquartile-range
 	  fivnum
 
@@ -39,6 +47,8 @@ Returns the standard deviation of the elements x. Vector reducing."
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
+
+;; FIXME the following assume that we are using the vector based functions
 (defun quantile (x p)
 "Args: (x p)
 Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."
@@ -57,7 +67,7 @@ Returns the median of the elements of X."
 (defun interquartile-range (x) 
 "Args: (number-data)
 Returns the interquartile range of the elements of X."
-  (apply #'- (quantile x '(0.75 0.25))))
+  (reduce #'- (quantile x '(0.75 0.25))))
 
 (defun fivnum (x) 
 "Args: (number-data)
