@@ -38,6 +38,7 @@ Last touched 1991, then in 2005--2007."
   :serial t
   :depends-on (:cffi )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
+	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
@@ -75,7 +76,8 @@ Last touched 1991, then in 2005--2007."
 
 
 	       ;; mix/match lsp vs. lisp in next 2.
-	       (:file "data" :depends-on ("lsobjects"
+	       (:file "data" :depends-on ("defsys"
+					  "lsobjects"
 					  "compound"))
 	       
 	       ;; Applications
@@ -86,6 +88,7 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("regression"))
 	       (:lispstat-lsp-source-file "statistics"
 					  :depends-on ("lsobjects"
+						       "lsmath"
 						       "data" ))
 	       (:file "optimize" :depends-on ("lsobjects"))
 	       (:lispstat-lsp-source-file "bayes"
