@@ -589,8 +589,6 @@ a list of objects. IVARS and CVARS must be lists."
 ;; ' => regular quote (not special in this context).
 
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;;                   Initialize the Root Object
