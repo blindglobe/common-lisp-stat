@@ -408,7 +408,7 @@ control the behavior of simplex algorithm."
 (defmeth simplex-proto :mean-opposite-face (x)
   (let ((face (mapcar #'(lambda (x) (send self :point-location x))
                       (remove x (send self :simplex)))))
-    (/ (apply #'+ face) (length face))))
+    (/ (reduce #'+ face) (length face))))
 
 ;;;
 ;;; Iteration Step Methods

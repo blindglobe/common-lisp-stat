@@ -123,7 +123,7 @@
     (flet ((value (f)
              (let ((v (send f :value x)))
                (if exptilt v (log v)))))
-      (* tilt (if (consp f) (apply #'+ (mapcar #'value f)) (value f))))))
+      (* tilt (if (consp f) (reduce #'+ (mapcar #'value f)) (value f))))))
 
 (defmeth tilt-function-proto :gradient (x &optional (h (send self :grad-h)))
   (let ((f (send self :f))
@@ -136,7 +136,7 @@
                        (grad (send f :gradient x h)))
                    (/ grad v)))))
       (* tilt 
-         (if (consp f) (apply #'+ (mapcar #'gradient f)) (gradient f))))))
+         (if (consp f) (reduce #'+ (mapcar #'gradient f)) (gradient f))))))
 
 (defmeth tilt-function-proto :hessian (x &optional (h (send self :hess-h)))
   (let ((f (send self :f))
@@ -148,7 +148,7 @@
                     (grad (if exptilt (second vals) (/ (second vals) v)))
                     (hess (if exptilt (third vals) (/ (third vals) v))))
                (if exptilt hess (- hess (outer-product grad grad))))))
-      (* tilt (if (consp f) (apply #'+ (mapcar #'hessian f)) (hessian f))))))
+      (* tilt (if (consp f) (reduce #'+ (mapcar #'hessian f)) (hessian f))))))
 
 (defmeth tilt-function-proto :vals (x &optional (h (send self :hess-h)))
   (let ((f (send self :f))
@@ -164,7 +164,7 @@
                                    (outer-product grad grad))))
                      (list (log v) grad hess))))))
       (let ((v (if (consp f) (mapcar #'vals f) (vals f))))
-        (* tilt (if (consp f) (apply #'+ v) v))))))
+        (* tilt (if (consp f) (reduce #'+ v) v))))))
         
 ;; scaled log posterior prototype
 
@@ -498,7 +498,7 @@ covaraince is appended to the end of the result as well."
              (moms2 (g mu)
                (let ((mu1 (exp (loglap g 1.0)))
                      (mu2 (exp (loglap g 2.0))))
-                 (* mu (list mu1 (sqrt (- mu2 (^ mu1 2)))))))
+                 (* mu (values-list (list mu1 (sqrt (- mu2 (^ mu1 2))))))))
              (covar (g mean-sd)
                (let* ((mu (/ (first mean-sd) mean1))
                       (sd (second mean-sd))
@@ -569,9 +569,9 @@ covaraince is appended to the end of the result as well."
          (ghess (mapcar #'third gvals))
          (ggradmat (apply #' bind-columns ggrad)))
     (setf (slot-value 'val) val)
-    (setf (slot-value 'grad) (apply #'+ grad (* lambda ggrad)))
+    (setf (slot-value 'grad) (reduce #'+ grad (* lambda ggrad)))
     (setf (slot-value 'gval) gval)
-    (setf (select a i i) (apply #'+ hess (* lambda ghess)))
+    (setf (select a i i) (reduce #'+ hess (* lambda ghess)))
     (setf (select a i j) ggradmat)
     (setf (select a j i) (transpose ggradmat))
     (setf (slot-value 'lu) (lu-decomp a))))

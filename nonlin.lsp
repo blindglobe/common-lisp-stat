@@ -278,10 +278,11 @@ by more than EPSILON."
 F is a function of an N-vector. Returns a function that approximates the
 jacobian function iof F by a symmetric difference."
   (let* ((h .0001)
-         (del (* h (column-list (identity-matrix n)))))
+         (del (* h (values-list (column-list (identity-matrix n))))))
     #'(lambda (b) 
       (let ((b+ (mapcar #'(lambda (x) (+ b x)) del))
             (b- (mapcar #'(lambda (x) (- b x)) del)))
+	;; FIXME:AJR BAD  IDIOM FOLLOWS
         (apply #'bind-columns (/ (- (mapcar f b+) (mapcar f b-)) (* 2 h)))))))
 
 (defun nlreg (f y guess &optional 
