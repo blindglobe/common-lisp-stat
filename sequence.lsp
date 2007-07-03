@@ -19,7 +19,9 @@
 	   make-next-element sequencep iseq
 
 	   ;; vector differences
-	   difference rseq ))
+	   difference rseq
+
+	   sort-data order rank))
 
 (in-package :lisp-stat-sequence)
 

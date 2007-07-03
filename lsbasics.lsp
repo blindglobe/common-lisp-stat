@@ -30,7 +30,7 @@
   (:export
    ;; lsbasics.lisp
    copy-vector copy-array which repeat
-   permute-array sum prod count-elements mean if-else sample sort-data
+   permute-array sum prod count-elements mean if-else sample 
    select
    
    ;; matrices.lisp
