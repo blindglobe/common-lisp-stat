@@ -2,67 +2,20 @@
 
 (defpackage :lisp-stat-config
   (:use :common-lisp)
-  (:export *default-path* *lsos-files* *basic-files* *ls-files*
-	   ))
+  (:export *default-path* *lsos-files* *basic-files* *ls-files*))
 
 (in-package :lisp-stat-config)
 
-;;;; defsys -- System setup for CL version of Lisp-Stat
-;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
+;; KCL
+;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
+;; (setf *break-enable* nil)
 
-#+kcl
-(dolist (f *features*)
-  (if (symbolp f)
-      (pushnew (intern (symbol-name f) 'keyword) *features*)))
-
-#-:mcl(require :lspackages)
-#-:mcl(require :lsmacros)
-
-;;;;
-;;;; Macintosh CL
-;;;;
-
-#+:mcl (pushnew :CLtL2 *features*)
-#+:mcl (def-logical-directory "mcls;" "ccl;:MCLS:")
-#+:mcl (setf *break-on-errors* nil)
-#+:mcl (set-mac-default-directory "mcls;")
-#+:mcl (setf *save-definitions* t)
-#+:mcl (defpackage "COMMON-LISP" (:nicknames "CL" "LISP"))
-#+:mcl (pushnew :stat-float-is-double-float *features*)
-#+:mcl (require :ff)
-
-;;;;
-;;;; AKCL
-;;;;
-
-#+:kcl (proclaim '(optimize (safety 2) (space 3) (speed 3)))
-#+:kcl (setf *break-enable* nil)
-
-#+:kcl (allocate 'cons 600)
-#+:kcl (allocate 'cfun 1000)
-#+:kcl (si:allocate-relocatable-pages 100)
-
-;; **** This feature should only be used if the patches in num_sfun.c
-;; **** and numlib.lsp habe been applied to AKCL -- see lsfloat.lsp for
-;; **** more details.
-
-;#+:kcl (pushnew :stat-float-is-double-float *features*)
 
 ;;;;
 ;;;; EXCL (Allegro)
 ;;;;
 
-#+excl(setf *read-default-float-format* 'double-float)
-
-;;;;
-;;;; Switch to Lisp-Stat package
-;;;;
-
-#+:mcl (load "lspackages")
-#+:mcl (load "lsmacros")
-
+;; (setf *read-default-float-format* 'double-float)
 
 (defvar *common-lisp-stat-version* "1.0 Alpha 1")
 
@@ -73,12 +26,8 @@
 ;;;;
 
 (defun debug ()
-  #+:kcl (setf *break-enable* t)
-  #+:mcl (setf *break-on-errors* t))
-
-(defun nodebug ()
-  #+:kcl (setf *break-enable* nil)
-  #+:mcl (setf *break-on-errors* nil))
+  #+:kcl (setf *break-enable* t) ;; or nil for nodebug
+  #+:mcl (setf *break-on-errors* t)) ;; or nil
 
 ;;;;
 ;;;; Compilation and Loading Utilities
@@ -87,10 +36,7 @@
 (defvar *lsos-files* (list "lsobjects"))
 
 (defvar *basic-files*
-  (list #+:kcl "kclpatch"
-	#+:mcl "mclglue"
-	#+:excl "exclglue"
-	"lsbasics"
+  (list "lsbasics"
 	"lsfloat"
 	"fastmap"
         "compound"
@@ -120,6 +66,7 @@
   (use-ls-package 'lisp-stat))
 
 (defun lispfile (x)
+  "Add suffix/type to string name."
   (concatenate 'string x
 	       #+:kcl ".lsp"
 	       #+(or :mcl :excl) ".lisp"))
