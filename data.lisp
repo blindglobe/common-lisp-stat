@@ -43,7 +43,7 @@
    ;;; from statistics.lsp
           open-file-dialog read-data-file read-data-columns load-data 
           load-example *variables* *ask-on-redefine* def variables savevar
-          undef  ))
+          undef split-list ))
 
 (in-package :lisp-stat-data)
 
@@ -267,7 +267,8 @@ VARS is a symbol or a list of symbols. FILE-NAME-ROOT is a string (or a symbol
 whose print name is used) not endinf in .lsp. The VARS and their current values
 are written to the file FILE-NAME-ROOT.lsp in a form suitable for use with the
 load command."
-  (with-open-file (f (strcat (string file) ".lsp") :direction :output)
+  (with-open-file (f (concatenate 'string (namestring file) ".lsp")
+		     :direction :output)
     (let ((vars (if (consp vars) vars (list vars))))
       (flet ((save-one (x)
 	       (let ((v (symbol-value x)))
