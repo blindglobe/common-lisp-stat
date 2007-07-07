@@ -11,13 +11,20 @@
        :lisp-stat-basics)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)
- (:export newtonmax nelmeadmax))
+ (:export newtonmax nelmeadmax
+
+	   numgrad numhess))
 
 ;;; FIXME:AJR: There is a need to figure out the proper symbols to
-;;; export.  more importantly should there be any specialty packages
-;;; that are exported for maximization?
+;;; export.  more importantly should there be any specialty package
+z;;; that are exported for maximization?
 
 (in-package :lisp-stat-optimize)
+
+(defvar *maximize-callback-function* nil
+  "Used in generic optimization to determine function name -- symbol or string?")
+(defvar *maximize-callback-arg* nil
+  "args to function to maximize")
 
 ;;;;
 ;;;; minfo basics (internal??)
@@ -440,4 +447,96 @@ control the behavior of simplex algorithm."
     (* 2 (/ (abs (- best worst)) (+ 1 (abs best) (abs worst))))))
 
 
+
+
+;;;;
+;;;; Maximization and Numerical Derivatives
+;;;;
+
+
+(defun data2double (n data ptr)
+  (declare (fixnum n))
+  (let* ((seq (compound-data-seq data))
+	 (elem (make-next-element seq)))
+    (if (/= (length seq) n) (error "bad data size"))
+    (dotimes (i n) 
+      (declare (fixnum i))
+      (la-put-double ptr i (get-next-element elem i)))))
+
+(defun maximize-callback (n px pfval pgrad phess pderivs)
+  (la-vector-to-data px n mode-re *maximize-callback-arg*)
+  (let* ((val (funcall *maximize-callback-function* *maximize-callback-arg*))
+	 (derivs (if (consp val) (- (length val) 1) 0)))
+    (la-put-integer pderivs 0 derivs)
+    (la-put-double pfval 0 (if (consp val) (first val) val))
+    (if (<= 1 derivs) (data2double n (second val) pgrad))
+    (if (<= 2 derivs) (data2double (* n n) (third val) phess))))
+
+(defun numgrad (f x &optional scale (h -1.0))
+"Args: (f x &optional scale derivstep)
+Computes the numerical gradient of F at X."
+  (check-sequence x)
+  (check-real x)
+  (when scale
+	(check-sequence scale)
+	(check-real scale))
+  (check-one-real h)
+  (let* ((n (length x))
+	 (result (make-list n)))
+    (if (and scale (/= n (length scale)))
+	(error "scale not the same length as x"))
+    (let ((*maximize-callback-function* f)
+	  (*maximize-callback-arg* (make-list n)))
+      (let ((px (la-data-to-vector x mode-re))
+	    (pgrad (la-vector n mode-re))
+	    (pscale (la-data-to-vector
+		     (if scale scale (make-list n :initial-element 1.0))
+		     mode-re)))
+	(unwind-protect
+	    (progn
+	      (numgrad-front n px pgrad h pscale)
+	      (la-vector-to-data pgrad n mode-re result))
+	  (la-free-vector px)
+	  (la-free-vector pgrad)
+	  (la-free-vector pscale))))
+      result))
+
+(defun numhess (f x &optional scale (h -1.0) all)
+"Args: (f x &optional scale derivstep)
+Computes the numerical Hessian matrix of F at X."
+  (check-sequence x)
+  (check-real x)
+  (when scale
+	(check-sequence scale)
+	(check-real scale))
+  (check-one-real h)
+  (let* ((n (length x))
+	 (result (if all 
+		     (list nil (make-list n) (make-array (list n n)))
+		     (make-array (list n n)))))
+    (if (and scale (/= n (length scale)))
+	(error "scale not the same length as x"))
+    (let ((*maximize-callback-function* f)
+	  (*maximize-callback-arg* (make-list n)))
+      (let ((hess-data (compound-data-seq (if all (third result) result)))
+	    (px (la-data-to-vector x mode-re))
+	    (pf (la-vector 1 mode-re))
+	    (pgrad (la-vector n mode-re))
+	    (phess (la-vector (* n n) mode-re))
+	    (pscale (la-data-to-vector
+		     (if scale scale (make-list n :initial-element 1.0))
+		     mode-re)))
+	(unwind-protect
+	    (progn
+	      (numhess-front n px pf pgrad phess h pscale)
+	      (when all
+		    (setf (first result) (la-get-double pf 0))
+		    (la-vector-to-data pgrad n mode-re (second result)))
+	      (la-vector-to-data phess (* n n) mode-re hess-data))
+	  (la-free-vector pf)
+	  (la-free-vector px)
+	  (la-free-vector pgrad)
+	  (la-free-vector phess)
+	  (la-free-vector pscale))))
+    result))
 
