@@ -14,6 +14,7 @@
 (defpackage :lisp-stat-regression-nonlin
  (:use :common-lisp
        :lisp-stat-object-system
+       :lisp-stat-math
        :lisp-stat-basics
        :lisp-stat-compound-data
        :lisp-stat-sequence
