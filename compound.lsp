@@ -20,13 +20,13 @@
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value
 			  call-next-method call-method)
-  (:export compound-data-p
-	   compound-data-seq
-	   compound-data-length
-	   compound-data-proto
-	   element-list
-	   element-seq
-	   compound-object-p))
+  (:export compound-data-p compound-data-proto
+	   compound-object-p
+
+	   compound-data-seq compound-data-length
+	   element-list element-seq
+
+	   sort-data order rank))
 
 (in-package :lisp-stat-compound-data)
 
@@ -216,3 +216,41 @@ Returns sequence of the elements of compound item X."
 (defmeth compound-data-proto :select-data (&rest args) nil)
 
 (defun compound-object-p (x) (kind-of-p x compound-data-proto))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;;                         Sorting Functions
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun sort-data (x)
+"Args: (sequence)
+Returns a sequence with the numbers or strings in the sequence X in order."
+  (flet ((less (x y) (if (numberp x) (< x y) (string-lessp x y))))
+    (stable-sort (copy-seq (compound-data-seq x)) #'less)))
+
+(defun order (x)
+"Args (x)
+Returns a sequence of the indices of elements in the sequence of numbers
+or strings X in order."
+  (let* ((seq (compound-data-seq x))
+	 (type (if (consp seq) 'list 'vector))
+	 (i -1))
+    (flet ((entry (x) (setf i (+ i 1)) (list x i))
+	   (less (a b)
+		 (let ((x (first a))
+		       (y (first b)))
+		   (if (numberp x) (< x y) (string-lessp x y)))))
+      (let ((sorted-seq (stable-sort (map type #'entry seq) #'less)))
+	(map type #'second sorted-seq)))))
+
+;; this isn't destructive -- do we document destructive only, or any
+;; variant?
+(defun rank (x)
+"Args (x)
+Returns a sequence with the elements of the list or array of numbers or
+strings X replaced by their ranks."
+  (let ((ranked-seq (order (order x))))
+    (make-compound-data (compound-data-shape x) ranked-seq)))
