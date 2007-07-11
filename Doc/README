@@ -1,0 +1,133 @@
+ -*- mode: text -*-
+
+
+Common Lisp Stat: 
+
+After a few false starts, I (Tony Rossini) finally know how I want to
+proceed.  First, we update CLS.  Then, continue with TSL.  Separation
+is needed, so that we can make everything separate.
+
+We are working with SBCL and CLISP implementations so as to keep a
+wide range of target platforms as well as to maintain ANSI CL as close
+as possible.  This challenges the system by targetting two more common
+CL implementations (compiled, and byte-compiled).
+
+
+Design: 
+(see "orig file dependencies" below for original design docs through
+code).
+------ 
+
+lsobject :  package containing prototype object system
+
+
+data : package from which all data objects are built.  data should
+       provide compound objects, pulling from all potential data
+       structures, so that 
+
+optimization : maximization
+
+linear-algebra : merges matrix data structures, numerical linear
+                 algebra work
+
+<specialty routines>
+regression
+nonlin
+glim
+gee
+bayes-regression
+
+ls-user : 
+
+
+
+
+
+
+
+
+============
+
+File Dependencies from 9 Feb 2007
+
+Package lisp-stat-object-system
+   self contained
+
+Package lisp-stat-fastmap
+   self contained, new.
+
+Package lisp-stat-basics:
+   lsbasics
+   compound
+   lsmacros
+   dists
+   ladata
+   linalg
+   matrices
+   lsfloat
+   lsmath
+   lisp-stat-sequence
+
+ lisp-stat-matrix  (matrices)
+   lisp-stat-sequence (sequence)
+
+ lisp-stat-sequence (sequence)
+   lisp-stat-compound-data (compound)
+
+ lisp-stat-compound-data (compound)
+   common-lisp
+   lisp-stat-object-system (lsobject)
+   lisp-stat-fastmap
+ 
+lisp-stat-fastmap
+   common-lisp   
+
+
+
+============
+Original, dating to Oct 30, 1991.
+
+This is Lisp-Stat 1.0 Alpha 1, a first attempt at producing a Common
+Lisp version of Lisp-Stat. This version contains NO graphics, but
+should implement all the non-graphical facilities of Lisp-Stat.  
+
+The implementation uses C code from XLISP-STAT for linear algebra and
+probability distributions, so this code is dependent an a CL's foreign
+function interface. At this time, three CL's are supported: AKCL (at
+least verision 1-600) for UNIX systems, Franz' Allegro CL for UNIX
+systems, and Macintosh CL (version 2.0b1). Separate README files
+describe each version
+
+On A DEC 3100 or 5000 the AKCL version of Lisp-Stat runs about half as
+fast as xlispstat on a standard battery of tests if xlispstat is given
+an (expand 30) command. I seem to recall that on a sun3 this the AKCL
+code and xlispstat code run at about the same speed. I have not yet
+confirmed this. If so, then the relative performance of the AKCL
+version to xlispstat may be quite hardware-dependent. The Allegro
+version on a DEC 5000 is considerably slower and larger than the AKCL
+version, but I have not yet figured out how to tune Allegro's memory
+management. The Macintosh CL version seems to run at least as fast as
+xlispstat on the Macintosh.
+
+To port this code to another CL, you need to
+
+	Edit defsys.lsp to add any necessary definitions
+
+	Add a top level to lstoplevel.lsp (this is only needed if you
+	want to recover the history mechanism, which is broken by
+	shadowing *, etc.)
+
+	Write versions of the lisp and/or C glue files to interface to
+	the C code in lib.
+
+	Experiment with tuning the memory management to run reasonably
+	in statistical applications.
+
+If you do port this code to another CL, please let me know so I can
+add it to this distribution.
+
+Luke Tierney
+School of Statistics
+University of Minnesota
+Minneapolis, MN 55455
+luke@umnstat.stat.umn.edu
