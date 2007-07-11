@@ -9,8 +9,10 @@
 ;; ensure appropriate tools are linked in for loading.
 ;; i.e. if features don't exist, load from particular locations in this directory structure.
 
-(defvar *lispstat-home-dir* #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
-	"Value considered \"home\" for our data")
+(defvar *lispstat-home-dir*
+  ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
+  #p"/home/tony/sandbox/CommonLispStat.git/"
+  "Value considered \"home\" for our data")
 
 (defmacro ls-dir (root-str)
   `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))

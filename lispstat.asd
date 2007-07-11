@@ -43,12 +43,12 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
+	       (:lispstat-lsp-source-file "sequence")
 	       (:lispstat-lsp-source-file "compound" 
 					  :depends-on ("lsobjects"
-						       "fastmap"))
+						       "fastmap"
+						       "sequence"))
 	       (:lispstat-lsp-source-file "lsmacros" 
-					  :depends-on ("compound"))
-	       (:lispstat-lsp-source-file "sequence"
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
@@ -72,7 +72,7 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
-					  :depends-on ("lsbasics")) ;; in lisp-stat-basics
+					  :depends-on ("lsbasics"))
 
 
 	       ;; mix/match lsp vs. lisp in next 2.
