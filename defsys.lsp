@@ -21,13 +21,19 @@
 
 (defvar *default-path* "./")
 
-;;;;
-;;;; Functions for switching into and out of debug mode
-;;;;
+;;;
+;;; Functions for switching into and out of debug mode
+;;;
+;;; Note that ANSI Common Lisp post-dates these, we need to ensure
+;;; that CL's signal handling is taken into consideration.
 
-(defun debug ()
-  #+:kcl (setf *break-enable* t) ;; or nil for nodebug
-  #+:mcl (setf *break-on-errors* t)) ;; or nil
+
+(defun ls-debug-on (signals-to-break-on) ;; FIXME:AJR
+  (setf *break-on-signals* signals-to-break-on))
+
+(defun ls-debug-off ()
+  (setf *break-on-signals* nil))
+
 
 ;;;;
 ;;;; Compilation and Loading Utilities
