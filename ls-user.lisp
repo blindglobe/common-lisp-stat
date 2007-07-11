@@ -27,7 +27,6 @@ should be packaged up elsewhere for reproducibility.")
       min max logand logior logxor lognot ffloor fceiling
       ftruncate fround signum cis)
 
-
   (:export
    ;; lsobjects.lsp : should this become a prototype object?
    defproto defmeth send 

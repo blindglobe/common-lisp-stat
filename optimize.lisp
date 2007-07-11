@@ -11,9 +11,14 @@
        :lisp-stat-basics)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)
- (:export newtonmax nelmeadmax
+ (:export
+     ;; derivatives
+     numgrad numhess
 
-	   numgrad numhess))
+     ;; optimization
+     newtonmax nelmeadmax))
+	  
+	
 
 ;;; FIXME:AJR: There is a need to figure out the proper symbols to
 ;;; export.  more importantly should there be any specialty package
@@ -23,6 +28,7 @@ z;;; that are exported for maximization?
 
 (defvar *maximize-callback-function* nil
   "Used in generic optimization to determine function name -- symbol or string?")
+
 (defvar *maximize-callback-arg* nil
   "args to function to maximize")
 
@@ -30,47 +36,50 @@ z;;; that are exported for maximization?
 ;;;; minfo basics (internal??)
 ;;;;
 
-(defun init-minfo-ipar-values (n ipars)
-  (let* ((TRUE 1)
-	 (FALSE 0)
-	 (k 0)
-	 (m 0)
-	 (itnlimit -1)
-	 (backtrack TRUE)
-	 (verbose 0)
-	 (vals_suppl FALSE)
-	 (exptilt TRUE)
-	 (count 0)
-	 (termcode 0))
-    (setf (aref ipars 0) n)
-    (setf (aref ipars 1) m)
-    (setf (aref ipars 2) k)
-    (setf (aref ipars 3) itnlimit)
-    (setf (aref ipars 4) backtrack)
-    (setf (aref ipars 5) verbose)
-    (setf (aref ipars 6) vals_suppl)
-    (setf (aref ipars 7) exptilt)
-    (setf (aref ipars 8) count)
-    (setf (aref ipars 9) termcode)))
+(defun init-minfo-ipar-values (n ipars
+			       &optional 
+			       (TRUE 1)
+			       (FALSE 0)
+			       (k 0)
+			       (m 0)
+			       (itnlimit -1)
+			       (backtrack TRUE)
+			       (verbose 0)
+			       (vals_suppl FALSE)
+			       (exptilt TRUE)
+			       (count 0)
+			       (termcode 0))
+  "Initialize ipars (iteration parameters) by destructive modification."
+  (setf (aref ipars 0) n)
+  (setf (aref ipars 1) m)
+  (setf (aref ipars 2) k)
+  (setf (aref ipars 3) itnlimit)
+  (setf (aref ipars 4) backtrack)
+  (setf (aref ipars 5) verbose)
+  (setf (aref ipars 6) vals_suppl)
+  (setf (aref ipars 7) exptilt)
+  (setf (aref ipars 8) count)
+  (setf (aref ipars 9) termcode))
 
-(defun init-minfo-dpar-values (h dpars)
-  (let ((typf 1.0)
-	(gradtol -1.0)
-	(steptol -1.0)
-	(maxstep -1.0)
-	(dflt 0.0)
-	(tilt 0.0)
-	(newtilt 0.0)
-	(hessadd 0.0))
-    (setf (aref dpars 0) typf)
-    (setf (aref dpars 1) h)
-    (setf (aref dpars 2) gradtol)
-    (setf (aref dpars 3) steptol)
-    (setf (aref dpars 4) maxstep)
-    (setf (aref dpars 5) dflt)
-    (setf (aref dpars 6) tilt)
-    (setf (aref dpars 7) newtilt)
-    (setf (aref dpars 8) hessadd)))
+(defun init-minfo-dpar-values (h dpars &optional
+			       (typf 1.0)
+			       (gradtol -1.0)
+			       (steptol -1.0)
+			       (maxstep -1.0)
+			       (dflt 0.0)
+			       (tilt 0.0)
+			       (newtilt 0.0)
+			       (hessadd 0.0))
+  "Initialize dpars (derivative parameters) by destructive modification."
+  (setf (aref dpars 0) typf)
+  (setf (aref dpars 1) h)
+  (setf (aref dpars 2) gradtol)
+  (setf (aref dpars 3) steptol)
+  (setf (aref dpars 4) maxstep)
+  (setf (aref dpars 5) dflt)
+  (setf (aref dpars 6) tilt)
+  (setf (aref dpars 7) newtilt)
+  (setf (aref dpars 8) hessadd))
 
 (defun init-minfo-internals (n h internals)
   (let ((ipars (aref internals 8))

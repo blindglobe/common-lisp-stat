@@ -14,11 +14,10 @@ git-push :
 
 clean:
 	(cd lib; make clean)
-	rm -f *.o *.fasl kclcmplr *~
+	rm -f *.o *.fasl *~
 
-cleanall:
-	(cd lib; make cleanall)
-	rm -f *.o *.fasl kclcmplr saved_kcls kcls cls
+dist-clean: clean
+	rm -rf fasl sbcl-fasl
 
 ## C compilation
 
