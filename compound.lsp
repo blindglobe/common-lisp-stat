@@ -15,7 +15,8 @@
 
 (defpackage :lisp-stat-compound-data
   (:use :common-lisp
-	:lisp-stat-object-system)
+	:lisp-stat-object-system
+	:lisp-stat-sequence)
   (:import-from :lisp-stat-fastmap fastmap)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value
@@ -26,7 +27,12 @@
 	   compound-data-seq compound-data-length
 	   element-list element-seq
 
-	   sort-data order rank))
+	   sort-data order rank
+
+	   ;; export sequence-related functionality
+
+	   ;; export matrix-related functionality (not sure??)
+	   ))
 
 (in-package :lisp-stat-compound-data)
 
