@@ -13,15 +13,12 @@
 (in-package :cl-user)
 
 (defpackage :lisp-stat-sequence
-  (:use :common-lisp
-	:lisp-stat-compound-data)
+  (:use :common-lisp)
   (:export check-sequence get-next-element ;;compound-data-seq 
 	   make-next-element sequencep iseq
 
 	   ;; vector differences
-	   difference rseq
-
-	   ))
+	   difference rseq))
 
 (in-package :lisp-stat-sequence)
 
@@ -29,8 +26,14 @@
 ;;; list (ordered set of things).
 ;;; 
 ;;; Need to use the interenal structure when possible -- silly to be
-;;; redundant!
+;;; redundant!  However, this means we need to understand what
+;;; sequences were intending to do, which I'm not clear on yet.
 
+;;; The original ordering, object-wise, was to have compound
+;;; functionality passed into sequences, into other data sources.
+;;; However, at this point, we will see about inverting this and
+;;; having basic data types pushed through compound, to simplify
+;;; packaging. 
 
 ;;;                      Type Checking Functions
 
@@ -217,9 +220,6 @@ submatrix of A is returned. SELECT can be used in setf."
     values))
 
 (defsetf select set-select)
-
-
-
 
 ;;;;
 ;;;; Basic Sequence Operations
