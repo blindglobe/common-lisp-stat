@@ -36,8 +36,7 @@ z;;; that are exported for maximization?
 ;;;; minfo basics (internal??)
 ;;;;
 
-(defun init-minfo-ipar-values (n ipars
-			       &optional 
+(defun init-minfo-ipar-values (n ipars &key
 			       (TRUE 1)
 			       (FALSE 0)
 			       (k 0)
@@ -61,7 +60,7 @@ z;;; that are exported for maximization?
   (setf (aref ipars 8) count)
   (setf (aref ipars 9) termcode))
 
-(defun init-minfo-dpar-values (h dpars &optional
+(defun init-minfo-dpar-values (h dpars &key
 			       (typf 1.0)
 			       (gradtol -1.0)
 			       (steptol -1.0)
