@@ -5,7 +5,6 @@
 ;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
 ;;; Common Lisp.  
 
-
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
 ;;;; You may give out copies of this software; for conditions see the file
@@ -23,14 +22,22 @@
        :lisp-stat-regression-linear)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)
+ (:shadowing-import-from :lisp-stat-math
+			 expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+			 asin acos atan sinh cosh tanh asinh acosh atanh float random
+			 truncate floor ceiling round minusp zerop plusp evenp oddp 
+			 < <= = /= >= > complex conjugate realpart imagpart phase
+			 min max logand logior logxor lognot ffloor fceiling
+			 ftruncate fround signum cis)
+
  (:export nreg-model nreg-model-proto mean-function theta-hat epsilon
 	  count-limit verbose))
 
 (in-package :lisp-stat-regression-nonlin)
 
-;;;;
-;;;; Nonlinear Regression Model Prototype
-;;;;
+;;;
+;;; Nonlinear Regression Model Prototype
+;;;
 
 (defproto nreg-model-proto 
           '(mean-function theta-hat epsilon count-limit verbose)

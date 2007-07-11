@@ -27,8 +27,16 @@
 
 (defpackage :lisp-stat-linalg
   (:use :common-lisp
+	:lisp-stat-math
 	:lisp-stat-types
 	:lisp-stat-matrix)
+  (:shadowing-import-from :lisp-stat-math
+			  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+			  asin acos atan sinh cosh tanh asinh acosh atanh float random
+			  truncate floor ceiling round minusp zerop plusp evenp oddp 
+			  < <= = /= >= > complex conjugate realpart imagpart phase
+			  min max logand logior logxor lognot ffloor fceiling
+			  ftruncate fround signum cis)
   (:export chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
 	   qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
 	   fft make-sweep-matrix sweep-operator ax+y eigen))
