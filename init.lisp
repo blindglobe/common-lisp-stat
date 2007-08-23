@@ -35,9 +35,9 @@
   ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
   (pushnew  *lispstat-asdf-dir*  asdf:*central-registry*)
   (asdf:oos 'asdf:load-op :cffi)
-  (asdf:oos 'asdf:load-op :lisp-unit)
-  (asdf:oos 'asdf:load-op :cells)
-  (asdf:oos 'asdf:load-op :lisp-stat))
+  ;;(asdf:oos 'asdf:load-op :lisp-unit)
+  ;;(asdf:oos 'asdf:load-op :cells)
+  (asdf:oos 'asdf:load-op :lispstat))
 
 #+nil(progn
        (asdf:oos 'asdf:compile-op :cffi)
