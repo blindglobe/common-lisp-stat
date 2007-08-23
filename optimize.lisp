@@ -8,7 +8,10 @@
 (defpackage :lisp-stat-optimize
  (:use :common-lisp
        :lisp-stat-object-system
-       :lisp-stat-basics)
+       :lisp-stat-types
+       :lisp-stat-basics
+       :lisp-stat-matrix
+       :lisp-stat-linalg)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)
  (:export
@@ -386,7 +389,7 @@ control the behavior of simplex algorithm."
                      	(pts (cons (repeat 0 n)	
                                    (mapcar #'(lambda (x) (coerce x 'list))
                                            (column-list (diagonal diag))))))
-                   (mapcar #'(lambda (x) (+ (* size x) new)) pts)))))
+                   (mapcar #'(lambda (x) (reduce #'+ (list (* size x) new))) pts)))))
         (setf (slot-value 'simplex) 
               (mapcar #'(lambda (x) (send self :make-point x)) simplex))
         (send self :sort-simplex)))

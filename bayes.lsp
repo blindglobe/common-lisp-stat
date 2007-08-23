@@ -13,7 +13,9 @@
 (defpackage :lisp-stat-bayes
   (:use :common-lisp
 	:lisp-stat-object-system
-	:lisp-stat-basics)
+	:lisp-stat-basics
+	:lisp-stat-matrix
+	)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   ;;(:export .... )
@@ -161,7 +163,7 @@
                    (let* ((v (first vals))
                           (grad (/ (second vals) v))
                           (hess (- (/ (third vals) v) 
-                                   (outer-product grad grad))))
+                                   (outer-product grad grad0))))
                      (list (log v) grad hess))))))
       (let ((v (if (consp f) (mapcar #'vals f) (vals f))))
         (* tilt (if (consp f) (reduce #'+ v) v))))))
@@ -569,9 +571,9 @@ covaraince is appended to the end of the result as well."
          (ghess (mapcar #'third gvals))
          (ggradmat (apply #' bind-columns ggrad)))
     (setf (slot-value 'val) val)
-    (setf (slot-value 'grad) (reduce #'+ grad (* lambda ggrad)))
+    (setf (slot-value 'grad) (reduce #'+ (list grad (* lambda ggrad))))
     (setf (slot-value 'gval) gval)
-    (setf (select a i i) (reduce #'+ hess (* lambda ghess)))
+    (setf (select a i i) (reduce #'+ (list hess (* lambda ghess))))
     (setf (select a i j) ggradmat)
     (setf (select a j i) (transpose ggradmat))
     (setf (slot-value 'lu) (lu-decomp a))))
