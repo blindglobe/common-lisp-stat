@@ -91,7 +91,7 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "lsmath"
 						       "data" ))
-	       (:file "optimize" :depends-on ("lsobjects"))
+	       (:file "optimize" :depends-on ("lsobjects" "lstypes"))
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "dists")) ; in lisp-stat
