@@ -13,14 +13,21 @@
 (defpackage :lisp-stat-bayes
   (:use :common-lisp
 	:lisp-stat-object-system
+	:lisp-stat-math
 	:lisp-stat-basics
 	:lisp-stat-matrix
+	:lisp-stat-linalg
 	)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
-  ;;(:export .... )
-  )
-
+  (:shadowing-import-from :lisp-stat-math
+			  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+			  asin acos atan sinh cosh tanh asinh acosh atanh float random
+			  truncate floor ceiling round minusp zerop plusp evenp oddp 
+			  < <= = /= >= > complex conjugate realpart imagpart phase
+			  min max logand logior logxor lognot ffloor fceiling
+			  ftruncate fround signum cis)
+  (:export *bayes-model-proto*))
 
 (in-package :lisp-stat-bayes)
 
@@ -231,11 +238,11 @@
 ;;;; Bayes Model Prototype
 ;;;;
 
-(defproto bayes-model-proto '(bayes-internals))
+(defproto *bayes-model-proto* '(bayes-internals))
 
 ;; initialization methods and constructor function
 
-(defmeth bayes-model-proto :isnew (logpost mode &key
+(defmeth *bayes-model-proto* :isnew (logpost mode &key
                                            scale 
                                            (derivstep .001)
                                            (verbose t)
@@ -255,13 +262,13 @@ the mode. SCALE and DERIVSTEP are used for numerical derivatives and
 scaling. VERBOSE controls printing of iteration information during
 optimization, PRINT controls printing of summary information. If QUICK
 is T the summary is based on first order approximations."
-  (let ((m (apply #'send bayes-model-proto :new logpost mode args)))
+  (let ((m (apply #'send *bayes-model-proto* :new logpost mode args)))
     (if print (send m :display :quick quick))
     m))
 
 ;; display method
 
-(defmeth bayes-model-proto :display (&key (quick t))
+(defmeth *bayes-model-proto* :display (&key (quick t))
   (let* ((moments (send self (if quick :1stmoments :moments)))
          (means (first moments))
          (stdevs (second moments))
@@ -276,29 +283,29 @@ is T the summary is based on first order approximations."
             stdevs)
     (format t "~%")))
 
-(defmeth bayes-model-proto :parameter-names ()
+(defmeth *bayes-model-proto* :parameter-names ()
   (let ((n (length (send self :mode))))
     (mapcar #'(lambda (x) (format nil "Parameter ~d" x)) (iseq 0 (- n 1)))))
 
 ;; implementation-dependent access methods
 
-(defmeth bayes-model-proto :set-bayes-internals (lp m s h mval ch max dom)
+(defmeth *bayes-model-proto* :set-bayes-internals (lp m s h mval ch max dom)
   (setf (slot-value 'bayes-internals) 
         (vector lp m s h mval ch max dom)))
 
-(defmeth bayes-model-proto :logpost (&optional new)
+(defmeth *bayes-model-proto* :logpost (&optional new)
   (let ((internals (slot-value 'bayes-internals)))
     (when new
           (setf (select internals 0) new)
           (send self :needs-maximizing t))
     (select internals 0)))
 
-(defmeth bayes-model-proto :domain (&optional new)
+(defmeth *bayes-model-proto* :domain (&optional new)
   (let ((internals (slot-value 'bayes-internals)))
     (if new (setf (select internals 7) new))
     (select internals 7)))
 
-(defmeth bayes-model-proto :mode-values (&optional mode mval ch)
+(defmeth *bayes-model-proto* :mode-values (&optional mode mval ch)
   (let ((internals (slot-value 'bayes-internals)))
     (when mode
           (setf (select internals 1) mode)
@@ -308,18 +315,18 @@ is T the summary is based on first order approximations."
           (select internals 4)
           (select internals 5))))
 
-(defmeth bayes-model-proto :parameter-scale (&optional new)
+(defmeth *bayes-model-proto* :parameter-scale (&optional new)
   (let ((internals (slot-value 'bayes-internals)))
     (if new (setf (select internals 2) new))
     (select internals 2)))
 
-(defmeth bayes-model-proto :parameter-dimension ()
+(defmeth *bayes-model-proto* :parameter-dimension ()
   (length (select (slot-value 'bayes-internals) 1)))
 
-(defmeth bayes-model-proto :derivstep ()
+(defmeth *bayes-model-proto* :derivstep ()
   (select (slot-value 'bayes-internals) 3))
 
-(defmeth bayes-model-proto :needs-maximizing (&optional (new nil set))
+(defmeth *bayes-model-proto* :needs-maximizing (&optional (new nil set))
   (let ((internals (slot-value 'bayes-internals)))
     (if set (setf (select internals 6) new))
     (select internals 6)))
@@ -341,15 +348,15 @@ is T the summary is based on first order approximations."
            (list #'(lambda (x) (list (elt x g) grad hess))))))
     (t (mapcar #'(lambda (x) (car (function-list x n))) g))))
 
-(defmeth bayes-model-proto :mode ()
+(defmeth *bayes-model-proto* :mode ()
   (if (send self :needs-maximizing) (send self :maximize))
   (first (send self :mode-values)))
 
-(defmeth bayes-model-proto :new-mode-guess (new)
+(defmeth *bayes-model-proto* :new-mode-guess (new)
   (send self :needs-maximizing t)
   (send self :mode-values new))
 
-(defmeth bayes-model-proto :transformed-logpost ()
+(defmeth *bayes-model-proto* :transformed-logpost ()
   (if (send self :needs-maximizing) (send self :maximize))
   (let* ((m-values (send self :mode-values))
          (mode (first m-values))
@@ -361,7 +368,7 @@ is T the summary is based on first order approximations."
 
 ;;**** need transformed domain here
 
-(defmeth bayes-model-proto :transformed-functions (&optional g (c 0) (s 1))
+(defmeth *bayes-model-proto* :transformed-functions (&optional g (c 0) (s 1))
   (if (send self :needs-maximizing) (send self :maximize))
   (let* ((m-values (send self :mode-values))
          (mode (first m-values))
@@ -378,7 +385,7 @@ is T the summary is based on first order approximations."
 
 ;; computing methods
 
-(defmeth bayes-model-proto :maximize (&optional (verbose 0))
+(defmeth *bayes-model-proto* :maximize (&optional (verbose 0))
   (let* ((lp (send self :logpost))
          (x (first (send self :mode-values)))
          (scale (send self :parameter-scale))
@@ -395,7 +402,7 @@ is T the summary is based on first order approximations."
     (send self :needs-maximizing nil)
     (send self :check-derivatives verbose)))
 
-(defmeth bayes-model-proto :check-derivatives (&optional 
+(defmeth *bayes-model-proto* :check-derivatives (&optional 
                                                (verbose 0) 
                                                (epsilon .00001))
   (let* ((verbose (if (numberp verbose) (< 0 verbose) verbose))
@@ -419,7 +426,7 @@ is T the summary is based on first order approximations."
 
 ;; moments
 
-(defmeth bayes-model-proto :1stmoments (&optional gfuns &key covar)
+(defmeth *bayes-model-proto* :1stmoments (&optional gfuns &key covar)
 "Args: (&optional gfuns &key covar) 
 Computes first order approximations to posterior moments. GFUNS can be
 a parameter index, list of indices, a function of the parameters or a
@@ -438,7 +445,7 @@ covaraince is appended to the end of the result as well."
         (list mean (sqrt (diagonal cov)) cov)
         (list mean (sqrt (diagonal cov))))))
 
-(defmeth bayes-model-proto :mgfmoments (&optional g &key covar 
+(defmeth *bayes-model-proto* :mgfmoments (&optional g &key covar 
                                                   (mgfdel .1)
                                                   ((:derivstep h) .1)
                                                   (maxiter 2))
@@ -485,7 +492,7 @@ covaraince is appended to the end of the result as well."
             (append mean-sd (list (covar g-objects mean-sd)))
             mean-sd)))))
 
-(defmeth bayes-model-proto :fullmoments (&optional g &key covar
+(defmeth *bayes-model-proto* :fullmoments (&optional g &key covar
                                                    ((:derivstep h) .1)
                                                    (maxiter 2))
   (let* ((moms1 (send self :1stmoments g))
@@ -521,10 +528,10 @@ covaraince is appended to the end of the result as well."
             (append mean-sd (list (covar g-objects mean-sd)))
             mean-sd)))))
 
-(defmeth bayes-model-proto :2ndmoments (&rest args)
+(defmeth *bayes-model-proto* :2ndmoments (&rest args)
   (apply #'send self :mgfmoments args))
 
-(defmeth bayes-model-proto :moments (&rest args)
+(defmeth *bayes-model-proto* :moments (&rest args)
 "Args: (&optional gfuns &key covar) 
 Computes second order approximations to posterior moments. GFUNS can be
 a parameter index, list of indices, a function of the parameters or a
@@ -571,6 +578,8 @@ covaraince is appended to the end of the result as well."
          (ghess (mapcar #'third gvals))
          (ggradmat (apply #' bind-columns ggrad)))
     (setf (slot-value 'val) val)
+    ;; The following is matrix multiplication hidden away in an
+    ;; abstraction.
     (setf (slot-value 'grad) (reduce #'+ (list grad (* lambda ggrad))))
     (setf (slot-value 'gval) gval)
     (setf (select a i i) (reduce #'+ (list hess (* lambda ghess))))
@@ -600,7 +609,7 @@ covaraince is appended to the end of the result as well."
 
 ;; ***** fix step choice
 ;; ***** Cut off at first nil?
-(defmeth bayes-model-proto :log-margin1 (g x &key 
+(defmeth *bayes-model-proto* :log-margin1 (g x &key 
                                            ((:derivstep h) .05)
                                            (spline t)
                                            profile)
@@ -630,7 +639,7 @@ covaraince is appended to the end of the result as well."
         (list (+ mean1 (* stdev1 (first xy)))
               (- (second xy) (log stdev1) (* 0.5 (log (* 2 pi)))))))))
 
-(defmeth bayes-model-proto :margin1 (g x &key 
+(defmeth *bayes-model-proto* :margin1 (g x &key 
                                        (derivstep .05)
                                        (spline t)
                                        profile)
@@ -647,7 +656,7 @@ posterior is returned."
     (list (first logmar) (exp (second logmar)))))
     
 ;;**** allow domain test function
-(defmeth bayes-model-proto :impsample (&optional g &key (n 100) (df 2))
+(defmeth *bayes-model-proto* :impsample (&optional g &key (n 100) (df 2))
   (let* ((l-ob (send self :transformed-logpost))
          (g-obs (send self :transformed-functions g))
          (k (send self :parameter-dimension))
@@ -663,7 +672,7 @@ posterior is returned."
            (gvals (z) (mapcar #'(lambda (g) (send g :value z)) g-obs)))
       (list (mapcar #'gvals z) (mapcar #'w z)))))
 
-(defmeth bayes-model-proto :impmoments (&optional g &key (n 100) (df 2))
+(defmeth *bayes-model-proto* :impmoments (&key g (n 100) (df 2))
   (let* ((impsample (send self :impsample g :n n :df df))
          (means (/ (reduce #'+ (* (first impsample) (second impsample))) 
                    (reduce #'+ (second impsample))))
