@@ -38,26 +38,25 @@ Last touched 1991, then in 2005--2007."
   :serial t
   :depends-on (:cffi :lift :clem)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
-	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
 	       (:lispstat-lsp-source-file "sequence")
 	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("lsobjects"
+					  :depends-on ("src"  ;; "lsobjects"
 						       "fastmap"
 						       "sequence"))
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("lsobjects"
+					  :depends-on ("src" ;; "lsobjects"
 						       "lsmacros"
 						       "lsfloat"))
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
 	       (:lispstat-lsp-source-file "lsbasics"
-					  :depends-on ("lsobjects"
+					  :depends-on ("src" ;; "lsobjects"
 						       "lstypes"
 						       "lsmacros"
 						       "sequence"
@@ -78,22 +77,23 @@ Last touched 1991, then in 2005--2007."
 
 	       ;; mix/match lsp vs. lisp in next 2.
 	       (:file "data" :depends-on ("defsys"
-					  "lsobjects"
+					  "src" ;; "lsobjects"
 					  "compound"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("lsbasics"
-						       "lsobjects"))
+					  :depends-on ("src" ;; "lsobjects"
+						       "lsbasics"))
 	       (:lispstat-lsp-source-file "nonlin"
 					  :depends-on ("regression"))
 	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("lsobjects"
+					  :depends-on ("src" ;; "lsobjects"
 						       "lsmath"
 						       "data" ))
-	       (:file "optimize" :depends-on ("lsobjects" "lstypes"))
+	       (:file "optimize" :depends-on ("src" ;; "lsobjects"
+					      "lstypes"))
 	       (:lispstat-lsp-source-file "bayes"
-					  :depends-on ("lsobjects"
+					  :depends-on ("src" ;; "lsobjects"
 						       "lsmath"
 						       "dists")) ; in lisp-stat
 	       ))

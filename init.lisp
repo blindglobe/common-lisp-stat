@@ -46,7 +46,10 @@
 
   ;; Unit Testing 
   (asdf:oos 'asdf:load-op :lift)
+
   ;;(asdf:oos 'asdf:load-op :lisp-unit)
+
+  (asdf:oos 'asdf:load-op :clem)
 
   ;; Constraint System
   ;;(asdf:oos 'asdf:load-op :cells)
