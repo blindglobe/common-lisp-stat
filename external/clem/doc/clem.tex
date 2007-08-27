@@ -1,0 +1,243 @@
+\documentclass[10pt]{article}
+\setcounter{secnumdepth}{5}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{fancyheadings}
+\usepackage{longtable}
+\usepackage[letterpaper]{geometry}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\title{clem: A common-lisp matrix package}
+\author{Cyrus L. Harmon}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}     % 2 may work better
+\setcounter{dbltopnumber}{2}    % for 2-column pages
+\renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+\renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+%   Parameters for FLOAT pages (not text pages):
+\renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+% N.B.: floatpagefraction MUST be less than topfraction !!
+\renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+\setlength{\captionmargin}{10pt}
+\begin{document}
+\maketitle
+\let\mypdfximage\pdfximage
+\def\pdfximage{\immediate\mypdfximage}
+\baselineskip14pt
+
+
+\clearpage
+\section{Abstract}
+CLEM is an open-source Common Lisp library for the
+ representation and manipulation of matrices. CLEM is designed to
+ be a flexible and extensible system for the representation of
+ arbitrary 2-dimensional matrices.
+
+\clearpage
+\section{Introduction}
+The Common Lisp language\cite{steele1990common} offers a rich, dynamic environment for programming and
+data analysis. Common Lisp contains a powerful object system, the
+Common Lisp Object System (CLOS)\cite{keene1989object}, and most modern implementations support a protocol for
+the generation not just of new classes and objects, but to extend
+the object system itself using the Meta-object Protocol\cite{kiczales1991art}.
+
+CLEM uses CLOS and the Meta-object protocol (MOP) to define astandard-matrix-class that serves as the metaclass for classes that represent
+matrices with elements of specific types. The typed matrices can
+represent matrices containing values of specific types in the
+Common Lisp type system, starting with type t as the most general data type, and becoming more restrictive by using more specific types suchdouble-float, fixnum, or (unsigned-byte 8). By using the most specific type that can represent the values of a given matrix, the lisp system can optimize for better performance and memory usage requirements. For example, a bit-matrix will use 1 bit per matrix element, rather than 32-bits on 32-bit systems for a t-matrix.
+
+\baselineskip12pt
+\subsection{Matrix Types}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Matrix Representation}
+\baselineskip14pt
+Common Lisp provides a rich built-in array type which serves as
+ the storage for CLEM matrices. Given that Common Lisp has built-in
+ arrays, why do we need CLEM and what value is provided by creating a
+ set of classses around arrays? First, the Common Lisp arrays have a
+ limited set of operations defined on them. While there is a built-in
+ (scalar) addition operator, there is no built-in way to perform an
+ element-wise addition of two arrays. CLEM addresses these by defining
+ a set of generic functions that operate on matrices that provide a
+ number of commonly used matrix operations such as matrix
+ arithmetic. Second, there is no way to define methods on arrays based
+ on their element types. Therefore, we define subclasses of matrix
+ whose underlying arrays are specialized to distinct types. We can
+ then define methods to operate specifically on these subclasses,
+ affording the opportunity to treat, say, floating point and integer
+ matrices differently and to provide declarations to the compiler
+ based on the array element type, which can, in Common Lisp
+ implementations with sufficiently smart compilers, lead to much
+ improved performance.
+
+\clearpage
+\section{Defining CLEM Classes and Making CLEM Instances}
+\baselineskip12pt
+\subsection{Creating CLEM Instances with make-instance}
+\baselineskip14pt
+The following code creates a 16-row by 16-column matrix of typedouble-float-matrix and assigns it to the dynamic variable*m1*.
+
+
+\baselineskip12pt
+\begin{verbatim}(defparameter *m1* (make-instance 'double-float-matrix :rows 16 :cols 16))
+*M1*
+
+*m1*
+#<DOUBLE-FLOAT-MATRIX [.000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000;
+ ... 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000]>
+
+\end{verbatim}
+\baselineskip14pt
+The default is to only show the first 7 and the last rows
+ and columns of each matrix. The number of rows and columns can
+ be changed by setting the *matrix-print-row-limit* and*matrix-print-col-limit* variables.
+
+\baselineskip12pt
+\subsection{standard-matrix-class}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{CLEM Matrix Types}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Number matrices}
+\baselineskip14pt
+The most general class of numerical matrix is the number matrix.
+
+\baselineskip12pt
+\subsubsection{Integer Matrices}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Floating-point Matrices}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Complex-value Matrices}
+\baselineskip14pt
+\clearpage
+\section{Working with CLEM Matrices}
+\baselineskip12pt
+\subsection{Matrix Dimensions and Values}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Typed matrix operations}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Matrix Copying}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{matrix-move}
+\baselineskip14pt
+\clearpage
+\section{Matrix Arithmetic}
+\baselineskip12pt
+\subsection{Matrix Addition and Subtraction}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Matrix Multiplication}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Hadamard Product}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Scalar Arithmetic}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Other Mathematical Functions}
+\baselineskip14pt
+Discuss mat-log, mat-abs, min, and max.
+
+\clearpage
+\section{Matrix Operations}
+\baselineskip12pt
+\subsection{Matrix Inversion}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Matrix Normalization}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Discrete Convolution}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Derivatives}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Gradient Magnitude}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Gaussian Blur}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Affine Transformations}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Interpolation}
+\baselineskip14pt
+\baselineskip12pt
+\subsection{Morphological Operations}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Dilation and Erosion}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Variance}
+\baselineskip14pt
+\baselineskip12pt
+\subsubsection{Thresholding}
+\baselineskip14pt
+\clearpage
+\section{CLEM Implementation Details}
+\baselineskip12pt
+\subsection{Type-specific matrix functions}
+\baselineskip14pt
+The general strategy has been to 1) make things work and
+ then make them work quickly.  To this end, I have been writing
+ functions for matrix operations in a general manner first and
+ then recoding type-specific versions to make certain operations
+ go faster.  This is done via liberal use of macros to generate
+ type-specific functions and methods for matrix operations that
+ go much faster than the general versions.
+
+The convention is that a generic function such as sum-range
+ will have a generic version that works with all matrices and
+ type specific versions thaqt work with specific matrices. g In
+ order to support these functions there may be internal methods,
+ prefixed with a %, that implement certain type-specific
+ functionality.  Macros that generate the code used for the
+ type-specific methods will be prefixed with a %%.  In theory,
+ the %%-macros can be called from other code that need to
+ generate in-place code where the overhead of the method-call to
+ the %-method would be too expensive. This convention is not yet
+ widely enforced and certainly untested. Hopefully this situation
+ will improve.
+
+\baselineskip12pt
+\subsection{Hacking the SBCL compiler to improve performance}
+\baselineskip14pt
+\clearpage
+\baselineskip11pt
+\begin{thebibliography}{1}
+
+\bibitem{steele1990common}
+G.~L. Steele, Jr., {\it Common {L}isp: the {L}anguage\/} (Digital Press, Bedford MA, 1990), second edn.
+
+\bibitem{keene1989object}
+S.~E. Keene, {\it Object-{O}riented {P}rogramming in {C}ommon {L}isp: {A} {P}rogrammer's 	{G}uide to {CLOS}\/} (Addison-Wesley Professional, 1989).
+
+\bibitem{kiczales1991art}
+G.~Kiczales, {\it The {A}rt of the {M}etaobject {P}rotocol\/} (The MIT Press, 1991).
+
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><title>clem: A common-lisp matrix package</title>
+<link rel="stylesheet" type="text/css" href="simple.css"/></head>
+<body><p/><span><h1>Abstract</h1>
+<p>CLEM is an open-source Common Lisp library for the
+ representation and manipulation of matrices. CLEM is designed to
+ be a flexible and extensible system for the representation of
+ arbitrary 2-dimensional matrices.</p>
+</span>
+<h1>Introduction</h1>
+<p>The Common Lisp language<span><a href="#ref1">[1]</a>
+</span>
+ offers a rich, dynamic environment for programming and
+data analysis. Common Lisp contains a powerful object system, the
+Common Lisp Object System (CLOS)<span><a href="#ref2">[2]</a>
+</span>
+, and most modern implementations support a protocol for
+the generation not just of new classes and objects, but to extend
+the object system itself using the Meta-object Protocol<span><a href="#ref3">[3]</a>
+</span>
+.</p>
+<p>CLEM uses CLOS and the Meta-object protocol (MOP) to define a<code>standard-matrix-class</code>
+ that serves as the metaclass for classes that represent
+matrices with elements of specific types. The typed matrices can
+represent matrices containing values of specific types in the
+Common Lisp type system, starting with type <code>t</code>
+ as the most general data type, and becoming more restrictive by using more specific types such<code>double-float</code>
+, <code>fixnum</code>
+, or <code>(unsigned-byte 8)</code>
+. By using the most specific type that can represent the values of a given matrix, the lisp system can optimize for better performance and memory usage requirements. For example, a <code>bit-matrix</code>
+ will use 1 bit per matrix element, rather than 32-bits on 32-bit systems for a <code>t-matrix</code>
+.</p>
+<h2>Matrix Types</h2>
+<h2>Matrix Representation</h2>
+<p>Common Lisp provides a rich built-in array type which serves as
+ the storage for CLEM matrices. Given that Common Lisp has built-in
+ arrays, why do we need CLEM and what value is provided by creating a
+ set of classses around arrays? First, the Common Lisp arrays have a
+ limited set of operations defined on them. While there is a built-in
+ (scalar) addition operator, there is no built-in way to perform an
+ element-wise addition of two arrays. CLEM addresses these by defining
+ a set of generic functions that operate on matrices that provide a
+ number of commonly used matrix operations such as matrix
+ arithmetic. Second, there is no way to define methods on arrays based
+ on their element types. Therefore, we define subclasses of matrix
+ whose underlying arrays are specialized to distinct types. We can
+ then define methods to operate specifically on these subclasses,
+ affording the opportunity to treat, say, floating point and integer
+ matrices differently and to provide declarations to the compiler
+ based on the array element type, which can, in Common Lisp
+ implementations with sufficiently smart compilers, lead to much
+ improved performance.</p>
+<h1>Defining CLEM Classes and Making CLEM Instances</h1>
+<h2>Creating CLEM Instances with make-instance</h2>
+<p>The following code creates a 16-row by 16-column matrix of type<code>double-float-matrix</code>
+ and assigns it to the dynamic variable<code>*m1*</code>
+.</p>
+<div class="lisp"><pre><code>(defparameter *m1* (make-instance 'double-float-matrix :rows 16 :cols 16))
+</code>
+<code class="results">*M1*
+</code>
+
+<code>*m1*
+</code>
+<code class="results">#&lt;DOUBLE-FLOAT-MATRIX [.000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000; 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000;
+ ... 
+ .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 .000000000 ... .000000000]&gt;
+</code>
+
+</pre>
+</div>
+<p>The default is to only show the first 7 and the last rows
+ and columns of each matrix. The number of rows and columns can
+ be changed by setting the <code>*matrix-print-row-limit*</code>
+ and<code>*matrix-print-col-limit*</code>
+ variables.</p>
+<h2>standard-matrix-class</h2>
+<h2>CLEM Matrix Types</h2>
+<h3>Number matrices</h3>
+<p>The most general class of numerical matrix is the number matrix.</p>
+<h3>Integer Matrices</h3>
+<h3>Floating-point Matrices</h3>
+<h3>Complex-value Matrices</h3>
+<h1>Working with CLEM Matrices</h1>
+<h2>Matrix Dimensions and Values</h2>
+<h2>Typed matrix operations</h2>
+<h2>Matrix Copying</h2>
+<h2>matrix-move</h2>
+<h1>Matrix Arithmetic</h1>
+<h2>Matrix Addition and Subtraction</h2>
+<h2>Matrix Multiplication</h2>
+<h2>Hadamard Product</h2>
+<h2>Scalar Arithmetic</h2>
+<h2>Other Mathematical Functions</h2>
+<p>Discuss mat-log, mat-abs, min, and max.</p>
+<h1>Matrix Operations</h1>
+<h2>Matrix Inversion</h2>
+<h2>Matrix Normalization</h2>
+<h2>Discrete Convolution</h2>
+<h3>Derivatives</h3>
+<h3>Gradient Magnitude</h3>
+<h3>Gaussian Blur</h3>
+<h2>Affine Transformations</h2>
+<h3>Interpolation</h3>
+<h2>Morphological Operations</h2>
+<h3>Dilation and Erosion</h3>
+<h3>Variance</h3>
+<h3>Thresholding</h3>
+<h1>CLEM Implementation Details</h1>
+<h2>Type-specific matrix functions</h2>
+<p>The general strategy has been to 1) make things work and
+ then make them work quickly.  To this end, I have been writing
+ functions for matrix operations in a general manner first and
+ then recoding type-specific versions to make certain operations
+ go faster.  This is done via liberal use of macros to generate
+ type-specific functions and methods for matrix operations that
+ go much faster than the general versions.</p>
+<p>The convention is that a generic function such as sum-range
+ will have a generic version that works with all matrices and
+ type specific versions thaqt work with specific matrices. g In
+ order to support these functions there may be internal methods,
+ prefixed with a %, that implement certain type-specific
+ functionality.  Macros that generate the code used for the
+ type-specific methods will be prefixed with a %%.  In theory,
+ the %%-macros can be called from other code that need to
+ generate in-place code where the overhead of the method-call to
+ the %-method would be too expensive. This convention is not yet
+ widely enforced and certainly untested. Hopefully this situation
+ will improve.</p>
+<h2>Hacking the SBCL compiler to improve performance</h2>
+<div><h1>References</h1>
+<p><a name="ref1">1. Steele, Jr., Guy L.. Common {L}isp: the {L}anguage (1990).</a>
+</p>
+<p><a name="ref2">2. Sonya E. Keene. Object-{O}riented {P}rogramming in {C}ommon {L}isp: {A} {P}rogrammer's 	{G}uide to {CLOS} (1989).</a>
+</p>
+<p><a name="ref3">3. Gregor Kiczales. The {A}rt of the {M}etaobject {P}rotocol (1991).</a>
+</p>
+</div>
+</body>
+</html>

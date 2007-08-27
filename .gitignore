@@ -6,3 +6,4 @@ fasl
 *.fas
 *.lib
 *.o
+_darcs

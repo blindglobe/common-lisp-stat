@@ -1,0 +1,91 @@
+
+body {
+    color: #000;
+    background-color: #FFF;
+    background-attachment: fixed;
+    font-size: 11px;
+    font-family: sans-serif;
+}
+
+h1 {
+   padding: 2px;
+   margin-top: 2px;
+   padding-top: 4px;
+   font-size: 12px;
+   font-style: italic;
+   padding-bottom: 6px;
+}
+
+h1.title {
+   font-style: normal;
+   padding: 0px;
+   margin-top: 0px;
+   margin-bottom: 0px;
+   font-size: 14px;
+}
+
+h2 {
+   font-size: 12px;
+}
+
+h2.author {
+   padding-top: 0px;
+   padding-bottom: 0px;
+   margin-top: 2px;
+   margin-bottom: 2px;
+}
+
+h2.date {
+   padding-top: 0px;
+   padding-bottom: 0px;
+   margin-top: 2px;
+   margin-bottom: 2px;
+}
+
+h3 {
+   font-size: 11px;
+}
+
+h4 {
+   font-size: 10px;
+}
+
+ul {
+   padding-left: 6px;
+   margin-left: 6px;
+}
+
+li {
+   margin-left: 12px;
+}
+
+li.pub {
+   padding-top: 3px;
+   margin-left: 6px;
+   font-size: 9px;
+}
+
+tbody.nav2 { 
+   text-align: left;
+}
+
+table.nav2 {
+   padding-top: 24px;
+}
+
+tr, td, tbody, table {
+   border-collapse: collapse;
+   vertical-align: top;
+}
+
+tbody {
+   vertical-align: top;
+}
+
+td {
+   vertical-align: top;
+   padding: 4px;
+}
+
+pre {
+}

@@ -1,0 +1,1141 @@
+2007-02-21  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* benchmark/.cvsignore, benchmark/bench-add.lisp, benchmark/bench-hprod.lisp, benchmark/bench-mult.lisp, benchmark/bench-scale.lisp, benchmark/bench-subtr.lisp, benchmark/benchmarks.lisp, clem-benchmark.asd, make-dist.sh, src/defmatrix-types.lisp, src/scale.lisp, src/transform.lisp, version.lisp-expr:
+	clem 0.3.13
+	 * splitting benchmarks up into multiple files and adding more
+	   benchmarks
+
+2007-02-20  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* benchmark/benchmarks.lisp, benchmark/defpackage.lisp, clem-benchmark.asd, clem.asd, src/add.lisp, src/defpackage.lisp, src/matrix-classes.lisp, src/matrixops.lisp, src/scale.lisp, src/subtr.lisp, src/typed-ops/defmatrix-mult.lisp, src/typed-ops/defmatrix-scale.lisp, version.lisp-expr:
+	clem 0.3.12
+	 * moved benchmarks stuff into its own package/directory/asdf
+	 * moved scale stuff from defmatrix-scale.lisp to scale.lisp and
+	   reworked to simplify. added mat-scale-2 that takes both input and
+	   destination matrices. reworked mat-scale to take :in-place and to
+	   figure out types and call mat-scale-2 appropriately.
+	 * fixed a type bug in mat-mult and added more matrix mult types
+
+2007-02-17  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* test/bench-matrix.cl, test/benchmarks.lisp, version.lisp-expr:
+	clem 0.3.11
+	 * added more benchmarking stuff (beginning of a new approach)
+
+2007-01-24  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/typed-ops/defmatrix-mult-block.lisp, src/typed-ops/defmatrix-mult-debug.cl, src/typed-ops/defmatrix-mult.lisp, src/typed-ops/defmatrix-transform.lisp, version.lisp-expr:
+	clem 0.3.10
+	 * fixing more array declarations
+
+2007-01-23  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/matrixops.lisp, src/mloop.lisp, src/move.lisp, src/mref.lisp, src/statistics.lisp, src/sum.lisp, src/typed-ops/defmatrix-convolve.lisp, version.lisp-expr:
+	clem 0.3.9
+	 * in laplacian-2, scale the result of discrete-convolve in-place
+	 * make some array declarations be * instead of (* *)
+	 * whitespace in move.lisp
+	 * change semantics of matrix-move-range-2d to be more lispy (that is (0 5)
+	   includes 0, but not 5
+	 * change matrix-move to match
+	 * indentation
+
+2007-01-18  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/move.lisp, test/test-clem2.cl, version.lisp-expr: clem 0.3.8
+	 * fix bug in matrix-move
+	 * add some in-place tests
+
+2007-01-13  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/add.lisp, src/subtr.lisp, version.lisp-expr: clem 0.3.7
+	 * fix an error message in mat-add-range
+	 * add subtr.lisp
+
+2007-01-09  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/defpackage.lisp, src/matrix.lisp, src/matrixops.lisp, src/transform.lisp, version.lisp-expr:
+	clem 0.3.6
+	 * removed some oudated exported symbols
+	 * reworked mat-subtr
+	 * fixed gradmag and graddir
+	 * fixed affine-transformation to work with n-d matrices
+	 * fixed mat-subtr of affine-transformations
+
+2007-01-08  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/logical-operations.lisp, src/macros.lisp, src/matrix.lisp, src/mref.lisp, src/typed-ops/defmatrix-abs.lisp, src/typed-ops/defmatrix-add.lisp, src/typed-ops/defmatrix-binary-op.lisp, src/typed-ops/defmatrix-log.lisp, src/typed-ops/defmatrix-minmax.lisp, src/typed-ops/defmatrix-move.lisp, src/typed-ops/defmatrix-mref-debug.cl, src/typed-ops/defmatrix-mref.lisp, src/typed-ops/defmatrix-range-ops.lisp, src/typed-ops/defmatrix-square.lisp, src/typed-ops/defmatrix-subtr.lisp, src/typed-ops/defmatrix-sum.lisp, src/typed-ops/defmatrix-unary-op.lisp, test/test-add.lisp, test/test-normalize.lisp, test/test-not.lisp, test/test-sum.lisp, test/test-typed-mref.lisp, clem.asd, doc/clem.sexp, src/add.lisp, src/defmatrix.lisp, src/extrema.lisp, version.lisp-expr:
+	clem 0.3.5
+	 * continuing the reorganization
+	 * minor documentation update
+	 * fixing add.lisp
+	 * reorganized with-typed-matrix-vals and friends
+	 * min and max now work with n-d matrices
+	 * added license to logical-operations.lisp
+	 * clean up logical-operations.lisp
+	 * add (:allow-in-place t) keyword arg to def-binary-op
+	 * clen up mref
+	 * remove moved files
+	 * add some tests
+
+2007-01-07  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* clem.asd, src/abs.lisp, src/add.lisp, src/arithmetic.lisp, src/defmatrix-types.lisp, src/defpackage.lisp, src/early-matrix.lisp, src/extrema.lisp, src/matrix.lisp, src/move.lisp, src/mref.lisp, src/print.lisp, src/statistics.lisp, src/sum.lisp, src/transform.lisp, src/typed-matrix.lisp, src/vector.lisp, version.lisp-expr:
+	clem 0.3.4
+	 * continuing the reorganization
+	 * added license information to some files
+	 * working on making functions work with n-dimensional matrices
+
+	* src/abs.lisp, src/add.lisp, src/arithmetic.lisp, src/early-matrix.lisp, src/exponential.lisp, src/extrema.lisp, src/log.lisp, src/logical-operations.lisp, src/macros.lisp, src/matrix.lisp, src/move.lisp, src/mref.lisp, src/normalize.lisp, src/statistics.lisp, src/sum.lisp, src/typed-ops/defmatrix-binary-op.lisp, src/typed-ops/defmatrix-minmax.lisp, src/typed-ops/defmatrix-square.lisp, src/typed-ops/defmatrix-sum.lisp, src/typed-ops/defmatrix-unary-op.lisp, test/test-clem.cl, version.lisp-expr, clem.asd:
+	clem 0.3.3
+	 * continuing the reorganization
+	 * rewrite with-typed-mref to work properly
+
+2007-01-06  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* doc/clem.sexp, src/defmatrix.lisp, src/early-matrix.lisp, src/matrix.lisp, src/typed-ops/defmatrix-move.lisp, src/typed-ops/defmatrix-mref.lisp, test/bench-matrix.cl, test/test-clem.cl, version.lisp-expr:
+	clem 0.3.2
+	 * deleted with-typed mref and commented out mref methods
+	 * spacing changes
+	 * add mref, row-major-mref, matrix-total-size, matrix-dimensions and
+	   with-typed-mref macros
+	 * matrix-move-range -> matrix-move-range-2d
+	 * reworked dim, cols and rows to work n-d matrices
+	 * removed mat-add-inline and mat-add!-inline
+	 * added fallback untyped matrix-move for matrix and integer-matrix
+	 * fixed some test stuff
+
+2007-01-03  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* src/early-matrix.lisp, src/matrix.lisp, version.lisp-expr: clem 0.3.1
+	 * adding :dimensions arg
+	 * making rows and columns reader functions work
+
+2006-12-27  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* STYLE, bootstrap.cl, bootstrap.lisp, clem.asd, src/defmatrix.lisp, src/early-matrix.lisp, src/matrix.lisp, src/n-d-matrix.lisp, src/typed-ops/defmatrix-mref.lisp, version.lisp-expr:
+	clem 0.3.0
+	 * getting ready for the big switch to n-dimensional matrices
+
+2006-12-16  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* clem.asd, src/defmatrix-types-debug.cl, src/typed-ops/defmatrix-abs.cl, src/typed-ops/defmatrix-abs.lisp, src/typed-ops/defmatrix-add.cl, src/typed-ops/defmatrix-add.lisp, src/typed-ops/defmatrix-binary-op.cl, src/typed-ops/defmatrix-binary-op.lisp, src/typed-ops/defmatrix-convolve.cl, src/typed-ops/defmatrix-convolve.lisp, src/typed-ops/defmatrix-equal.cl, src/typed-ops/defmatrix-equal.lisp, src/typed-ops/defmatrix-hprod.cl, src/typed-ops/defmatrix-hprod.lisp, src/typed-ops/defmatrix-log.cl, src/typed-ops/defmatrix-log.lisp, src/typed-ops/defmatrix-minmax.cl, src/typed-ops/defmatrix-minmax.lisp, src/typed-ops/defmatrix-move.cl, src/typed-ops/defmatrix-move.lisp, src/typed-ops/defmatrix-mref.cl, src/typed-ops/defmatrix-mref.lisp, src/typed-ops/defmatrix-mult-block.cl, src/typed-ops/defmatrix-mult-block.lisp, src/typed-ops/defmatrix-mult.cl, src/typed-ops/defmatrix-mult.lisp, src/typed-ops/defmatrix-range-ops.cl, src/typed-ops/defmatrix-range-ops.lisp, src/typed-ops/defmatrix-scale.cl, src/typed-ops/defmatrix-scale.lisp, src/typed-ops/defmatrix-square.cl, src/typed-ops/defmatrix-square.lisp, src/typed-ops/defmatrix-subset-matrix.cl, src/typed-ops/defmatrix-subset-matrix.lisp, src/typed-ops/defmatrix-subtr.cl, src/typed-ops/defmatrix-subtr.lisp, src/typed-ops/defmatrix-sum.cl, src/typed-ops/defmatrix-sum.lisp, src/typed-ops/defmatrix-transform.cl, src/typed-ops/defmatrix-transform.lisp, src/typed-ops/defmatrix-unary-op.cl, src/typed-ops/defmatrix-unary-op.lisp, version.lisp-expr:
+	clem 0.2.11
+	 * second stage of the big file rename/consolidation
+	   this time for the typed-ops
+	   + .cl -> .lisp files
+	   + just use standard :cl-source-file asdf type
+
+	* src/print.cl, src/print.lisp, src/row-vector.cl, src/scalar-types.cl, src/scalar.cl, src/scalar.lisp, src/transform.cl, src/transform.lisp, src/typed-matrix-utils.cl, src/typed-matrix-utils.lisp, src/typed-matrix.cl, src/typed-matrix.lisp, src/vector.lisp, Makefile, NEWS, clem.asd, src/base-vector.cl, src/col-vector.cl, src/defmatrix-types.cl, src/defmatrix-types.lisp, src/defmatrix.cl, src/defmatrix.lisp, src/defpackage.cl, src/defpackage.lisp, src/early-matrix.cl, src/early-matrix.lisp, src/generics.cl, src/interpolation.cl, src/interpolation.lisp, src/matrix-classes.cl, src/matrix-classes.lisp, src/matrix.cl, src/matrix.lisp, src/matrixops.cl, src/matrixops.lisp, src/matrixutils.cl, src/metaclasses.cl, src/metaclasses.lisp, src/mloop.cl, src/mloop.lisp, version.lisp-expr:
+	clem 0.2.10
+	 * first stage of the big file rename/consolidation
+	   + .cl -> .lisp files
+	   + just use standard :cl-source-file asdf type
+	   + consolidate vector stuff in one file
+	 * remove cruft
+
+	* clem.asd, src/early-matrix.cl, src/matrix.cl, src/print.cl, version.lisp-expr:
+	clem 0.2.9
+	 * add print file, start to simplify asdf dependencies
+	 * fix matrix-argument-error so that it now works with a :cause initarg
+	 * break out generics into a protocol section at the beginning of
+	   matrix.cl
+	 * add some documentation to the protocol defgenerics
+	 * remove list-if
+	 * remove dim-1
+	 * rework m* logic so that it works more as one would expect, and
+	   documented that behavior!
+
+2006-12-14  Cyrus Harmon  <cyrus@bobobeach.com>
+
+	* ChangeLog, src/matrix-classes.cl, version.lisp-expr: clem 0.2.8
+	 * made real-matrix and complex-matrix be subtypes of number-matrix instead of t-matrix
+
+2006-12-11  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* ChangeLog, version.lisp-expr: clem 0.2.7
+	 * forgot to update ChangeLog
+
+2006-12-11  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* bootstrap.cl, src/defmatrix.cl, src/defpackage.cl, src/transform.cl, version.lisp-expr:
+	clem 0.2.6
+	 * spacing fixes
+	 * fix maxvalue in defmatrix.cl
+	 * add clem-user package
+	 * types for affine-transformation-7-parameters need to be unquoted
+
+2006-09-19  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-binary-op.cl, src/typed-ops/defmatrix-scale.cl, doc/clem-performance.sexp, src/matrixops.cl, version.lisp-expr:
+	clem 0.2.5
+	 * added some comments about boxed and unboxed representation of lisp
+	   data objects
+	 * Added a question about extensible arrays
+	 * set-val - set-val-fit in dilate (or was it erode?)
+	 * added mbitnor
+	 * added some more type inference in defmatrix-scale
+
+2006-08-30  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/defmatrix.cl, src/matrix.cl, src/matrixops.cl, src/typed-ops/defmatrix-move.cl, src/typed-ops/defmatrix-square.cl, version.lisp-expr:
+	clem 0.2.4
+	  * added with-typed-map-range macro
+	  * added matrix->list
+	  * added destination optional argument for matrix-l2-distance
+	   (performance optimization)
+	 * trying to make matrix-move and mat-square faster
+
+2006-08-27  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, src/defpackage.cl, src/matrixops.cl, src/transform.cl, src/typed-ops/defmatrix-equal.cl, src/typed-ops/defmatrix-transform.cl, version.lisp-expr:
+	clem 0.2.3
+	* add defmatrix-equal file with mat-equal operation
+	* matrix-medians takes a list of matrices, not &rest matrices
+	* added matrix-l2-distance
+	* added docstring about interpolation types
+
+2006-08-09  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* doc/clem.sexp, make-dist.sh, src/defpackage.cl, src/matrixops.cl, test/scratch.cl, version.lisp-expr:
+	clem 0.2.2
+	  * use asdf-package:package-system instead of ch-util:make-dist in make-dist.sh
+	  * fix references
+	  * add and export matrix-means and matrix-medians
+	  * add enable-bracket-reader-macro to scratch file
+
+2006-07-29  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/metaclasses.cl, version.lisp-expr: clem 0.1.10.7-20060729
+	  * added finalize-inheritance call in initialize-instance
+	    and reinitialize-instance methods for standard-matrix-class
+	    instances.
+
+	* src/matrixops.cl, version.lisp-expr: clem 0.1.10.6-20060729
+	  * added standard-deviation and matrix-means
+
+2006-07-17  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-add.cl, version.lisp-expr:
+	clem 0.1.10.5-20060716
+	  * added an add function for ub32 and ub8
+
+2006-07-06  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* doc/clem.sexp: lowercase tags
+
+	* src/matrix.cl, version.lisp-expr: clem 0.1.10.4-20060705
+	  * added mat-scalar-op methods that take numbers
+	  * added mat-subtr ops where one arg is a number, so m- works with
+	    numbers now
+
+2006-06-29  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/defpackage.cl, src/transform.cl, version.lisp-expr:
+	CLEM 0.1.10.3-20060629
+	   * added affine-transformation-7-parameters and associated functions
+
+2006-06-26  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* NEWS, doc/clem-performance.sexp, doc/clem.gmarkup, src/defmatrix.cl, src/matrix.cl, src/matrixops.cl, src/transform.cl, src/typed-ops/defmatrix-scale.cl, src/typed-ops/defmatrix-subtr.cl, src/typed-ops/defmatrix-transform.cl, test/bench-matrix-2.cl, test/bench-matrix.cl, version.lisp-expr:
+	* smarkup changes
+	* normalize now takes a copy parameter
+	* added graddir for computing the gradient direction
+	* added laplacian-2 with a different matrix
+	* removed the 7-parameter :initargs from affine-transformation
+	* stopped trying to keep a 7-parameter representation in six with the matrix
+	  representation of an affine transformation
+	* affine transforamtion scaling is no longer exponential
+	* added mat-mult/scale/add/subtr/hprod methods for affine-transfromations
+	  (but perhaps these can go away now?)
+	* added mat-scale-fit and friends
+	* added some more types for defmatrix-subtr
+	* comment indentation
+	* benchmarks
+
+2006-06-09  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem-doc.asd: * gigamonkeys markup -> smarkup
+
+	* clem.asd: * Added ChangeLog to the asdf
+
+	* NEWS: * update NEWS
+
+	* ChangeLog: * update ChangeLog
+
+	* doc/clem.sexp: * now works with smarkup instead of gigamonkeys markup
+
+	* src/matrixops.cl: * comment out dilate-orig and erode-orig
+	* added defgenerics for threshold binary-threshold and
+	  complement-matrix
+
+2006-06-04  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* TODO, clem-doc.asd, doc/clem-performance.sexp, doc/clem.sexp, doc/simple.css, make-tinaa-docs.lisp, src/defpackage.cl, src/early-matrix.cl, src/matrix.cl, version.lisp-expr:
+	* update TODO items
+	* replace clem.gmarkup with clem.sexp
+	* increase tinaa::*short-documentation-length*
+	* add initial performance documentation
+	* add css file
+	* aad some more exported symbols
+	* add docstring to random-matrix
+
+	* src/matrix.cl:
+	* throw an error on attempt to multiply incongruent matrices
+
+	* src/typed-ops/defmatrix-mult.cl:
+	* Throw an error on attempt to multiply incongruent matrices
+
+2006-05-10  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, src/defmatrix-types.cl, src/defmatrix.cl, src/defpackage.cl, src/early-matrix.cl, src/matrix-classes.cl, src/matrix.cl, src/matrixops.cl, src/transform.cl, src/typed-ops/defmatrix-mref.cl, test/bench-matrix-2.cl, test/bench-matrix.cl, test/mref-tests.cl, test/test-gradmag.cl, version.lisp-expr:
+	* moved some early matrix class definition stuff into early-matrix.
+	* moved the rest of the matrix class definitions into matrix-classes.
+	* removed the eval-when stuff from defmatrix-types.
+	* exported some more symbols (mref, copy-to-ub16-matrx,
+	  copy-to-ub32-matrix, sb8-scalar, ub8-scalar, mlogior, mlogand,
+	  mlogxor.
+	* added dim1 to get the size of one array dimension.
+	* scale x and y derivative matrices.
+	* added laplacian, binary-threshold and complement-matrix functions.
+	* added updated-affine-transformation-slots and
+	  set-affine-transformation-matrix, to allow for updating to of the
+	  matrix parameters directly, adjusting the slots accordingly.
+	* removed mref2
+	* added some more benchmarks and tests
+
+2006-05-03  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/bench-matrix.cl, src/typed-ops/defmatrix-mult.cl, src/typed-ops/defmatrix-mref.cl, src/typed-ops/defmatrix-convolve.cl, version.lisp-expr:
+	* added some fixnum declarations in convolve and mult that muffle some
+	  warnings
+	* getting ready to replace the arefs with mref sbcl compiler hackery
+
+	* src/typed-ops/defmatrix-mref.cl:
+	checking in my hinky sbcl deftransform stuff before i go and mess it up
+
+2006-04-18  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, src/matrix.cl, src/mloop.cl, src/transform.cl, src/typed-matrix-utils.cl, src/typed-ops/defmatrix-add.cl, src/typed-ops/defmatrix-transform.cl, version.lisp-expr:
+	* added mloop file for mloop macro for looping over matrices
+	* fixed some depends
+	* removed map-matrix
+	* removed some spurious clem: package designators
+	* added new copy-to-{ub16,ub32,sb8,sb16,sb32}-matrix
+	  methods
+	* use mloop in defmatrix-add to simplify the logic a bit
+	* added bit-matrix bit-matrix add
+	* add a small epsilon before calling floor in %transform-matrix
+
+2006-04-15  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* version.lisp-expr, clem.asd, src/generics.cl, src/typed-ops/defmatrix-add.cl, src/typed-ops/defmatrix-convolve.cl, src/typed-ops/defmatrix-hprod.cl, src/typed-ops/defmatrix-move.cl, src/typed-ops/defmatrix-mult-block.cl, src/typed-ops/defmatrix-mult.cl, src/typed-ops/defmatrix-scale.cl, src/typed-ops/defmatrix-subtr.cl, src/typed-ops/defmatrix-transform.cl:
+	* added generics file with generic funciton definitions
+	* mat-add!-range -> mat-add-range!
+	* added some fixnum declarations in discrete convolution and
+	  affine transformation routines
+	* added some defgenerics to quiet warnings
+
+2006-04-14  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, src/scalar-types.cl, src/scalar.cl, src/typed-ops/defmatrix-add.cl, src/typed-ops/defmatrix-binary-op.cl, version.lisp-expr:
+	* add scalar-types.cl
+	* added some typed scalar-matrix add functions. this is a hack and
+	  should be cleaned up soon.
+	* added more typed mlogior/mlogxor/mlogand methods
+
+2006-04-08  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* version.lisp-expr, make-tinaa-docs.lisp, make-dist.sh, clem.asd, clem-test.asd, clem-doc.asd:
+	 * tinaa docs
+	 * version.lisp-expr stuff
+
+2006-04-05  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* make-tinaa-docs.lisp: added lisp files for loading to make tinaa docs
+
+	* clem.asd, bootstrap.cl: cleaning up tinaa doc stuff
+
+	* clem.asd, bootstrap.cl: tinaa stuff
+
+2006-04-03  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-unary-op.cl, clem.asd:
+	Added defmatrix-unary-op
+
+	* src/typed-ops/defmatrix-subtr.cl:
+	   * left a debugging print in. remove it.
+
+	* src/typed-ops/defmatrix-subtr.cl, src/typed-ops/defmatrix-binary-op.cl, src/matrix.cl, clem.asd, TODO:
+	    * Reworked matrix printing logic
+	    * Added make-load-form
+	    * Added defmatrix-binary-op with mlogand, mlogior, mlogxor and
+	      destructive and range variants
+	    * Better type inference for destination matrix for mat-subtr
+	    * New TODO:  min-val and max-val -> mmin, mmax
+
+2006-03-15  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, clem-test.asd, ChangeLog:     * Bump version number
+	    * Update ChangeLog
+
+2006-01-26  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* doc/clem.gmarkup: minor matrix printing change.
+
+	* ChangeLog: commit ChangeLog changes
+
+2006-01-26  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* doc/clem.gmarkup: minor matrix printing change.
+
+	* ChangeLog: commit ChangeLog changes
+
+2006-01-26  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* doc/clem.gmarkup: fix bib ref
+
+2006-01-25  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/bench-matrix.cl: add more benchmarks
+
+	* src/typed-ops/defmatrix-mult.cl:
+	add some SBCL specific matrix multiplication hacks
+
+	* src/defpackage.cl: add mat-hprod
+	remove dups
+
+	* clem-doc.asd: add doc asdf file
+
+	* doc/clem.gmarkup: checking in outline.
+
+2006-01-23  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-move.cl:
+	* matrix-move-range and matrix-move-range-constrain now take range
+	  arguments in both the source and destination matrix so that one can
+	  move part of the src matrix to a different part of the dest matrix.
+	* Added generics for matrix-move-range and matrix-move-range-constrain.
+
+	* src/transform.cl, src/matrix.cl:
+	* mat-copy-proto-dim now takes an initial element
+	* transform-matrix truncates rows and cols to get matrix with
+	    integral # of rows and cols
+
+2006-01-05  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/defpackage.cl, src/defmatrix.cl, bootstrap.cl:
+	fixing MOP stuff for CMUCL
+
+2006-01-03  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* TODO: work on TODO list.
+
+2005-12-05  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd: * bumped version number, added NEWS
+
+	* src/typed-ops/defmatrix-mref.cl:
+	* some with-typed-matrix-vals that I missed. (needed to remove the t
+	  for the removed specialized-array arg.
+
+2005-12-05  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* TODO: update clem TODO list.
+
+	* test/test-clem.cl: some more minor tests
+
+	* src/defmatrix.cl, src/defmatrix-types.cl:
+	* removed the specialized-array cruft.
+	* fixed some of the macro-logic to make complex scalar row ops
+	  happy
+
+	* src/metaclasses.cl, src/matrix.cl, src/defmatrix.cl, src/defmatrix-types.cl:
+	* finally got inheritance of meta-class slots from parent classes. I'm
+	  not sure if this is the wisest thing, but it seems to work, and
+	  solves some OAOO problems.
+	* removed a bunch of now extraneous val-formats and what not.
+
+2005-12-04  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/metaclasses.cl:
+	metaclass stuff with debug comments on in case we need to go back here
+
+	* src/transform.cl, src/metaclasses.cl, src/matrix.cl, src/defmatrix.cl:
+	* check for zero slope in normalize so we don't get a divide-by-zero
+	  error
+	* remove print statements in horzcat and vertcat
+	* keep working on filling ancestor slots. I think i've got it
+	  this time. the problem is that we need both the slotname
+	  and the initarg. because they can be different, we probably should
+	  check for that explicitly. At the moment, we just cons up a keyword
+	  and use that for the initarg.
+	* added new affine-transform generic and method.
+	* added resize-matrix (which scales, not pads the matrix)
+
+2005-11-29  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/defmatrix.cl: use (truncate instead of (truncate (/
+
+2005-11-12  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* ChangeLog: updating ChangeLogs
+
+	* src/typed-ops/defmatrix-square.cl: added mat-sqrt
+
+	* src/matrixops.cl:
+	do an in-place in grad-mag to avoid consing a new matrix
+
+	* test/test-convolve.cl: adding more convolution tests
+
+	* src/metaclasses.cl:
+	removed initform nil from minval and maxval. This needs more testing!!
+
+	* src/matrixops.cl: removed bogus comment about gradmag being broken
+
+	* src/matrix.cl, src/defpackage.cl: trim-one -> mat-trim
+
+	* src/defmatrix.cl:
+	improve the test for maybe truncate to do the right thing for reals.
+
+	* src/typed-ops/defmatrix-subset-matrix.cl, clem.asd:
+	* added defmatrix-subset-matrix
+	* and defmatrix-subset-matrix and defmatrix-square to the asd file
+
+	* src/typed-ops/defmatrix-square.cl: adding typed square func
+
+	* src/matrixops.cl:
+	added norm-v to the discrete-convolve defgeneric keys
+
+	* clem-test.asd: added test-convolve.cl to the asdf
+
+	* src/matrixops.cl:
+	trying to fix gradmag but convolve is busted! BROKEN! FIXME!
+
+	* src/typed-ops/defmatrix-mult.cl: removed timestamp
+
+2005-11-11  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-transform.cl, clem-test.asd:
+	cleaning up tests a (very) little bit
+
+	* src/transform.cl: * added some documentation
+	* moved things around a little bit
+
+	* src/col-vector.cl: added a defgeneric for array->col-vector
+
+	* src/matrixops.cl: added some defgenerics
+
+2005-10-29  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* COPYRIGHT: added COPYRIGHT file
+
+2005-10-27  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd:
+	adding some static files to the :clem system so that these get
+	packaged up via make-dist.sh
+
+2005-10-14  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/metaclasses.cl, src/defmatrix.cl:
+	 * use map-set-val-fit in normalize instead of map-set-val
+	 * inherit minval and maxval slots from ancestor matrix classes
+
+2005-10-13  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* TODO, ChangeLog: updating ChangeLog and TODO
+
+	* test/test-transform.cl, test/test-mean.cl, test/test-hprod.cl, test/test-dilate.cl, test/test-convolve.cl, test/test-clem.cl, test/mattest4.cl, src/defpackage.cl:
+	exporting some symbols
+
+	* clem-test.asd, clem.asd: bumping version number
+
+2005-10-12  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* make-dist.sh: new make-dist shell scripts
+
+2005-09-27  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-add.cl: added some add frobs
+
+2005-09-07  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-move.cl:
+	added frob for real-matrix to ub8-matrix
+
+	* src/typed-ops/defmatrix-add.cl:
+	added methods to add a scalar to a matrix
+
+2005-09-03  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-hprod.cl, src/metaclasses.cl:
+	fixed metaclasses so that the really do inherit properties
+	  from ancestor meta-classes
+	add hprod frobs for complex and real matrices
+
+2005-09-01  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-move.cl:
+	added some more frobs for complex, rea, etc...
+
+2005-08-31  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* ChangeLog, TODO, clem.asd, src/defmatrix-types.cl, src/defmatrix.cl, src/matrix.cl, src/typed-matrix-utils.cl, src/typed-ops/defmatrix-abs.cl, src/typed-ops/defmatrix-log.cl, src/typed-ops/defmatrix-move.cl, src/typed-ops/defmatrix-range-ops.cl, test/test-transform.cl:
+	added complex matrix type
+	fixed up real, integer, number, etc... matrices a bit
+	new functions log and abs
+	moved range functions
+	added test-transform.cl
+	added (some, not all yet) new frobs for complex matrices, etc...
+
+2005-08-31  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-scale.cl, src/typed-ops/defmatrix-mref.cl, src/typed-ops/defmatrix-minmax.cl, src/typed-ops/defmatrix-add.cl, src/defpackage.cl, src/defmatrix.cl, src/defmatrix-types.cl, clem.asd:
+	initial support for complex matrices
+	real, integer and float matrices should work now
+	moved min and max into their own file
+	currently only do min and max for real matrices and
+	subtypes. we should fix this and use the min and max of the
+	abs for complex matrices.
+
+2005-08-30  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-scale.cl, src/defmatrix-types.cl:
+	added complex-matrix type
+	changed the element-types for real-matrix, integer-matrix, etc... to
+	  be real, integer, etc...
+
+2005-07-24  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd: bumping version # again
+
+	* clem.asd: made typed-ops depend on interpolation
+
+	* src/typed-ops/defmatrix-transform.cl:
+	whoops. forgot I had commented out some frobs.
+
+	* clem.asd: bumped version #
+
+	* src/typed-ops/defmatrix-transform.cl, src/matrix.cl:
+	added :type fixnum arguments to matrix class definition
+	fixed a bad bug in typed affine-transform routines where I
+	  was setting a local column variable to the number of rows
+	added a half variable and add .5d0 and call truncate instead
+	of round, which I think was consing.
+
+2005-07-23  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-move.cl: fixed a missing paren
+
+	* src/typed-ops/defmatrix-move-add-subtr.cl: removed
+
+2005-07-22  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-transform.cl:
+	fixed the type of zero. I was declaring zero as the type of the coord,
+	not of the value at the coord. this was compiling (safety 0) but
+	causing the background to be hosed. whoops!
+
+	* src/typed-ops/defmatrix-move.cl:
+	removed unused third argument of frobs
+	added more bit-matrix move types
+
+	* src/transform.cl: :x and :y become :x-shift and :y-shift
+	added decf-affine-transformation, move-affine-transformation,
+	copy-affine-transformation
+	added type declarations to the affine-transformation slots
+	added parameters-list function
+
+2005-07-20  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* ChangeLog: updating changelogs
+
+	* src/typed-ops/defmatrix-transform.cl:
+	fixed how we compute the transform. the notions of x and y were messed up.
+
+	* src/transform.cl:
+	transform-coord now returns multiple-values x and y instead of a matrix
+	added compute-bounds
+
+	* src/metaclasses.cl:
+	setting initform of val-format to a list to match how the :val-format
+	  args come in from instances of the metaclass
+	filling val-format from ancestor, for what that's worth
+
+2005-07-19  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/bench-matrix.cl:
+	added matrix-class to mat-subtr so we can deal w/ negative values
+
+	* src/typed-ops/defmatrix-move.cl:
+	removed duplicated mat-add definitions
+
+	* src/typed-ops/defmatrix-subtr.cl, src/typed-ops/defmatrix-move.cl, src/typed-ops/defmatrix-move-add-subtr.cl, src/typed-ops/defmatrix-add.cl, src/metaclasses.cl, src/matrix.cl, clem.asd:
+	moved add move and subtr into their own files
+	working on optimized subtr into different matrix types
+
+2005-07-18  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem.cl, src/typed-matrix-utils.cl, src/scalar.cl, src/row-vector.cl, src/metaclasses.cl, src/matrixops.cl, src/matrix.cl, src/defmatrix.cl, src/col-vector.cl, src/base-vector.cl, clem.asd:
+	added base-vector class
+	lots of code-cleanup stuff
+	 ... new defgenerics
+	 ... some ignores
+	removed some old code
+
+2005-07-17  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-scale.cl, src/typed-ops/defmatrix-mult.cl, src/typed-ops/defmatrix-move-add-subtr.cl, src/typed-ops/defmatrix-hprod.cl, src/matrix.cl:
+	more make-intern -> ch-util:make-intern
+	fixed up a defgeneric that had too many &key args
+
+	* src/metaclasses.cl: added some defgenerics and FIXMEs
+
+	* src/defpackage.cl: added m+, m-, m* and m.*
+
+	* clem.asd: added an order dependency in the typed matrix stuff.
+
+	* src/defmatrix.cl: make-intern -> ch-util:make-intern
+
+	* src/matrix.cl: added a bunch of defgenerics
+
+2005-07-16  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/matrix.cl:
+	ch-util::closest-common-ancestor -> ch-util:closest-common-ancestor
+
+	* src/matrix.cl:
+	renamed convenience arithmetic functions (matrix+, matrix-, et al.)
+	reorded some stuff
+	replaced closest-common-ancestor w/ ch-util::closest-common-ancestor
+
+	* src/matrix.cl: added m.*
+	made m* work with scalars
+	m- now supports unary -
+
+	* src/typed-ops/defmatrix-scale.cl:
+	try coercing before doing the scale. there's no need (I think) for not consing here...
+
+	* src/matrixops.cl: removed old discrete-convolve cruft
+
+	* src/matrix.cl:
+	added print-object method for matrices so we don't have to rely on
+	matrix-print anymore
+
+2005-07-15  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-convolve.cl:
+	fixing test to work with new separable-discrete-convolve
+
+	* src/typed-ops/defmatrix-convolve.cl:
+	separable-discrete-convolve now works better
+
+	* src/matrixops.cl:
+	added gaussian-kernel-1d (should really take dim args for the 2d
+	version)
+	messing with separable-discrete-convolve and gaussian-blur
+
+	* src/matrix.cl:
+	added sum-cols and sum-rows. I feel like I did this before, but i
+	couldnt' find it. Note that these are untyped. Adding typed versions
+	is trivial.
+
+	* src/typed-ops/defmatrix-convolve.cl:
+	ok, separable-discrete-convolve is in better shape now...
+
+2005-07-14  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/row-vector.cl, src/col-vector.cl:
+	allocate-matrix-vals now matches what matrix uses. this shoud probably go away, however.
+
+	* clem.asd: added a depends on ch-util
+
+	* test/test-convolve.cl, src/typed-ops/defmatrix-sum.cl, src/typed-ops/defmatrix-move-add-subtr.cl, src/matrixops.cl, doc/index.html:
+	moved sum type-specific functions into their own file
+	trying to make the convolve stuff work quickly
+	removing timestamps
+	tests
+
+	* clem.asd: trying to get fast discrete-convolve working
+	removing evil timestamps
+	added a super-secret %%sum-range macro
+
+	* src/typed-ops/defmatrix-convolve.cl: adding typed convolve functions
+
+2005-07-13  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/transform.cl: timestamps are a bad idea in source files
+
+	* src/interpolation.cl: time stamps are a bad idea in source files
+
+	* src/defpackage.cl:
+	export the following symbols: mat-copy-proto, affine-transformation,
+	transform-matrix, matrix-move.
+
+	* src/interpolation.cl:
+	added a once-only macro around the bilinear-interp macro. I should
+	probably do the same for the quadratic one.
+
+	* src/typed-ops/defmatrix-transform.cl:
+	using types for quadratic interp macros now
+
+	* src/interpolation.cl:
+	had to add a type argument to quadratic-kernel and quadratic
+	interpolate to make SBCLs compiler happy.
+
+	* clem.asd: added interpolation file to asd
+
+	* src/typed-ops/defmatrix-transform.cl:
+	added quadratic interpolation. not sure that these work with types
+	other than double-float, however.
+
+	* src/interpolation.cl: ... moved interpolation functions here.
+	... added bilinear and quadratic interpolation routines.  note, these just
+	interpolate the values, to actually interprolate the values in a
+	matrix, say via an affine tranformation, see transform.cl
+
+2005-07-12  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-transform.cl: restore all of the frobs
+
+	* src/defmatrix-types.cl:
+	use #. to compute the values for minval and maxval
+
+2005-07-11  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-transform.cl:
+	works fine for floats now. working on the rest...
+
+	* src/transform.cl: added arguments for interpolation
+
+	* src/transform.cl:
+	make a subclass of double-float-matrix to hold the affine
+	transformation parameters. appropriate changes to make this work
+	properly.
+
+	* src/matrix.cl:
+	added rvref and cvref for row-vector and column-vector refs.
+
+	* src/defmatrix.cl: removed defmatrix-method
+
+	* src/typed-ops/defmatrix-transform.cl:
+	made %transform-matrix a lot faster by avoiding a full matrix-multiply
+	using foley et al.'s trick that exploits the structure of the affine
+	transformation matrix.
+
+2005-07-10  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-move-add-subtr.cl:
+	added more move/add/subtr types
+
+	* src/transform.cl, clem.asd: added transform.cl
+
+	* src/typed-ops/defmatrix-transform.cl:
+	changed the type-specific function from transform-matrix ->
+	   %transform-matrix
+	range over the space of the output matrix, not the input matrix
+
+2005-07-08  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-transform.cl, clem.asd:
+	added defmatrix-transform which defines optimized transform-matrix functions
+
+	* src/matrix.cl:
+	added comments about the need for optimized invert-matrix routines
+
+2005-07-07  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/typed-ops/defmatrix-mult.cl: removed mat-mult-range
+	made mat-mult3 non-consing
+
+	* src/matrix.cl:
+	rows and cols now use array-dimension instead of array-dimensions
+	which is non-consing.
+
+	* src/matrix.cl:
+	array->matrix goes straight to matrix, not to row-vector, col-vector or scalar
+
+2005-07-06  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem.cl, clem.asd, clem-test.asd: removing registry stuff
+	fixing a type (ch-uti -> ch-util)
+
+2005-07-01  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* Makefile, src/.cvsignore, src/typed-ops/.cvsignore, test/.cvsignore:
+	adding Makefile and fixing up cvsignores
+
+	* README, clem-test.asd, clem.asd, src/defpackage.cl, src/typed-ops/defmatrix-move-add-subtr.cl, src/typed-ops/defmatrix-mult-debug.cl, test/test-clem.cl, test/test-defmatrix.cl:
+	chutil -> ch-util
+	cleaning up defmatrix ops a bit
+
+	* test/test-defmatrix.cl, test/test-clem.cl, src/typed-ops/defmatrix-mult-block.cl, clem.asd, clem-test.asd:
+	Added defmatrix-mult-block and some initial blocking mulitply functions which
+	  are about 2x faster
+	Fixing up test packages to work under the new scheme
+
+2005-06-30  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, doc/index.html, src/.cvsignore, src/defmatrix-types-debug.cl, src/typed-ops/defmatrix-mref-debug.cl, src/typed-ops/defmatrix-mref.cl, src/typed-ops/defmatrix-mult-debug.cl, test/.cvsignore, test/test-clem4.cl:
+	various cleanups as I get ready to move this up two levels.
+
+	* src/discrete-convolve-ppc.cl: removing
+
+	* src/discrete-convolve-ppc.cl: adding this so that I can delete it.
+
+2005-06-23  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-mult.cl, test/test-hprod.cl, test/test-clem2.cl, src/typed-ops/defmatrix-mult.cl, src/typed-ops/defmatrix-move-add-subtr.cl, src/matrixops.cl, src/matrix.cl, clem.asd:
+	* added test-hprod file and to clem-test.asd
+	* added defmatrix-mult file and to clem.asd
+	* map-matrix-copy now accepts a matrix-class argument and calls
+	   make-instance instead of mat-copy-proto (which should go away!)
+	* variance-window now returns a double-float-matrix
+	* trying to make double -> integer matrix moves work properly
+	* work on the tests a bit
+
+2005-06-22  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem-test.asd: * added test-hprod file and to clem-test.asd
+	* added defmatrix-mult file and to clem.asd
+	* map-matrix-copy now accepts a matrix-class argument and calls
+	   make-instance instead of mat-copy-proto (which should go away!)
+	* variance-window now returns a double-float-matrix
+	* trying to make double -> integer matrix moves work properly
+	* work on the tests a bit
+
+	* TODO: * updated TODO
+	* added test-hprod file and to clem-test.asd
+	* added defmatrix-mult file and to clem.asd
+	* map-matrix-copy now accepts a matrix-class argument and calls
+	   make-instance instead of mat-copy-proto (which should go away!)
+	* variance-window now returns a double-float-matrix
+	* trying to make double -> integer matrix moves work properly
+	* work on the tests a bit
+
+2005-06-15  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem2.cl:
+	fixed single-float literal vals (were erroneous doubles)
+
+	* src/defmatrix.cl: whoops. left some debug statements in here...
+
+	* src/defmatrix-hprod.cl, src/defmatrix-move-add-subtr.cl, src/defmatrix-scale.cl:
+	moved these files to typed-ops
+
+	* test/test-clem2.cl, src/typed-ops/defmatrix-hprod.cl, src/defmatrix.cl, clem.asd, LICENSE, ChangeLog:
+	moved some typed matrix operations into their own directory
+	   ... will move more soon
+	added more typed hprods
+	added more hprod tests via the frobber
+	modified asdf to reflect above
+	minor change to license
+	changelog update
+
+	* src/typed-ops/defmatrix-hprod.cl, src/typed-ops/defmatrix-move-add-subtr.cl, src/typed-ops/defmatrix-scale.cl:
+	moved files into their own directory
+
+2005-06-15  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, clem-test.asd: more asdf cleanup
+
+	* test/test-mean.cl, test/test-gaussian-convolve.cl, test/test-dilate.cl, test/test-defmatrix.cl, test/test-clem2.cl, test/test-clem.cl, test/mattest4.cl, test/mattest3.cl, test/bench-matrix.cl, src/typed-matrix-utils.cl, src/matrixops.cl, src/defpackage.cl, src/defmatrix.cl, src/defmatrix-types.cl, src/defmatrix-scale.cl, src/defmatrix-move-add-subtr.cl, src/defmatrix-hprod.cl, bootstrap.cl:
+	* The big unsigned-byte -> ub8 and friends rename.
+	  ... Now use ub32-matrix instead of unsigned-long matrix.
+	      Some folks might hate the numbers, but word and long were
+	      just too vague and all of those unsigned ints are in fact
+	      bytes to lisp anyway!
+
+2005-06-14  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem3.cl: making function names agree
+	removing erroneous compiler output that popped in here somehow
+
+	* src/defmatrix-types.cl, src/defmatrix-move-add-subtr.cl:
+	moved some method definition frobs into their own file so we don't
+	have to compile everything so often
+
+	* clem.asd, clem-test.asd:
+	cleaned up asdf file logic a bit. Now there's a piece of code that
+	  needs to go in each .asd file, but we don't get screwy behavior
+	  based on partial overriding of asdf methods. Now each system gets
+	  its own subclass of cl-source-file type and components are specified
+	  as :clem-cl-source-file, for instance, instead of :file. Files
+	  usually have .cl as the suffix, but this is easily changeable on a
+	  per-system basis and fasls go in a separate directory.
+
+	* test/test-clem3.cl, test/test-clem2.cl, src/defmatrix.cl, src/defmatrix-types.cl, src/defmatrix-scale.cl, src/defmatrix-hprod.cl, clem.asd, TODO:
+	Added defmatrix-hprod and defmatrix-scale for matrix scale and hadamard product
+	removed unused specialized-type parameter from with-map-range
+	removed unused with-map-range-vals
+	added some ignore declarations
+	removed gensyms for loop variables when there was no macro body
+	moved matrix-scale definitions into their own file
+	added more tests
+
+	* src/defmatrix-types.cl:
+	finally found the extraneous b and removed it!
+
+2005-06-14  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem3.cl: making function names agree
+	removing erroneous compiler output that popped in here somehow
+
+	* src/defmatrix-types.cl, src/defmatrix-move-add-subtr.cl:
+	moved some method definition frobs into their own file so we don't
+	have to compile everything so often
+
+	* clem.asd, clem-test.asd:
+	cleaned up asdf file logic a bit. Now there's a piece of code that
+	  needs to go in each .asd file, but we don't get screwy behavior
+	  based on partial overriding of asdf methods. Now each system gets
+	  its own subclass of cl-source-file type and components are specified
+	  as :clem-cl-source-file, for instance, instead of :file. Files
+	  usually have .cl as the suffix, but this is easily changeable on a
+	  per-system basis and fasls go in a separate directory.
+
+	* test/test-clem3.cl, test/test-clem2.cl, src/defmatrix.cl, src/defmatrix-types.cl, src/defmatrix-scale.cl, src/defmatrix-hprod.cl, clem.asd, TODO:
+	Added defmatrix-hprod and defmatrix-scale for matrix scale and hadamard product
+	removed unused specialized-type parameter from with-map-range
+	removed unused with-map-range-vals
+	added some ignore declarations
+	removed gensyms for loop variables when there was no macro body
+	moved matrix-scale definitions into their own file
+	added more tests
+
+	* src/defmatrix-types.cl:
+	finally found the extraneous b and removed it!
+
+2005-06-14  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem3.cl, test/test-clem2.cl, src/defmatrix.cl, src/defmatrix-types.cl, src/defmatrix-scale.cl, src/defmatrix-hprod.cl, clem.asd, TODO:
+	Added defmatrix-hprod and defmatrix-scale for matrix scale and hadamard product
+	removed unused specialized-type parameter from with-map-range
+	removed unused with-map-range-vals
+	added some ignore declarations
+	removed gensyms for loop variables when there was no macro body
+	moved matrix-scale definitions into their own file
+	added more tests
+
+	* src/defmatrix-types.cl:
+	finally found the extraneous b and removed it!
+
+	* test/test-clem3.cl, test/test-clem2.cl, clem-test.asd:
+	Added tests for mat-scale and mat-scale!
+	Added test-clem3 for messing around
+	Added dependencies on defpackage in the asdf file
+
+	* src/defmatrix.cl, src/defmatrix-types.cl:
+	added :execute to eval-when forms
+	fixed accumulator type of signed-bytes and signed-words
+	  ... (unsigned-byte 32) -> (signed-byte 32)
+	added def-matrix-scale
+	added forms to call def-matrix-scale for the basic types
+
+2005-06-13  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* ChangeLog: more ChangeLog stuff.
+
+	* TODO, README, LICENSE:
+	Added LICENSE and TODO. Removed TODO stuff from README.
+
+	* clem.asd: removed util dependency
+
+	* src/metaclasses.cl, src/matrix.cl, src/defpackage.cl, src/defmatrix.cl:
+	removed dependency on util. Had to copy some stuff over here to do it, however. Goes against OAOO but means we don't need util to run clem (except for the tests).
+
+	* src/row-vector.cl, src/col-vector.cl:
+	remove reference to undefined functions and call make-instance. WARNING: this hasn't been tested, but at least it compiles now!
+
+2005-06-13  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* TODO, README, LICENSE:
+	Added LICENSE and TODO. Removed TODO stuff from README.
+
+	* clem.asd: removed util dependency
+
+	* src/metaclasses.cl, src/matrix.cl, src/defpackage.cl, src/defmatrix.cl:
+	removed dependency on util. Had to copy some stuff over here to do it, however. Goes against OAOO but means we don't need util to run clem (except for the tests).
+
+	* src/row-vector.cl, src/col-vector.cl:
+	remove reference to undefined functions and call make-instance. WARNING: this hasn't been tested, but at least it compiles now!
+
+2005-06-13  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/test-clem2.cl: adding new tests (slowly).
+
+	* src/typed-matrix-utils.cl, src/metaclasses.cl, src/matrix.cl, src/defpackage.cl, src/defmatrix.cl, src/defmatrix-types.cl:
+	val-format is now a metaclass option rather than a class allocated variable
+	... added val-format stuff to metaclass
+	added def-move-element and def-matrix-move
+	added new matrix conversion/move functions
+	... this still needs to be cleaned up!
+	added def-matrix-move and supporting macros
+	export #:identity-matrix and #:copy-to-bit-matrix
+	trying to clean up the copy-to-<matrix-type> stuff
+
+	* src/scalar.cl: use element-type instead of storage-type
+
+	* src/row-vector.cl, src/col-vector.cl:
+	Cleanup row-vector and col-vector
+	... use element-type instead of storage-type
+	... call make-instance instead of xxx-vector functions
+
+2005-06-09  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/matrix.cl:
+	  *  cleaned up the scalar-op stuff to use macros instead of eval
+
+	* test/test-clem2.cl, src/metaclasses.cl, src/matrix.cl, src/defpackage.cl, src/defmatrix.cl, src/defmatrix-types.cl:
+	  * Lots of changes to clem. From here on out, I'll try to do a better
+		job of documenting them.
+	  * new matrix typed arithmetic functions.
+	  * cleaning up the matrix macro system
+	  * more tests
+
+2005-05-12  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd: bumped version #.
+
+	* src/defmatrix-types.cl:
+	added eval-when (:compile-toplevel :load-toplevel) around the matrix
+	definitions so that the function definitions can use the classes to DTRT.
+
+2005-05-07  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem.asd, src/defmatrix-types.cl, src/defmatrix.cl, src/matrix.cl, src/metaclasses.cl, src/typed-matrix.cl:
+	finally! got things back to a working state.
+	summary of major changes:
+	1. matrix now is a standard-matrix-class
+	2. added accessors for standard-matrix-class element type
+	   and specialized-array-p or whatever
+	3. funky eval-when hacks to get the matrix classes defined before the
+	   functions which use the meta-data at function definition time
+	   to generate the proper declare statements so that all of this
+	   runs quickly.
+
+2005-04-26  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* clem-test.asd, clem.asd, src/defmatrix-types.cl, src/defmatrix.cl, src/defpackage.cl, src/matrix.cl, src/metaclasses.cl:
+	checkpoint so I can use on multiple computers.
+
+	* test/test-clem2.cl, test/test-defmatrix.cl, test/test-gaussian-convolve.cl:
+	fixing tests for new regime.
+
+2005-04-19  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* test/bench-matrix.cl: getting ready to for metaclass stuff.
+
+2005-04-18  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* src/matrix.cl, src/matrixops.cl, src/typed-matrix.cl:
+	checkpoint now that we cons a lot less than we used to when doing a
+	discrete-convolve. We still have a little ways to go, but it's much
+	better than before.
+
+2005-04-15  Cyrus Harmon  <ch-lisp@bobobeach.com>
+
+	* .cvsignore, README, bootstrap.cl, clem-test.asd, clem.asd, src/CHANGES, src/README, src/col-vector.cl, src/defpackage.cl, src/matrix.cl, src/matrixops.cl, src/matrixutils.cl, src/row-vector.cl, src/scalar.cl, src/typed-matrix-utils.cl, src/typed-matrix.cl, test/bench-matrix.cl, test/defpackage.cl, test/mat-test.cl, test/mattest2.cl, test/mattest3.cl, test/mattest4.cl, test/scratch.cl, test/test-clem.cl, test/test-convolve.cl, test/test-defmatrix.cl, test/test-dilate.cl, test/test-gaussian-convolve-1.cl, test/test-gaussian-convolve.cl, test/test-mean.cl, test/test-mult.cl, test/test-scalar.cl, test/vector-test.cl:
+	renamed the matrix package to ... CLEM ...
+
