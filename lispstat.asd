@@ -36,7 +36,7 @@
 based on CLS by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
 Last touched 1991, then in 2005--2007."
   :serial t
-  :depends-on (:cffi )
+  :depends-on (:cffi :lift :clem)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "lsobjects")
@@ -56,10 +56,6 @@ Last touched 1991, then in 2005--2007."
 						       "lsfloat"))
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("lstypes"
-						       "lsmath"
-						       "matrices"))
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
 						       "lstypes"
@@ -69,6 +65,10 @@ Last touched 1991, then in 2005--2007."
 						       "matrices"
 						       "linalg"))
 
+	       (:lispstat-lsp-source-file "linalg"
+					  :depends-on ("lsbasics"
+						       "lsmath"
+						       "matrices"))
 
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
@@ -94,6 +94,7 @@ Last touched 1991, then in 2005--2007."
 	       (:file "optimize" :depends-on ("lsobjects" "lstypes"))
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
+						       "lsmath"
 						       "dists")) ; in lisp-stat
 	       ))
 ;;	       ;;; Top level
