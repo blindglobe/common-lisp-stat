@@ -50,6 +50,8 @@
   ;;(asdf:oos 'asdf:load-op :lisp-unit)
 
   (asdf:oos 'asdf:load-op :clem)
+  #+nil(asdf:oos 'asdf:load-op :clem-test)
+  #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
 
   ;; Constraint System
   ;;(asdf:oos 'asdf:load-op :cells)

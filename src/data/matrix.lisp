@@ -1,18 +1,13 @@
 ;;; -*- mode: lisp -*-
 ;;;
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2007, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
-;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
-;;; Common Lisp.  
 
-;;;; matrices -- Basic matrix operations
-;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
+;;;; matrices for statistics.  Extends CLEM 
 
-
-;;; Need to extend to use CLEM 
-
+;;; What is this talk of 'release'? Klingons do not make software
+;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
+;;; designers and quality assurance people in its wake.
 
 
 ;;;;
@@ -21,8 +16,7 @@
 
 (defpackage :lisp-stat-matrix
   (:use :common-lisp
-	:lisp-stat-compound-data
-	:lisp-stat-sequence)
+	:clem)
   (:export matrixp num-rows num-cols matmult identity-matrix diagonal
 	   row-list column-list inner-product outer-product
 	   cross-product transpose bind-columns bind-rows
@@ -30,7 +24,30 @@
 
 (in-package :lisp-stat-matrix)
 
-(deftype matrix () 'array)  ;; temp fix
+;; Using CLEM:
+
+CL-USER> (defparameter tr1 (make-instance 'number-matrix))
+TR1
+CL-USER> tr1
+#<NUMBER-MATRIX of dimensions (1)>
+CL-USER> (defparameter tr2 (make-instance 'number-matrix :rows 4 :cols 3))
+TR2
+CL-USER> tr2
+#<NUMBER-MATRIX [.000000000 .000000000 .000000000; 
+ .000000000 .000000000 .000000000; 
+ .000000000 .000000000 .000000000; 
+ .000000000 .000000000 .000000000]>
+CL-USER> (transpose tr2)
+
+
+
+
+
+tr2
+
+(defparameter tr3 (make-instance 'clem::base-vector :length 4))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -48,6 +65,7 @@ Displaces array A to a vector"
 (defun vector-to-array (v dims)
 "Args: (v dims)
 Displaces vector V to array with dimensions DIMS"
+;;; Yes, but using row or column first approach?
   (make-array dims
 	      :displaced-to v
 	      :element-type (array-element-type v)))
