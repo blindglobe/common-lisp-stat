@@ -43,20 +43,25 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
 	       (:lispstat-lsp-source-file "sequence")
+
 	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("src"  ;; "lsobjects"
+					  :depends-on ("lsobjects"
 						       "fastmap"
 						       "sequence"))
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("src" ;; "lsobjects"
+					  :depends-on ("lsobjects"
 						       "lsmacros"
 						       "lsfloat"))
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("sequence"))
+	       (:lispstat-lsp-source-file "linalg"
+					  :depends-on ("lsmath"
+						       "matrices"))
+
 	       (:lispstat-lsp-source-file "lsbasics"
-					  :depends-on ("src" ;; "lsobjects"
+					  :depends-on ("lsobjects"
 						       "lstypes"
 						       "lsmacros"
 						       "sequence"
@@ -64,39 +69,33 @@ Last touched 1991, then in 2005--2007."
 						       "matrices"
 						       "linalg"))
 
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("lsbasics"
-						       "lsmath"
-						       "matrices"))
-
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("lsbasics"))
 
-
 	       ;; mix/match lsp vs. lisp in next 2.
-	       (:file "data" :depends-on ("defsys"
-					  "src" ;; "lsobjects"
+	       (:file "data" :depends-on ("lsobjects"
 					  "compound"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("src" ;; "lsobjects"
+					  :depends-on ("lsobjects"
 						       "lsbasics"))
 	       (:lispstat-lsp-source-file "nonlin"
 					  :depends-on ("regression"))
 	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("src" ;; "lsobjects"
+					  :depends-on ("lsobjects"
 						       "lsmath"
 						       "data" ))
-	       (:file "optimize" :depends-on ("src" ;; "lsobjects"
+	       (:file "optimize" :depends-on ("lsobjects"
 					      "lstypes"))
 	       (:lispstat-lsp-source-file "bayes"
-					  :depends-on ("src" ;; "lsobjects"
+					  :depends-on ("lsobjects"
 						       "lsmath"
-						       "dists")) ; in lisp-stat
+						       "dists"))
 	       ))
-;;	       ;;; Top level
-;;	       (:file "ls-user" :depends-on ("statistics"
-;;						    "data"))))
+
+#|
+   
+|#

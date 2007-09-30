@@ -30,9 +30,10 @@
   (:documentation "Data I/O, management, other data technologies.")
   (:nicknames :ls-data)
   (:use :common-lisp
-	:lisp-stat-config
+	;;:lisp-stat-config
 	;;:cxml
 	:lisp-stat-object-system
+	:lisp-stat-types
 	:lisp-stat-compound-data
 	:lisp-stat-matrix
 	:lisp-stat-linalg
@@ -66,6 +67,7 @@
 (defvar *lisp-stat-data-count* 0
   "number of items currently recorded.")
 
+#|
 ;;; Data Types:
 ;;;
 ;;; Data types are the representation of data from a computer-science
@@ -87,12 +89,12 @@
   `(or integer double complex))
 
 (deftype dt-array (&optional type)
-  `(satisfies equal-type))
+  `(satisfies array-of-equal-type))
 
 (deftype dt-dataframe ()
-  `(satisfies equal-type-within-column))
+  `(satisfies array-of-equal-type-within-column))
 
-(deftype dt-relationdata ()
+(deftype dt-relationaldata ()
   `(satisfies (foreach unit in relationalUnit
 	       (typep unit 'dt-dataframe)))) 
 
@@ -100,14 +102,23 @@
 
 
 ;;; Statistical Variable Classes
-;;(deftype sv-nominal )
-;;(deftype sv-ordinal )
-;;(deftype sv-categorical (or 'sv-nominal 'sv-ordinal))
+
+
+(deftype sv-nominal (&optional length)
+  ())
+
+(deftype sv-ordinal (ordering &optional length)
+  ())
+
+(deftype sv-categorical ()
+  `(satisfies (or sv-nominal sv-ordinal)))
 ;;(deftype sv-integer )
 ;;(deftype sv-real )
 ;;(deftype sv-rational )
 ;;(deftype sv-complex )
 ;;(deftype sv-continuous (or 'sv-integer 'sv-real 'sv-rational 'sv-complex))
+
+|#
 
 
 ;;; Data I/O
