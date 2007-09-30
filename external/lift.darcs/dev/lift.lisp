@@ -22,7 +22,7 @@
 	    measure-time
 	    measure-conses
 	    with-profile-report
-          
+
 	    ;; Variables
 	    *test-ignore-warnings?*
 	    *test-break-on-errors?*
@@ -315,14 +315,12 @@ All other CLOS slot options are processed normally."
 (defvar *testsuite-test-count* nil
   "Temporary variable used to 'communicate' between deftestsuite and addtest.")
 (defvar *lift-debug-output* *debug-io*
-  "Messages from LIFT will be sent to this stream. It can set to nil or
-to an output stream. It defaults to *debug-io**.")
+  "Messages from LIFT will be sent to this stream. It can set to nil or to an output stream. It defaults to *debug-io*.")
 
 (defvar *test-break-on-errors?* nil)
 (defvar *test-do-children?* t)
 (defparameter *test-ignore-warnings?* nil
-  "If true, LIFT will not cause a test to fail if a warning occurs while
-the test is running. Note that this may interact oddly with ensure-warning.")
+  "If true, LIFT will not cause a test to fail if a warning occurs while the test is running. Note that this may interact oddly with ensure-warning.")
 (defparameter *test-print-when-defined?* nil)
 (defparameter *test-evaluate-when-defined?* t)
 (defparameter *test-scratchpad* nil
@@ -362,16 +360,13 @@ the test is running. Note that this may interact oddly with ensure-warning.")
   "The current testsuite.")
 
 (defvar *lift-dribble-pathname* nil
-  "If bound, then test output from run-tests will be sent to this file in 
-in addition to *lift-standard-output*. It can be set to nil or to a pathname.")
+  "If bound, then test output from run-tests will be sent to this file in addition to *lift-standard-output*. It can be set to nil or to a pathname.")
 
 (defvar *lift-standard-output* *standard-output*
-  "Output from tests will be sent to this stream. If can set to nil or
-to an output stream. It defaults to *standard-output*.")
+  "Output from tests will be sent to this stream. If can set to nil or to an output stream. It defaults to *standard-output*.")
 
 (defvar *lift-if-dribble-exists* :append
-  "Specifies what to do to any existing file at *lift-dribble-pathname*. It
-can be :supersede, :append, or :error.")
+  "Specifies what to do to any existing file at *lift-dribble-pathname*. It can be :supersede, :append, or :error.")
   
 ;;; ---------------------------------------------------------------------------
 ;;; Error messages and warnings
@@ -393,9 +388,7 @@ can be :supersede, :append, or :error.")
   "Could not find test: ~S.~S")
 
 (defparameter +run-tests-null-test-case+
-  "There is no current testsuite (possibly because
-   none have been defined yet?). You can specify the
-   testsuite to test by evaluating (run-tests :suite <suitename>).")
+  "There is no current testsuite (possibly because none have been defined yet?). You can specify the testsuite to test by evaluating (run-tests :suite <suitename>).")
 
 (defparameter +lift-unable-to-parse-test-name-and-class+ 
   "")
@@ -412,8 +405,6 @@ can be :supersede, :append, or :error.")
   (:report (lambda (c s)
              (format s "Compile error: '~S'" (msg c)))))
 
-;;; ---------------------------------------------------------------------------
-
 (define-condition test-class-not-defined (lift-compile-error)
                   ((test-class-name :reader test-class-name
                                     :initarg :test-class-name))
@@ -421,35 +412,26 @@ can be :supersede, :append, or :error.")
              (format s "Test class ~A not defined before it was used."
                      (test-class-name c)))))
 
-;;; ---------------------------------------------------------------------------
-
-(defun build-lift-error-message (context message &rest args)
+(defun build-lift-error-message (context message &rest arguments)
   (format nil "~A: ~A" 
           context
-          (apply #'format nil message args)))
+          (apply #'format nil message arguments)))
 
-;;; ---------------------------------------------------------------------------
-
-(defun signal-lift-error (context message &rest args)
+(defun signal-lift-error (context message &rest arguments)
   (let ((c (make-condition  
             'lift-compile-error
-            :lift-message (apply #'build-lift-error-message context message args))))
+            :lift-message (apply #'build-lift-error-message 
+				 context message arguments))))
     (unless (signal c)
       (error c))))
 
-;;; ---------------------------------------------------------------------------
-
-(defun report-lift-error (context message &rest args)
+(defun report-lift-error (context message &rest arguments)
   (format *debug-io* "~&~A."
-          (apply #'build-lift-error-message context message args))
+          (apply #'build-lift-error-message context message arguments))
   (values))
-
-;;; ---------------------------------------------------------------------------
 
 (defun lift-report-condition (c)
   (format *debug-io* "~&~A." c))
-
-;;; ---------------------------------------------------------------------------
 
 (define-condition test-condition (warning) 
                   ((message :initform ""
@@ -459,8 +441,6 @@ can be :supersede, :append, or :error.")
              (when (message c)
                (format s "~%~A" (message c))))))
 
-;;; ---------------------------------------------------------------------------
-
 (define-condition ensure-failed-error (test-condition) 
                   ((assertion :initform "" 
                               :accessor assertion
@@ -469,17 +449,16 @@ can be :supersede, :append, or :error.")
              (format s "Ensure failed: ~S ~@[(~a)~]" 
 		     (assertion c) (message c)))))
 
-;;; ---------------------------------------------------------------------------
-
 (define-condition ensure-null-failed-error (ensure-failed-error)
   ((value :initform "" 
 	  :accessor value
-	  :initarg :value))
+	  :initarg :value)
+   (assertion :initform "" 
+	      :accessor assertion
+	      :initarg :assertion))
   (:report (lambda (c s)
-             (format s "Ensure null failed: ~S ~@[(~a)~]" 
-		     (value c) (message c)))))
-
-;;; ---------------------------------------------------------------------------
+             (format s "Ensure null failed: ~s evaluates to ~s ~@[(~a)~]" 
+		     (assertion c) (value c) (message c)))))
 
 (define-condition ensure-expected-condition (test-condition) 
                   ((expected-condition-type
@@ -495,8 +474,6 @@ can be :supersede, :append, or :error.")
                      (expected-condition-type c)
                      (the-condition c)))))
 
-;;; ---------------------------------------------------------------------------
-
 (define-condition ensure-not-same (test-condition) 
                   ((first-value :accessor first-value
                                 :initarg :first-value)
@@ -509,7 +486,6 @@ can be :supersede, :append, or :error.")
                      (first-value c) (test c) (second-value c)
 		     (message c)))))
 
-;; hacked list to take arguments in addition to args
 (defmacro ensure (predicate &key report arguments)
   "If ensure's `predicate` evaluates to false, then it will generate a 
 test failure. You can use the `report` and `arguments` keyword parameters
@@ -548,6 +524,7 @@ details."
 	   t
 	 (let ((condition (make-condition 'ensure-null-failed-error
 			    :value ,g
+			    :assertion ',predicate
 			    ,@(when report
 				`(:message (format nil ,report ,@arguments))))))
 	   (if (find-restart 'ensure-failed)
@@ -607,16 +584,18 @@ error, then ensure-error will generate a test failure."
   (when (and (consp test)
              (eq (first test) 'function))
     (setf test (second test)))
-  `(progn
-     (loop for value in (multiple-value-list ,form)
-           for other-value in (multiple-value-list ,values) do
-           (unless (funcall ,(if test-specified-p (list 'quote test) '*lift-equality-test*)
-                            value other-value)
-             (maybe-raise-not-same-condition 
-              value other-value
-              ,(if test-specified-p (list 'quote test) '*lift-equality-test*)
-	      ,report ,@arguments)))
-     (values t)))
+  (let ((block (gensym)))
+    `(block ,block
+       (loop for value in (multiple-value-list ,form)
+	  for other-value in (multiple-value-list ,values) do
+	  (unless (funcall ,(if test-specified-p (list 'quote test) '*lift-equality-test*)
+			   value other-value)
+	    (maybe-raise-not-same-condition 
+	     value other-value
+	     ,(if test-specified-p (list 'quote test) '*lift-equality-test*)
+	     ,report ,@arguments)
+	    (return-from ,block nil)))
+       (values t))))
 
 (defmacro ensure-different
     (form values &key (test nil test-specified-p) 
@@ -880,8 +859,8 @@ the thing being defined.")
   (let ((current (assoc name *current-definition*)))
     (if current
       (setf (cdr current) value)
-      (push (cons name value) *current-definition*)))
-    (values value))
+      (push (cons name value) *current-definition*)))  
+  (values value))
 
 (defun def (name &optional (definition *current-definition*))
   (when definition (cdr (assoc name definition))))
@@ -909,7 +888,7 @@ the thing being defined.")
                 :code code)))
     (if current
       (setf (cdr current) value)
-      (push (cons name value) *code-blocks*))
+      (push (cons name value) *code-blocks*))  
     (eval 
      `(defmethod block-handler ((name (eql ',name)) value)
         (declare (ignorable value))
@@ -1016,12 +995,8 @@ the thing being defined.")
  '((push value (def :categories)))
  nil)
 
-(defmacro no-handler-case (form &rest cases)
-  (declare (ignore cases))
-  `,form)
-
 (defmacro deftestsuite (testsuite-name superclasses slots &rest
-                                  clauses-and-options) 
+			clauses-and-options) 
   "
 Creates a testsuite named `testsuite-name` and, optionally, the code required for test setup, test tear-down and the actual test-cases. A testsuite is a collection of test-cases and other testsuites.
 
@@ -1069,7 +1044,6 @@ Test options are one of :setup, :teardown, :test, :tests, :documentation, :expor
 * :test - Define a single test case. Can be specified multiple times.
 
 * :tests - Define multiple test cases for this test suite. Can be specified multiple times.
-
 "
   #+no-lift-tests
   `(values)
@@ -1121,70 +1095,59 @@ Test options are one of :setup, :teardown, :test, :tests, :documentation, :expor
           (push ',return *test-is-being-loaded?*))
         (eval-when (:execute)
           (push ',return *test-is-being-executed?*))
+	;; remove previous methods (do this _before_ we define the class)
+	(remove-previous-definitions ',(def :testsuite-name))
+	,(build-test-class)
 	(unwind-protect
-	     (let (#+MCL (ccl:*warn-if-redefine* nil)
-			 (*test-is-being-defined?* t))
-	       (no-handler-case 
-                (progn
-                  ;; remove previous methods (do this 
-		  ;; _before_ we define the class)
-					;#+(or)
-                  (remove-previous-definitions ',(def :testsuite-name))
-                  (setf *current-case-method-name* nil)
-                  ;; and then redefine the class
-		  ,(build-test-class)
-                  (setf *current-suite-class-name* ',(def :testsuite-name)
-			(test-slots ',(def :testsuite-name)) 
-			',(def :slot-names)
-			(testsuite-dynamic-variables ',(def :testsuite-name))
-			',(def :dynamic-variables)
-			;;?? issue 27: breaks 'encapsulation' of code-block mechanism
-			(testsuite-function-specs ',(def :testsuite-name))
-			',(def :function-specs))
-                  ,@(when (def :export-p)
-			  `((export '(,(def :testsuite-name)))))
-                  ,@(when (def :export-slots?)
-			  `((export ',(def :direct-slot-names))))
-                  ;; make a place to save test-case information
-                  (empty-test-tables ',(def :testsuite-name))
-;;; create methods
-                  ;; setup :before
-		  (eval-when (:load-toplevel :execute)
-		    ,@(build-initialize-test-method) 
-		    ,@(loop for (nil . block) in *code-blocks* 
-			 when (and block 
-				   (code block)
-				   (eq (operate-when block) :methods)
-				   (or (not (filter block))
-				       (funcall (filter block)))) collect
-			 (funcall (code block)))
-		    ,@(when (def :dynamic-variables)
-			    `((defmethod do-testing :around
-				  ((suite ,(def :testsuite-name)) result fn) 
-				(declare (ignore result fn))
-				(cond ((done-dynamics? suite)
-				       (call-next-method))
-				      (t
-				       (setf (slot-value suite 'done-dynamics?) t)
-				       (let* (,@(build-dynamics))
-					 (call-next-method)))))))
-		    ;; tests
-		    ,@(when test-list
-			    `((let ((*test-evaluate-when-defined?* nil))
-				,@(loop for test in (nreverse test-list) collect
-				       `(addtest (,(def :testsuite-name)) 
-					  ,@test))
-				(setf *testsuite-test-count* nil))))
-		    ,(if *test-evaluate-when-defined?* 
-			 `(unless (or *test-is-being-compiled?*
-				      *test-is-being-loaded?*)
-			    (let ((*test-break-on-errors?* *test-break-on-errors?*))
-			      (run-tests :suite ',testsuite-name)))
-			 `(find-class ',testsuite-name))))
-                (condition (c) 
-			   (break)
-			   (setf *testsuite-test-count* nil)
-			   (lift-report-condition c))))
+	     (let ((*test-is-being-defined?* t))
+	       (setf *current-case-method-name* nil)
+	       (setf *current-suite-class-name* ',(def :testsuite-name)
+		     (test-slots ',(def :testsuite-name)) 
+		     ',(def :slot-names)
+		     (testsuite-dynamic-variables ',(def :testsuite-name))
+		     ',(def :dynamic-variables)
+		     ;;?? issue 27: breaks 'encapsulation' of code-block mechanism
+		     (testsuite-function-specs ',(def :testsuite-name))
+		     ',(def :function-specs))
+	       ,@(when (def :export-p)
+		       `((export '(,(def :testsuite-name)))))
+	       ,@(when (def :export-slots?)
+		       `((export ',(def :direct-slot-names))))
+	       ;; make a place to save test-case information
+	       (empty-test-tables ',(def :testsuite-name))
+	       ;; create methods
+	       ;; setup :before
+	       ,@(build-initialize-test-method) 
+	       ,@(loop for (nil . block) in *code-blocks* 
+		    when (and block 
+			      (code block)
+			      (eq (operate-when block) :methods)
+			      (or (not (filter block))
+				  (funcall (filter block)))) collect
+		    (funcall (code block)))
+	       ,@(when (def :dynamic-variables)
+		       `((defmethod do-testing :around
+			     ((suite ,(def :testsuite-name)) result fn) 
+			   (declare (ignore result fn))
+			   (cond ((done-dynamics? suite)
+				  (call-next-method))
+				 (t
+				  (setf (slot-value suite 'done-dynamics?) t)
+				  (let* (,@(build-dynamics))
+				    (call-next-method)))))))
+	       ;; tests
+	       ,@(when test-list
+		       `((let ((*test-evaluate-when-defined?* nil))
+			   ,@(loop for test in (nreverse test-list) collect
+				  `(addtest (,(def :testsuite-name)) 
+				     ,@test))
+			   (setf *testsuite-test-count* nil))))
+	       ,(if *test-evaluate-when-defined?* 
+		    `(unless (or *test-is-being-compiled?*
+				 *test-is-being-loaded?*)
+		       (let ((*test-break-on-errors?* *test-break-on-errors?*))
+			 (run-tests :suite ',testsuite-name)))
+		    `(find-class ',testsuite-name)))
 	  ;; cleanup
 	  (setf *test-is-being-compiled?* 
 		(remove ',return *test-is-being-compiled?*))
@@ -1232,57 +1195,54 @@ Test options are one of :setup, :teardown, :test, :tests, :documentation, :expor
   #+no-lift-tests
   `nil
   #-no-lift-tests
-  (no-handler-case 
-    (let ((body nil)
-          (return (gensym))
-	  (options nil)
-	  (looks-like-suite-name (looks-like-suite-name-p name))
-	  (looks-like-code (looks-like-code-p name)))
-      (cond ((and looks-like-suite-name looks-like-code)
-	     (error "Can't disambiguate suite name from possible code."))
-	    (looks-like-suite-name
-             ;; testsuite given
-             (setf (def :testsuite-name) (first name) 
-		   options (rest name)
-		   name nil body test))
-            (t
-             ;; the 'name' is really part of the test...
-             (setf body (cons name test))))
-      (unless (def :testsuite-name)
-        (when *current-suite-class-name*
-          (setf (def :testsuite-name) *current-suite-class-name*)))
-      (unless (def :testsuite-name)
-        (signal-lift-error 'add-test +lift-no-current-test-class+))
-      (unless (or (def :deftestsuite) 
-                  (find-testsuite (def :testsuite-name)))
-        (signal-lift-error 'add-test +lift-test-class-not-found+
-                           (def :testsuite-name)))
-      `(eval-when (:compile-toplevel :load-toplevel :execute)
-         (eval-when (:compile-toplevel)
-           (push ',return *test-is-being-compiled?*))
-         (eval-when (:load-toplevel)
-           (push ',return *test-is-being-loaded?*))
-         (eval-when (:execute)
-           (push ',return *test-is-being-executed?*))
-         (unwind-protect
-           (let ((*test-is-being-defined?* t))
-             ,(build-test-test-method (def :testsuite-name) body options)
-             (setf *current-suite-class-name* ',(def :testsuite-name))
-             (if *test-evaluate-when-defined?*
-               (unless (or *test-is-being-compiled?*
-                           *test-is-being-loaded?*)
-                 (let ((*test-break-on-errors?* (testing-interactively-p)))
-                   (run-test)))
-               (values)))
-           ;; cleanup
-           (setf *test-is-being-compiled?* 
-		 (remove ',return *test-is-being-compiled?*)
-		 *test-is-being-loaded?*
-		 (remove ',return *test-is-being-loaded?*)
-		 *test-is-being-executed?*
-		 (remove ',return *test-is-being-executed?*)))))
-    (condition (c) 
-               (lift-report-condition c))))
+  (let ((body nil)
+	(return (gensym))
+	(options nil)
+	(looks-like-suite-name (looks-like-suite-name-p name))
+	(looks-like-code (looks-like-code-p name)))
+    (cond ((and looks-like-suite-name looks-like-code)
+	   (error "Can't disambiguate suite name from possible code."))
+	  (looks-like-suite-name
+	   ;; testsuite given
+	   (setf (def :testsuite-name) (first name) 
+		 options (rest name)
+		 name nil body test))
+	  (t
+	   ;; the 'name' is really part of the test...
+	   (setf body (cons name test))))
+    (unless (def :testsuite-name)
+      (when *current-suite-class-name*
+	(setf (def :testsuite-name) *current-suite-class-name*)))
+    (unless (def :testsuite-name)
+      (signal-lift-error 'add-test +lift-no-current-test-class+))
+    (unless (or (def :deftestsuite) 
+		(find-testsuite (def :testsuite-name)))
+      (signal-lift-error 'add-test +lift-test-class-not-found+
+			 (def :testsuite-name)))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (eval-when (:compile-toplevel)
+	 (push ',return *test-is-being-compiled?*))
+       (eval-when (:load-toplevel)
+	 (push ',return *test-is-being-loaded?*))
+       (eval-when (:execute)
+	 (push ',return *test-is-being-executed?*))
+       (unwind-protect
+	    (let ((*test-is-being-defined?* t))
+	      ,(build-test-test-method (def :testsuite-name) body options)
+	      (setf *current-suite-class-name* ',(def :testsuite-name))
+	      (if *test-evaluate-when-defined?*
+		  (unless (or *test-is-being-compiled?*
+			      *test-is-being-loaded?*)
+		    (let ((*test-break-on-errors?* (testing-interactively-p)))
+		      (run-test)))
+		  (values)))
+	 ;; cleanup
+	 (setf *test-is-being-compiled?* 
+	       (remove ',return *test-is-being-compiled?*)
+	       *test-is-being-loaded?*
+	       (remove ',return *test-is-being-loaded?*)
+	       *test-is-being-executed?*
+	       (remove ',return *test-is-being-executed?*))))))
 
 (defun looks-like-suite-name-p (form)
   (and (consp form)
@@ -1453,15 +1413,13 @@ control over where in the test hierarchy the search begins."
 		  (result (make-test-result (or suite config) :multiple))
 					;run-setup
 		  &allow-other-keys)
-  "Run all of the tests in a suite. Arguments are :suite, :result,
-:do-children? and :break-on-errors?" 
+  "Run all of the tests in a suite. Arguments are :suite, :result, :do-children? and :break-on-errors?" 
   (remf args :suite)
   (remf args :break-on-errors?)
   (remf args :run-setup)
   (remf args :dribble)
   (cond ((and suite config)
-	 (error "Specify either configuration file or test suite
-but not both."))
+	 (error "Specify either configuration file or test suite but not both."))
 	(config
 	 (run-tests-from-file config))
 	((or suite (setf suite *current-suite-class-name*))
@@ -1489,8 +1447,7 @@ but not both."))
 	   (setf (tests-run result) (reverse (tests-run result)))
 	   (values result)))
 	(t
-	 (error "There is not a current test suite and neither suite
-nor configuration file options were specified."))))
+	 (error "There is not a current test suite and neither suite nor configuration file options were specified."))))
 
 (defun maybe-add-dribble (stream dribble-stream)
   (if dribble-stream
@@ -1577,7 +1534,7 @@ nor configuration file options were specified."))))
 			   (getf (test-data case) :conses)
 			 (lift-test case name)))
 		 (check-for-surprises result case name))
-            (teardown-test case)
+            (teardown-test case)	    
             (end-test result case name)))
         (ensure-failed (cond) 
 	  (setf problem 
@@ -1631,7 +1588,7 @@ nor configuration file options were specified."))))
       (if (find-restart 'ensure-failed)
 	  (invoke-restart 'ensure-failed condition)
 	  (warn condition)))))
-
+	
 (defun report-test-problem (problem-type result suite method condition
 			    &rest args)
   ;; ick

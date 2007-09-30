@@ -15,7 +15,7 @@ For *debug-io*, *query-io*: a bidirectional stream.
 
 #|
 (progn
-  (setf (test-result-property *test-result* :style-sheet) "style.css")
+  (setf (test-result-property *test-result* :style-sheet) "test-style.css")
   (setf (test-result-property *test-result* :title) "Test Results X")
   (setf (test-result-property *test-result* :if-exists) :supersede)
   (test-result-report *test-result*  #p"/tmp/report.html" :html))
@@ -68,23 +68,31 @@ run-test-internal
   (add test-data to tests-run of result)
 |#
 
+;; when it doubt, add a special
+(defvar *report-environment* nil
+  "Used internally by LIFT reports.")
+
+(defun make-report-environment ()
+  nil)
+
 ;; env variables need to be part saved in result
 
 (defun test-result-report (result output format)
-  (cond ((or (stringp output)
-	     (pathnamep output))
-	 (with-open-file (stream 
-			  output
-			  :direction :output
-			  :if-does-not-exist :create
-			  :if-exists (or (test-result-property
-					  result :if-exists)
-					 :error))
-	   (%test-result-report-stream result stream format)))
-	((streamp output)
-	 (%test-result-report-stream result output format))
-	(t
-	 (error "Don't know how to send a report to ~s" output))))
+  (let ((*report-environment* (make-report-environment)))
+    (cond ((or (stringp output)
+	       (pathnamep output))
+	   (with-open-file (stream 
+			    output
+			    :direction :output
+			    :if-does-not-exist :create
+			    :if-exists (or (test-result-property
+					    result :if-exists)
+					   :error))
+	     (%test-result-report-stream result stream format)))
+	  ((streamp output)
+	   (%test-result-report-stream result output format))
+	  (t
+	   (error "Don't know how to send a report to ~s" output)))))
 
 (defun %test-result-report-stream (result stream format)
   (start-report-output result stream format)
@@ -191,12 +199,14 @@ run-test-internal
 		   (length (failures result))
 		   (length (errors result)))))
 
-#|
-    (print (start-time-universal result) stream)
-    (print (end-time-universal result) stream)
-    (print (real-start-time result) stream)
-    (print (real-end-time result) stream)
-|#
+    (when (or (expected-errors result) (expected-failures result))
+      (format stream "~&<h3>~[~:;~:*Expected failure~:p: ~a~]~[~:;, ~]~[~:;~:*Expected error~:p: ~a~]</h3>~%" 
+	      (length (expected-failures result))
+	      ;; zero if only one or the other (so we don't need a separator...)
+	      (* (length (expected-failures result))
+		 (length (expected-errors result)))
+	      (length (expected-errors result))))
+
     (when (and (numberp (end-time-universal result))
 	       (numberp (start-time-universal result)))
       (format stream "~&<h3>Testing took: ~:d seconds</h3>"
@@ -313,15 +323,15 @@ run-test-internal
 	 (format stream "~&<div class=\"test-case\">")
 	 (let ((problem (getf datum :problem)))
 	   (cond ((typep problem 'test-failure)
-		  (format stream "~&<span class=\"test-name\">~a <a href=\"~a\" title=\"details\">[*]</a></span>"
-			  test-name
-			  (details-link stream test-name))
+		  (format stream "~&<span class=\"test-name\"><a href=\"~a\" title=\"details\">~a</a></span>"
+			  (details-link stream suite test-name)
+			  test-name)
 		  (format stream 
 			  "~&<span class=\"test-failure\">failure</span>" ))
 		 ((typep problem 'test-error)
-		  (format stream "~&<span class=\"test-name\">~a <a href=\"~a\" title=\"details\">[during ~a]</a></span>"
+		  (format stream "~&<span class=\"test-name\"><a href=\"~a\" title=\"details\">~a [during ~a]</a></span>"
+			  (details-link stream suite test-name)
 			  test-name
-			  (details-link stream test-name)
 			  (test-step problem))
 		  (format stream "~&<span class=\"test-error\">error</span>"))
 		 (t
@@ -339,16 +349,33 @@ run-test-internal
     (when current-suite
       (format stream "</div>"))))
 
-(defun details-link (stream name)
+(defun get-details-links-table ()
+  (let ((hash (getf *report-environment* :details-links)))
+    (or hash
+	(setf (getf *report-environment* :details-links)
+	      (make-hash-table :test 'equal)))))
+
+#+(or)
+(get-details-links-table)
+
+(defun details-link (stream suite name)
   (declare (ignore stream))
-  (make-pathname :name (format nil "details-~a" name)
-		 :type "html"))
+  (let* ((hash (get-details-links-table)))
+    (or (gethash (cons suite name) hash)
+	(progn
+	  (incf (getf *report-environment* :details-links-count 0))
+	  (setf (gethash (cons suite name) hash)
+		(make-pathname 
+		 :name (format nil "details-~a" 
+			       (getf *report-environment* :details-links-count))
+		 :type "html"))))))
 
 (defmethod end-report-output (result stream (format (eql :html)))
   (let ((style-sheet (test-result-property result :style-sheet)))
     (when style-sheet
       (ignore-errors
-	(copy-file (asdf:system-relative-pathname 'lift "resources/style.css")
+	(copy-file (asdf:system-relative-pathname 
+		    'lift "resources/test-style.css")
 		   (make-pathname 
 		    :name (pathname-name style-sheet)
 		    :type (pathname-type style-sheet)
@@ -369,11 +396,13 @@ run-test-internal
   (format stream "~&</body></html>"))
 
 (defmethod generate-detailed-reports (result stream (format (eql :html)))
-  (loop for (nil test-name datum)  in (tests-run result)
+  (loop for (suite test-name datum)  in (tests-run result)
      when (getf datum :problem) do
-       (with-open-file (out (merge-pathnames
-			     (details-link stream test-name) 
-			     stream)
+     (let ((output-pathname (merge-pathnames
+			     (details-link stream suite test-name) 
+			     stream)))
+       (ensure-directories-exist output-pathname)
+       (with-open-file (out output-pathname
 			    :direction :output
 			    :if-does-not-exist :create
 			    :if-exists :supersede)
@@ -392,8 +421,7 @@ run-test-internal
 		  (with-output-to-string (s)
 		    (print-test-problem "" (getf datum :problem) s))))
 	 (format out "~&</pre>") 
-	 (html-footer out))
-       ))
+	 (html-footer out)))))
 
 #+(or)
 (defmethod summarize-test-environment (result stream format)

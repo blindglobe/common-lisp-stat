@@ -1,6 +1,7 @@
 (in-package #:lift)
 
-(declaim (optimize (speed 3) (safety 1)))
+(eval-when (:compile-toplevel)
+  (declaim (optimize (speed 3) (safety 1))))
 
 (defmacro with-measuring ((var measure-fn) &body body)
   (let ((initial (gensym)))
@@ -34,6 +35,26 @@
 	 (measure-conses (,bytes)
 	   (setf ,result (progn ,@body))))
        (values ,result))))
+
+(defmacro measure-time-and-conses (&body body)
+  (let ((seconds (gensym))
+	(conses (gensym))
+	(results (gensym)))
+    `(let ((,seconds 0) (,conses 0) ,results) 
+       (setf ,results (multiple-value-list 
+			    (measure ,seconds ,conses ,@body)))
+       (values-list (nconc (list ,seconds ,conses)
+			   ,results)))))
+
+#+(or)
+;; tries to handle multiple values (but fails since measure doesn't)
+(defmacro measure-time-and-conses (&body body)
+  (let ((seconds (gensym))
+	(conses (gensym)))
+    `(let ((,seconds 0) (,conses 0)) 
+       (values-list (nconc (multiple-value-list 
+			    (measure ,seconds ,conses ,@body))
+			   (list ,seconds ,conses))))))
 
 (defparameter *benchmark-file*
   (asdf:system-relative-pathname 
@@ -135,3 +156,78 @@
    (total-seconds :initform 0
 		  :accessor total-seconds)))
 |#
+
+
+#|
+(defun test-sleep (period)	 
+  (print (get-universal-time))
+  (print
+   (mp:process-wait-with-timeout 
+    "wait-for-delay" period
+    (lambda ()
+      (sleep (1+ period)))))
+  (print (get-universal-time)))
+
+#+(or)
+(test-sleep 2)
+3392550276 
+nil 
+3392550281 
+
+(defun test-gates (period)	 
+  (print (get-universal-time))
+  (let ((g (mp:make-gate nil)))
+    (print
+     (mp:process-wait-with-timeout 
+      "wait-for-delay" period
+      (lambda (gate)
+	(mp:gate-open-p gate))
+      g)))
+  (print (get-universal-time)))
+
+#+(or)
+(test-gates 2)
+3392550287 
+nil 
+3392550289 
+
+
+|#
+
+#|
+
+(princ "ls" (shell-session-input-stream *ss*))
+(terpri (shell-session-input-stream *ss*))
+(force-output (shell-session-input-stream *ss*))
+
+(read-shell-session-stream *ss* :output)
+
+(shell-session-command *ss* "ls")
+
+(shell-session-command *ss* "ps u")
+
+(end-shell-session *ss*)
+
+(compile 'read-from-stream-no-hang)
+
+(with-input-from-string (s "hello there")
+  (read-from-stream-no-hang s))
+
+(read-shell-session-stream *ss* :output)
+
+(setf *ss* (make-shell-session))
+
+(count-repetitions-in-period 
+ (lambda ()
+   (shell-session-command *ss* "ps u")) 
+ 2.0)
+
+(count-repetitions-in-period 
+ (lambda ()
+   (selected-metatilities::os-processes)) 
+ 2.0)
+
+|#
+
+#+(or)
+(test-sleep-b 2)

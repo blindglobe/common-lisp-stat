@@ -2,7 +2,7 @@
 (in-package #:asdf-lift)
 
 (defsystem lift
-  :version "1.3.1"
+  :version "1.3.5"
   :author "Gary Warren King <gwking@metabang.com>"
   :maintainer "Gary Warren King <gwking@metabang.com>"
   :licence "MIT Style License; see file COPYING for details"
@@ -25,7 +25,7 @@
 		 (:file "measuring" 
 			:depends-on ("packages"))
 		 (:file "config" 
-			:depends-on ("port"))
+			:depends-on ("port" "lift"))
 		 (:file "reports" 
 			:depends-on ("port"))
 		 #+Ignore
@@ -39,11 +39,11 @@
 				      ((:static-file "index.lml"))))))
   
   :in-order-to ((test-op (load-op lift-test)))
+  :depends-on ()
   :perform (test-op :after (op c)
-                    (describe 
-		     (funcall (intern (symbol-name '#:run-tests) :lift) 
-			      :suite '#:lift-test)))
-  :depends-on ()) 
+		    (funcall
+		      (intern (symbol-name '#:run-tests) :lift)
+		      :config :generic)))
 
 (defmethod operation-done-p 
            ((o test-op) (c (eql (find-system 'lift))))

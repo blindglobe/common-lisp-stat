@@ -1,6 +1,7 @@
 {set-property html yes}
-{set-property style-sheet style}
+{set-property style-sheet "http://common-lisp.net/project/cl-containers/shared/style.css"}
 {set-property author "Gary Warren King"}
+{set-property title "LIFT - the LIsp Framework for Testing"}
 
   [del.icio.us]: http://del.icio.us
   [Arnesi]: http://common-lisp.net/project/bese/arnesi.html
@@ -27,6 +28,11 @@
   [SUnit]: http://www.sunit.com/
   [JUnit]: http://www.junit.com/
   
-<div id="header">
-{include navigation.md}
+<div class="header">
+	<span class="logo"><a href="http://www.metabang.com/" title="metabang.com"><img src="http://common-lisp.net/project/cl-containers/shared/metabang-2.png" title="metabang.com" width="100" alt="Metabang Logo" /></a></span>
+
+## LIFT
+
+#### Fighting like cats with AK-47s
+
 </div>

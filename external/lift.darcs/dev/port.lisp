@@ -16,17 +16,32 @@ returns a string with the corresponding backtrace.")
 	 #+allegro
 	 (excl.osi:access directory excl.osi:*w-ok*))))
 
-#+allegro
+;; Handle missing platforms gracefully?
 (defun total-bytes-allocated ()
+  (if (fboundp '%total-bytes-allocated)
+    (funcall '%total-bytes-allocated)
+    0))
+
+#+allegro
+(defun %total-bytes-allocated ()
   (sys::gsgc-totalloc-bytes t))
 
 #+(or digitool openmcl)
-(defun total-bytes-allocated ()
+(defun %total-bytes-allocated ()
   (ccl::total-bytes-allocated))
 
 #+sbcl
-(defun total-bytes-allocated ()
+(defun %total-bytes-allocated ()
   (cl-user::get-bytes-consed))
+
+#+(or cmu scl)
+(defun %total-bytes-allocated ()
+  (ext:get-bytes-consed))
+
+#+lispworks
+;; thanks to Frank Schorr, via e-mail
+(defun %total-bytes-allocated ()
+  (hcl:total-allocation))
 
 #+mcl
 (defun get-backtrace (error)
@@ -117,7 +132,13 @@ returns a string with the corresponding backtrace.")
           (sb-debug:*debug-print-length* nil))
       (sb-debug:backtrace most-positive-fixnum s))))
 
-#+cmucl
+#+clisp
+(defun get-backtrace (error)
+  (declare (ignore error))
+  (with-output-to-string (s)
+    (system::print-backtrace :out s)))
+
+#+(or cmucl scl)
 (defun get-backtrace (error)
   (declare (ignore error))
   (with-output-to-string (s)

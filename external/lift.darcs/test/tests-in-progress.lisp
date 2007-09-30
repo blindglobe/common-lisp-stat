@@ -153,20 +153,5 @@ the methods that should be run to do the tests for this test."))
 
   
 
-;;; inherited functions
 
-(deftestsuite test-+ ()
-  ()
-  (:function 
-   (really? (a b c)
-	    (ensure-same (+ a b) c :test '=))))
 
-(deftestsuite test-+-pos (test-+)
-  ()
-  (:tests ((really? 1 2 3))
-	  ((really? 4 5 9))))
-	  
-(deftestsuite test-+-neg (test-+)
-  ()
-  (:tests ((really? -4 -2 -6))
-	  ((really? -1 -1 -2))))

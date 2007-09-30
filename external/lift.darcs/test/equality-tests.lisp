@@ -1,4 +1,4 @@
-(in-package lift)
+(in-package #:lift)
 
 (deftestsuite equality-test-1 ()
   ()
