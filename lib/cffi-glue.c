@@ -1,4 +1,9 @@
+#ifdef __APPLE__
+#include <stdlib.h>
+#else
 #include <malloc.h>
+#endif
+
 #include <string.h>
 
 #include "linalg.h"
