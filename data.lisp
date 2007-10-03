@@ -209,39 +209,27 @@ Reads the data in FILE as COLS columns and returns a list of lists representing 
       (transpose (split-list (read-data-file file) cols))))
 
 
-;;; FIXME:AJR:  ALL THE FOLLOWING ARE SOLVED BY PLATFORM-INDEP PATHNAME WORK! 
+;;; FIXME:AJR:  ALL THE FOLLOWING NEED TO BE SOLVED BY PLATFORM-INDEP PATHNAME WORK! 
+;;; FIXME:AJR: use either string or pathname.
 
-#+unix
+(defun path-string-to-path (p s) 
+    (pathname (concatenate 'string (namestring p) s)))
+
 (defun load-data (file)
-"Args: (file)
+"Args: (file) as string
 Read in data file from the data examples library."
-  (if (load (format nil "~aData/~a" *default-path* file))
+  (if (load (path-string-to-path *lispstat-data-dir* file))
       t
-      (load (format nil "~aExamples/~a" *default-path* file))))
+      (load (path-string-to-path *lispstat-examples-dir* file))))
 
-#+unix
 (defun load-example (file)
-"Args: (file)
+  "Args: (file) as string
 Read in lisp example file from the examples library."
-  (if (load (format nil "~aExamples/~a" *default-path* file))
+  (if (load (path-string-to-path *lispstat-examples-dir* file))
       t
-      (load (format nil "~aData/~a" *default-path* file))))
-#+macintosh
-(defun load-data (s) (require s (concatenate 'string ":Data:" s)))
-#+macintosh
-(defun load-example (s) (require s (concatenate 'string ":Examples:" s)))
+      (load (path-string-to-path *lispstat-data-dir* file))))
 
-#+msdos
-(defun load-data (file)
-"Args: (file)
-Read in data file from the data examples library."
-  (load (format nil "~aData\\~a" *default-path* file)))
 
-#+msdos
-(defun load-example (file)
-"Args: (file)
-Read in lisp example file from the examples library."
-  (load (format nil "~aExamples\\~a" *default-path* file)))
 
 ;;;;
 ;;;; Listing and Saving Variables and Functions

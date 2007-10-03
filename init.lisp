@@ -39,6 +39,7 @@
   (ls-defdir *lispstat-asdf-dir* "ASDF/")
   (ls-defdir *lispstat-data-dir* "data/")
   (ls-defdir *lispstat-external-dir* "external/")
+  (ls-defdir *lispstat-examples-dir* "examples/")
   
   ;; Load ASDF if it isn't loaded
   #-asdf(load (pathname (concatenate 'string (namestring *lispstat-external-dir*) "asdf")))
