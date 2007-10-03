@@ -229,8 +229,6 @@ Read in lisp example file from the examples library."
       t
       (load (path-string-to-path *lispstat-data-dir* file))))
 
-
-
 ;;;;
 ;;;; Listing and Saving Variables and Functions
 ;;;;
