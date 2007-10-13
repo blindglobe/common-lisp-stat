@@ -42,7 +42,7 @@
    ;; chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
    ;; qr-decomp rcondest make-rotation 
    ;; fft make-sweep-matrix sweep-operator ax+y numgrad numhess
-   ;; split-list eigen
+   ;; split-list eigenp
 
    ;; in linalg.lisp, possibly not supported by matlisp
    spline kernel-dens kernel-smooth

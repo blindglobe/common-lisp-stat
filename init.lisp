@@ -7,39 +7,48 @@
 ;; Associate ASDF directory for loading.
 ;; Make sure that we have initialized any locally defined global variables
 ;; ensure appropriate tools are linked in for loading.
-;; i.e. if features don't exist, load from particular locations in this directory structure.
+;; i.e. if features don't exist, load from particular locations in
+;; this directory structure.
 
+
+;; What package should we be in?  Contaminating cl-user is probably EVIL.
 
 ;; Need to replace this with some form of self-referential structure. 
 
-(defvar *lispstat-home-dir*
-  ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
-  #p"/home/tony/sandbox/CommonLispStat.git/"
-  "Value considered \"home\" for our data")
+;; Add the critical paths to the ASDF facility and set up other
+;; things; currently this will not do the other setups.
 
-
-(defmacro ls-dir (root-str)
-  `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))
-
-(defmacro ls-defdir (target-dir-var  root-str)
-  `(defvar ,target-dir-var (ls-dir ,root-str)))
-
-;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
-;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
-;;(macroexpand-1 '(ls-dir "ASDF"))
-
-(ls-defdir *lispstat-asdf-dir* "ASDF/")
-(ls-defdir *lispstat-data-dir* "data/")
-(ls-defdir *lispstat-external-dir* "external/")
-
-;; Load ASDF if it isn't loaded
-#-asdf(load (pathname (concatenate 'string (namestring *lispstat-external-dir*) "asdf")))
-
-;; Add the critical paths to the ASDF facility
-
-(progn 
+(progn
+  
+  (defvar *lispstat-home-dir*
+    ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
+    #p"/home/tony/sandbox/CommonLispStat.git/"
+    "Value considered \"home\" for our data")
+  
+  
+  (defmacro ls-dir (root-str)
+    `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))
+  
+  (defmacro ls-defdir (target-dir-var  root-str)
+    `(defvar ,target-dir-var (ls-dir ,root-str)))
+  
+  ;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+  ;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+  ;;(macroexpand-1 '(ls-dir "ASDF"))
+  
+  (ls-defdir *lispstat-asdf-dir* "ASDF/")
+  (ls-defdir *lispstat-data-dir* "data/")
+  (ls-defdir *lispstat-external-dir* "external/")
+  (ls-defdir *lispstat-examples-dir* "examples/")
+  
+  ;; Load ASDF if it isn't loaded
+  #-asdf(load (pathname (concatenate 'string (namestring *lispstat-external-dir*) "asdf")))
+  
   ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
-  (pushnew  *lispstat-asdf-dir*  asdf:*central-registry*)
+  (pushnew  *lispstat-asdf-dir*  asdf:*central-registry*))
+
+;; Load the packages that we will need.
+(progn 
 
   ;; FFI
   (asdf:oos 'asdf:load-op :cffi)

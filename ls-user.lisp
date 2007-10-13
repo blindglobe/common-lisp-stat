@@ -56,7 +56,7 @@ should be packaged up elsewhere for reproducibility.")
 ;;; regression, bayesian regression via laplace approximation, etc. 
 
 ;;; The following could be considered "core packages", similar to the
-;;; idea of a recommended set.
+;;; idea of the recommended packages in R.
 
    ;; regression.lsp
    regression-model regression-model-proto x y intercept sweep-matrix

@@ -29,7 +29,7 @@
   (:use :common-lisp
 	:lisp-stat-math
 	:lisp-stat-types
-	:lisp-stat-basics
+;;	:lisp-stat-basics
 	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-math
 			  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
