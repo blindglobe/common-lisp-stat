@@ -1,7 +1,0 @@
-2006-09-18  Gary King <gwking@metabang.com>
-	    
-	    * moved with-timeout code here and made :timeouts part of the defautl LIFT 
-
-2006-09-08  Gary King <gwking@metabang.com>
-
-	    * addtest no longer defines the defgeneric of a test method because some Lisps (notably Allegro) remove existing methods when you do this.
