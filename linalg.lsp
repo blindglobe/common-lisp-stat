@@ -99,13 +99,13 @@ positive definite. Returns a list (L (max D))."
 	 (result (make-array (list n n)))
 	 (dpars (list maxoffl 0.0)))
     (check-real dpars)
-    (let ((mat (la-data-to-matrix a mode-re))
-	  (dp (la-data-to-vector dpars mode-re)))
+    (let ((mat (la-data-to-matrix a +mode-re+))
+	  (dp (la-data-to-vector dpars +mode-re+)))
       (unwind-protect
 	  (progn
 	    (chol-decomp-front mat n dp)
-	    (la-matrix-to-data mat n n mode-re result)
-	    (la-vector-to-data dp 2 mode-re dpars))
+	    (la-matrix-to-data mat n n +mode-re+ result)
+	    (la-vector-to-data dp 2 +mode-re+ dpars))
 	(la-free-matrix mat n)
 	(la-free-vector dp)))
     (list result (second dpars))))
@@ -130,17 +130,17 @@ is odd, -1 if even, and FLAG is T if A is numerically singular, NIL otherwise.
 Used bu LU-SOLVE."
   (check-square-matrix a)
   (let* ((n (array-dimension a 0))
-	 (mode (max mode-re (la-data-mode a)))
+	 (mode (max +mode-re+ (la-data-mode a)))
 	 (result (list (make-array (list n n)) (make-array n) nil nil)))
     (let ((mat (la-data-to-matrix a mode))
-	  (iv (la-vector n mode-in))
-	  (d (la-vector 1 mode-re))
+	  (iv (la-vector n +mode-in+))
+	  (d (la-vector 1 +mode-re+))
 	  (singular 0))
       (unwind-protect
 	  (progn
 	    (setf singular (lu-decomp-front mat n iv mode d))
 	    (la-matrix-to-data mat n n mode (first result))
-	    (la-vector-to-data iv n mode-in (second result))
+	    (la-vector-to-data iv n +mode-in+ (second result))
 	    (setf (third result) (la-get-double d 0))
 	    (setf (fourth result) (if (= singular 0.0) nil t)))
 	(la-free-matrix mat n)
@@ -165,9 +165,9 @@ singular."
 	   (b-mode (la-data-mode lb)))
       (if (/= n (length lidx)) (error "index sequence is wrong length"))
       (if (/= n (length lb)) (error "right hand side is wrong length"))
-      (let* ((mode (max mode-re a-mode b-mode))
+      (let* ((mode (max +mode-re+ a-mode b-mode))
 	     (a (la-data-to-matrix la mode))
-	     (indx (la-data-to-vector lidx mode-in))
+	     (indx (la-data-to-vector lidx +mode-in+))
 	     (b (la-data-to-vector lb mode))
 	     (singular 0))
 	(unwind-protect
@@ -204,7 +204,7 @@ Returns the inverse of the the square matrix M; signals an error if M is ill
 conditioned or singular"
   (check-square-matrix a)
   (let ((n (num-rows a))
-	(mode (max mode-re (la-data-mode a))))
+	(mode (max +mode-re+ (la-data-mode a))))
     (declare (fixnum n))
     (let ((result (make-array (list n n) :initial-element 0)))
       (dotimes (i n)
@@ -212,7 +212,7 @@ conditioned or singular"
 	       (setf (aref result i i) 1))
       (let ((mat (la-data-to-matrix a mode))
 	    (inv (la-data-to-matrix result mode))
-	    (iv (la-vector n mode-in))
+	    (iv (la-vector n +mode-in+))
 	    (v (la-vector n mode))
 	    (singular 0))
 	(unwind-protect
@@ -240,16 +240,16 @@ if the algorithm converged, NIL otherwise."
   (check-matrix a)
   (let* ((m (num-rows a))
 	 (n (num-cols a))
-	 (mode (max mode-re (la-data-mode a)))
+	 (mode (max +mode-re+ (la-data-mode a)))
 	 (result (list (make-array (list m n)) 
 		       (make-array n)
 		       (make-array (list n n))
 		       nil)))
     (if (< m n) (error "number of rows less than number of columns"))
-    (if (= mode mode-cx) (error "complex SVD not available yet"))
+    (if (= mode +mode-cx+) (error "complex SVD not available yet"))
     (let ((mat (la-data-to-matrix a mode))
-	  (w (la-vector n mode-re))
-	  (v (la-matrix n n mode-re))
+	  (w (la-vector n +mode-re+))
+	  (v (la-matrix n n +mode-re+))
 	  (converged 0))
       (unwind-protect
 	  (progn
@@ -279,7 +279,7 @@ the order in which they were used."
   (check-matrix a)
   (let* ((m (num-rows a))
 	 (n (num-cols a))
-	 (mode (max mode-re (la-data-mode a)))
+	 (mode (max +mode-re+ (la-data-mode a)))
 	 (p (if pivot 1 0))
 	 (result (if pivot
 		     (list (make-array (list m n))
@@ -287,16 +287,16 @@ the order in which they were used."
 			   (make-array n))
 		     (list (make-array (list m n)) (make-array (list n n))))))
     (if (< m n) (error "number of rows less than number of columns"))
-    (if (= mode mode-cx) (error "complex QR decomposition not available yet"))
+    (if (= mode +mode-cx+) (error "complex QR decomposition not available yet"))
     (let ((mat (la-data-to-matrix a mode))
-	  (v (la-matrix n n mode-re))
-	  (jpvt (la-vector n mode-in)))
+	  (v (la-matrix n n +mode-re+))
+	  (jpvt (la-vector n +mode-in+)))
       (unwind-protect
 	  (progn
 	    (qr-decomp-front mat m n v jpvt p)
 	    (la-matrix-to-data mat m n mode (first result))
 	    (la-matrix-to-data v n n mode (second result))
-	    (if pivot (la-vector-to-data jpvt n mode-in (third result))))
+	    (if pivot (la-vector-to-data jpvt n +mode-in+ (third result))))
 	(la-free-matrix mat m)
 	(la-free-matrix v n)
 	(la-free-vector jpvt))
@@ -311,9 +311,9 @@ the order in which they were used."
 Returns an estimate of the reciprocal of the L1 condition number of an upper
 triangular matrix a."
   (check-square-matrix a)
-  (let ((mode (max mode-re (la-data-mode a)))
+  (let ((mode (max +mode-re+ (la-data-mode a)))
 	(n (num-rows a)))
-    (if (= mode mode-cx)
+    (if (= mode +mode-cx+)
 	(error "complex condition estimate not available yet"))
     (let ((mat (la-data-to-matrix a mode))
 	  (est 0.0))
@@ -334,19 +334,19 @@ by angle ALPHA, in radians. X and Y are sequences of the same length."
   (check-sequence y)
   (if alpha (check-one-real alpha))
   (let* ((n (length x))
-	 (mode (max mode-re (la-data-mode x) (la-data-mode y)))
+	 (mode (max +mode-re+ (la-data-mode x) (la-data-mode y)))
 	 (use-angle (if alpha 1 0))
 	 (angle (if alpha (float alpha 0.0) 0.0))
 	 (result (make-array (list n n))))
     (if (/= n (length y)) (error "sequences not the same length"))
-    (if (= mode mode-cx) (error "complex data not supported yet"))
-    (let ((px (la-data-to-vector x mode-re))
-	  (py (la-data-to-vector y mode-re))
-	  (rot (la-matrix n n mode-re)))
+    (if (= mode +mode-cx+) (error "complex data not supported yet"))
+    (let ((px (la-data-to-vector x +mode-re+))
+	  (py (la-data-to-vector y +mode-re+))
+	  (rot (la-matrix n n +mode-re+)))
       (unwind-protect
 	  (progn
 	    (make-rotation-front n rot px py use-angle angle)
-	    (la-matrix-to-data rot n n mode-re result))
+	    (la-matrix-to-data rot n n +mode-re+ result))
 	(la-free-vector px)
 	(la-free-vector py)
 	(la-free-matrix rot n))
@@ -363,21 +363,21 @@ symmetric matrix A. Third element of result is NIL if algorithm converges.
 If the algorithm does not converge, the third element is an integer I.
 In this case the eigenvalues 0, ..., I are not reliable."
   (check-square-matrix a)
-  (let ((mode (max mode-re (la-data-mode a)))
+  (let ((mode (max +mode-re+ (la-data-mode a)))
 	(n (num-rows a)))
-    (if (= mode mode-cx) (error "matrix must be real and symmetric"))
+    (if (= mode +mode-cx+) (error "matrix must be real and symmetric"))
     (let ((evals (make-array n))
 	  (evecs (make-list (* n n)))
-	  (pa (la-data-to-vector (compound-data-seq a) mode-re))
-	  (w (la-vector n mode-re))
-	  (z (la-vector (* n n) mode-re))
-	  (fv1 (la-vector n mode-re))
+	  (pa (la-data-to-vector (compound-data-seq a) +mode-re+))
+	  (w (la-vector n +mode-re+))
+	  (z (la-vector (* n n) +mode-re+))
+	  (fv1 (la-vector n +mode-re+))
 	  (ierr 0))
       (unwind-protect
 	  (progn
 	    (setf ierr (eigen-front pa n w z fv1))
-	    (la-vector-to-data w n mode-re evals)
-	    (la-vector-to-data z (* n n) mode-re evecs))
+	    (la-vector-to-data w n +mode-re+ evals)
+	    (la-vector-to-data z (* n n) +mode-re+ evecs))
 	(la-free-vector pa)
 	(la-free-vector z)
 	(la-free-vector w)
@@ -426,17 +426,17 @@ In this case the eigenvalues 0, ..., I are not reliable."
 	   (error "sequences not the same length"))
        (if (and (not supplied) (< ns 2))
 	   (error "too few points for interpolation"))
-       (let* ((px (la-data-to-vector ,x mode-re))
-	      (py (if ,is-reg (la-data-to-vector ,y mode-re)))
+       (let* ((px (la-data-to-vector ,x +mode-re+))
+	      (py (if ,is-reg (la-data-to-vector ,y +mode-re+)))
 	      (pxs (if supplied 
-		       (la-data-to-vector ,xvals mode-re)
-		       (la-vector ns mode-re)))
-	      (pys (la-vector ns mode-re)))
+		       (la-data-to-vector ,xvals +mode-re+)
+		       (la-vector ns +mode-re+)))
+	      (pys (la-vector ns +mode-re+)))
 	 (unless supplied (la-range-to-rseq n px ns pxs))
 	 (unwind-protect
 	     (progn ,@body
-		    (la-vector-to-data pxs ns mode-re (first result))
-		    (la-vector-to-data pys ns mode-re (second result)))
+		    (la-vector-to-data pxs ns +mode-re+ (first result))
+		    (la-vector-to-data pys ns +mode-re+ (second result)))
 	   (la-free-vector px)
 	   (if ,is-reg (la-free-vector py))
 	   (la-free-vector pxs)
@@ -450,7 +450,7 @@ X must be strictly increasing. XVALS can be an integer, the number of equally
 spaced points to use in the range of X, or it can be a sequence of points at 
 which to interpolate."
   (with-smoother-data (x y xvals t)
-    (let ((work (la-vector (* 2 n) mode-re))
+    (let ((work (la-vector (* 2 n) +mode-re+))
 	  (error 0))
       (unwind-protect
 	  (setf error (spline-front n px py ns pxs pys work))
@@ -492,8 +492,11 @@ U or B for Gaussian, triangular, uniform or bisquare. The default is B."
   (with-smoother-data (x y xvals t)
     (let ((code (kernel-type-code type))
           (error 0))
-      ;;(kernel-smooth-front px py n width pxs pys ns code)
-      (kernel-smooth-Cport px py n width pxs pys ns code)
+      (kernel-smooth-front px py n width pxs pys ns code)
+      ;; if we get the Lisp version ported from C, uncomment below and
+      ;; comment above.  (thanks to Carlos Ungil for the initial CFFI
+      ;; work).
+      ;;(kernel-smooth-Cport px py n width pxs pys ns code)
       (if (/= 0 error) (error "bad kernel density data")))))
 
 
@@ -501,7 +504,8 @@ U or B for Gaussian, triangular, uniform or bisquare. The default is B."
 (defun kernel-smooth-Cport (px py n width ;;wts wds ;; see above for mismatch?
 			    xs ys ns ktype)
   "Port of kernel_smooth (Lib/kernel.c) to Lisp.
-FIXME:kernel-smooth-Cport"
+FIXME:kernel-smooth-Cport :  This is broken.
+Until this is fixed, we are using Luke's C code and CFFI as glue."
   (cond ((< n 1) 1.0)
 	((and (< n 2) (<= width 0)) 1.0)
 	(t (let* ((xmin (min px))
@@ -584,16 +588,16 @@ x,y,w are doubles, type is an integer"
   (let* ((n (length s1))
 	 (result (make-list n)))
     (if (/= n (length s2)) (error "sequences not the same length"))
-    (let ((x (la-data-to-vector s1 mode-re))
-	  (y (la-data-to-vector s2 mode-re))
-	  (ys (la-vector n mode-re))
-	  (rw (la-vector n mode-re))
-	  (res (la-vector n mode-re))
+    (let ((x (la-data-to-vector s1 +mode-re+))
+	  (y (la-data-to-vector s2 +mode-re+))
+	  (ys (la-vector n +mode-re+))
+	  (rw (la-vector n +mode-re+))
+	  (res (la-vector n +mode-re+))
 	  (error 0))
       (unwind-protect
 	  (progn
 	    (setf error (base-lowess-front x y n f nsteps delta ys rw res))
-	    (la-vector-to-data ys n mode-re result))
+	    (la-vector-to-data ys n +mode-re+ result))
 	(la-free-vector x)
 	(la-free-vector y)
 	(la-free-vector ys)
@@ -684,12 +688,12 @@ is true."
 	 (mode (la-data-mode x))
 	 (isign (if inverse -1 1))
 	 (result (if (consp x) (make-list n) (make-array n))))
-    (let ((px (la-data-to-vector x mode-cx))
-	  (work (la-vector (+ (* 4 n) 15) mode-re)))
+    (let ((px (la-data-to-vector x +mode-cx+))
+	  (work (la-vector (+ (* 4 n) 15) +mode-re+)))
       (unwind-protect
 	  (progn
 	    (fft-front n px work isign)
-	    (la-vector-to-data px n mode-cx result))
+	    (la-vector-to-data px n +mode-cx+ result))
 	(la-free-vector px)
 	(la-free-vector work))
       result)))
