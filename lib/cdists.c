@@ -4,8 +4,8 @@ extern void normbase(double *,double *);
 extern void gammabase(double *,double *, double *);
 extern void studentbase(double *,double *, double *);
 extern void betabase(double *, double *,double *,int *, int *,double *);
-extern double max(double, double);
-extern double min(double, double);
+extern int max(int, int);
+extern int min(int, int);
 
 extern void xlfail(char *);
 
