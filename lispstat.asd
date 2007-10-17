@@ -2,6 +2,7 @@
 
 ;;; Copyright (c) 2005--2006, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLispStat
+;;; Provided under a BSD license.
 
 ;;(asdf:oos 'asdf:load-op 'cffi)
 
