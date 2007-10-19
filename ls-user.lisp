@@ -6,11 +6,9 @@
 
 (in-package :cl-user)
 
-
 (defpackage :lisp-stat
   (:documentation "Experimentation package for LispStat.  Serious work
 should be packaged up elsewhere for reproducibility.")
-  (:nicknames :ls-user)
   (:use :common-lisp
 	:lisp-stat-object-system
         :lisp-stat-float
@@ -86,5 +84,3 @@ should be packaged up elsewhere for reproducibility.")
 			  slot-value call-method call-next-method))
 
 (in-package :lisp-stat-user)
-
-;;; 

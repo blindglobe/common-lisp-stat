@@ -70,6 +70,8 @@ Last touched 1991, then in 2005--2007."
 						       "matrices"
 						       "linalg"))
 
+	       (:lispstat-lsp-source-file "cffiglue"
+					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
@@ -95,8 +97,6 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "lsmath"
 						       "dists"))
+	       (:file "ls-user" :depends-on ("lsobjects"
+					     "lsbasics"))
 	       ))
-
-#|
-   
-|#

@@ -1,3 +1,5 @@
+;;  -*- mode: lisp -*-
+
 ;;;; cffiglue -- Interface to C library
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. 
@@ -12,20 +14,14 @@
 ;;;; Untested
 ;;;;    numgrad numhess minfo-maximize
 
-;;;; Known problems
-;;;;   BINOMIAL-QUANT doesn't return !!!
-;;;;   maybe a bug in BINOMIALQUANT (lib/cdists.c)?
-;;;;   I suspect of the line "del = max(1, (int) (0.2 * s));"
-;;;;   (or a problem with signed/unsigned integers?)
-
 (in-package :lisp-stat-basics)
 
-(cffi:load-foreign-library (concatenate 'string  
-					(namestring cl-user::*lispstat-home-dir*)
-					"lib/liblispstat"
-					#+darwin ".dylib"
-					#-darwin ".so"))
-
+(cffi:load-foreign-library
+ (concatenate 'string
+	      (namestring cl-user::*lispstat-home-dir*)
+	      "lib/liblispstat"
+	      #+darwin ".dylib"
+	      #-darwin ".so"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -68,6 +64,7 @@
 
 (cffi:defcfun ("la_mode_size" ccl-la-mode-size)
     :int (x :int))
+
 (defun la-mode-size (mode)
   (ccl-la-mode-size mode))
 
@@ -180,18 +177,15 @@
 (cffi:defcfun ("xlfail" xlfail) 
     :void (string :string))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;             Lisp Interfaces to Linear Algebra Routines
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;             Lisp Interfaces to Linear Algebra Routines
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;
-;;;; Cholesky Decomposition
-;;;;
+;;;
+;;; Cholesky Decomposition
+;;;
 
 (cffi:defcfun ("ccl_chol_decomp_front" ccl-chol-decomp-front)
     :int (x :pointer) (y :int) (z :pointer))
