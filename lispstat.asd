@@ -98,5 +98,7 @@ Last touched 1991, then in 2005--2007."
 						       "lsmath"
 						       "dists"))
 	       (:file "ls-user" :depends-on ("lsobjects"
-					     "lsbasics"))
+					     "lsbasics"
+					     ;; and more!
+					     ))
 	       ))

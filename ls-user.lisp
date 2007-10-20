@@ -53,8 +53,8 @@ should be packaged up elsewhere for reproducibility.")
 ;;; specialized extensions to LispStat, i.e. regression, nonlin
 ;;; regression, bayesian regression via laplace approximation, etc. 
 
-;;; The following could be considered "core packages", similar to the
-;;; idea of the recommended packages in R.
+;;; The following could be considered "recommended packages", similar
+;;; to the idea of the recommended packages in R.
 
    ;; regression.lsp
    regression-model regression-model-proto x y intercept sweep-matrix
