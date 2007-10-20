@@ -4,6 +4,7 @@
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. 
 ;;;; Copyright (c) 2007, by Carlos Ungil.
+;;;; Copyright (c) 2007, by AJ Rossini <blindglobe@gmail.com>.
 ;;;; Permission is granted for unrestricted use.
 
 ;;;; Tested (but the results have not been checked):
@@ -14,7 +15,86 @@
 ;;;; Untested
 ;;;;    numgrad numhess minfo-maximize
 
-(in-package :lisp-stat-basics)
+(defpackage :lisp-stat-ffi-int
+    (:use :common-lisp
+	  :cffi)
+  (:export  
+
+   chol-decomp-front
+   lu-decomp-front lu-solve-front
+   sv-decomp-front
+   qr-decomp-front
+
+   rcondest-front
+   make-rotation-front
+
+   eigen-front
+
+   la-range-to-rseq
+   spline-front
+
+   kernel-dens-front
+   kernel-smooth-front
+
+   base-lowess-front
+
+   numgrad-front
+   numhess-front
+   base-minfo-maximize
+
+   one-uniform-rand
+   base-log-gamma
+
+   base-normal-cdf
+   base-normal-quant
+   base-normal-dens
+   one-normal-rand
+   base-bivnorm-cdf
+
+   base-cauchy-cdf
+   base-cauchy-quant
+   base-cauchy-dens
+   one-cauchy-rand
+
+   base-gamma-cdf
+   base-gamma-quant
+   base-gamma-dens
+   one-gamma-rand
+   
+   base-chisq-cdf
+   base-chisq-quant
+   base-chisq-dens
+   one-chisq-rand
+
+   base-beta-cdf
+   base-beta-quant
+   base-beta-dens
+   one-beta-rand
+
+   base-t-cdf
+   base-t-quant
+   base-t-dens
+   one-t-rand
+
+   base-f-cdf
+   base-f-quant
+   base-f-dens
+   one-f-rand
+
+   base-poisson-cdf
+   base-poisson-quant
+   base-poisson-dens
+   one-poisson-rand
+
+   base-binomial-cdf
+   base-binomial-quant
+   base-binomial-dens
+   one-binomial-rand
+
+
+))   
+
+(in-package :lisp-stat-ffi-int)
 
 (cffi:load-foreign-library
  (concatenate 'string
@@ -50,7 +130,6 @@
 
 (defun null-ptr-p (p) (cffi:null-pointer-p p))
 (defun ptr-eq (p q) (cffi:pointer-eq p q))
-
 
 (cffi:defcfun ("la_base_allocate" ccl-la-base-allocate)
     :pointer (n :int) (m :int))

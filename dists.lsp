@@ -12,16 +12,24 @@
 ;;;; Package Setup
 ;;;;
 
+(defpackage :lisp-stat-probability
+    (:use :common-lisp
+	  :lisp-stat-ffi-int
+	  :lisp-stat-macros)
+    (:export
+     log-gamma
+     uniform-rand
+     normal-cdf normal-quant normal-dens normal-rand bivnorm-cdf
+     cauchy-cdf cauchy-quant cauchy-dens cauchy-rand
+     gamma-cdf gamma-quant gamma-dens gamma-rand
+     chisq-cdf chisq-quant chisq-dens chisq-rand
+     beta-cdf beta-quant beta-dens beta-rand
+     t-cdf t-quant t-dens t-rand
+     f-cdf f-quant f-dens f-rand
+     poisson-cdf poisson-quant poisson-pmf poisson-rand 
+     binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
-(in-package :lisp-stat-basics)
-
-(export '(log-gamma uniform-rand normal-cdf normal-quant normal-dens
-	  normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
-	  cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
-	  chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
-	  beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
-	  f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
-	  binomial-cdf binomial-quant binomial-pmf binomial-rand))
+(in-package :lisp-stat-probability)
 
 (defmacro defbaserand (name onefun &rest args)
   `(defun ,name (n ,@args)

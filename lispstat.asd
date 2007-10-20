@@ -60,6 +60,12 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "linalg"
 					  :depends-on ("lsmath"
 						       "matrices"))
+	       (:file "optimize" :depends-on ("lsobjects"
+					      "lstypes"))
+	       (:lispstat-lsp-source-file "cffiglue"
+					  :depends-on ("optimize"))
+	       (:lispstat-lsp-source-file "dists"
+					  :depends-on ("cffiglue"))
 
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
@@ -68,12 +74,9 @@ Last touched 1991, then in 2005--2007."
 						       "sequence"
 						       "lsfloat"
 						       "matrices"
-						       "linalg"))
+						       "linalg"
+						       "dists"))
 
-	       (:lispstat-lsp-source-file "cffiglue"
-					  :depends-on ("lsbasics"))
-	       (:lispstat-lsp-source-file "dists"
-					  :depends-on ("lsbasics"))
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("lsbasics"))
 
@@ -91,12 +94,12 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "lsmath"
 						       "data" ))
-	       (:file "optimize" :depends-on ("lsobjects"
-					      "lstypes"))
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "lsmath"
 						       "dists"))
+
+
 	       (:file "ls-user" :depends-on ("lsobjects"
 					     "lsbasics"
 					     ;; and more!
