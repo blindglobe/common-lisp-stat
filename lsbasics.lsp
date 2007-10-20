@@ -8,21 +8,20 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;;;
-;;;; Package Setup
-;;;;
+;;; Package Setup
 
 (defpackage :lisp-stat-basics
-  (:use :common-lisp
-	:lisp-stat-object-system
-	:lisp-stat-types
-	:lisp-stat-fastmap
-	:lisp-stat-float
-	:lisp-stat-macros
-	:lisp-stat-compound-data
-	:lisp-stat-sequence
-	:lisp-stat-matrix
-	:lisp-stat-linalg)
+    (:use :common-lisp
+	  :lisp-stat-object-system
+	  :lisp-stat-types
+	  :lisp-stat-fastmap
+	  :lisp-stat-float
+	  :lisp-stat-macros
+	  :lisp-stat-compound-data
+	  :lisp-stat-sequence
+	  :lisp-stat-matrix
+	  :lisp-stat-linalg
+	  :lisp-stat-probability)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:shadowing-import-from :lisp-stat-types
