@@ -1,6 +1,6 @@
 
 
-;; (asdf:operate 'asdf:compile-op 'cffi)
+(asdf:operate 'asdf:compile-op 'cffi)
 (asdf:operate 'asdf:compile-op 'lispstat)
 
 ;; (asdf:operate 'asdf:load-op 'cffi)
@@ -16,6 +16,19 @@
 
 (load "/Users/ungil/lisp/CommonLispStat/init.lisp")
 (load "/Users/ungil/lisp/CommonLispStat/cffiglue.lsp")
+
+
+(in-package :cl-user)
+
+(lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
+(lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
+
+(in-package :ls-user)
+
+(binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
+(binomial-quant 0 3 0.4) ;;; -2147483648
+
+
 
 ;; optimization-related functions not tested
 ;;(lisp-stat-optimize:numgrad
