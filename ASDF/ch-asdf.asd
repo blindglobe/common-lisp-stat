@@ -1,0 +1,1 @@
+../external/ch-asdf/ch-asdf.asd

@@ -1,0 +1,1 @@
+../external/lift.darcs/lift-test.asd

@@ -20,11 +20,13 @@
 
 (progn
   
-  (defvar *lispstat-home-dir*
-    ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
-    #p"/home/tony/sandbox/CommonLispStat.git/"
+  (defvar *lispstat-home-dir* #p"/home/tony/sandbox/CLS.git/"
     "Value considered \"home\" for our data")
-  
+
+  (setf *lispstat-home-dir*
+	;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
+	;; #p"/home/tony/sandbox/CommonLispStat.git/"
+	#p"/home/tony/sandbox/CLS.git/")
   
   (defmacro ls-dir (root-str)
     `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))
@@ -75,4 +77,5 @@
        (asdf:oos 'asdf:compile-op :lift)
        (asdf:oos 'asdf:compile-op :rclg)
        (asdf:oos 'asdf:compile-op :cl-cairo2)
-       (asdf:oos 'asdf:load-op :celtk))
+       (asdf:oos 'asdf:load-op :celtk)
+       (asdf:oos 'asdf:compile-op :lispstat)
