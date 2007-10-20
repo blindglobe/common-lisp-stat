@@ -73,10 +73,9 @@ should be packaged up elsewhere for reproducibility.")
 
    ))
 
-
 (defpackage :lisp-stat-user
-  (:documentation "Experimentation package for LispStat.  Serious work
-should be packaged up elsewhere for reproducibility.")
+  (:documentation "Experimentation package for LispStat.  
+Serious work should be packaged up elsewhere for reproducibility.")
   (:nicknames :ls-user)
   (:use :common-lisp
 	:lisp-stat)
