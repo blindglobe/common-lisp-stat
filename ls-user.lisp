@@ -3,9 +3,6 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-
-(in-package :cl-user)
-
 (defpackage :lisp-stat
   (:documentation "Experimentation package for LispStat.  Serious work
 should be packaged up elsewhere for reproducibility.")
@@ -48,6 +45,10 @@ should be packaged up elsewhere for reproducibility.")
    backsolve eigenvalues eigenvectors accumulate cumsum combine
    lowess
 
+   ;; probability
+
+
+
 ;;; Here is where we have a problem -- lispstat core should be core
 ;;; data management and config problems, with packages providing
 ;;; specialized extensions to LispStat, i.e. regression, nonlin
@@ -75,11 +76,22 @@ should be packaged up elsewhere for reproducibility.")
 
 (defpackage :lisp-stat-user
   (:documentation "Experimentation package for LispStat.  
-Serious work should be packaged up elsewhere for reproducibility.")
+Serious work should be packaged up elsewhere for reproducibility.  But
+this should provide a hint as to what could be done for a user-package
+or analysis-package.")
   (:nicknames :ls-user)
   (:use :common-lisp
 	:lisp-stat)
-  (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method))
+  (:shadowing-import-from :lisp-stat
 
-(in-package :lisp-stat-user)
+      slot-value call-method call-next-method
+
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > complex conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis
+
+      <= float imagpart
+      ))
