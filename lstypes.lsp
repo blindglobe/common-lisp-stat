@@ -42,5 +42,6 @@ Returns T if X is a fixnum; NIL otherwise."
       (error "not a number ~s" a)
     t))
 
-(defun check-sequence (a)
-  (if (not (or (vectorp a) (consp a))) (error "not a sequence - ~s" a)))
+;; moved to sequence.lsp
+;;(defun check-sequence (a)
+;;  (if (not (or (vectorp a) (consp a))) (error "not a sequence - ~s" a)))
