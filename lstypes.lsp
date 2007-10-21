@@ -7,7 +7,7 @@
 (defpackage :lisp-stat-types
  (:use :common-lisp)
  (:export fixnump check-nonneg-fixnum check-one-fixnum
-          check-one-real check-one-number check-sequence))
+          check-one-real check-one-number)) ;; check-sequence))
 
 (in-package #:lisp-stat-types)
 
