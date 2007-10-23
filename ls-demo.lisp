@@ -1,7 +1,7 @@
 
 
 (asdf:operate 'asdf:compile-op 'cffi)
-(asdf:operate 'asdf:compile-op 'lispstat)
+(asdf:operate 'asdf:compile-op 'lispstat :force t)
 
 ;; (asdf:operate 'asdf:load-op 'cffi)
 ;; (asdf:operate 'asdf:load-op 'rclg)
@@ -27,6 +27,15 @@
 
 (binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
 (binomial-quant 0 3 0.4) ;;; -2147483648
+
+;; Once the above seem to work, we are on our way!
+
+
+
+
+
+
+
 
 
 

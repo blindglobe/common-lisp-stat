@@ -24,7 +24,7 @@
 	  :lisp-stat-probability)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
-  (:shadowing-import-from :lisp-stat-types
+  (:shadowing-import-from :lisp-stat-sequence
 			  check-sequence)
   (:export
    ;; lsbasics.lisp

@@ -14,7 +14,7 @@
 
 (defpackage :lisp-stat-sequence
   (:use :common-lisp)
-  (:export check-sequence get-next-element ;;compound-data-seq 
+  (:export check-sequence get-next-element
 	   make-next-element sequencep iseq
 
 	   ;; vector differences

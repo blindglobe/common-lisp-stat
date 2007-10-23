@@ -1,3 +1,14 @@
-See Doc/README* for history and design considerations
+-*- mode: text -*-
 
+
+
+
+===========
+
+See Doc/README* for history and design considerations
 See Doc/INSTALL for getting this to work and run
+
+===========
+
+Current design challenge :: we need to find a means to avoid circular
+references, especiallz where call-backs

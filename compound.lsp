@@ -3,15 +3,17 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;;; compound -- Compound data and element-wise mapping functions
-;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
-;;;;
+;;; compound -- Compound data and element-wise mapping functions
+;;; 
+;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
+;;; unrestricted use.
+;;;
 
-;;;;
-;;;; Package Setup
-;;;;
+;;;
+;;; Package Setup
+;;;
+
+(in-package :cl-user)
 
 (defpackage :lisp-stat-compound-data
   (:use :common-lisp
@@ -23,8 +25,8 @@
 			  call-next-method call-method)
   (:export compound-data-p compound-data-proto
 	   compound-object-p
-
 	   compound-data-seq compound-data-length
+
 	   element-list element-seq
 
 	   sort-data order rank

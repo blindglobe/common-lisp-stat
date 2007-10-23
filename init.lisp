@@ -19,7 +19,6 @@
 ;; things; currently this will not do the other setups.
 
 (progn
-  
   (defvar *lispstat-home-dir* #p"/home/tony/sandbox/CLS.git/"
     "Value considered \"home\" for our data")
 
@@ -49,18 +48,13 @@
   ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
   (pushnew  *lispstat-asdf-dir*  asdf:*central-registry*))
 
-;; Load the packages that we will need.
 (progn 
+  ;; Load needed packages
 
-  ;; FFI
-  (asdf:oos 'asdf:load-op :cffi)
+  (asdf:oos 'asdf:load-op :cffi)     ;; FFI
+  (asdf:oos 'asdf:load-op :lift)     ;; Unit Testing 
 
-  ;; Unit Testing 
-  (asdf:oos 'asdf:load-op :lift)
-
-  ;;(asdf:oos 'asdf:load-op :lisp-unit)
-
-  (asdf:oos 'asdf:load-op :clem)
+  (asdf:oos 'asdf:load-op :clem)     ;; matrixes
   #+nil(asdf:oos 'asdf:load-op :clem-test)
   #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
 
@@ -78,4 +72,5 @@
        (asdf:oos 'asdf:compile-op :rclg)
        (asdf:oos 'asdf:compile-op :cl-cairo2)
        (asdf:oos 'asdf:load-op :celtk)
-       (asdf:oos 'asdf:compile-op :lispstat)
+       (asdf:oos 'asdf:compile-op :lispstat :force t)
+       )
