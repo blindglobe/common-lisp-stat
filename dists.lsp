@@ -31,6 +31,254 @@
 
 (in-package :lisp-stat-probability)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;  CFFI support for Probability Distributions
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;
+;;; C-callable uniform generator
+;;;
+
+(cffi:defcfun ("register_uni" register-uni)
+    :void (f :pointer))
+(cffi:defcallback ccl-uni :int () (ccl-store-double (random 1.0)) 0)
+(register-uni (cffi:callback ccl-uni))
+
+(defun one-uniform-rand () (random 1.0))
+
+;;;;
+;;;; Log-gamma function
+;;;;
+
+(cffi:defcfun ("ccl_gamma" ccl-base-log-gamma)
+    :double (x :double))
+(defun base-log-gamma (x) 
+  (ccl-base-log-gamma (float x 1d0)))
+
+;;;;
+;;;; Normal distribution
+;;;;
+
+(cffi:defcfun ("ccl_normalcdf" ccl-base-normal-cdf) 
+    :double (x :double))
+(defun base-normal-cdf (x) 
+  (ccl-base-normal-cdf (float x 1d0)))
+
+(cffi:defcfun ("ccl_normalquant" ccl-base-normal-quant)
+    :double (x :double))
+(defun base-normal-quant (x) 
+  (ccl-base-normal-quant (float x 1d0)))
+
+(cffi:defcfun ("ccl_normaldens" ccl-base-normal-dens)
+        :double (x :double))
+(defun base-normal-dens (x) 
+  (ccl-base-normal-dens (float x 1d0)))
+
+(cffi:defcfun ("ccl_normalrand" one-normal-rand) 
+    :float)
+
+(cffi:defcfun ("ccl_bnormcdf" ccl-base-bivnorm-cdf) 
+    :double (x :double) (y :double) (z :double))
+(defun base-bivnorm-cdf (x y z)
+  (ccl-base-bivnorm-cdf (float x 1d0) (float y 1d0) (float z 1d0)))
+
+;;;;
+;;;; Cauchy distribution
+;;;;
+
+(cffi:defcfun ("ccl_cauchycdf" ccl-base-cauchy-cdf) 
+            :double (x :double))
+(defun base-cauchy-cdf (x) 
+  (ccl-base-cauchy-cdf (float x 1d0)))
+
+(cffi:defcfun ("ccl_cauchyquant" ccl-base-cauchy-quant)
+            :double (x :double))
+(defun base-cauchy-quant (x) 
+  (ccl-base-cauchy-quant (float x 1d0)))
+
+(cffi:defcfun ("ccl_cauchydens" ccl-base-cauchy-dens)
+            :double (x :double))
+(defun base-cauchy-dens (x) 
+  (ccl-base-cauchy-dens (float x 1d0)))
+
+(cffi:defcfun ("ccl_cauchyrand" one-cauchy-rand)
+    :double)
+
+;;;;
+;;;; Gamma distribution
+;;;;
+
+(cffi:defcfun ("ccl_gammacdf" ccl-base-gamma-cdf)
+            :double (x :double) (y :double))
+(defun base-gamma-cdf (x y) 
+  (ccl-base-gamma-cdf (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_gammaquant" ccl-base-gamma-quant)
+            :double (x :double) (y :double))
+(defun base-gamma-quant (x y) 
+  (ccl-base-gamma-quant (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_gammadens" ccl-base-gamma-dens)
+            :double (x :double) (y :double))
+(defun base-gamma-dens (x y) 
+  (ccl-base-gamma-dens (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_gammarand" ccl-gamma-rand)
+            :double (x :double))
+(defun one-gamma-rand (x) 
+  (ccl-gamma-rand (float x 1d0)))
+
+;;;;
+;;;; Chi-square distribution
+;;;;
+
+(cffi:defcfun ("ccl_chisqcdf" ccl-base-chisq-cdf)
+            :double (x :double) (y :double))
+(defun base-chisq-cdf (x y) 
+  (ccl-base-chisq-cdf (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_chisqquant" ccl-base-chisq-quant)
+            :double (x :double) (y :double))
+(defun base-chisq-quant (x y) 
+  (ccl-base-chisq-quant (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_chisqdens" ccl-base-chisq-dens)
+            :double (x :double) (y :double))
+(defun base-chisq-dens (x y) 
+  (ccl-base-chisq-dens (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_chisqrand" ccl-chisq-rand)
+            :double (x :double))
+(defun one-chisq-rand (x) 
+  (ccl-chisq-rand (float x 1d0)))
+
+;;;;
+;;;; Beta distribution
+;;;;
+
+(cffi:defcfun ("ccl_betacdf" ccl-base-beta-cdf)
+    :double (x :double) (y :double) (z :double))
+(defun base-beta-cdf (x y z) 
+  (ccl-base-beta-cdf (float x 1d0) (float y 1d0) (float z 1d0)))
+
+(cffi:defcfun ("ccl_betaquant" ccl-base-beta-quant)
+    :double (x :double) (y :double) (z :double))
+(defun base-beta-quant (x y z) 
+  (ccl-base-beta-quant (float x 1d0) (float y 1d0) (float z 1d0)))
+
+(cffi:defcfun ("ccl_betadens" ccl-base-beta-dens) 
+    :double (x :double) (y :double) (z :double))
+(defun base-beta-dens (x y z) 
+  (ccl-base-beta-dens (float x 1d0) (float y 1d0) (float z 1d0)))
+
+(cffi:defcfun ("ccl_betarand" ccl-beta-rand)
+    :double (x :double) (y :double))
+(defun one-beta-rand (x y)
+  (ccl-beta-rand (float x 1d0) (float y 1d0)))
+
+;;;;
+;;;; t distribution
+;;;;
+
+(cffi:defcfun ("ccl_tcdf" ccl-base-t-cdf)
+    :double (x :double) (y :double))
+(defun base-t-cdf (x y)
+  (ccl-base-t-cdf (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_tquant" ccl-base-t-quant)
+    :double (x :double) (y :double))
+(defun base-t-quant (x y) 
+  (ccl-base-t-quant (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_tdens" ccl-base-t-dens)
+    :double (x :double) (y :double))
+(defun base-t-dens (x y) 
+  (ccl-base-t-dens (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_trand" ccl-t-rand)
+    :double (x :double))
+(defun one-t-rand (x) 
+  (ccl-t-rand (float x 1d0)))
+
+;;;;
+;;;; F distribution
+;;;;
+
+(cffi:defcfun ("ccl_fcdf" ccl-base-f-cdf)
+    :double (x :double) (y :double) (z :double))
+(defun base-f-cdf (x y z) 
+  (ccl-base-f-cdf (float x 1d0) (float y 1d0) (float z 1d0)))
+
+(cffi:defcfun ("ccl_fquant" ccl-base-f-quant)
+    :double (x :double) (y :double) (z :double))
+(defun base-f-quant (x y z) 
+  (ccl-base-f-quant (float x 1d0) (float y 1d0) (float z 1d0)))
+
+(cffi:defcfun ("ccl_fdens" ccl-base-f-dens)
+    :double (x :double) (y :double) (z :double))
+(defun base-f-dens (x y z) 
+  (ccl-base-f-dens (float x 1d0) (float y 1d0) (float z 1d0)))
+
+(cffi:defcfun ("ccl_frand" ccl-f-rand)
+    :double (x :double) (y :double))
+(defun one-f-rand (x y) (ccl-f-rand (float x 1d0) (float y 1d0)))
+
+;;;;
+;;;; Poisson distribution
+;;;;
+
+(cffi:defcfun ("ccl_poissoncdf" ccl-base-poisson-cdf)
+    :double (x :double) (y :double))
+(defun base-poisson-cdf (x y)
+  (ccl-base-poisson-cdf (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_poissonquant" ccl-base-poisson-quant)
+    :int (x :double) (y :double))
+(defun base-poisson-quant (x y) 
+  (ccl-base-poisson-quant (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("ccl_poissonpmf" ccl-base-poisson-pmf)
+    :double (x :int) (y :double))
+(defun base-poisson-pmf (x y) 
+  (ccl-base-poisson-pmf x (float y 1d0)))
+
+(cffi:defcfun ("ccl_poissonrand" ccl-poisson-rand)
+    :int (x :double))
+(defun one-poisson-rand (x) 
+  (ccl-poisson-rand (float x 1d0)))
+
+;;;;
+;;;; Binomial distribution
+;;;;
+
+(cffi:defcfun ("ccl_binomialcdf" ccl-base-binomial-cdf) 
+    :double (x :double) (y :int) (z :double))
+(defun base-binomial-cdf (x y z) 
+  (ccl-base-binomial-cdf (float x 1d0) y (float z 1d0)))
+
+(cffi:defcfun ("ccl_binomialquant" ccl-base-binomial-quant) 
+    :int (x :double) (y :int) (z :double))
+(defun base-binomial-quant (x y z) 
+  (ccl-base-binomial-quant (float x 1d0) y (float z 1d0)))
+
+(cffi:defcfun ("ccl_binomialpmf" ccl-base-binomial-pmf)
+    :double (x :int) (y :int) (z :double))
+(defun base-binomial-pmf (x y z) 
+  (ccl-base-binomial-pmf x y (float z 1d0)))
+
+(cffi:defcfun ("ccl_binomialrand" ccl-binomial-rand) 
+    :int (x :int) (y :double))
+(defun one-binomial-rand (x y) 
+  (ccl-binomial-rand x (float y 1d0)))
+
+
+
+
+
+;;; definitions though macros
+
 (defmacro defbaserand (name onefun &rest args)
   `(defun ,name (n ,@args)
      (let ((result nil))

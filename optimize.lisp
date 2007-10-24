@@ -35,6 +35,43 @@ z;;; that are exported for maximization?
 (defvar *maximize-callback-arg* nil
   "args to function to maximize")
 
+
+;;;
+;;; CFFI support using library for optimization work.
+;;;
+
+;; There is a problem with this particular approach, in terms of
+;; circular dependencies.  We can not have this out-of-object call
+;; into optimize, at least not from here.  
+(cffi:defcallback ccl-maximize-callback :void ((n :int)
+ 					       (px :pointer)
+ 					       (pfval :pointer)
+ 					       (pgrad :pointer)
+ 					       (phess :pointer)
+ 					       (pderivs :pointer))
+   (lisp-stat-optimize::maximize-callback n px pfval pgrad phess pderivs))
+
+(cffi:defcfun ("register_maximize_callback" register-maximize-callback)
+    :void (x :pointer))
+(register-maximize-callback (cffi:callback ccl-maximize-callback))
+
+(cffi:defcfun ("ccl_numgrad_front" ccl-numgrad-front)
+    :int (x :int) (y :pointer) (z :pointer) (u :double) (v :pointer))
+(defun numgrad-front (x y z u v)
+  (ccl-numgrad-front x y z (float u 1d0) v))
+
+(cffi:defcfun ("ccl_numhess_front" ccl-numhess-front)
+    :int (x :int) (y :pointer) (z :pointer) (u :pointer) (v :pointer) (w :double) (a :pointer))
+(defun numhess-front (x y z u v w a) 
+  (ccl-numhess-front x y z u v (float w 1d0) a))
+
+(cffi:defcfun ("ccl_minfo_maximize" ccl-minfo-maximize)
+    :int (x :pointer) (y :pointer) (z :pointer) (u :pointer) (v :pointer) (w :int))
+(defun base-minfo-maximize (x y z u v w) 
+  (ccl-minfo-maximize x y z u v w))
+
+
+
 ;;;;
 ;;;; minfo basics (internal??)
 ;;;;

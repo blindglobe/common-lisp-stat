@@ -40,6 +40,7 @@ Last touched 1991, then in 2005--2007."
   :depends-on (:cffi :lift :clem)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "lsobjects")
+	       (:lispstat-lsp-source-file "cffiglue")
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
@@ -56,14 +57,14 @@ Last touched 1991, then in 2005--2007."
 						       "lsmacros"
 						       "lsfloat"))
 	       (:lispstat-lsp-source-file "matrices"
-					  :depends-on ("sequence"))
+					  :depends-on ("cffiglue"
+						       "sequence"))
+
 	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("lsmath"
+					  :depends-on ("cffiglue"
+						       "lsmath"
 						       "matrices"))
-	       (:file "optimize" :depends-on ("lsobjects"
-					      "lstypes"))
-	       (:lispstat-lsp-source-file "cffiglue"
-					  :depends-on ("optimize"))
+
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("cffiglue"))
 
@@ -79,6 +80,12 @@ Last touched 1991, then in 2005--2007."
 
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("lsbasics"))
+
+	       (:file "optimize" :depends-on ("lsobjects"
+					      "cffiglue"
+					      "lstypes"
+					      "lsbasics"
+					      "linalg" "matrices"))
 
 	       ;; mix/match lsp vs. lisp in next 2.
 	       (:file "data" :depends-on ("lsobjects"

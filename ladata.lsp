@@ -8,16 +8,34 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;;;
-;;;; Package Setup
-;;;;
+;;;
+;;; Package Setup
+;;;
 
-(in-package #:lisp-stat-basics)
+;;(in-package #:lisp-stat-basics)
+
+(in-package :common-lisp-user)
+
+(defpackage :lisp-stat-linalg-data
+  (:use :common-lisp
+	:cffi
+	;; probably some other functions as well, but not sure which. 
+	)
+  (:export ;; lots of stuff... sigh.
+      +mode-in+ +mode-re+ +mode-cx+ mode-of
+      
+      la-data-mode la-allocate la-free
+   ))
+
+(in-package :lisp-stat-linalg-data)
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                        Data Mode Functions
-;;;;
+;;;
+;;;                        Data Mode Functions
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;
@@ -61,6 +79,108 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar *la-allocations* nil)
+
+;;;
+;;; CFFI glue for...     Storage Allocation Functions
+;;; 
+
+(defun null-ptr-p (p) (cffi:null-pointer-p p))
+(defun ptr-eq (p q) (cffi:pointer-eq p q))
+
+(cffi:defcfun ("la_base_allocate" ccl-la-base-allocate)
+    :pointer (n :int) (m :int))
+(defun la-base-allocate (n m) 
+  (ccl-la-base-allocate n m))
+
+(cffi:defcfun ("la_base_free_alloc" ccl-la-base-free-alloc)
+    :void (p :pointer))
+(defun la-base-free (p)
+  (ccl-la-base-free-alloc p))
+
+(cffi:defcfun ("la_mode_size" ccl-la-mode-size)
+    :int (x :int))
+
+(defun la-mode-size (mode)
+  (ccl-la-mode-size mode))
+
+;;;
+;;;             Callbacks for Internal Storage
+;;;
+
+(cffi:defcallback lisp-la-allocate :void ((n :long) (m :long))
+		  (ccl-store-ptr (la-allocate n m)))
+(cffi:defcfun ("register_la_allocate" register-la-allocate)
+    :void (p :pointer))
+(register-la-allocate (cffi:callback lisp-la-allocate))
+(cffi:defcfun ("la_allocate" la) 
+    :pointer (x :int) (y :int))
+
+(cffi:defcallback lisp-la-free-alloc :void ((p :pointer)) 
+		  (lsbasics::la-free p))
+(cffi:defcfun ("register_la_free_alloc" register-la-free-alloc)
+    :void (p :pointer))
+(register-la-free-alloc (cffi:callback lisp-la-free-alloc))
+(cffi:defcfun ("la_free_alloc" lf)
+    :void (p :pointer))
+
+
+
+;;; CFFI glue for...         Storage Access Functions
+
+
+(cffi:defcfun ("la_get_integer" ccl-la-get-integer)
+    :int (p :pointer) (i :int))
+(defun la-get-integer (p i)
+  (ccl-la-get-integer p i))
+
+(cffi:defcfun ("la_get_double" ccl-la-get-double)
+    :double (p :pointer) (i :int))
+(defun la-get-double (p i)
+  (ccl-la-get-double p i))
+
+(cffi:defcfun ("la_get_complex_real" ccl-la-get-complex-real)
+    :double (p :pointer) (i :int))
+(defun la-get-complex-real (p i)
+  (ccl-la-get-complex-real p i))
+
+(cffi:defcfun ("la_get_complex_imag" ccl-la-get-complex-imag)
+    :double (p :pointer) (i :int))
+(defun la-get-complex-imag (p i)
+  (ccl-la-get-complex-imag p i))
+
+(defun la-get-complex (p i)
+  (complex (la-get-complex-real p i) (la-get-complex-imag p i)))
+
+(cffi:defcfun ("la_get_pointer" ccl-la-get-pointer)
+    :pointer (p :pointer) (i :int))
+(defun la-get-pointer (p i)
+  (ccl-la-get-pointer p i))
+
+
+;;; CFFI glue for     Storage Mutation Functions
+
+(cffi:defcfun ("la_put_integer" ccl-la-put-integer)
+    :void (p :pointer) (i :int) (x :int))
+(defun la-put-integer (p i x)
+  (ccl-la-put-integer p i x))
+
+(cffi:defcfun ("la_put_double" ccl-la-put-double)
+    :void (p :pointer) (i :int) (x :double))
+(defun la-put-double (p i x) 
+  (ccl-la-put-double p i (float x 1d0)))
+
+(cffi:defcfun ("la_put_complex" ccl-la-put-complex) 
+    :void (p :pointer) (i :int) (x :double) (y :double))
+(defun la-put-complex (p i x y) 
+  (ccl-la-put-complex p i (float x 1d0) (float y 1d0)))
+
+(cffi:defcfun ("la_put_pointer" ccl-la-put-pointer)
+    :void (p :pointer) (i :int) (q :pointer))
+(defun la-put-pointer (p i q) 
+  (ccl-la-put-pointer p i q)) 
+
+
+;; User interface (exported)
 
 (defun la-allocate (n m)
   (let ((p (la-base-allocate n m)))

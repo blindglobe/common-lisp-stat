@@ -27,6 +27,8 @@
 
 (defpackage :lisp-stat-linalg
   (:use :common-lisp
+	:cffi
+	:lisp-stat-ffi-int
 	:lisp-stat-math
 	:lisp-stat-types
 ;;	:lisp-stat-basics
@@ -43,6 +45,136 @@
 	   fft make-sweep-matrix sweep-operator ax+y eigen))
 
 (in-package #:lisp-stat-linalg)
+
+;;; CFFI Support
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;             Lisp Interfaces to Linear Algebra Routines
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;
+;;; Cholesky Decomposition
+;;;
+
+(cffi:defcfun ("ccl_chol_decomp_front" ccl-chol-decomp-front)
+    :int (x :pointer) (y :int) (z :pointer))
+(defun chol-decomp-front (x y z) 
+  (ccl-chol-decomp-front x y z))
+
+;;;;
+;;;; LU Decomposition
+;;;;
+
+(cffi:defcfun ("ccl_lu_decomp_front" ccl-lu-decomp-front)
+  :int (x :pointer) (y :int) (z :pointer) (u :int) (v :pointer))
+(defun lu-decomp-front (x y z u v) 
+(ccl-lu-decomp-front x y z u v))
+
+(cffi:defcfun ("ccl_lu_solve_front" ccl-lu-solve-front)
+    :int (x :pointer) (y :int) (z :pointer) (u :pointer) (v :int))
+(defun lu-solve-front (x y z u v) 
+  (ccl-lu-solve-front x y z u v))
+
+(cffi:defcfun ("ccl_lu_inverse_front" ccl-lu-inverse-front)
+    :int (x :pointer) (y :int) (z :pointer) (u :pointer) (v :int) (w :pointer))
+(defun lu-inverse-front (x y z u v w) 
+  (ccl-lu-inverse-front x y z u v w))
+
+;;;;
+;;;; SV Decomposition
+;;;;
+
+(cffi:defcfun ("ccl_sv_decomp_front" ccl-sv-decomp-front)
+    :int (x :pointer) (y :int) (z :int) (u :pointer) (v :pointer))
+(defun sv-decomp-front (x y z u v)
+  (ccl-sv-decomp-front x y z u v))
+
+;;;;
+;;;; QR Decomposition
+;;;;
+
+(cffi:defcfun ("ccl_qr_decomp_front" ccl-qr-decomp-front)
+    :int (x :pointer) (y :int) (z :int) (u :pointer) (v :pointer) (w :int))
+(defun qr-decomp-front (x y z u v w) 
+  (ccl-qr-decomp-front x y z u v w))
+
+;;;;
+;;;; Estimate of Condition Number for Lower Triangular Matrix
+;;;;
+
+(cffi:defcfun ("ccl_rcondest_front" ccl-rcondest-front)
+    :double (x :pointer) (y :int))
+(defun rcondest-front (x y) 
+  (ccl-rcondest-front x y))
+
+;;;;
+;;;; Make Rotation Matrix
+;;;;
+
+(cffi:defcfun ("ccl_make_rotation_front" ccl-make-rotation-front)
+    :int (x :int) (y :pointer) (z :pointer) (u :pointer) (v :int) (w :double))
+(defun make-rotation-front (x y z u v w)
+  (ccl-make-rotation-front x y z u v (float w 1d0)))
+
+;;;;
+;;;; Eigenvalues and Eigenvectors
+;;;;
+
+(cffi:defcfun ("ccl_eigen_front" ccl-eigen-front)
+    :int (x :pointer) (y :int) (z :pointer) (u :pointer) (v :pointer))
+(defun eigen-front (x y z u v) 
+  (ccl-eigen-front x y z u v))
+
+;;;;
+;;;; Spline Interpolation
+;;;;
+
+(cffi:defcfun ("ccl_range_to_rseq" ccl-range-to-rseq)
+    :int (x :int) (y :pointer) (z :int) (u :pointer))
+(defun la-range-to-rseq (x y z u)
+  (ccl-range-to-rseq x y z u))
+
+(cffi:defcfun ("ccl_spline_front" ccl-spline-front)
+    :int (x :int) (y :pointer) (z :pointer) (u :int) (v :pointer) (w :pointer) (a :pointer))
+(defun spline-front (x y z u v w a) 
+  (ccl-spline-front x y z u v w a))
+
+;;;;
+;;;; Kernel Density Estimators and Smoothers
+;;;;
+
+(cffi:defcfun ("ccl_kernel_dens_front" ccl-kernel-dens-front)
+    :int (x :pointer) (y :int) (z :double) (u :pointer) (v :pointer) (w :int) (a :int))
+(defun kernel-dens-front (x y z u v w a)
+  (ccl-kernel-dens-front x y (float z 1d0) u v w a))
+
+(cffi:defcfun ("ccl_kernel_smooth_front" ccl-kernel-smooth-front)
+    :int (x :pointer) (y :pointer) (z :int) (u :double) (v :pointer) (w :pointer) (a :int) (b :int))
+(defun kernel-smooth-front (x y z u v w a b)
+  (ccl-kernel-smooth-front x y z (float u 1d0) v w a b))
+
+;;;;
+;;;; Lowess Smoother Interface
+;;;;
+
+(cffi:defcfun ("ccl_base_lowess_front" ccl-base-lowess-front)
+  :int (x :pointer) (y :pointer) (z :int) (u :double) (v :int) (w :double) (a :pointer) (b :pointer) (c :pointer))
+(defun base-lowess-front (x y z u v w a b c)
+  (ccl-base-lowess-front x y z (float u 1d0) v (float w 1d0) a b c))
+
+;;;;
+;;;; FFT
+;;;;
+
+(cffi:defcfun ("ccl_fft_front" ccl-fft-front)
+    :int (x :int) (y :pointer) (z :pointer) (u :int))
+(defun fft-front (x y z u) 
+  (ccl-fft-front x y z u))
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
