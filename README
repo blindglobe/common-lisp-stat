@@ -11,4 +11,13 @@ See Doc/INSTALL for getting this to work and run
 ===========
 
 Current design challenge :: we need to find a means to avoid circular
-references, especiallz where call-backs
+references, especially where call-backs are concerned.
+
+Perhaps we should put the glue where it belongs, and if we use a
+package or tool which replaces it, then we no longer have to provide
+such FFI glue.
+
+This would suggest that we proceed as follows -- first make sure that
+we factor out the library loading into a separate package which is
+required, and then we embed the callback support into the individual
+libraries to make them work.
