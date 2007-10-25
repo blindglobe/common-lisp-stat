@@ -110,7 +110,7 @@
   (:export +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
 	   machine-epsilon
 
-	   base-float
+	   base-float makedouble
 
 	   make-base-trans-fun-2 make-base-trans-fun 
 

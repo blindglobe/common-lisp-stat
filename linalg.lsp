@@ -34,6 +34,8 @@
 	:lisp-stat-float
 	:lisp-stat-sequence
 	:lisp-stat-compound-data
+	:lisp-stat-data
+	:lisp-stat-basics
 	:lisp-stat-linalg-data
 	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-math
