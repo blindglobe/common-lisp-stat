@@ -26,7 +26,9 @@
   (:export matrixp num-rows num-cols matmult identity-matrix diagonal
 	   row-list column-list inner-product outer-product
 	   cross-product transpose bind-columns bind-rows
-	   array-data-vector vector-to-array))
+	   array-data-vector vector-to-array
+
+	   check-matrix))
 
 (in-package :lisp-stat-matrix)
 
@@ -81,9 +83,10 @@ Returns number of columns in X."
   (array-dimension x 1))
 
 (defun matmult (a b &rest args)
-"Args: (a b &rest args)
+  "Args: (a b &rest args)
 Returns the matrix product of matrices a, b, etc. If a is a vector it is
 treated as a row vector; if b is a vector it is treated as a column vector."
+  ;; fixme: why does SBCL claim this is unreachable?
   (let ((rtype (cond ((and (matrixp a) (matrixp b)) 'matrix)
                      ((and (sequencep a) (sequencep b)) 'number)
                      ((sequencep a) (if (consp a) 'list 'vector))
