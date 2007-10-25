@@ -22,13 +22,15 @@
 	:lisp-stat-types
 	:lisp-stat-sequence
 	:lisp-stat-compound-data
-	:lisp-stat-matrix
-	;; probably some other functions as well, but not sure which. 
-	)
-  (:export ;; lots of stuff... sigh.
+	:lisp-stat-matrix)
+  (:export ;; more to add
       +mode-in+ +mode-re+ +mode-cx+ mode-of
       
-      la-data-mode la-allocate la-free  ))
+      la-data-mode la-allocate la-free
+
+      la-get-double
+      la-matrix la-free-matrix la-matrix-to-data la-data-to-matrix
+      la-vector la-free-vector la-vector-to-data la-data-to-vector ))
 
 (in-package :lisp-stat-linalg-data)
 

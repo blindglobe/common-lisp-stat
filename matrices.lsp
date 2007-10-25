@@ -28,7 +28,7 @@
 	   cross-product transpose bind-columns bind-rows
 	   array-data-vector vector-to-array
 
-	   check-matrix))
+	   check-matrix check-square-matrix))
 
 (in-package :lisp-stat-matrix)
 

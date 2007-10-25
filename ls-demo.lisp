@@ -3,6 +3,7 @@
 
 (load "init.lisp")
 (asdf:operate 'asdf:compile-op 'lispstat :force t)
+(asdf:operate 'asdf:compile-op 'lispstat)
 
 ;; (asdf:operate 'asdf:load-op 'cffi)
 ;; (asdf:operate 'asdf:load-op 'rclg)
