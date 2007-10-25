@@ -37,7 +37,7 @@
 based on CLS by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
 Last touched 1991, then in 2005--2007."
   :serial t
-  :depends-on (:cffi :lift :clem)
+  :depends-on (:cffi :lift) ;;  :clem) not yet but soon!
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "cffiglue")

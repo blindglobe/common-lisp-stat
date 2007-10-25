@@ -15,6 +15,7 @@
    (:use :common-lisp
 	 :lisp-stat-object-system
 	 :lisp-stat-macros
+	 :lisp-stat-compound-data
 	 :lisp-stat-float)
    (:shadowing-import-from :lisp-stat-object-system
 			   slot-value call-method call-next-method)

@@ -31,6 +31,7 @@
 
 	   sort-data order rank
 
+	   recursive-map-elements
 	   ;; export sequence-related functionality
 
 	   ;; export matrix-related functionality (not sure??)

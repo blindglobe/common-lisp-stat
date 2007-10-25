@@ -14,8 +14,13 @@
 
 (defpackage :lisp-stat-sequence
   (:use :common-lisp)
-  (:export check-sequence get-next-element
-	   make-next-element sequencep iseq
+  (:export check-sequence
+	   get-next-element make-next-element set-next-element
+	   sequencep iseq
+
+	   ;; maybe?
+	   ordered-nneg-seq
+	   select
 
 	   ;; vector differences
 	   difference rseq))
@@ -100,6 +105,7 @@ Examples: (iseq 4) returns (0 1 2 3)
 
 ;;;; is x an ordered sequence of nonnegative positive integers?
 (defun ordered-nneg-seq(x)
+  ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
   (if (sequencep x)
       (let ((n (length x))
             (cx (make-next-element x))
@@ -110,6 +116,7 @@ Examples: (iseq 4) returns (0 1 2 3)
 
 ;;;; select or set the subsequence corresponding to the specified indices
 (defun sequence-select(x indices &optional (values nil set-values))
+  ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
   (let ((rlen 0)
         (dlen 0)
         (vlen 0)

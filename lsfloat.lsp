@@ -110,6 +110,8 @@
   (:export +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
 	   machine-epsilon
 
+	   base-float
+
 	   make-base-trans-fun-2 make-base-trans-fun 
 
 	   BASE-LOG BASE-EXP BASE-EXPT BASE-SQRT BASE-SIN BASE-COS

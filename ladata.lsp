@@ -13,19 +13,22 @@
 ;;;
 
 ;;(in-package #:lisp-stat-basics)
-
-(in-package :common-lisp-user)
+;;(in-package :cl-user)
 
 (defpackage :lisp-stat-linalg-data
   (:use :common-lisp
 	:cffi
+	:lisp-stat-ffi-int
+	:lisp-stat-types
+	:lisp-stat-sequence
+	:lisp-stat-compound-data
+	:lisp-stat-matrix
 	;; probably some other functions as well, but not sure which. 
 	)
   (:export ;; lots of stuff... sigh.
       +mode-in+ +mode-re+ +mode-cx+ mode-of
       
-      la-data-mode la-allocate la-free
-   ))
+      la-data-mode la-allocate la-free  ))
 
 (in-package :lisp-stat-linalg-data)
 
@@ -115,8 +118,10 @@
 (cffi:defcfun ("la_allocate" la) 
     :pointer (x :int) (y :int))
 
-(cffi:defcallback lisp-la-free-alloc :void ((p :pointer)) 
-		  (lsbasics::la-free p))
+(cffi:defcallback lisp-la-free-alloc
+    :void ((p :pointer))
+  (la-free p))
+
 (cffi:defcfun ("register_la_free_alloc" register-la-free-alloc)
     :void (p :pointer))
 (register-la-free-alloc (cffi:callback lisp-la-free-alloc))
@@ -303,3 +308,4 @@
 	  (declare (fixnum j))
 	  (setf (aref result i j) (funcall gf vec j))))))
   result)
+

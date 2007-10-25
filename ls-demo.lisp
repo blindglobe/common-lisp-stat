@@ -1,6 +1,7 @@
 
-
 (asdf:operate 'asdf:compile-op 'cffi)
+
+(load "init.lisp")
 (asdf:operate 'asdf:compile-op 'lispstat :force t)
 
 ;; (asdf:operate 'asdf:load-op 'cffi)
@@ -14,14 +15,22 @@
       #p"/Users/ungil/lisp/CommonLispStat/"
       )
 
+
+;;; To make it easier for Carlos...
 (load "/Users/ungil/lisp/CommonLispStat/init.lisp")
 (load "/Users/ungil/lisp/CommonLispStat/cffiglue.lsp")
 
-
 (in-package :cl-user)
+
+;; Can we get from both the subpackage as well as the "basic
+;; configuration"?
 
 (lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
 (lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
+
+(lisp-stat:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
+(lisp-stat:binomial-quant 0 3 0.4) ;;; -2147483648
+
 
 (in-package :ls-user)
 

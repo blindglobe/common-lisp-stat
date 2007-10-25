@@ -45,6 +45,7 @@
 
    ;; in linalg.lisp, possibly not supported by matlisp
    spline kernel-dens kernel-smooth
+
    ;; lispstat-macros
    make-rv-function make-rv-function-1 
    ;; dists
