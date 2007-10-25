@@ -41,6 +41,7 @@ Last touched 1991, then in 2005--2007."
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "cffiglue")
+	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
@@ -79,7 +80,8 @@ Last touched 1991, then in 2005--2007."
 						       "dists"))
 
 	       (:lispstat-lsp-source-file "ladata"
-					  :depends-on ("lsbasics"))
+					  :depends-on ("defsys"
+						       "lsbasics"))
 
 	       (:file "optimize" :depends-on ("lsobjects"
 					      "cffiglue"

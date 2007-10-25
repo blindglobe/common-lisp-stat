@@ -30,8 +30,8 @@
   (:documentation "Data I/O, management, other data technologies.")
   (:nicknames :ls-data)
   (:use :common-lisp
-	;;:lisp-stat-config
 	;;:cxml
+	:lisp-stat-config
 	:lisp-stat-object-system
 	:lisp-stat-types
 	:lisp-stat-compound-data
@@ -179,10 +179,10 @@ Returns the number of lisp items on the first nonblank line of file FNAME."
 
 (if (not (fboundp 'open-file-dialog))
   #+dialogs
-  (defun open-file-dialog (&optional set)
+  (defun open-file-dialog () ;; why?(&optional set)
     (get-string-dialog "Enter a data file name:"))
   #-dialogs
-  (defun open-file-dialog (&optional set)
+  (defun open-file-dialog () ;; why? (&optional set)
     (error "You must provide a file name explicitly")))
 
 (defun read-data-file (&optional (file (open-file-dialog t)))

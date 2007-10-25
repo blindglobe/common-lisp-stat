@@ -2,7 +2,11 @@
 
 (defpackage :lisp-stat-config
   (:use :common-lisp)
-  (:export *default-path* *lsos-files* *basic-files* *ls-files*))
+  (:export *default-path*
+	   *lsos-files* *basic-files* *ls-files*
+
+	   *lispstat-data-dir* *lispstat-examples-dir*
+	   ))
 
 (in-package :lisp-stat-config)
 
@@ -113,3 +117,34 @@
 (defun compile-stats (&optional (compile-all t))
   (if compile-all (compile-ls-basics) (load-ls-basics))
   (compile-load-files *ls-files*))
+
+
+(defvar *lispstat-home-dir* #p"/home/tony/sandbox/CLS.git/"
+	"Value considered \"home\" for our data")
+
+(setf *lispstat-home-dir*
+      ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
+      ;; #p"/home/tony/sandbox/CommonLispStat.git/"
+      #p"/home/tony/sandbox/CLS.git/")
+  
+(defmacro ls-dir (root-str)
+  `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))
+
+(defmacro ls-defdir (target-dir-var  root-str)
+  `(defvar ,target-dir-var (ls-dir ,root-str)))
+
+;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+;;(macroexpand-1 '(ls-dir "ASDF"))
+  
+(ls-defdir *lispstat-asdf-dir* "ASDF/")
+(ls-defdir *lispstat-data-dir* "data/")
+(ls-defdir *lispstat-external-dir* "external/")
+(ls-defdir *lispstat-examples-dir* "examples/")
+
+;; Load ASDF if it isn't loaded
+#-asdf(load (pathname (concatenate 'string (namestring *lispstat-external-dir*) "asdf")))
+
+;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
+;;(pushnew  *lispstat-asdf-dir*  asdf:*central-registry*))
+
