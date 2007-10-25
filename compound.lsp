@@ -262,4 +262,6 @@ or strings X in order."
 Returns a sequence with the elements of the list or array of numbers or
 strings X replaced by their ranks."
   (let ((ranked-seq (order (order x))))
-    (make-compound-data (compound-data-shape x) ranked-seq)))
+    (make-compound-data
+     ;; compound-data-shape is undefined?
+     (compound-data-shape x) ranked-seq)))
