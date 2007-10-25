@@ -61,10 +61,6 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("cffiglue"
 						       "sequence"))
 
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("cffiglue"
-						       "lsmath"
-						       "matrices"))
 
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("cffiglue"))
@@ -76,12 +72,18 @@ Last touched 1991, then in 2005--2007."
 						       "sequence"
 						       "lsfloat"
 						       "matrices"
-						       "linalg"
+						       ;;"linalg"
 						       "dists"))
 
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("defsys"
 						       "lsbasics"))
+
+	       (:lispstat-lsp-source-file "linalg"
+					  :depends-on ("cffiglue"
+						       "lsmath"
+						       "matrices"
+						       "ladata"))
 
 	       (:file "optimize" :depends-on ("lsobjects"
 					      "cffiglue"

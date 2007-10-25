@@ -15,7 +15,15 @@
 (defpackage :lisp-stat-descriptive-statistics
  (:use :common-lisp
        :lisp-stat-data
-       :lisp-stat-math)
+       :lisp-stat-math
+       :lisp-stat-compound-data
+       :lisp-stat-sequence
+       :lisp-stat-matrix
+       :lisp-stat-linalg-data
+       :lisp-stat-linalg
+       
+       :lisp-stat-basics
+       )
    (:shadowing-import-from :lisp-stat-math
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -150,7 +158,7 @@ in row major order."
 "Args: (matrix &optional stream)
 Prints MATRIX to STREAM in a nice form that is still machine readable"
   (unless (matrixp a) (error "not a matrix - ~a" a))
-  (let ((size (min 15 (max (map-elements #'flatsize a)))))
+  (let ((size (min 15 (max (map-elements #'flatsize a))))) ;; FIXME: flatsize not defined
     (format stream "#2a(~%")
     (dolist (x (row-list a))
             (format stream "    (")
