@@ -28,7 +28,10 @@
 	   cross-product transpose bind-columns bind-rows
 	   array-data-vector vector-to-array
 
-	   check-matrix check-square-matrix))
+	   check-matrix check-square-matrix
+
+	   copy-array copy-vector
+	   ))
 
 (in-package :lisp-stat-matrix)
 
@@ -335,3 +338,28 @@ Example: (bind-rows #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2)(3 4)(5 6))"
               (dotimes (j k)
                 (setf (aref result (+ firstrow j) i) (aref x j i)))))))
         (incf firstrow (arg-rows x))))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;;                           Copying Functions
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;
+;;; COPY-VECTOR function
+;;;
+
+(defun copy-vector (x)
+"Args: (x)
+Returns a copy of the vector X"
+  (copy-seq x))
+
+;;;
+;;; COPY-ARRAY function
+;;;
+
+(defun copy-array (a)
+"Args: (a)
+Returns a copy of the array A"
+  (vector-to-array (copy-seq (array-data-vector a))
+		   (array-dimensions a)))
+

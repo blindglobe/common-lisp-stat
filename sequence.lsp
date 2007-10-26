@@ -22,6 +22,7 @@
 	   ordered-nneg-seq
 	   select
 
+	   which
 	   ;; vector differences
 	   difference rseq))
 
@@ -242,3 +243,27 @@ Returns differences for a sequence X."
 "Args: (a b num)
 Returns a list of NUM equally spaced points starting at A and ending at B."
   (+ a (* (values-list (iseq 0 (1- num))) (/ (float (- b a)) (1- num)))))
+
+
+;;;;
+;;;; WHICH function
+;;;;
+
+(defun which (x)
+"Args: (x)
+Returns a list of the indices where elements of sequence X are not NIL."
+  (let ((x (list (compound-data-seq x)))
+	(result nil)
+	(tail nil))
+    (flet ((add-result (x)
+             (if result (setf (rest tail) (list x)) (setf result (list x)))
+	     (setf tail (if tail (rest tail) result)))
+	   (get-next-element (seq-list i)
+	     (cond ((consp (first seq-list))
+		    (let ((elem (first (first seq-list))))
+		      (setf (first seq-list) (rest (first seq-list)))
+		      elem))
+		   (t (aref (first seq-list) i)))))
+	  (let ((n (length (first x))))
+	    (dotimes (i n result)
+		     (if (get-next-element x i) (add-result i)))))))

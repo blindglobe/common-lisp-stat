@@ -19,18 +19,15 @@
 	  :lisp-stat-macros
 	  :lisp-stat-compound-data
 	  :lisp-stat-sequence
-	  :lisp-stat-matrix
-	  :lisp-stat-linalg
+	  ;;:lisp-stat-matrix
+	  ;;:lisp-stat-linalg
 	  :lisp-stat-probability)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:shadowing-import-from :lisp-stat-sequence
 			  check-sequence)
   (:export
-   ;; lsbasics.lisp
-   copy-vector copy-array which repeat
    permute-array sum prod count-elements mean if-else sample 
-   select
    
    ;; matrices.lisp
    ;;   matrixp num-rows num-cols matmult identity-matrix diagonal row-list
@@ -62,185 +59,12 @@
 
 (in-package #:lisp-stat-basics)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                           Copying Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;
-;;; COPY-VECTOR function
-;;;
-
-(defun copy-vector (x)
-"Args: (x)
-Returns a copy of the vector X"
-  (copy-seq x))
-
-;;;
-;;; COPY-ARRAY function
-;;;
-
-(defun copy-array (a)
-"Args: (a)
-Returns a copy of the array A"
-  (vector-to-array (copy-seq (array-data-vector a))
-		   (array-dimensions a)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                         Sequence Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;;;;
-;;;; WHICH function
-;;;;
-
-(defun which (x)
-"Args: (x)
-Returns a list of the indices where elements of sequence X are not NIL."
-  (let ((x (list (compound-data-seq x)))
-	(result nil)
-	(tail nil))
-    (flet ((add-result (x)
-             (if result (setf (rest tail) (list x)) (setf result (list x)))
-	     (setf tail (if tail (rest tail) result)))
-	   (get-next-element (seq-list i)
-	     (cond ((consp (first seq-list))
-		    (let ((elem (first (first seq-list))))
-		      (setf (first seq-list) (rest (first seq-list)))
-		      elem))
-		   (t (aref (first seq-list) i)))))
-	  (let ((n (length (first x))))
-	    (dotimes (i n result)
-		     (if (get-next-element x i) (add-result i)))))))
-
-;;;;
-;;;; REPEAT function
-;;;;
-
-(defun repeat (a b)
-"Args: (vals times)
-Repeats VALS. If TIMES is a number and VALS is a non-null, non-array atom,
-a list of length TIMES with all elements eq to VALS is returned. If VALS
-is a list and TIMES is a number then VALS is appended TIMES times. If
-TIMES is a list of numbers then VALS must be a list of equal length and 
-the simpler version of repeat is mapped down the two lists.
-Examples: (repeat 2 5)                 returns (2 2 2 2 2)
-          (repeat '(1 2) 3)            returns (1 2 1 2 1 2)
-	  (repeat '(4 5 6) '(1 2 3))   returns (4 5 5 6 6 6)
-	  (repeat '((4) (5 6)) '(2 3)) returns (4 4 5 6 5 6 5 6)"
-  (cond ((compound-data-p b)
-	 (let* ((reps (coerce (compound-data-seq (map-elements #'repeat a b))
-			      'list))
-		(result (first reps))
-		(tail (last (first reps))))
-	   (dolist (next (rest reps) result)
-		   (when next
-			 (setf (rest tail) next)
-			 (setf tail (last next))))))
-	(t (let* ((a (if (compound-data-p a) 
-			 (coerce (compound-data-seq a) 'list)
-		         (list a)))
-		  (result nil))
-	     (dotimes (i b result)
-		      (let ((next (copy-list a)))
-			(if result (setf (rest (last next)) result))
-			(setf result next)))))))
-			    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;;               Subset Selection and Mutation Functions
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; is x an ordered sequence of nonnegative positive integers?
-(defun ordered-nneg-seq(x)
-  (if (sequencep x)
-      (let ((n (length x))
-            (cx (make-next-element x))
-            (m 0))
-        (dotimes (i n t)
-          (let ((elem (check-nonneg-fixnum (get-next-element cx i))))
-            (if (> m elem) (return nil) (setf m elem)))))))
-
-;;;; select or set the subsequence corresponding to the specified indices
-(defun sequence-select(x indices &optional (values nil set-values))
-  (let ((rlen 0)
-        (dlen 0)
-        (vlen 0)
-        (data nil)
-        (result nil))
-    (declare (fixnum rlen dlen vlen))
-
-    ;; Check the input data
-    (check-sequence x)
-    (check-sequence indices)
-    (if set-values (check-sequence values))
-    
-    ;; Find the data sizes
-    (setf data (if (ordered-nneg-seq indices) x (coerce x 'vector)))
-    (setf dlen (length data))
-    (setf rlen (length indices))
-    (when set-values
-      (setf vlen (length values))
-      (if (/= vlen rlen) (error "value and index sequences do not match")))
-
-    ;; set up the result/value sequence
-    (setf result
-          (if set-values
-              values
-              (make-sequence (if (listp x) 'list 'vector) rlen)))
-
-    ;; get or set the sequence elements 
-    (if set-values
-      (do ((nextx x)
-           (cr (make-next-element result))
-           (ci (make-next-element indices))
-           (i 0 (+ i 1))
-           (j 0)
-           (index 0))
-          ((>= i rlen))
-        (declare (fixnum i j index))
-        (setf index (get-next-element ci i))
-	(if (<= dlen index) (error "index out of range - ~a" index))
-        (let ((elem (get-next-element cr i)))
-          (cond
-           ((listp x)
-            (when (> j index)
-              (setf j 0)
-              (setf nextx x))
-            (do ()
-                ((not (and (< j index) (consp nextx))))
-              (incf j 1)
-              (setf nextx (rest nextx)))
-            (setf (first nextx) elem))
-           (t (setf (aref x index) elem)))))
-      (do ((nextx data)
-           (cr (make-next-element result))
-           (ci (make-next-element indices))
-           (i 0 (+ i 1))
-           (j 0)
-           (index 0)
-           (elem nil))
-          ((>= i rlen))
-        (declare (fixnum i j index))
-        (setf index (get-next-element ci i))
-	(if (<= dlen index) (error "index out of range - ~a" index))
-	(cond
-         ((listp data) ;; indices must be ordered
-          (do ()
-              ((not (and (< j index) (consp nextx))))
-            (incf j 1)
-            (setf nextx (rest nextx)))
-          (setf elem (first nextx)))
-         (t (setf elem (aref data index))))
-	(set-next-element cr i elem)))
-  
-    result))
 
 (defun old-rowmajor-index (index indices dim olddim)
   "translate row major index in resulting subarray to row major index
@@ -336,44 +160,6 @@ in the original array."
         (setf (aref result_data i) (aref data k))))
   
     result))
-
-;;;;
-;;;; SELECT function
-;;;;
-
-(defun select (x &rest args)
-"Args: (a &rest indices)
-A can be a list or an array. If A is a list and INDICES is a single number
-then the appropriate element of A is returned. If  is a list and INDICES is
-a list of numbers then the sublist of the corresponding elements is returned.
-If A in an array then the number of INDICES must match the ARRAY-RANK of A.
-If each index is a number then the appropriate array element is returned.
-Otherwise the INDICES must all be lists of numbers and the corresponding
-submatrix of A is returned. SELECT can be used in setf."
-  (cond
-   ((every #'fixnump args)
-    (if (listp x) (nth (first args) x) (apply #'aref x args)))
-   ((sequencep x) (sequence-select x (first args)))
-   (t (subarray-select x args))))
-
-
-;; Built in SET-SELECT (SETF method for SELECT)
-(defun set-select (x &rest args)
-  (let ((indices (butlast args))
-        (values (first (last args))))
-    (cond
-     ((sequencep x)
-      (if (not (consp indices)) (error "bad indices - ~a" indices))
-      (let* ((indices (first indices))
-             (i-list (if (fixnump indices) (list indices) indices))
-             (v-list (if (fixnump indices) (list values) values)))
-        (sequence-select x i-list v-list)))
-     ((arrayp x)
-      (subarray-select x indices values))
-     (t (error "bad argument type - ~a" x)))
-    values))
-
-(defsetf select set-select)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

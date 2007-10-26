@@ -32,8 +32,8 @@
 	   sort-data order rank
 
 	   recursive-map-elements map-elements
-	   ;; export sequence-related functionality
 
+	   repeat
 	   ;; export matrix-related functionality (not sure??)
 	   ))
 
@@ -265,3 +265,38 @@ strings X replaced by their ranks."
     (make-compound-data
      ;; compound-data-shape is undefined?
      (compound-data-shape x) ranked-seq)))
+
+
+
+;;;;
+;;;; REPEAT function
+;;;;
+
+(defun repeat (a b)
+"Args: (vals times)
+Repeats VALS. If TIMES is a number and VALS is a non-null, non-array atom,
+a list of length TIMES with all elements eq to VALS is returned. If VALS
+is a list and TIMES is a number then VALS is appended TIMES times. If
+TIMES is a list of numbers then VALS must be a list of equal length and 
+the simpler version of repeat is mapped down the two lists.
+Examples: (repeat 2 5)                 returns (2 2 2 2 2)
+          (repeat '(1 2) 3)            returns (1 2 1 2 1 2)
+	  (repeat '(4 5 6) '(1 2 3))   returns (4 5 5 6 6 6)
+	  (repeat '((4) (5 6)) '(2 3)) returns (4 4 5 6 5 6 5 6)"
+  (cond ((compound-data-p b)
+	 (let* ((reps (coerce (compound-data-seq (map-elements #'repeat a b))
+			      'list))
+		(result (first reps))
+		(tail (last (first reps))))
+	   (dolist (next (rest reps) result)
+		   (when next
+			 (setf (rest tail) next)
+			 (setf tail (last next))))))
+	(t (let* ((a (if (compound-data-p a) 
+			 (coerce (compound-data-seq a) 'list)
+		         (list a)))
+		  (result nil))
+	     (dotimes (i b result)
+		      (let ((next (copy-list a)))
+			(if result (setf (rest (last next)) result))
+			(setf result next)))))))

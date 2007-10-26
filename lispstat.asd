@@ -51,6 +51,10 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "fastmap"
 						       "sequence"))
+
+	       (:file "data" :depends-on ("lsobjects"
+					  "compound" ))
+
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 	       (:lispstat-lsp-source-file "lsmath"
@@ -65,6 +69,17 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "dists"
 					  :depends-on ("cffiglue"))
 
+
+	       (:lispstat-lsp-source-file "ladata"
+					  :depends-on ("defsys"
+						       ;;"lsbasics"))
+						       ))
+	       (:lispstat-lsp-source-file "linalg"
+					  :depends-on ("cffiglue"
+						       "lsmath"
+						       "matrices"
+						       "ladata"))
+	       ;; there is a circ reference which we need to solve.
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("lsobjects"
 						       "lstypes"
@@ -72,18 +87,9 @@ Last touched 1991, then in 2005--2007."
 						       "sequence"
 						       "lsfloat"
 						       "matrices"
-						       ;;"linalg"
+						       "linalg"
 						       "dists"))
 
-	       (:lispstat-lsp-source-file "ladata"
-					  :depends-on ("defsys"
-						       "lsbasics"))
-
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("cffiglue"
-						       "lsmath"
-						       "matrices"
-						       "ladata"))
 
 	       (:file "optimize" :depends-on ("lsobjects"
 					      "cffiglue"
@@ -91,9 +97,6 @@ Last touched 1991, then in 2005--2007."
 					      "lsbasics"
 					      "linalg" "matrices"))
 
-	       ;; mix/match lsp vs. lisp in next 2.
-	       (:file "data" :depends-on ("lsobjects"
-					  "compound"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
