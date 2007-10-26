@@ -54,7 +54,8 @@
   (asdf:oos 'asdf:load-op :cffi)     ;; FFI
   (asdf:oos 'asdf:load-op :lift)     ;; Unit Testing 
 
-  (asdf:oos 'asdf:load-op :clem)     ;; matrixes
+  ;; soon...
+  ;;(asdf:oos 'asdf:load-op :clem)     ;; matrixes
   #+nil(asdf:oos 'asdf:load-op :clem-test)
   #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
 
