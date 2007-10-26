@@ -13,7 +13,8 @@
 (in-package :cl-user)
 
 (defpackage :lisp-stat-sequence
-  (:use :common-lisp)
+  (:use :common-lisp
+	:lisp-stat-types)
   (:export check-sequence
 	   get-next-element make-next-element set-next-element
 	   sequencep iseq
