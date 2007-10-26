@@ -47,7 +47,10 @@
 			  ftruncate fround signum cis)
   (:export chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
 	   qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
-	   fft make-sweep-matrix sweep-operator ax+y eigen))
+	   fft make-sweep-matrix sweep-operator ax+y eigen
+
+	   check-real ;; for optimize
+	   ))
 
 (in-package #:lisp-stat-linalg)
 
