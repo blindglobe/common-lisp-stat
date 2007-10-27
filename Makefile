@@ -13,8 +13,10 @@ git-push :
 ## Workspace cleanup
 
 clean:
+	rm -f *.o *.fasl *~ *.flc
+
+lib-clean : 
 	(cd lib; make clean)
-	rm -f *.o *.fasl *~
 
 dist-clean: clean
 	rm -rf fasl sbcl-fasl
