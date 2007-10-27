@@ -7,10 +7,15 @@
 
 (defpackage :lisp-stat-optimize
  (:use :common-lisp
+       :lisp-stat-ffi-int
        :lisp-stat-object-system
        :lisp-stat-types
+       :lisp-stat-sequence
+       :lisp-stat-compound-data
+       :lisp-stat-math
        :lisp-stat-basics
        :lisp-stat-matrix
+       :lisp-stat-linalg-data
        :lisp-stat-linalg)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)

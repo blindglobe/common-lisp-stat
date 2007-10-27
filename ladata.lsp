@@ -28,9 +28,12 @@
       
       la-data-mode la-allocate la-free
 
-      la-get-double
+      la-get-double la-put-double
+      la-put-integer
+      
       la-matrix la-free-matrix la-matrix-to-data la-data-to-matrix
       la-vector la-free-vector la-vector-to-data la-data-to-vector ))
+
 
 (in-package :lisp-stat-linalg-data)
 
