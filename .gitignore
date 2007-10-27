@@ -7,3 +7,4 @@ fasl
 *.lib
 *.o
 _darcs
+*.flc
