@@ -7,7 +7,7 @@
 ;;(asdf:oos 'asdf:load-op 'cffi)
 
 (defpackage #:lispstat-system
-  (:use :asdf :common-lisp))
+    (:use :asdf :common-lisp))
 
 (in-package #:lispstat-system)
 
@@ -42,39 +42,55 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "cffiglue")
 	       (:lispstat-lsp-source-file "defsys")
+
+
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
 	       (:lispstat-lsp-source-file "sequence"
 					  :depends-on ("lstypes"))
 
+	       (:lispstat-lsp-source-file "matrices"
+					  :depends-on ("cffiglue"
+						       "sequence"))
 	       (:lispstat-lsp-source-file "compound" 
 					  :depends-on ("lsobjects"
 						       "fastmap"
 						       "sequence"))
-
-	       (:file "data" :depends-on ("lsobjects"
-					  "compound" ))
+	       (:lispstat-lsp-source-file "ladata"
+					  :depends-on ("cffiglue"
+						       "defsys"
+						       "lstypes"
+						       "sequence"
+						       "compound"
+						       "matrices"
+						       ))
 
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
-	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("lsobjects"
-						       "lsmacros"
-						       "lsfloat"))
-	       (:lispstat-lsp-source-file "matrices"
-					  :depends-on ("cffiglue"
-						       "sequence"))
-
 
 	       (:lispstat-lsp-source-file "dists"
-					  :depends-on ("cffiglue"))
+					  :depends-on ("cffiglue"
+						       "lsmacros"))
 
 
-	       (:lispstat-lsp-source-file "ladata"
-					  :depends-on ("defsys"
-						       ;;"lsbasics"))
-						       ))
+	       (:lispstat-lsp-source-file "lsmath"
+					  :depends-on ("lsobjects"
+						       "compound"
+						       "lsmacros"
+						       "lsfloat"))
+
+	       (:file "data" :depends-on ("lsobjects"
+					  "compound"
+					  "matrices"
+					  "linalg"))
+
+	       (:lispstat-lsp-source-file "statistics"
+					  :depends-on ("lsobjects"
+						       "lsmath"
+						       "data" ))
+
+
 	       (:lispstat-lsp-source-file "linalg"
 					  :depends-on ("cffiglue"
 						       "lsmath"
@@ -105,10 +121,6 @@ Last touched 1991, then in 2005--2007."
 						       "lsbasics"))
 	       (:lispstat-lsp-source-file "nonlin"
 					  :depends-on ("regression"))
-	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("lsobjects"
-						       "lsmath"
-						       "data" ))
 	       (:lispstat-lsp-source-file "bayes"
 					  :depends-on ("lsobjects"
 						       "lsmath"

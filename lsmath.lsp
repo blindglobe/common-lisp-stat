@@ -10,7 +10,8 @@
 
 ;;; Package Setup
 
-;; in another world...
+(in-package :cl-user)
+
 (defpackage :lisp-stat-math
    (:use :common-lisp
 	 :lisp-stat-object-system

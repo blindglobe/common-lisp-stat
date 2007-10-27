@@ -101,16 +101,13 @@
 ;; long-float. An object can simultaneously be of types single-float and
 ;; short-float.
 
-
 ;;; Package Setup
-
+(in-package :cl-user)
 
 (defpackage :lisp-stat-float
   (:use :common-lisp)
   (:export +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
-	   machine-epsilon
-
-	   base-float makedouble
+	   machine-epsilon base-float makedouble
 
 	   make-base-trans-fun-2 make-base-trans-fun 
 

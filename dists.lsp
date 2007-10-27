@@ -3,31 +3,34 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;;; dists -- Lisp-Stat interface to basic probability distribution routines
-;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
+;;; dists -- Lisp-Stat interface to basic probability distribution routines
+;;; 
+;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
+;;; unrestricted use.
 
-;;;;
-;;;; Package Setup
-;;;;
+;;;
+;;; Package Setup
+;;;
+
+(in-package :cl-user)
 
 (defpackage :lisp-stat-probability
     (:use :common-lisp
+	  :cffi
 	  :lisp-stat-ffi-int
 	  :lisp-stat-macros)
-    (:export
-     log-gamma
-     uniform-rand
-     normal-cdf normal-quant normal-dens normal-rand bivnorm-cdf
-     cauchy-cdf cauchy-quant cauchy-dens cauchy-rand
-     gamma-cdf gamma-quant gamma-dens gamma-rand
-     chisq-cdf chisq-quant chisq-dens chisq-rand
-     beta-cdf beta-quant beta-dens beta-rand
-     t-cdf t-quant t-dens t-rand
-     f-cdf f-quant f-dens f-rand
-     poisson-cdf poisson-quant poisson-pmf poisson-rand 
-     binomial-cdf binomial-quant binomial-pmf binomial-rand))
+    (:export log-gamma
+	     uniform-rand
+	     normal-cdf normal-quant normal-dens normal-rand
+	     bivnorm-cdf
+	     cauchy-cdf cauchy-quant cauchy-dens cauchy-rand
+	     gamma-cdf gamma-quant gamma-dens gamma-rand
+	     chisq-cdf chisq-quant chisq-dens chisq-rand
+	     beta-cdf beta-quant beta-dens beta-rand
+	     t-cdf t-quant t-dens t-rand
+	     f-cdf f-quant f-dens f-rand
+	     poisson-cdf poisson-quant poisson-pmf poisson-rand 
+	     binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
 (in-package :lisp-stat-probability)
 
@@ -48,18 +51,18 @@
 
 (defun one-uniform-rand () (random 1.0))
 
-;;;;
-;;;; Log-gamma function
-;;;;
+;;;
+;;; Log-gamma function
+;;;
 
 (cffi:defcfun ("ccl_gamma" ccl-base-log-gamma)
     :double (x :double))
 (defun base-log-gamma (x) 
   (ccl-base-log-gamma (float x 1d0)))
 
-;;;;
-;;;; Normal distribution
-;;;;
+;;;
+;;; Normal distribution
+;;;
 
 (cffi:defcfun ("ccl_normalcdf" ccl-base-normal-cdf) 
     :double (x :double))
@@ -84,9 +87,9 @@
 (defun base-bivnorm-cdf (x y z)
   (ccl-base-bivnorm-cdf (float x 1d0) (float y 1d0) (float z 1d0)))
 
-;;;;
-;;;; Cauchy distribution
-;;;;
+;;;
+;;; Cauchy distribution
+;;;
 
 (cffi:defcfun ("ccl_cauchycdf" ccl-base-cauchy-cdf) 
             :double (x :double))

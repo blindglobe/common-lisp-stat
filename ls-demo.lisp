@@ -10,7 +10,6 @@
 
 (asdf:oos 'asdf:load-op :lispstat)
 
-
 (setf *my-base-directory*
       #p"/home/tony/sandbox/CLS.git/"
       #p"/Users/ungil/lisp/CommonLispStat/"

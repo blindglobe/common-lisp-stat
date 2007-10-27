@@ -1,5 +1,7 @@
 ;;; -*- mode: lisp -*-
 
+(in-package :cl-user)
+
 (defpackage :lisp-stat-config
   (:use :common-lisp)
   (:export *default-path*
