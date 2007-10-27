@@ -10,7 +10,6 @@
        :lisp-stat-ffi-int
        :lisp-stat-object-system
        :lisp-stat-types
-       :lisp-stat-sequence
        :lisp-stat-compound-data
        :lisp-stat-math
        :lisp-stat-basics

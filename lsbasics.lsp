@@ -18,14 +18,11 @@
 	  :lisp-stat-float
 	  :lisp-stat-macros
 	  :lisp-stat-compound-data
-	  :lisp-stat-sequence
 	  ;;:lisp-stat-matrix
 	  ;;:lisp-stat-linalg
 	  :lisp-stat-probability)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
-  (:shadowing-import-from :lisp-stat-sequence
-			  check-sequence)
   (:export
    permute-array sum prod count-elements mean if-else sample 
    
@@ -59,107 +56,7 @@
 
 (in-package #:lisp-stat-basics)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;               Subset Selection and Mutation Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-(defun old-rowmajor-index (index indices dim olddim)
-  "translate row major index in resulting subarray to row major index
-in the original array."
-  (declare (fixnum index))
-  (let ((rank (length dim))
-        (face 1)
-        (oldface 1)
-        (oldindex 0))
-    (declare (fixnum rank face oldface))
-
-    (dotimes (i rank)
-      (declare (fixnum i))
-      (setf face (* face (aref dim i)))
-      (setf oldface (* oldface (aref olddim i))))
-  
-    (dotimes (i rank)
-      (declare (fixnum i))
-      (setf face (/ face (aref dim i)))
-      (setf oldface (/ oldface (aref olddim i)))
-      (incf oldindex
-	    (* oldface (aref (aref indices i) (floor (/ index face))))) ;;*** is this floor really needed???
-      (setf index (rem index face)))
-    oldindex))
-
-(defun subarray-select (a indexlist &optional (values nil set_values))
-  "extract or set subarray for the indices from a displaced array." 
-  (let ((indices nil)
-        (index)
-        (dim)
-        (vdim)
-        (data)
-        (result_data)
-        (olddim)
-        (result)
-        (rank 0)
-        (n 0)
-        (k 0))
-    (declare (fixnum rank n))
-
-    (if (or (sequencep a) (not (arrayp a))) (error "not an array - ~a" a))
-    (if (not (listp indexlist))  (error "bad index list - ~a" indices))
-    (if (/= (length indexlist)  (array-rank a))
-	(error "wrong number of indices"))
-    
-    (setf indices (coerce indexlist 'vector))
-    
-    (setf olddim (coerce (array-dimensions a) 'vector))
-    
-    ;; compute the result dimension vector and fix up the indices
-    (setf rank (array-rank a))
-    (setf dim (make-array rank))
-    (dotimes (i rank)
-      (declare (fixnum i))
-      (setf index (aref indices i))
-      (setf n (aref olddim i))
-      (setf index (if (fixnump index) (vector index) (coerce index 'vector)))
-      (setf k (length index))
-      (dotimes (j k)
-        (declare (fixnum j))
-        (if (<= n (check-nonneg-fixnum (aref index j)))
-          (error "index out of bounds - ~a" (aref index j)))
-        (setf (aref indices i) index))
-      (setf (aref dim i) (length index)))
-    
-    ;; set up the result or check the values
-    (let ((dim-list (coerce dim 'list)))
-      (cond 
-       (set_values
-        (cond
-         ((compound-data-p values)
-          (if (or (not (arrayp values)) (/= rank (array-rank values)))
-            (error "bad values array - ~a" values))
-          (setf vdim (coerce (array-dimensions values) 'vector))
-          (dotimes (i rank)
-            (declare (fixnum i))
-            (if (/= (aref vdim i) (aref dim i))
-              (error "bad value array dimensions - ~a" values)))
-          (setf result values))
-         (t (setf result (make-array dim-list :initial-element values)))))
-       (t (setf result (make-array dim-list)))))
-
-    ;; compute the result or set the values
-    (setf data (compound-data-seq a))
-    (setf result_data (compound-data-seq result))
-    (setf n (length result_data))
-    (dotimes (i n)
-      (declare (fixnum i))
-      (setf k (old-rowmajor-index i indices dim olddim))
-      (if (or (> 0 k) (>= k (length data))) (error "index out of range"))
-      (if set_values
-        (setf (aref data k) (aref result_data i))
-        (setf (aref result_data i) (aref data k))))
-  
-    result))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

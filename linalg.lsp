@@ -32,7 +32,6 @@
 	:lisp-stat-math
 	:lisp-stat-types
 	:lisp-stat-float
-	:lisp-stat-sequence
 	:lisp-stat-compound-data
 	:lisp-stat-data
 	:lisp-stat-basics

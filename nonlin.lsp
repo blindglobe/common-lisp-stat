@@ -16,7 +16,6 @@
        :lisp-stat-math
        :lisp-stat-basics
        :lisp-stat-compound-data
-       :lisp-stat-sequence
        :lisp-stat-matrix
        :lisp-stat-linalg
        :lisp-stat-regression-linear)

@@ -21,8 +21,7 @@
 
 (defpackage :lisp-stat-matrix
   (:use :common-lisp
-	:lisp-stat-compound-data
-	:lisp-stat-sequence)
+	:lisp-stat-compound-data)
   (:export matrixp num-rows num-cols matmult identity-matrix diagonal
 	   row-list column-list inner-product outer-product
 	   cross-product transpose bind-columns bind-rows

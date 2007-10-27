@@ -20,7 +20,6 @@
 	:cffi
 	:lisp-stat-ffi-int
 	:lisp-stat-types
-	:lisp-stat-sequence
 	:lisp-stat-compound-data
 	:lisp-stat-matrix)
   (:export ;; more to add

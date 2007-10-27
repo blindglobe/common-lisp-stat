@@ -36,8 +36,7 @@
 	:lisp-stat-types
 	:lisp-stat-compound-data
 	:lisp-stat-matrix
-	:lisp-stat-linalg
-	:lisp-stat-sequence)
+	:lisp-stat-linalg)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export

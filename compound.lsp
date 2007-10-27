@@ -18,12 +18,12 @@
 (defpackage :lisp-stat-compound-data
   (:use :common-lisp
 	:lisp-stat-object-system
-	:lisp-stat-sequence)
+	:lisp-stat-types)
   (:import-from :lisp-stat-fastmap fastmap)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value
 			  call-next-method call-method)
-  (:export compound-data-p compound-data-proto
+  (:export compound-data-p *compound-data-proto*
 	   compound-object-p
 	   compound-data-seq compound-data-length
 
@@ -35,6 +35,18 @@
 
 	   repeat
 	   ;; export matrix-related functionality (not sure??)
+
+	   check-sequence
+	   get-next-element make-next-element set-next-element
+	   sequencep iseq
+
+	   ;; maybe?
+	   ordered-nneg-seq
+	   select
+
+	   which
+	   ;; vector differences
+	   difference rseq
 	   ))
 
 (in-package :lisp-stat-compound-data)
@@ -217,14 +229,14 @@ Returns sequence of the elements of compound item X."
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defproto compound-data-proto)
+(defproto *compound-data-proto*)
 
-(defmeth compound-data-proto :data-length (&rest args) nil)
-(defmeth compound-data-proto :data-seq (&rest args) nil)
-(defmeth compound-data-proto :make-data (&rest args) nil)
-(defmeth compound-data-proto :select-data (&rest args) nil)
+(defmeth *compound-data-proto* :data-length (&rest args) nil)
+(defmeth *compound-data-proto* :data-seq (&rest args) nil)
+(defmeth *compound-data-proto* :make-data (&rest args) nil)
+(defmeth *compound-data-proto* :select-data (&rest args) nil)
 
-(defun compound-object-p (x) (kind-of-p x compound-data-proto))
+(defun compound-object-p (x) (kind-of-p x *compound-data-proto*))
 
 
 
@@ -268,9 +280,9 @@ strings X replaced by their ranks."
 
 
 
-;;;;
-;;;; REPEAT function
-;;;;
+;;;
+;;; REPEAT function
+;;;
 
 (defun repeat (a b)
 "Args: (vals times)
@@ -300,3 +312,347 @@ Examples: (repeat 2 5)                 returns (2 2 2 2 2)
 		      (let ((next (copy-list a)))
 			(if result (setf (rest (last next)) result))
 			(setf result next)))))))
+;;;
+;;; WHICH function
+;;;
+
+(defun which (x)
+"Args: (x)
+Returns a list of the indices where elements of sequence X are not NIL."
+  (let ((x (list (compound-data-seq x)))
+	(result nil)
+	(tail nil))
+    (flet ((add-result (x)
+             (if result (setf (rest tail) (list x)) (setf result (list x)))
+	     (setf tail (if tail (rest tail) result)))
+	   (get-next-element (seq-list i)
+	     (cond ((consp (first seq-list))
+		    (let ((elem (first (first seq-list))))
+		      (setf (first seq-list) (rest (first seq-list)))
+		      elem))
+		   (t (aref (first seq-list) i)))))
+	  (let ((n (length (first x))))
+	    (dotimes (i n result)
+		     (if (get-next-element x i) (add-result i)))))))
+
+
+;;; Sequences are part of ANSI CL, being a supertype of vector and
+;;; list (ordered set of things).
+;;; 
+;;; Need to use the interenal structure when possible -- silly to be
+;;; redundant!  However, this means we need to understand what
+;;; sequences were intending to do, which I'm not clear on yet.
+
+;;; The original ordering, object-wise, was to have compound
+;;; functionality passed into sequences, into other data sources.
+;;; However, at this point, we will see about inverting this and
+;;; having basic data types pushed through compound, to simplify
+;;; packaging. 
+
+;;;                      Type Checking Functions
+
+(defun check-sequence (a)
+  ;; FIXME:AJR: does this handle consp as well?  (Luke had an "or"
+  ;; with consp).
+  (if (not (typep a 'sequence))
+      (error "not a sequence - ~s" a)))
+
+;;;                       Sequence Element Access
+
+
+;;; (elt x i) -- NOT.  This is more like "pop".
+(defun get-next-element (x i)
+  "Get element i from seq x.  FIXME: not really??"
+  (let ((myseq (first x)))
+    (if (consp myseq)
+        (let ((elem (first myseq)))
+          (setf (first x) (rest myseq))
+          elem)
+      (aref myseq i))))
+
+;;; (setf (elt x i) v)
+(defun set-next-element (x i v)
+  (let ((seq (first x)))
+    (cond ((consp seq)
+           (setf (first seq) v)
+           (setf (first x) (rest seq)))
+          (t (setf (aref seq i) v)))))
+
+(defun make-next-element (x) (list x))
+
+
+;;;                         Sequence Functions
+
+
+;; to prevent breakage.
+(defmacro sequencep (x) 
+  (typep x 'sequence))
+
+(defun iseq (a &optional b)
+"Args: (n &optional m)
+Generate a sequence of consecutive integers from a to b.
+With one argumant returns a list of consecutive integers from 0 to N - 1.
+With two returns a list of consecutive integers from N to M.
+Examples: (iseq 4) returns (0 1 2 3)
+          (iseq 3 7)  returns (3 4 5 6 7)
+          (iseq 3 -3) returns (3 2 1 0 -1 -2 -3)"
+  (if b
+      (let ((n (+ 1 (abs (- b a))))
+	    (x nil))
+	(dotimes (i n x)
+		 (setq x (cons (if (< a b) (- b i) (+ b i)) x))))
+      (cond 
+       ((= 0 a) nil)
+       ((< a 0) (iseq (+ a 1) 0))
+       ((< 0 a) (iseq 0 (- a 1))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;;               Subset Selection and Mutation Functions
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun old-rowmajor-index (index indices dim olddim)
+  "translate row major index in resulting subarray to row major index
+in the original array."
+  (declare (fixnum index))
+  (let ((rank (length dim))
+        (face 1)
+        (oldface 1)
+        (oldindex 0))
+    (declare (fixnum rank face oldface))
+
+    (dotimes (i rank)
+      (declare (fixnum i))
+      (setf face (* face (aref dim i)))
+      (setf oldface (* oldface (aref olddim i))))
+  
+    (dotimes (i rank)
+      (declare (fixnum i))
+      (setf face (/ face (aref dim i)))
+      (setf oldface (/ oldface (aref olddim i)))
+      (incf oldindex
+	    (* oldface (aref (aref indices i) (floor (/ index face))))) ;;*** is this floor really needed???
+      (setf index (rem index face)))
+    oldindex))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;;               Subset Selection and Mutation Functions
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun subarray-select (a indexlist &optional (values nil set_values))
+  "extract or set subarray for the indices from a displaced array." 
+  (let ((indices nil)
+        (index)
+        (dim)
+        (vdim)
+        (data)
+        (result_data)
+        (olddim)
+        (result)
+        (rank 0)
+        (n 0)
+        (k 0))
+    (declare (fixnum rank n))
+
+    (if (or (sequencep a) (not (arrayp a))) (error "not an array - ~a" a))
+    (if (not (listp indexlist))  (error "bad index list - ~a" indices))
+    (if (/= (length indexlist)  (array-rank a))
+	(error "wrong number of indices"))
+    
+    (setf indices (coerce indexlist 'vector))
+    
+    (setf olddim (coerce (array-dimensions a) 'vector))
+    
+    ;; compute the result dimension vector and fix up the indices
+    (setf rank (array-rank a))
+    (setf dim (make-array rank))
+    (dotimes (i rank)
+      (declare (fixnum i))
+      (setf index (aref indices i))
+      (setf n (aref olddim i))
+      (setf index (if (fixnump index) (vector index) (coerce index 'vector)))
+      (setf k (length index))
+      (dotimes (j k)
+        (declare (fixnum j))
+        (if (<= n (check-nonneg-fixnum (aref index j)))
+          (error "index out of bounds - ~a" (aref index j)))
+        (setf (aref indices i) index))
+      (setf (aref dim i) (length index)))
+    
+    ;; set up the result or check the values
+    (let ((dim-list (coerce dim 'list)))
+      (cond 
+       (set_values
+        (cond
+         ((compound-data-p values)
+          (if (or (not (arrayp values)) (/= rank (array-rank values)))
+            (error "bad values array - ~a" values))
+          (setf vdim (coerce (array-dimensions values) 'vector))
+          (dotimes (i rank)
+            (declare (fixnum i))
+            (if (/= (aref vdim i) (aref dim i))
+              (error "bad value array dimensions - ~a" values)))
+          (setf result values))
+         (t (setf result (make-array dim-list :initial-element values)))))
+       (t (setf result (make-array dim-list)))))
+
+    ;; compute the result or set the values
+    (setf data (compound-data-seq a))
+    (setf result_data (compound-data-seq result))
+    (setf n (length result_data))
+    (dotimes (i n)
+      (declare (fixnum i))
+      (setf k (old-rowmajor-index i indices dim olddim))
+      (if (or (> 0 k) (>= k (length data))) (error "index out of range"))
+      (if set_values
+        (setf (aref data k) (aref result_data i))
+        (setf (aref result_data i) (aref data k))))
+  
+    result))
+
+
+;;;; is x an ordered sequence of nonnegative positive integers?
+(defun ordered-nneg-seq(x)
+  ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
+  (if (sequencep x)
+      (let ((n (length x))
+            (cx (make-next-element x))
+            (m 0))
+        (dotimes (i n t)
+          (let ((elem (check-nonneg-fixnum (get-next-element cx i))))
+            (if (> m elem) (return nil) (setf m elem)))))))
+
+;;;; select or set the subsequence corresponding to the specified indices
+(defun sequence-select(x indices &optional (values nil set-values))
+  ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
+  (let ((rlen 0)
+        (dlen 0)
+        (vlen 0)
+        (data nil)
+        (result nil))
+    (declare (fixnum rlen dlen vlen))
+
+    ;; Check the input data
+    (check-sequence x)
+    (check-sequence indices)
+    (if set-values (check-sequence values))
+    
+    ;; Find the data sizes
+    (setf data (if (ordered-nneg-seq indices) x (coerce x 'vector)))
+    (setf dlen (length data))
+    (setf rlen (length indices))
+    (when set-values
+      (setf vlen (length values))
+      (if (/= vlen rlen) (error "value and index sequences do not match")))
+
+    ;; set up the result/value sequence
+    (setf result
+          (if set-values
+              values
+              (make-sequence (if (listp x) 'list 'vector) rlen)))
+
+    ;; get or set the sequence elements 
+    (if set-values
+      (do ((nextx x)
+           (cr (make-next-element result))
+           (ci (make-next-element indices))
+           (i 0 (+ i 1))
+           (j 0)
+           (index 0))
+          ((>= i rlen))
+        (declare (fixnum i j index))
+        (setf index (get-next-element ci i))
+	(if (<= dlen index) (error "index out of range - ~a" index))
+        (let ((elem (get-next-element cr i)))
+          (cond
+           ((listp x)
+            (when (> j index)
+              (setf j 0)
+              (setf nextx x))
+            (do ()
+                ((not (and (< j index) (consp nextx))))
+              (incf j 1)
+              (setf nextx (rest nextx)))
+            (setf (first nextx) elem))
+           (t (setf (aref x index) elem)))))
+      (do ((nextx data)
+           (cr (make-next-element result))
+           (ci (make-next-element indices))
+           (i 0 (+ i 1))
+           (j 0)
+           (index 0)
+           (elem nil))
+          ((>= i rlen))
+        (declare (fixnum i j index))
+        (setf index (get-next-element ci i))
+	(if (<= dlen index) (error "index out of range - ~a" index))
+	(cond
+         ((listp data) ;; indices must be ordered
+          (do ()
+              ((not (and (< j index) (consp nextx))))
+            (incf j 1)
+            (setf nextx (rest nextx)))
+          (setf elem (first nextx)))
+         (t (setf elem (aref data index))))
+	(set-next-element cr i elem)))
+  
+    result))
+
+;;;
+;;; SELECT function
+;;;
+
+(defun select (x &rest args)
+"Args: (a &rest indices)
+A can be a list or an array. If A is a list and INDICES is a single number
+then the appropriate element of A is returned. If  is a list and INDICES is
+a list of numbers then the sublist of the corresponding elements is returned.
+If A in an array then the number of INDICES must match the ARRAY-RANK of A.
+If each index is a number then the appropriate array element is returned.
+Otherwise the INDICES must all be lists of numbers and the corresponding
+submatrix of A is returned. SELECT can be used in setf."
+  (cond
+   ((every #'fixnump args)
+    (if (listp x) (nth (first args) x) (apply #'aref x args)))
+   ((sequencep x) (sequence-select x (first args)))
+   (t (subarray-select x args))))
+
+
+;; Built in SET-SELECT (SETF method for SELECT)
+(defun set-select (x &rest args)
+  (let ((indices (butlast args))
+        (values (first (last args))))
+    (cond
+     ((sequencep x)
+      (if (not (consp indices)) (error "bad indices - ~a" indices))
+      (let* ((indices (first indices))
+             (i-list (if (fixnump indices) (list indices) indices))
+             (v-list (if (fixnump indices) (list values) values)))
+        (sequence-select x i-list v-list)))
+     ((arrayp x)
+      (subarray-select x indices values))
+     (t (error "bad argument type - ~a" x)))
+    values))
+
+(defsetf select set-select)
+
+;;;;
+;;;; Basic Sequence Operations
+;;;;
+
+(defun difference (x)
+"Args: (x)
+Returns differences for a sequence X."
+  (let ((n (length x)))
+    (- (select x (iseq 1 (1- n))) (select x (iseq 0 (- n 2))))))
+
+(defun rseq (a b num)
+"Args: (a b num)
+Returns a list of NUM equally spaced points starting at A and ending at B."
+  (+ a (* (values-list (iseq 0 (1- num))) (/ (float (- b a)) (1- num)))))
+
+

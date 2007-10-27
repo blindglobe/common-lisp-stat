@@ -17,7 +17,9 @@
 (defparameter *fasl-directory*
    (make-pathname :directory '(:relative #+sbcl "sbcl-fasl"
 			      #+openmcl "openmcl-fasl"
-			      #-(or sbcl openmcl) "fasl")))
+			      #+cmucl "cmucl-fasl"
+			      #+clisp "clisp-fasl"
+			      #-(or sbcl openmcl clisp cmucl) "fasl")))
 
 (defmethod source-file-type ((c lispstat-lsp-source-file) (s module)) "lsp")
 (defmethod asdf::output-files :around ((operation compile-op)
@@ -42,29 +44,24 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "cffiglue")
 	       (:lispstat-lsp-source-file "defsys")
-
-
 	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
-	       (:lispstat-lsp-source-file "sequence"
-					  :depends-on ("lstypes"))
+
+	       (:lispstat-lsp-source-file "compound" 
+					  :depends-on ("lsobjects"
+						       "fastmap"))
 
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("cffiglue"
-						       "sequence"))
-	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("lsobjects"
-						       "fastmap"
-						       "sequence"))
+						       "compound"))
+
 	       (:lispstat-lsp-source-file "ladata"
 					  :depends-on ("cffiglue"
 						       "defsys"
 						       "lstypes"
-						       "sequence"
 						       "compound"
-						       "matrices"
-						       ))
+						       "matrices"))
 
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
@@ -101,7 +98,6 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("lsobjects"
 						       "lstypes"
 						       "lsmacros"
-						       "sequence"
 						       "lsfloat"
 						       "matrices"
 						       "linalg"

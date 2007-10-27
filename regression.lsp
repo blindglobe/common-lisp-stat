@@ -23,7 +23,6 @@
 	:lisp-stat-object-system
 	:lisp-stat-basics
 	:lisp-stat-compound-data
-	:lisp-stat-sequence
 	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
