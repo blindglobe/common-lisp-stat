@@ -198,6 +198,11 @@ Returns length of data sequence in X."
   (check-compound x)
   (length (compound-data-sequence x)))
 
+(defun compound-data-shape (x)
+  "Needed but undefined??"
+  x)
+
+
 (defun element-list (x)
   (cond 
    ((compound-data-p x)
