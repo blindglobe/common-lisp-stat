@@ -13,14 +13,15 @@
 
 ;;; Need to extend to use CLEM 
 
+;;;
+;;; Package Setup
+;;;
 
-
-;;;;
-;;;; Package Setup
-;;;;
+(in-package :cl-user)
 
 (defpackage :lisp-stat-matrix
   (:use :common-lisp
+	:cffi
 	:lisp-stat-compound-data)
   (:export matrixp num-rows num-cols matmult identity-matrix diagonal
 	   row-list column-list inner-product outer-product

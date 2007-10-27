@@ -55,7 +55,7 @@
   (asdf:oos 'asdf:load-op :lift)     ;; Unit Testing 
 
   ;; soon...
-  ;;(asdf:oos 'asdf:load-op :clem)     ;; matrixes
+  #+nil(asdf:oos 'asdf:load-op :clem)     ;; matrixes
   #+nil(asdf:oos 'asdf:load-op :clem-test)
   #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
 

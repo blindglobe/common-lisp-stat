@@ -20,9 +20,7 @@
        :lisp-stat-matrix
        :lisp-stat-linalg-data
        :lisp-stat-linalg
-       
-       :lisp-stat-basics
-       )
+       :lisp-stat-basics)
    (:shadowing-import-from :lisp-stat-math
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random

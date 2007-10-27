@@ -21,9 +21,11 @@
 ;;;; it for (A)KCL but have not yet been able to obtain a significant
 ;;;; increase in speed.
 
-;;;;
-;;;; Package Setup
-;;;;
+;;;
+;;; Package Setup
+;;;
+
+(in-package :cl-user)
 
 (defpackage :lisp-stat-fastmap
   (:use :common-lisp)

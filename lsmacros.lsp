@@ -15,12 +15,15 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;
-;;;; Package Setup
-;;;;
+;;;
+;;; Package Setup
+;;;
+
+(in-package :cl-user)
 
 (defpackage :lisp-stat-macros
-  (:use :common-lisp :lisp-stat-compound-data)
+  (:use :common-lisp
+	:lisp-stat-compound-data)
   (:export make-rv-function make-rv-function-1))
 
 (in-package :lisp-stat-macros)

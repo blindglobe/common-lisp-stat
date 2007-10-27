@@ -21,9 +21,11 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;;;
-;;;; Package Setup
-;;;;
+;;;
+;;; Package Setup
+;;;
+
+(in-package :cl-user)
 
 (defpackage :lisp-stat-linalg
   (:use :common-lisp
@@ -34,7 +36,6 @@
 	:lisp-stat-float
 	:lisp-stat-compound-data
 	:lisp-stat-data
-	:lisp-stat-basics
 	:lisp-stat-linalg-data
 	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-math
