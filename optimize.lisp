@@ -18,6 +18,13 @@
        :lisp-stat-linalg)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)
+ (:shadowing-import-from :lisp-stat-math
+	   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+ 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
+ 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
+ 	   < <= = /= >= > complex conjugate realpart imagpart phase
+ 	   min max logand logior logxor lognot ffloor fceiling
+ 	   ftruncate fround signum cis)
  (:export
      ;; derivatives
      numgrad numhess
@@ -25,7 +32,7 @@
      ;; optimization
      newtonmax nelmeadmax))
 	  
-	
+;; matrix is in statistics, but should that be a predecessor?	
 
 ;;; FIXME:AJR: There is a need to figure out the proper symbols to
 ;;; export.  more importantly should there be any specialty package
@@ -166,18 +173,18 @@ z;;; that are exported for maximization?
 	     (fvals (aref internals 5))
 	     (ip (aref internals 8))
 	     (dp (aref internals 9))
-	     (px (la-data-to-vector x mode-re))
-	     (pscale (la-data-to-vector scale mode-re))
-	     (pfvals (la-vector (length fvals) mode-re))
-	     (pip (la-data-to-vector ip mode-in))
-	     (pdp (la-data-to-vector dp mode-re)))
+	     (px (la-data-to-vector x +mode-re+))
+	     (pscale (la-data-to-vector scale +mode-re+))
+	     (pfvals (la-vector (length fvals) +mode-re+))
+	     (pip (la-data-to-vector ip +mode-in+))
+	     (pdp (la-data-to-vector dp +mode-re+)))
 	(unwind-protect
 	    (progn
 	      (base-minfo-maximize px pfvals pscale pip pdp v)) ;; access to C
-	  (la-vector-to-data px n mode-re x)
-	  (la-vector-to-data pfvals (+ 1 n (* n n)) mode-re fvals)
-	  (la-vector-to-data pip (length ip) mode-in ip)
-	  (la-vector-to-data pdp (length dp) mode-re dp))
+	  (la-vector-to-data px n +mode-re+ x)
+	  (la-vector-to-data pfvals (+ 1 n (* n n)) +mode-re+ fvals)
+	  (la-vector-to-data pip (length ip) +mode-in+ ip)
+	  (la-vector-to-data pdp (length dp) +mode-re+ dp))
 	(get-buf)))))
 
 
@@ -516,7 +523,7 @@ control the behavior of simplex algorithm."
       (la-put-double ptr i (get-next-element elem i)))))
 
 (defun maximize-callback (n px pfval pgrad phess pderivs)
-  (la-vector-to-data px n mode-re *maximize-callback-arg*)
+  (la-vector-to-data px n +mode-re+ *maximize-callback-arg*)
   (let* ((val (funcall *maximize-callback-function* *maximize-callback-arg*))
 	 (derivs (if (consp val) (- (length val) 1) 0)))
     (la-put-integer pderivs 0 derivs)
@@ -539,15 +546,15 @@ Computes the numerical gradient of F at X."
 	(error "scale not the same length as x"))
     (let ((*maximize-callback-function* f)
 	  (*maximize-callback-arg* (make-list n)))
-      (let ((px (la-data-to-vector x mode-re))
-	    (pgrad (la-vector n mode-re))
+      (let ((px (la-data-to-vector x +mode-re+))
+	    (pgrad (la-vector n +mode-re+))
 	    (pscale (la-data-to-vector
 		     (if scale scale (make-list n :initial-element 1.0))
-		     mode-re)))
+		     +mode-re+)))
 	(unwind-protect
 	    (progn
 	      (numgrad-front n px pgrad h pscale)
-	      (la-vector-to-data pgrad n mode-re result))
+	      (la-vector-to-data pgrad n +mode-re+ result))
 	  (la-free-vector px)
 	  (la-free-vector pgrad)
 	  (la-free-vector pscale))))
@@ -571,20 +578,20 @@ Computes the numerical Hessian matrix of F at X."
     (let ((*maximize-callback-function* f)
 	  (*maximize-callback-arg* (make-list n)))
       (let ((hess-data (compound-data-seq (if all (third result) result)))
-	    (px (la-data-to-vector x mode-re))
-	    (pf (la-vector 1 mode-re))
-	    (pgrad (la-vector n mode-re))
-	    (phess (la-vector (* n n) mode-re))
+	    (px (la-data-to-vector x +mode-re+))
+	    (pf (la-vector 1 +mode-re+))
+	    (pgrad (la-vector n +mode-re+))
+	    (phess (la-vector (* n n) +mode-re+))
 	    (pscale (la-data-to-vector
 		     (if scale scale (make-list n :initial-element 1.0))
-		     mode-re)))
+		     +mode-re+)))
 	(unwind-protect
 	    (progn
 	      (numhess-front n px pf pgrad phess h pscale)
 	      (when all
 		    (setf (first result) (la-get-double pf 0))
-		    (la-vector-to-data pgrad n mode-re (second result)))
-	      (la-vector-to-data phess (* n n) mode-re hess-data))
+		    (la-vector-to-data pgrad n +mode-re+ (second result)))
+	      (la-vector-to-data phess (* n n) +mode-re+ hess-data))
 	  (la-free-vector pf)
 	  (la-free-vector px)
 	  (la-free-vector pgrad)

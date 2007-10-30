@@ -35,7 +35,6 @@
 	:lisp-stat-types
 	:lisp-stat-float
 	:lisp-stat-compound-data
-	:lisp-stat-data
 	:lisp-stat-linalg-data
 	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-math
@@ -50,6 +49,12 @@
 	   fft make-sweep-matrix sweep-operator ax+y eigen
 
 	   check-real ;; for optimize
+
+	  ;; the following are more matrix-centric (init from lsbasics, stats)
+	  covariance-matrix matrix print-matrix solve
+	  backsolve eigenvalues eigenvectors accumulate cumsum combine
+	  lowess
+
 	   ))
 
 (in-package #:lisp-stat-linalg)
@@ -1101,3 +1106,107 @@ This could probably be made more efficient."
 	   (setf val (+ val (* (get-next-element tx j)
 			       (aref a (+ start j))))))
 	 (set-next-element tr i val)))))
+
+
+
+
+
+;;;;
+;;;; Linear Algebra Functions
+;;;;
+
+(defun matrix (dim data)
+"Args: (dim data)
+returns a matrix of dimensions DIM initialized using sequence DATA
+in row major order." 
+  (let ((dim (coerce dim 'list))
+        (data (coerce data 'list)))
+    (make-array dim :initial-contents (split-list data (nth 1 dim)))))
+
+(defun print-matrix (a &optional (stream *standard-output*))
+"Args: (matrix &optional stream)
+Prints MATRIX to STREAM in a nice form that is still machine readable"
+  (unless (matrixp a) (error "not a matrix - ~a" a))
+  (let ((size (min 15 (max (map-elements #'flatsize a))))) ;; FIXME: flatsize not defined
+    (format stream "#2a(~%")
+    (dolist (x (row-list a))
+            (format stream "    (")
+            (let ((n (length x)))
+              (dotimes (i n)
+                       (let ((y (aref x i)))
+                         (cond
+                           ((integerp y) (format stream "~vd" size y))
+                           ((floatp y) (format stream "~vg" size y))
+                           (t (format stream "~va" size y))))
+                       (if (< i (- n 1)) (format stream " "))))
+            (format stream ")~%"))
+    (format stream "   )~%")
+    nil))
+
+(defun solve (a b)
+"Args: (a b)
+Solves A x = B using LU decomposition and backsolving. B can be a sequence
+or a matrix."
+  (let ((lu (lu-decomp a)))
+    (if (matrixp b)
+        (apply #'bind-columns 
+               (mapcar #'(lambda (x) (lu-solve lu x)) (column-list b)))
+        (lu-solve lu b))))
+        
+(defun backsolve (a b)
+"Args: (a b)
+Solves A x = B by backsolving, assuming A is upper triangular. B must be a
+sequence. For use with qr-decomp."
+  (let* ((n (length b))
+         (sol (make-array n)))
+    (dotimes (i n)
+             (let* ((k (- n i 1))
+                    (val (elt b k)))
+               (dotimes (j i)
+                        (let ((l (- n j 1)))
+                          (setq val (- val (* (aref sol l) (aref a k l))))))
+               (setf (aref sol k) (/ val (aref a k k)))))
+    (if (listp b) (coerce sol 'list) sol)))
+
+(defun eigenvalues (a) 
+"Args: (a)
+Returns list of eigenvalues of square, symmetric matrix A"
+  (first (eigen a)))
+
+(defun eigenvectors (a) 
+"Args: (a)
+Returns list of eigenvectors of square, symmetric matrix A"
+  (second (eigen a)))
+
+(defun accumulate (f s)
+"Args: (f s)
+Accumulates elements of sequence S using binary function F.
+(accumulate #'+ x) returns the cumulative sum of x."
+  (let* ((result (list (elt s 0)))
+         (tail result))
+    (flet ((acc (dummy x)
+                (rplacd tail (list (funcall f (first tail) x)))
+                (setf tail (cdr tail))))
+      (reduce #'acc s))
+    (if (vectorp s) (coerce result 'vector) result)))
+
+(defun cumsum (x)
+  "Args: (x)
+Returns the cumulative sum of X."
+  (accumulate #'+ x))
+
+(defun combine (&rest args) 
+  "Args (&rest args) 
+Returns sequence of elements of all arguments."
+  (copy-seq (element-seq args)))
+
+(defun lowess (x y &key (f .25) (steps 2) (delta -1) sorted)
+"Args: (x y &key (f .25) (steps 2) delta sorted)
+Returns (list X YS) with YS the LOWESS fit. F is the fraction of data used for
+each point, STEPS is the number of robust iterations. Fits for points within
+DELTA of each other are interpolated linearly. If the X values setting SORTED
+to T speeds up the computation."
+  (let ((x (if sorted x (sort-data x)))
+        (y (if sorted y (select y (order x))))
+        (delta (if (> delta 0.0) delta (/ (- (max x) (min x)) 50))))
+    (list x)));; (|base-lowess| x y f steps delta))))

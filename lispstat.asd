@@ -111,20 +111,23 @@ Last touched 1991, then in 2005--2007."
 	       (:file "optimize" :depends-on ("lsobjects"
 					      "cffiglue"
 					      "lstypes"
+					      "lsfloat"
 					      "lsbasics"
-					      "linalg" "matrices"))
-
+					      "matrices"
+					      "ladata"
+					      "linalg"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
 					  :depends-on ("lsobjects"
 						       "lsbasics"))
-	       (:lispstat-lsp-source-file "nonlin"
-					  :depends-on ("regression"))
-	       (:lispstat-lsp-source-file "bayes"
-					  :depends-on ("lsobjects"
-						       "lsmath"
-						       "dists"))
+;	       (:lispstat-lsp-source-file "nonlin"
+;					  :depends-on ("regression"))
+
+;	       (:lispstat-lsp-source-file "bayes"
+;					  :depends-on ("lsobjects"
+;						       "lsmath"
+;						       "dists"))
 
 
 	       (:file "ls-user" :depends-on ("lsobjects"
