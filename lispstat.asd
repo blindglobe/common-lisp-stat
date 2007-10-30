@@ -58,6 +58,13 @@ Last touched 1991, then in 2005--2007."
 					  :depends-on ("cffiglue"
 						       "lsmacros"))
 
+	       (:lispstat-lsp-source-file "lsmath"
+					  :depends-on ("lsobjects"
+						       "compound"
+						       "lsmacros"
+						       "lsfloat"))
+
+
 	       (:lispstat-lsp-source-file "matrices"
 					  :depends-on ("cffiglue"
 						       "compound"))
@@ -76,15 +83,7 @@ Last touched 1991, then in 2005--2007."
 						       "ladata"
 						       "lsfloat"
 						       "lstypes"
-						       "compound"
-						       "data"
-						       ))
-
-	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("lsobjects"
-						       "compound"
-						       "lsmacros"
-						       "lsfloat"))
+						       "compound"))
 
 	       (:file "data" :depends-on ("lsobjects"
 					  "compound"
@@ -108,8 +107,6 @@ Last touched 1991, then in 2005--2007."
 						       "ladata" "matrices" "linalg"
 						       "lsmath"
 						       "data" ))
-
-
 
 	       (:file "optimize" :depends-on ("lsobjects"
 					      "cffiglue"

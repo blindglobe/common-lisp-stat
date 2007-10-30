@@ -3,39 +3,39 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;;; lsfloat -- Floating point specs and transcendental functions
-;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
-;;;;
-;;;; Common Lisp allows for four different floating point types that need
-;;;; not be distinct. For statistical work, the type I prefer to use is
-;;;; the one that is closest to a C double. This type is named stat-float.
-;;;; By setting the variable *read-default-float-format* to this type, you
-;;;; insure that data entered as floating point data is read in with this
-;;;; type. The problem arises with data read as integers that is passed to
-;;;; a transcendental, like sqrt. Floating point contagion rules say these
-;;;; integers are to be converted to type single-float. Unless single-float
-;;;; is equivalent to C double, as it is in Mac CL and KCL, this is not
-;;;; what I want. Hence this file redefines the transcendentals to first 
-;;;; coerce their arguments to stat-float before applying the built-in
-;;;; functions.
-;;;;
-;;;; No actual modifications to the transcendentals are needed if
-;;;; single-float is the same as stat-float. The fearure 
-;;;; :stat-float-is-double-float is used to indicate this.
-;;;;
-;;;; KCL NOTE:
-;;;; In (A)KCL the type short-float corresponds to C float and the types
-;;;; single-float, double-float and long-float correspond to C double.
-;;;; But in the implementation of the transcendentals (A)KCL coerces
-;;;; rationals to short-float, not single-float. CLtL1 is a little vague
-;;;; on this (it talks about "single precision") but CLtL2 clarifies that
-;;;; rationals should produce single-float results. So (A)KCL is wrong, at
-;;;; least relative to the clarification in CLtL2. I therefore decided
-;;;; to fix (A)KCL in files c/num_sfun.c and lsp/numlib.lsp. If these
-;;;; fixes are applied, the feature :stat-float-is-double-float should be
-;;;; defined.
+;;; lsfloat -- Floating point specs and transcendental functions
+;;; 
+;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
+;;; unrestricted use.
+;;;
+;;; Common Lisp allows for four different floating point types that need
+;;; not be distinct. For statistical work, the type I prefer to use is
+;;; the one that is closest to a C double. This type is named stat-float.
+;;; By setting the variable *read-default-float-format* to this type, you
+;;; insure that data entered as floating point data is read in with this
+;;; type. The problem arises with data read as integers that is passed to
+;;; a transcendental, like sqrt. Floating point contagion rules say these
+;;; integers are to be converted to type single-float. Unless single-float
+;;; is equivalent to C double, as it is in Mac CL and KCL, this is not
+;;; what I want. Hence this file redefines the transcendentals to first 
+;;; coerce their arguments to stat-float before applying the built-in
+;;; functions.
+;;;
+;;; No actual modifications to the transcendentals are needed if
+;;; single-float is the same as stat-float. The feature 
+;;; :stat-float-is-double-float is used to indicate this.
+;;;
+;;; KCL NOTE:
+;;; In (A)KCL the type short-float corresponds to C float and the types
+;;; single-float, double-float and long-float correspond to C double.
+;;; But in the implementation of the transcendentals (A)KCL coerces
+;;; rationals to short-float, not single-float. CLtL1 is a little vague
+;;; on this (it talks about "single precision") but CLtL2 clarifies that
+;;; rationals should produce single-float results. So (A)KCL is wrong, at
+;;; least relative to the clarification in CLtL2. I therefore decided
+;;; to fix (A)KCL in files c/num_sfun.c and lsp/numlib.lsp. If these
+;;; fixes are applied, the feature :stat-float-is-double-float should be
+;;; defined.
 
 
 ;;; ======== From the CLHS ==========
@@ -102,6 +102,7 @@
 ;; short-float.
 
 ;;; Package Setup
+
 (in-package :cl-user)
 
 (defpackage :lisp-stat-float

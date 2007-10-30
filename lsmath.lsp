@@ -36,39 +36,6 @@
 
 (in-package :lisp-stat-math)
 
-;;; Import some symbols
-
-#+(and kcl fast-c-code internal-c-math)
-(progn
-  ;;  (import 'ls-basics::install-rv-function)
-  (import '(ls-basics::rv-expt ls-basics::rv-+ ls-basics::rv--
-			       ls-basics::rv-* ls-basics::rv-/ ls-basics::rv-mod
-			       ls-basics::rv-rem ls-basics::rv-pmin ls-basics::rv-pmax
-			       ls-basics::rv-1+ ls-basics::rv-1- ls-basics::rv-exp
-			       ls-basics::rv-log ls-basics::rv-sqrt ls-basics::rv-sin
-			       ls-basics::rv-cos ls-basics::rv-tan ls-basics::rv-atan
-			       ls-basics::rv-float ls-basics::rv-random ls-basics::rv-floor
-			       ls-basics::rv-ceiling ls-basics::rv-truncate ls-basics::rv-round
-			       ls-basics::rv-zerop ls-basics::rv-plusp ls-basics::rv-minusp
-			       ls-basics::rv-oddp ls-basics::rv-evenp ls-basics::rv-<
-			       ls-basics::rv-<= ls-basics::rv-= ls-basics::rv-/=
-			       ls-basics::rv->= ls-basics::rv-> ls-basics::rv-complex
-			       ls-basics::rv-realpart ls-basics::rv-imagpart 
-			       ls-basics::rv-conjugate)))
-
-;; found in lisp-stat-float
-;; (import '(ls-basics::base-expt ls-basics::base-log ls-basics::base-exp
-;; 			       ls-basics::base-sqrt ls-basics::base-sin ls-basics::base-cos
-;; 			       ls-basics::base-tan ls-basics::base-asin ls-basics::base-acos
-;; 			       ls-basics::base-atan ls-basics::base-sinh ls-basics::base-cosh
-;; 			       ls-basics::base-tanh ls-basics::base-asinh ls-basics::base-acosh
-;; 			       ls-basics::base-atanh ls-basics::base-float ls-basics::base-abs
-;; 			       ls-basics::base-phase ls-basics::base-ffloor
-;; 			       ls-basics::base-fceiling ls-basics::base-ftruncate
-;; 			       ls-basics::base-fround ls-basics::base-signum
-;; 			       ls-basics::base-cis))
-
-
 ;;; Patch up some type definitions
 
 (deftype float () 'common-lisp:float)

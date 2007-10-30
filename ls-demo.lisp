@@ -46,8 +46,6 @@
 
 
 
-
-
 ;; optimization-related functions not tested
 ;;(lisp-stat-optimize:numgrad
 ;;(lisp-stat-optimize:numhess
