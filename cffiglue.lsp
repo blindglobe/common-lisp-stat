@@ -13,7 +13,8 @@
 (defpackage :lisp-stat-ffi-int
   (:use :common-lisp
 	:cffi)
-  (:export ccl-store-integer ccl-store-double ccl-store-ptr))
+  (:export ccl-store-integer ccl-store-double ccl-store-ptr
+	   get-buf ))
    
 ;; are there any error message components that need to be exported?
 ;; More importantly, should we factor them out into a logging package?
