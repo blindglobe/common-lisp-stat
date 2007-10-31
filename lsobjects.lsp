@@ -518,10 +518,11 @@ a method."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro defmeth (object name arglist first &rest body)
-"Syntax: (defmeth object method-name lambda-list [doc] {form}*)
+  "Syntax: (defmeth object method-name lambda-list [doc] {form}*)
 OBJECT must evaluate to an existing object. Installs a method for NAME in
 the value of OBJECT and installs DOC in OBJECTS's documentation.
 RETURNS: method-name."
+  (declare (ignorable self))  ;; hints for the compiler that sometimes it isn't used
   (if (and body (stringp first)) 
     `(progn ;; first=docstring + body
        (add-lsos-method ,object ,name
@@ -750,9 +751,8 @@ Default object printing method."
 	 "Method args: (sym &optional val)
 Sets and retrieves value of slot named SYM. Signals an error if slot
 does not exist."
-  ;;(declare (ignore self))
-  (if set (setf (slot-value sym) val))
-  (slot-value sym))
+    (if set (setf (slot-value sym) val))
+    (slot-value sym))
 
 (defmeth *object* :slot-names () 
 "Method args: ()
