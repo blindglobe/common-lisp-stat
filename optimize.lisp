@@ -12,6 +12,7 @@
        :lisp-stat-types
        :lisp-stat-compound-data
        :lisp-stat-math
+       :lisp-stat-float
        :lisp-stat-basics
        :lisp-stat-matrix
        :lisp-stat-linalg-data
@@ -36,7 +37,7 @@
 
 ;;; FIXME:AJR: There is a need to figure out the proper symbols to
 ;;; export.  more importantly should there be any specialty package
-z;;; that are exported for maximization?
+;;; that are exported for maximization?
 
 (in-package :lisp-stat-optimize)
 
