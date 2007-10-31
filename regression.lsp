@@ -23,10 +23,18 @@
 	:lisp-stat-object-system
 	:lisp-stat-basics
 	:lisp-stat-compound-data
-	:lisp-stat-matrix)
+	:lisp-stat-math
+	:lisp-stat-matrix
+	:lisp-stat-linalg)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
-
+  (:shadowing-import-from :lisp-stat-math
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > complex conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis)
   (:export regression-model regression-model-proto x y intercept sweep-matrix
 	   basis weights included total-sum-of-squares residual-sum-of-squares
 	   predictor-names response-name case-labels))
@@ -417,15 +425,16 @@ Computes Cook's distances."
                 (send self :num-coefs))))
     (if-else (send self :included) (* res (/ lev (- 1 lev) )) (* res lev))))
 
-(defmeth regression-model-proto :plot-residuals (&optional x-values)
-"Message args: (&optional x-values)
-Opens a window with a plot of the residuals. If X-VALUES are not supplied 
-the fitted values are used. The plot can be linked to other plots with the 
-link-views function. Returns a plot object."
-  (plot-points (if x-values x-values (send self :fit-values))
-               (send self :residuals)
-               :title "Residual Plot"
-               :point-labels (send self :case-labels)))
+;; Can not plot points yet!!
+;;(defmeth regression-model-proto :plot-residuals (&optional x-values)
+;;"Message args: (&optional x-values)
+;;Opens a window with a plot of the residuals. If X-VALUES are not supplied 
+;;the fitted values are used. The plot can be linked to other plots with the 
+;;link-views function. Returns a plot object."
+;;  (plot-points (if x-values x-values (send self :fit-values))
+;;               (send self :residuals)
+;;               :title "Residual Plot"
+;;               :point-labels (send self :case-labels)))
 
 (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)
