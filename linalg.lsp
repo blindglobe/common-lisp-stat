@@ -1123,11 +1123,14 @@ in row major order."
         (data (coerce data 'list)))
     (make-array dim :initial-contents (split-list data (nth 1 dim)))))
 
+(defun flatsize (x)
+  (length x))  ;; FIXME: defined badly!!
+
 (defun print-matrix (a &optional (stream *standard-output*))
 "Args: (matrix &optional stream)
 Prints MATRIX to STREAM in a nice form that is still machine readable"
   (unless (matrixp a) (error "not a matrix - ~a" a))
-  (let ((size (min 15 (max (map-elements #'flatsize a))))) ;; FIXME: flatsize not defined
+  (let ((size (min 15 (max (map-elements #'flatsize a)))))
     (format stream "#2a(~%")
     (dolist (x (row-list a))
             (format stream "    (")
