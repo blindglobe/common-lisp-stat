@@ -10,28 +10,21 @@
 
 ;;; Package Setup
 
+(in-package :cl-user)
+
 (defpackage :lisp-stat-basics
     (:use :common-lisp
 	  :lisp-stat-object-system
 	  :lisp-stat-types
-	  :lisp-stat-fastmap
 	  :lisp-stat-float
 	  :lisp-stat-macros
-	  :lisp-stat-compound-data
-	  ;;:lisp-stat-matrix
-	  ;;:lisp-stat-linalg
-	  :lisp-stat-probability)
+	  :lisp-stat-compound-data)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
-  (:export
-   permute-array sum prod count-elements mean if-else sample ))
-   
-
+  (:export permute-array sum prod count-elements mean
+	   if-else sample))
 
 (in-package #:lisp-stat-basics)
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;

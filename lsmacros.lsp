@@ -28,15 +28,15 @@
 
 (in-package :lisp-stat-macros)
 
-;;;;
-;;;; Floating Point Macros
-;;;;
+;;;
+;;; Floating Point Macros
+;;;
 
 (defmacro declare-double (&rest vars) `(declare (long-float ,@vars)))
 
-;;;;
-;;;; Macros for Defining Vectorized Funcitons
-;;;;
+;;;
+;;; Macros for Defining Vectorized Funcitons
+;;;
 
 (defmacro make-vectorized-function (sym fcn)
   `(defun ,sym (&rest args)
@@ -44,14 +44,11 @@
 
 (defmacro fixup-vectorized-doc-list (sym)
   `(let ((doc (documentation ',sym 'function)))
-    (if doc (list (format nil "~s~%Vectorized." ,sym))))) ;; AJR: new version
-;;    (if doc (list (format nil "~s~%Vectorized.")))))
-
+    (if doc (list (format nil "~s~%Vectorized." ,sym)))))
 
 ;;; Exported
 
-;;; recursively vectorizes (rv) functions in dists and lispstat-math. 
-
+;; recursively vectorizes (rv) functions in dists and lispstat-math. 
 (defmacro make-rv-function (sym fcn &rest args)
   (cond
    ((and args (= (length args) 1))
