@@ -24,7 +24,7 @@
   (:export permute-array sum prod count-elements mean
 	   if-else sample))
 
-(in-package #:lisp-stat-basics)
+(in-package :lisp-stat-basics)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
