@@ -4,12 +4,16 @@
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
 (defpackage :lisp-stat
-  (:documentation "Experimentation package for LispStat.  Serious work
+    (:documentation "Experimentation package for LispStat.  Serious work
 should be packaged up elsewhere for reproducibility.")
   (:use :common-lisp
 	:lisp-stat-object-system
+	:lisp-stat-probability
+	:lisp-stat-fastmap
+	:lisp-stat-types
         :lisp-stat-float
         :lisp-stat-math
+	:lisp-stat-compound-data
 	:lisp-stat-basics
 	:lisp-stat-regression-linear)
   (:shadowing-import-from :lisp-stat-object-system
@@ -23,8 +27,34 @@ should be packaged up elsewhere for reproducibility.")
 	ftruncate fround signum cis)
   (:export
 
-   ;; lsobjects.lsp
+   ;; lsobjects :
    defproto defmeth send 
+  
+   ;; fastmap :
+   fastmap
+
+   ;; lstypes
+   fixnump check-nonneg-fixnum check-one-fixnum
+   check-one-real check-one-number
+
+   ;; lsmacros
+   
+   ;; lsfloat :
+   machine-epsilon
+
+   ;; compound :
+   compound-data-p *compound-data-proto* compound-object-p
+   compound-data-seq compound-data-length 
+   element-list element-seq
+   sort-data order rank
+   recursive-map-elements map-elements
+   repeat
+   check-sequence
+   get-next-element make-next-element set-next-element
+   sequencep iseq
+   ordered-nneg-seq
+   select which
+   difference rseq
 
    ;; lsmath.lsp
    ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
