@@ -24,34 +24,8 @@
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export
-   permute-array sum prod count-elements mean if-else sample 
+   permute-array sum prod count-elements mean if-else sample ))
    
-   ;; matrices.lisp
-   ;;   matrixp num-rows num-cols matmult identity-matrix diagonal row-list
-   ;;   column-list inner-product outer-product cross-product transpose
-   ;;   bind-columns bind-rows
-
-   ;;; linalg.lisp
-   ;; chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
-   ;; qr-decomp rcondest make-rotation 
-   ;; fft make-sweep-matrix sweep-operator ax+y numgrad numhess
-   ;; split-list eigenp
-
-   ;; in linalg.lisp, possibly not supported by matlisp
-   ;;spline kernel-dens kernel-smooth
-
-   ;; lispstat-macros
-   make-rv-function make-rv-function-1 
-   ;; dists
-   log-gamma uniform-rand normal-cdf normal-quant normal-dens
-   normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
-   cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
-   chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
-   beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
-   f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
-   binomial-cdf binomial-quant binomial-pmf binomial-rand
-   ;;
-   ))
 
 
 (in-package #:lisp-stat-basics)
