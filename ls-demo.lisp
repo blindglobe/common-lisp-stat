@@ -28,6 +28,9 @@
 (lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
 (lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
 
+(lisp-stat-probability:normal-rand 20) ;;; DOESN'T RETURN
+(lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
+
 (lisp-stat:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
 (lisp-stat:binomial-quant 0 3 0.4) ;;; -2147483648
 
