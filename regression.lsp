@@ -425,16 +425,21 @@ Computes Cook's distances."
                 (send self :num-coefs))))
     (if-else (send self :included) (* res (/ lev (- 1 lev) )) (* res lev))))
 
+
+(defun plot-points (x y)
+  "FIXME!!"
+  (error "Graphics not implemented yet.")
+
 ;; Can not plot points yet!!
-;;(defmeth regression-model-proto :plot-residuals (&optional x-values)
-;;"Message args: (&optional x-values)
-;;Opens a window with a plot of the residuals. If X-VALUES are not supplied 
-;;the fitted values are used. The plot can be linked to other plots with the 
-;;link-views function. Returns a plot object."
-;;  (plot-points (if x-values x-values (send self :fit-values))
-;;               (send self :residuals)
-;;               :title "Residual Plot"
-;;               :point-labels (send self :case-labels)))
+(defmeth regression-model-proto :plot-residuals (&optional x-values)
+"Message args: (&optional x-values)
+Opens a window with a plot of the residuals. If X-VALUES are not supplied 
+the fitted values are used. The plot can be linked to other plots with the 
+link-views function. Returns a plot object."
+  (plot-points (if x-values x-values (send self :fit-values))
+               (send self :residuals)
+               :title "Residual Plot"
+               :point-labels (send self :case-labels)))
 
 (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)

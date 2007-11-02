@@ -26,28 +26,14 @@
   (:export compound-data-p *compound-data-proto*
 	   compound-object-p
 	   compound-data-seq compound-data-length
-
 	   element-list element-seq
-
 	   sort-data order rank
-
-	   recursive-map-elements map-elements
-
-	   repeat
-	   ;; export matrix-related functionality (not sure??)
-
+	   recursive-map-elements map-elements repeat
 	   check-sequence
 	   get-next-element make-next-element set-next-element
-	   sequencep iseq
-
-	   ;; maybe?
-	   ordered-nneg-seq
-	   select
-
-	   which
-	   ;; vector differences
-	   difference rseq
-	   ))
+	   sequencep iseq ordered-nneg-seq
+	   select split-list which
+	   difference rseq))
 
 (in-package :lisp-stat-compound-data)
 
@@ -661,3 +647,36 @@ Returns a list of NUM equally spaced points starting at A and ending at B."
   (+ a (* (values-list (iseq 0 (1- num))) (/ (float (- b a)) (1- num)))))
 
 
+
+(defun split-list (x n)
+"Args: (list cols)
+Returns a list of COLS lists of equal length of the elements of LIST.
+Example: (split-list '(1 2 3 4 5 6) 2) returns ((1 2 3) (4 5 6))"
+  (check-one-fixnum n)
+  (if (/= (rem (length x) n) 0) (error "length not divisible by ~a" n))
+  (flet ((next-split ()
+           (let ((result nil)
+                 (end nil))
+             (dotimes (i n result)
+               (declare (fixnum i))
+               (let ((c-elem (list (first x))))
+                 (cond ((null result)
+                        (setf result c-elem)
+                        (setf end result))
+                       (t 
+                        (setf (rest end) c-elem)
+                        (setf end (rest end)))))
+               (setf x (rest x))))))
+    (let ((result nil)
+          (end nil)
+          (k (/ (length x) n)))
+      (declare (fixnum k))
+      (dotimes (i k result)
+        (declare (fixnum i))
+        (let ((c-sub (list (next-split))))
+          (cond ((null result)
+                 (setf result c-sub)
+                 (setf end result))
+                (t 
+                 (setf (rest end) c-sub)
+                 (setf end (rest end)))))))))
