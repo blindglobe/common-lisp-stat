@@ -3,70 +3,63 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-(in-package #:cl-user)
-
 ;;; This is semi-external to lispstat core packages.  The dependency
 ;;; should be that lispstat packages are dependencies for the unit
 ;;; tests.  However, where they will end up is still to be
 ;;; determined. 
 
+(in-package #:cl-user)
+
 (defpackage #:lisp-stat-unittests
   (:use :lift :lisp-stat)
-  (:export run-ls-tests run-ls-test scoreboard))
+  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
 
 (in-package #:lisp-stat-unittests)
 
 ;;; TESTS
 
-;; optimization-related functions not tested
-;;(lisp-stat-optimize:numgrad
-;;(lisp-stat-optimize:numhess
-;;(lisp-stat-optimize::minfo-maximize
 
-;; the rest return reasonable values, except BINOMIAL-QUANT:
-;; (lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
-;; (lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
+(deftestsuite lisp-stat () ())
 
+(deftestsuite lisp-stat-lin-alg (lisp-stat) ())
 
-(deftestsuite ls-lin-alg () ())
-
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   cholesky-decomposition
   (ensure-same
-	  (lisp-stat-linalg:chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+	  (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 	  (#2A((1.7888543819998317 0.0 0.0)
 	       (1.6770509831248424 0.11180339887498929 0.0)
 	       (2.23606797749979 2.23606797749979 3.332000937312528e-8))
 	      5.000000000000003)))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   lu-decomposition
   (ensure-same
-   (lisp-stat-linalg:lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+   (lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
    (#2A((2.0 3.0 4.0) (1.0 1.0 1.0) (0.5 0.5 1.5)) #(0 2 2) -1.0 NIL)))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   lu-solve
   (ensure-same 
-   (lisp-stat-linalg:lu-solve 
-    (lisp-stat-linalg:lu-decomp
+   (lu-solve 
+    (lu-decomp
      #2A((2 3 4) (1 2 4) (2 4 5)))
     #(2 3 4))
    #(-2.333333333333333 1.3333333333333335 0.6666666666666666)))
 
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   inverse
   (ensure-same 
-   (lisp-stat-linalg:inverse #2A((2 3 4) (1 2 4) (2 4 5)))
+   (inverse #2A((2 3 4) (1 2 4) (2 4 5)))
    #2A((2.0 -0.33333333333333326 -1.3333333333333335)
        (-1.0 -0.6666666666666666 1.3333333333333333)
        (0.0 0.6666666666666666 -0.3333333333333333))))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   sv-decomp
   (ensure-same 
-   (lisp-stat-linalg:sv-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+   (sv-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
    (#2A((-0.5536537653489974 0.34181191712789266 -0.7593629708013371)
 	(-0.4653437312661058 -0.8832095891230851 -0.05827549615722014)
 	(-0.6905959164998124 0.3211003503429828 0.6480523475178517))
@@ -76,10 +69,10 @@
 	   (-0.7762392122368734 -0.6242853493399995 -0.08786630745236332))
        T)))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   qr-decomp
   (ensure-same 
-   (lisp-stat-linalg:qr-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+   (qr-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
    (#2A((-0.6666666666666665 0.7453559924999298 5.551115123125783e-17)
 	(-0.3333333333333333 -0.2981423969999719 -0.894427190999916)
 	(-0.6666666666666666 -0.5962847939999439 0.44721359549995787))
@@ -87,26 +80,26 @@
 	   (0.0 -0.7453559924999292 -1.1925695879998877)
 	   (0.0 0.0 -1.3416407864998738))) ))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   rcondest
   (ensure-same 
-   (lisp-stat-linalg:rcondest #2A((2 3 4) (1 2 4) (2 4 5))) 
+   (rcondest #2A((2 3 4) (1 2 4) (2 4 5))) 
    6.8157451e7 ))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   eigen
   (ensure-same 
-   (lisp-stat-linalg:eigen #2A((2 3 4) (1 2 4) (2 4 5)))
+   (eigen #2A((2 3 4) (1 2 4) (2 4 5)))
    (#(10.656854249492381 -0.6568542494923802 -0.9999999999999996)
      (#(0.4999999999999998 0.4999999999999997 0.7071067811865475)
        #(-0.49999999999999856 -0.5000000000000011 0.7071067811865474)
        #(0.7071067811865483 -0.7071067811865466 -1.2560739669470215e-15))
      NIL) ))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   spline
   (ensure-same 
-   (lisp-stat-linalg:spline
+   (spline
     #(1.0 1.2 1.3 1.8 2.1 2.5)  
     #(1.2 2.0 2.1 2.0 1.1 2.8)
     :xvals 6)
@@ -114,11 +107,11 @@
     (1.2 2.1 2.2750696543866313 1.6465231041904045 1.2186576148879609 2.8))))
 
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   kernel-smooth
   (ensure-same 
    ;; using KERNEL-SMOOTH-FRONT, not KERNEL-SMOOTH-CPORT
-   (lisp-stat-linalg:kernel-smooth
+   (kernel-smooth
     #(1.0 1.2 1.3 1.8 2.1 2.5)  
     #(1.2 2.0 2.1 2.0 1.1 2.8)
     :xvals 5)
@@ -126,23 +119,23 @@
 	   (1.6603277642110226 1.9471748095239771 1.7938127405752287 
 			       1.5871511322219498 2.518194783156392))))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   kernel-dens
   (ensure-same 
-   (lisp-stat-linalg:kernel-dens
+   (kernel-dens
     #(1.0 1.2 2.5 2.1 1.8 1.2)
     :xvals 5)
    ((1.0 1.375 1.75 2.125 2.5)
     (0.7224150453621405 0.5820045548233707 0.38216411702854214 
 			0.4829822708587095 0.3485939156929503)) ))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   fft
   (ensure-same 
-   (lisp-stat-linalg:fft #(1.0 1.2 2.5 2.1 1.8))
+   (fft #(1.0 1.2 2.5 2.1 1.8))
    #(#C(1.0 0.0) #C(1.2 0.0) #C(2.5 0.0) #C(2.1 0.0) #C(1.8 0.0)) ))
 
-(addtest (ls-lin-alg)
+(addtest (lisp-stat-lin-alg)
   lowess
   (ensure-same 
    (lisp-stat-descriptive-statistics:lowess 
@@ -151,11 +144,11 @@
    (#(1.0 1.2 1.2 1.8 2.1 2.5))))
 
 
-(deftestsuite ls-spec-fns () ())
+(deftestsuite lisp-stat-spec-fns () ())
 
 ;;;; Log-gamma function
 
-(addtest (ls-spec-fns)
+(addtest (lisp-stat-spec-fns)
 	 (ensure-same 
 	  (lisp-stat-basics:log-gamma 3.4)
 	  1.0923280596789584))
@@ -170,7 +163,7 @@
 			  pmf-params pmf-answer
 			  rand-params rand-answer)
   
-  (deftestsuite ls-probdist-,prefixName (ls-probdistn)
+  (deftestsuite lisp-stat-probdist-,prefixName (lisp-stat-probdistn)
     ;;  ((  ))
     (:documentation "testing for ,testName distribution results")
     (:test (ensure-same
@@ -186,7 +179,7 @@
 
 ;;; Normal distribution
 
-(deftestsuite ls-probdist-f (ls-probdistn)
+(deftestsuite lisp-stat-probdist-f (lisp-stat-probdistn)
   (:documentation "testing for Gaussian distn results")
   (:test (ensure-same
 	  (lisp-stat-basics:normal-quant 0.95)
@@ -206,7 +199,7 @@
 
 ;;;; Cauchy distribution
 
-(deftestsuite ls-probdist-cauchy (ls-probdistn)
+(deftestsuite lisp-stat-probdist-cauchy (lisp-stat-probdistn)
   (:documentation "testing for Cachy-distn results")
   (:test (ensure-same
 	  (lisp-stat-basics:cauchy-quant 0.95)
@@ -223,7 +216,7 @@
 
 ;;;; Gamma distribution
 
-(deftestsuite ls-probdist-gamma (ls-probdistn)
+(deftestsuite lisp-stat-probdist-gamma (lisp-stat-probdistn)
   (:documentation "testing for gamma distn results")
   (:test (ensure-same
 	  (lisp-stat-basics:gamma-quant 0.95 4.3)
@@ -240,7 +233,7 @@
 
 ;;;; Chi-square distribution
 
-(deftestsuite ls-probdist-chisq (ls-probdistn)
+(deftestsuite lisp-stat-probdist-chisq (lisp-stat-probdistn)
   ()
   (:documentation "testing for Chi-square distn results")
   (:test (ensure-same
@@ -260,7 +253,7 @@
 
 ;;;; Beta distribution
 
-(deftestsuite ls-probdist-beta (ls-probdistn)
+(deftestsuite lisp-stat-probdist-beta (lisp-stat-probdistn)
   ()
   (:documentation "testing for beta distn results")
   (:test (ensure-same
@@ -278,7 +271,7 @@
 
 ;;;; t distribution
 
-(deftestsuite ls-probdist-t (ls-probdistn)
+(deftestsuite lisp-stat-probdist-t (lisp-stat-probdistn)
   (:documentation "testing for t-distn results")
   (:test (ensure-same
 	  (lisp-stat-basics:t-quant 0.95 3)
@@ -295,7 +288,7 @@
 
 ;;;; F distribution
 
-(deftestsuite ls-probdist-f (ls-probdistn)
+(deftestsuite lisp-stat-probdist-f (lisp-stat-probdistn)
   (:documentation "testing for f-distn results")
   (:test (ensure-same
 	  (lisp-stat-basics:f-quant 0.95 3 5) 5.409451318117459))
@@ -313,7 +306,7 @@
 
 ;;;; Poisson distribution
 
-(deftestsuite ls-probdist-poisson (ls-probdistn)
+(deftestsuite lisp-stat-probdist-poisson (lisp-stat-probdistn)
 ;;  ((  ))
   (:documentation "testing for poisson distribution results")
   (:test (ensure-same
@@ -332,7 +325,7 @@
 
 ;; Binomial distribution
 
-(deftestsuite ls-probdist-binomial (ls-probdistn)
+(deftestsuite lisp-stat-probdist-binomial (lisp-stat-probdistn)
 ;;  ((  ))
   (:documentation "testing for binomial distribution results")
   (:test (ensure-same
@@ -358,4 +351,4 @@
 
 ;;; External support for running tests
 
-(defun run-ls-tests)
+(defun run-lisp-stat-tests ())
