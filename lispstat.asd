@@ -122,7 +122,12 @@ Last touched 1991, then in 2005--2007."
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
 					  :depends-on ("lsobjects"
-						       "lsbasics"))
+						       "lsbasics"
+						       "compound"
+						       "lsmath"
+						       "matrices"
+						       "linalg"
+						       "statistics"))
 ;	       (:lispstat-lsp-source-file "nonlin"
 ;					  :depends-on ("regression"))
 
@@ -134,6 +139,12 @@ Last touched 1991, then in 2005--2007."
 
 	       (:file "ls-user" :depends-on ("lsobjects"
 					     "lsbasics"
-					     ;; and more!
-					     ))
-	       ))
+					     "compound"
+					     "dists"
+					     "fastmap"
+					     "lstypes"
+					     "lsfloat"
+					     "lsmath"
+					     "matrices"
+					     "linalg"
+					     "regression"))))

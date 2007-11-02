@@ -8,20 +8,39 @@
 ;;; tests.  However, where they will end up is still to be
 ;;; determined. 
 
-(in-package #:cl-user)
+(in-package :cl-user)
 
-(defpackage #:lisp-stat-unittests
+(defpackage :lisp-stat-unittests
   (:use :lift :lisp-stat)
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
 
-(in-package #:lisp-stat-unittests)
+(in-package :lisp-stat-unittests)
 
 ;;; TESTS
 
 
 (deftestsuite lisp-stat () ())
-
 (deftestsuite lisp-stat-lin-alg (lisp-stat) ())
+
+;;; and add a test to it
+(addtest (lisp-stat)
+  (ensure-same (+ 1 1) 2))
+;; => #<Test passed>
+
+;;; add another test using ensure-error
+(addtest (lisp-stat-lin-alg)
+  (ensure-error (let ((x 0)) (/ x))))
+;; => #<Test passed>
+
+
+#+nil(progn 
+
+
+;;; add another, slightly more specific test
+(addtest (lisp-stat)
+  (ensure-condition division-by-zero (let ((x 0)) (/ x))))
+;; => #<Test passed>
+
 
 (addtest (lisp-stat-lin-alg)
   cholesky-decomposition
@@ -352,3 +371,5 @@
 ;;; External support for running tests
 
 (defun run-lisp-stat-tests ())
+
+)
