@@ -8,13 +8,15 @@
 should be packaged up elsewhere for reproducibility.")
   (:use :common-lisp
 	:lisp-stat-object-system
+	:lisp-stat-compound-data
 	:lisp-stat-probability
 	:lisp-stat-fastmap
 	:lisp-stat-types
         :lisp-stat-float
-        :lisp-stat-math
-	:lisp-stat-compound-data
 	:lisp-stat-basics
+        :lisp-stat-math
+	:lisp-stat-matrix
+	:lisp-stat-linalg
 	:lisp-stat-regression-linear)
   (:shadowing-import-from :lisp-stat-object-system
 	slot-value call-method call-next-method)
@@ -70,10 +72,14 @@ should be packaged up elsewhere for reproducibility.")
    bind-columns bind-rows
 
    ;; linalg.lisp
-   chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
-   qr-decomp rcondest make-rotation 
-   fft make-sweep-matrix sweep-operator ax+y numgrad numhess
-   split-list eigenp
+   chol-decomp lu-decomp lu-solve determinant inverse
+   sv-decomp qr-decomp rcondest make-rotation spline
+   kernel-dens kernel-smooth 
+   fft make-sweep-matrix sweep-operator ax+y eigen
+   check-real
+   covariance-matrix matrix print-matrix solve
+   backsolve eigenvalues eigenvectors accumulate cumsum combine
+   lowess
 
    ;; in linalg.lisp, possibly not supported by matlisp
    spline kernel-dens kernel-smooth

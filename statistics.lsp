@@ -28,20 +28,14 @@
       < <= = /= >= > complex conjugate realpart imagpart phase
       min max logand logior logxor lognot ffloor fceiling
       ftruncate fround signum cis)
-   (:export ;; descriptive stats
-          standard-deviation quantile median interquartile-range
-	  fivnum
-
-	  sample 
-
-
-	  ))
+   (:export standard-deviation quantile median interquartile-range
+	    fivnum sample))
 
 (in-package :lisp-stat-descriptive-statistics)
 
-;;;;
-;;;; Basic Summary Statistics
-;;;;
+;;;
+;;; Basic Summary Statistics
+;;;
 
 (defun standard-deviation (x)
 "Args: (x)

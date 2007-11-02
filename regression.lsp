@@ -25,7 +25,8 @@
 	:lisp-stat-compound-data
 	:lisp-stat-math
 	:lisp-stat-matrix
-	:lisp-stat-linalg)
+	:lisp-stat-linalg
+	:lisp-stat-descriptive-statistics)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:shadowing-import-from :lisp-stat-math
@@ -426,9 +427,9 @@ Computes Cook's distances."
     (if-else (send self :included) (* res (/ lev (- 1 lev) )) (* res lev))))
 
 
-(defun plot-points (x y)
+(defun plot-points (x y &rest args)
   "FIXME!!"
-  (error "Graphics not implemented yet.")
+  (error "Graphics not implemented yet."))
 
 ;; Can not plot points yet!!
 (defmeth regression-model-proto :plot-residuals (&optional x-values)

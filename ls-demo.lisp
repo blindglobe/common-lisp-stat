@@ -1,12 +1,12 @@
+;; (asdf:operate 'asdf:compile-op 'cffi)
+;; (asdf:operate 'asdf:load-op 'cffi)
+;; (asdf:operate 'asdf:load-op 'rclg)
 
-(asdf:operate 'asdf:compile-op 'cffi)
+(load "/Users/ungil/lisp/CommonLispStat/init.lisp") ;;; To make it easier for Carlos...
 
 (load "init.lisp")
 (asdf:operate 'asdf:compile-op 'lispstat :force t)
 (asdf:operate 'asdf:compile-op 'lispstat)
-
-;; (asdf:operate 'asdf:load-op 'cffi)
-;; (asdf:operate 'asdf:load-op 'rclg)
 
 (asdf:oos 'asdf:load-op :lispstat)
 
@@ -16,36 +16,21 @@
       )
 
 
-;;; To make it easier for Carlos...
-(load "/Users/ungil/lisp/CommonLispStat/init.lisp")
-(load "/Users/ungil/lisp/CommonLispStat/cffiglue.lsp")
-
 (in-package :cl-user)
 
 ;; Can we get from both the subpackage as well as the "basic
 ;; configuration"?
 
-(lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
-(lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
+(lisp-stat:binomial-quant 0.95 3 0.4) ;;; 3
+(lisp-stat:binomial-quant 0 3 0.4) ;;; 0
 
-(lisp-stat-probability:normal-rand 20) ;;; DOESN'T RETURN
-(lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
-
-(lisp-stat:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
-(lisp-stat:binomial-quant 0 3 0.4) ;;; -2147483648
-
+(lisp-stat:normal-rand 20) ;;; DOESN'T RETURN
 
 (in-package :ls-user)
 
-(binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
-(binomial-quant 0 3 0.4) ;;; -2147483648
-
-;; Once the above seem to work, we are on our way!
-
-
-
-
-
+(binomial-quant 0.95 3 0.4) ; 3
+(binomial-quant 0 3 0.4) ; 0
+(normal-rand 20)
 
 
 
@@ -54,22 +39,21 @@
 ;;(lisp-stat-optimize:numhess
 ;;(lisp-stat-optimize::minfo-maximize
 
-;; the rest return reasonable values, except BINOMIAL-QUANT:
-;; (lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
-;; (lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
 
 (lisp-stat-linalg:chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+(lisp-stat:chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+(chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((1.7888543819998317 0.0 0.0)
 ;;      (1.6770509831248424 0.11180339887498929 0.0)
 ;;      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
 ;;  5.000000000000003)
 
-(lisp-stat-linalg:lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+(lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((2.0 3.0 4.0) (1.0 1.0 1.0) (0.5 0.5 1.5)) #(0 2 2) -1.0 NIL)
 
-(lisp-stat-linalg:lu-solve 
- (lisp-stat-linalg:lu-decomp #2A((2 3 4) (1 2 4) (2 4 5))) 
- #(2 3 4)) 
+(lu-solve 
+ (lu-decomp #2A((2 3 4) (1 2 4) (2 4 5))) 
+ #(2 3 4))
 ;; #(-2.333333333333333 1.3333333333333335 0.6666666666666666)
 
 (lisp-stat-linalg:inverse #2A((2 3 4) (1 2 4) (2 4 5)))

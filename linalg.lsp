@@ -38,24 +38,22 @@
 	:lisp-stat-linalg-data
 	:lisp-stat-matrix)
   (:shadowing-import-from :lisp-stat-math
-			  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-			  asin acos atan sinh cosh tanh asinh acosh atanh float random
-			  truncate floor ceiling round minusp zerop plusp evenp oddp 
-			  < <= = /= >= > complex conjugate realpart imagpart phase
-			  min max logand logior logxor lognot ffloor fceiling
-			  ftruncate fround signum cis)
-  (:export chol-decomp lu-decomp lu-solve determinant inverse sv-decomp
-	   qr-decomp rcondest make-rotation spline kernel-dens kernel-smooth
+	  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+	  asin acos atan sinh cosh tanh asinh acosh atanh float random
+	  truncate floor ceiling round minusp zerop plusp evenp oddp 
+	  < <= = /= >= > complex conjugate realpart imagpart phase
+	  min max logand logior logxor lognot ffloor fceiling
+	  ftruncate fround signum cis)
+  (:export chol-decomp lu-decomp lu-solve determinant inverse
+	   sv-decomp qr-decomp rcondest make-rotation spline
+	   kernel-dens kernel-smooth 
 	   fft make-sweep-matrix sweep-operator ax+y eigen
 
 	   check-real ;; for optimize
 
-	  ;; the following are more matrix-centric (init from lsbasics, stats)
-	  covariance-matrix matrix print-matrix solve
-	  backsolve eigenvalues eigenvectors accumulate cumsum combine
-	  lowess
-
-	   ))
+	   covariance-matrix matrix print-matrix solve
+	   backsolve eigenvalues eigenvectors accumulate cumsum combine
+	   lowess))
 
 (in-package #:lisp-stat-linalg)
 
