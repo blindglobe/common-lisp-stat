@@ -26,7 +26,7 @@
 	:cffi
 	:lisp-stat-ffi-int
 	:lisp-stat-macros)
-  (:export log-gamma
+  (:export log-gamma set-seed
 	   uniform-rand
 	   normal-cdf normal-quant normal-dens normal-rand
 	   bivnorm-cdf
@@ -40,6 +40,12 @@
 	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
 (in-package :lisp-stat-probability)
+
+
+(defun set-seed (x)
+  "stupid dummy function, need to implement rng seeding tool."
+  0)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

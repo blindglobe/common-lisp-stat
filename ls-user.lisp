@@ -102,7 +102,8 @@ should be packaged up elsewhere for reproducibility.")
    lowess
 
    ;; dists
-   log-gamma uniform-rand normal-cdf normal-quant normal-dens
+   log-gamma set-seed
+   uniform-rand normal-cdf normal-quant normal-dens
    normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
    cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
    chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
