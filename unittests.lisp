@@ -11,30 +11,40 @@
 (in-package :cl-user)
 
 (defpackage :lisp-stat-unittests
-  (:use :lift :lisp-stat)
+  (:use :common-lisp :lift :lisp-stat)
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
 
 (in-package :lisp-stat-unittests)
 
 ;;; TESTS
 
+;;; Need a waz to minimize the possibilities
+
+(defun run-lisp-stat-tests ()
+  (run-tests :suite 'lisp-stat))
+
+(defun run-lisp-stat-test (&rest x)
+  (run-test x))
+
+
 
 (deftestsuite lisp-stat () ())
 (deftestsuite lisp-stat-lin-alg (lisp-stat) ())
+
 
 ;;; and add a test to it
 (addtest (lisp-stat)
   (ensure-same (+ 1 1) 2))
 ;; => #<Test passed>
 
-;;; add another test using ensure-error
-(addtest (lisp-stat-lin-alg)
-  (ensure-error (let ((x 0)) (/ x))))
-;; => #<Test passed>
 
 
 #+nil(progn 
 
+;;; add another test using ensure-error
+(addtest (lisp-stat-lin-alg)
+  (ensure-error (let ((x 0)) (/ x))))
+;; => #<Test passed>
 
 ;;; add another, slightly more specific test
 (addtest (lisp-stat)
@@ -370,6 +380,5 @@
 
 ;;; External support for running tests
 
-(defun run-lisp-stat-tests ())
 
 )
