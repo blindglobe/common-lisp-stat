@@ -15,9 +15,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;
 ;;; Package Setup
-;;;
 
 (in-package :cl-user)
 
@@ -28,15 +26,11 @@
 
 (in-package :lisp-stat-macros)
 
-;;;
 ;;; Floating Point Macros
-;;;
 
 (defmacro declare-double (&rest vars) `(declare (long-float ,@vars)))
 
-;;;
 ;;; Macros for Defining Vectorized Funcitons
-;;;
 
 (defmacro make-vectorized-function (sym fcn)
   `(defun ,sym (&rest args)
