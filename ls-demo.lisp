@@ -1,30 +1,17 @@
-;; (asdf:operate 'asdf:compile-op 'cffi)
-;; (asdf:operate 'asdf:load-op 'cffi)
-;; (asdf:operate 'asdf:load-op 'rclg)
-
-(load "/Users/ungil/lisp/CommonLispStat/init.lisp") ;;; To make it easier for Carlos...
 
 (load "init.lisp")
-(asdf:operate 'asdf:compile-op 'lispstat :force t)
-(asdf:operate 'asdf:compile-op 'lispstat)
 
-(asdf:oos 'asdf:load-op :lispstat)
-
-(setf *my-base-directory*
-      #p"/home/tony/sandbox/CLS.git/"
-      #p"/Users/ungil/lisp/CommonLispStat/"
-      )
-
+;;; checking exports.
+;;; This is generally not how I expect it to be used.
 
 (in-package :cl-user)
-
-;; Can we get from both the subpackage as well as the "basic
-;; configuration"?
-
 (lisp-stat:binomial-quant 0.95 3 0.4) ;;; 3
 (lisp-stat:binomial-quant 0 3 0.4) ;;; 0
-
 (lisp-stat:normal-rand 20) ;;; DOESN'T RETURN
+
+
+;;; This is how I expect it to be used, either with work in ls-user,
+;;; or a cloned package similar to ls-user.
 
 (in-package :ls-user)
 

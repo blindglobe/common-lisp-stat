@@ -11,6 +11,12 @@
 ;; this directory structure.
 
 
+;; (setf *my-base-directory*
+;;       #p"/home/tony/sandbox/CLS.git/"
+;;       #p"/Users/ungil/lisp/CommonLispStat/")
+
+
+
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
 
 ;; Need to replace this with some form of self-referential structure. 
@@ -63,7 +69,7 @@
   ;;(asdf:oos 'asdf:load-op :cells)
 
   ;; Finally...
-  #+nil(asdf:oos 'asdf:load-op :lispstat)
+  (asdf:oos 'asdf:load-op :lispstat)
   )
 
 #+nil(progn
@@ -72,6 +78,11 @@
        (asdf:oos 'asdf:compile-op :lift)
        (asdf:oos 'asdf:compile-op :rclg)
        (asdf:oos 'asdf:compile-op :cl-cairo2)
+;; (asdf:operate 'asdf:load-op 'cffi)
+;; (asdf:operate 'asdf:load-op 'rclg)
        (asdf:oos 'asdf:load-op :celtk)
        (asdf:oos 'asdf:compile-op :lispstat :force t)
+;; (asdf:operate 'asdf:compile-op 'lispstat)
        )
+
+
