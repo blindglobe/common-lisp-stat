@@ -33,15 +33,6 @@
 (normal-rand 20)
 
 
-
-;; optimization-related functions not tested
-;;(lisp-stat-optimize:numgrad
-;;(lisp-stat-optimize:numhess
-;;(lisp-stat-optimize::minfo-maximize
-
-
-(lisp-stat-linalg:chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
-(lisp-stat:chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((1.7888543819998317 0.0 0.0)
 ;;      (1.6770509831248424 0.11180339887498929 0.0)
@@ -113,72 +104,84 @@
  #(1.0 1.2 2.5 2.1 1.8 1.2)  #(1.2 2.0 2.1 2.0 1.1 2.8))
 ;; (#(1.0 1.2 1.2 1.8 2.1 2.5))
 
-;;;; Log-gamma function
 
-(lisp-stat-basics:log-gamma 3.4) ;;1.0923280596789584
 
-;;;; Normal distribution
+;;; Log-gamma function
 
-(lisp-stat-basics:normal-quant 0.95) ;;1.6448536279366268
-(lisp-stat-basics:normal-cdf 1.3) ;;0.9031995154143897
-(lisp-stat-basics:normal-dens 1.3) ;;0.17136859204780736
-(lisp-stat-basics:normal-rand 2) ;;(-0.40502015f0 -0.8091404f0)
+(log-gamma 3.4) ;;1.0923280596789584
 
-(lisp-stat-basics:bivnorm-cdf 0.2 0.4 0.6) ;;0.4736873734160288
+;;; Probability functions
 
-;;;; Cauchy distribution
+;;; looking at these a bit more, perhaps a more CLOSy style is needed, i.e. 
+;;; (quantile :list-or-cons loc :type type (one of 'empirical 'normal 'cauchy, etc...))
+;;; similar for the cdf, density, and rand.
+;;; Probably worth figuring out how to add a new distribution
+;;; efficiently, i.e. by keeping some kind of list.
 
-(lisp-stat-basics:cauchy-quant 0.95) ;;6.313751514675031 
-(lisp-stat-basics:cauchy-cdf 1.3) ;;0.7912855998398473
-(lisp-stat-basics:cauchy-dens 1.3) ;;0.1183308127104695 
-(lisp-stat-basics:cauchy-rand 2) ;;(-1.06224644160405 -0.4524695943939537)
+;;; Normal distribution
 
-;;;; Gamma distribution
+(normal-quant 0.95) ;;1.6448536279366268
+(normal-cdf 1.3) ;;0.9031995154143897
+(normal-dens 1.3) ;;0.17136859204780736
+(normal-rand 2) ;;(-0.40502015f0 -0.8091404f0)
 
-(lisp-stat-basics:gamma-quant 0.95 4.3) ;;8.178692439291645
-(lisp-stat-basics:gamma-cdf 1.3 4.3) ;;0.028895150986674906
-(lisp-stat-basics:gamma-dens 1.3 4.3) ;;0.0731517686447374
-(lisp-stat-basics:gamma-rand 2 4.3) ;;(2.454918912880936 4.081365384357454)
+(bivnorm-cdf 0.2 0.4 0.6) ;;0.4736873734160288
 
-;;;; Chi-square distribution
+;;; Cauchy distribution
 
-(lisp-stat-basics:chisq-quant 0.95 3) ;;7.814727903379012
-(lisp-stat-basics:chisq-cdf 1 5) ;;0.03743422675631789
-(lisp-stat-basics:chisq-dens 1 5) ;;0.08065690818083521
-(lisp-stat-basics:chisq-rand 2 4) ;;(1.968535826180572 2.9988646156942997)
+(cauchy-quant 0.95) ;;6.313751514675031 
+(cauchy-cdf 1.3) ;;0.7912855998398473
+(cauchy-dens 1.3) ;;0.1183308127104695 
+(cauchy-rand 2) ;;(-1.06224644160405 -0.4524695943939537)
 
-;;;; Beta distribution
+;;; Gamma distribution
 
-(lisp-stat-basics:beta-quant 0.95 3 2) ;;0.9023885371149876
-(lisp-stat-basics:beta-cdf 0.4 2 2.4) ;;0.4247997418541529 
-(lisp-stat-basics:beta-dens 0.4 2 2.4) ;;1.5964741858913518 
-(lisp-stat-basics:beta-rand 2 2 2.4) ;;(0.8014897077282279 0.6516371997922659) 
+(gamma-quant 0.95 4.3) ;;8.178692439291645
+(gamma-cdf 1.3 4.3) ;;0.028895150986674906
+(gamma-dens 1.3 4.3) ;;0.0731517686447374
+(gamma-rand 2 4.3) ;;(2.454918912880936 4.081365384357454)
 
-;;;; t distribution
+;;; Chi-square distribution
 
-(lisp-stat-basics:t-quant 0.95 3) ;;2.35336343484194
-(lisp-stat-basics:t-cdf 1 2.3) ;;0.794733624298342
-(lisp-stat-basics:t-dens 1 2.3) ;;0.1978163816318102
-(lisp-stat-basics:t-rand 2 2.3) ;;(-0.34303672776089306 -1.142505872436518)
+(chisq-quant 0.95 3) ;;7.814727903379012
+(chisq-cdf 1 5) ;;0.03743422675631789
+(chisq-dens 1 5) ;;0.08065690818083521
+(chisq-rand 2 4) ;;(1.968535826180572 2.9988646156942997)
 
-;;;; F distribution
+;;; Beta distribution
 
-(lisp-stat-basics:f-quant 0.95 3 5) ;;5.409451318117459
-(lisp-stat-basics:f-cdf 1 3.2 5.4) ;;0.5347130905510765
-(lisp-stat-basics:f-dens 1 3.2 5.4) ;;0.37551128864591415
-(lisp-stat-basics:f-rand 2 3 2) ;;(0.7939093442091963 0.07442694152491144)
+(beta-quant 0.95 3 2) ;;0.9023885371149876
+(beta-cdf 0.4 2 2.4) ;;0.4247997418541529 
+(beta-dens 0.4 2 2.4) ;;1.5964741858913518 
+(beta-rand 2 2 2.4) ;;(0.8014897077282279 0.6516371997922659) 
 
-;;;; Poisson distribution
+;;; t distribution
 
-(lisp-stat-basics:poisson-quant 0.95 3.2) ;;6
-(lisp-stat-basics:poisson-cdf 1 3.2) ;;0.17120125672252395
-(lisp-stat-basics:poisson-pmf 1 3.2) ;;0.13043905274097067
-(lisp-stat-basics:poisson-rand 5 3.2) ;;(2 1 2 0 3)
+(t-quant 0.95 3) ;;2.35336343484194
+(t-cdf 1 2.3) ;;0.794733624298342
+(t-dens 1 2.3) ;;0.1978163816318102
+(t-rand 2 2.3) ;;(-0.34303672776089306 -1.142505872436518)
 
-;;;; Binomial distribution
+;;; F distribution
 
-(lisp-stat-basics:binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
-(lisp-stat-basics:binomial-quant 0 3 0.4) ;;; -2147483648
-(lisp-stat-basics:binomial-cdf 1 3 0.4) ;;0.6479999999965776
-(lisp-stat-basics:binomial-pmf 1 3 0.4) ;;0.4320000000226171
-(lisp-stat-basics:binomial-rand 5 3 0.4) ;;(2 2 0 1 2)
+(f-quant 0.95 3 5) ;;5.409451318117459
+(f-cdf 1 3.2 5.4) ;;0.5347130905510765
+(f-dens 1 3.2 5.4) ;;0.37551128864591415
+(f-rand 2 3 2) ;;(0.7939093442091963 0.07442694152491144)
+
+;;; Poisson distribution
+
+(poisson-quant 0.95 3.2) ;;6
+(poisson-cdf 1 3.2) ;;0.17120125672252395
+(poisson-pmf 1 3.2) ;;0.13043905274097067
+(poisson-rand 5 3.2) ;;(2 1 2 0 3)
+
+;;; Binomial distribution
+
+(binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
+(binomial-quant 0 3 0.4) ;;; -2147483648
+(binomial-cdf 1 3 0.4) ;;0.6479999999965776
+(binomial-pmf 1 3 0.4) ;;0.4320000000226171
+(binomial-rand 5 3 0.4) ;;(2 2 0 1 2)
+
+
