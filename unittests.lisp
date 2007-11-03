@@ -12,6 +12,14 @@
 
 (defpackage :lisp-stat-unittests
   (:use :common-lisp :lift :lisp-stat)
+  (:shadowing-import-from :lisp-stat
+	slot-value call-method call-next-method ;; objects
+	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
+	asin acos atan sinh cosh tanh asinh acosh atanh float random
+	truncate floor ceiling round minusp zerop plusp evenp oddp 
+	< <= = /= >= > complex conjugate realpart imagpart phase
+	min max logand logior logxor lognot ffloor fceiling
+	ftruncate fround signum cis)
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
 
 (in-package :lisp-stat-unittests)
@@ -37,14 +45,11 @@
   (ensure-same (+ 1 1) 2))
 ;; => #<Test passed>
 
-
-
-#+nil(progn 
-
 ;;; add another test using ensure-error
 (addtest (lisp-stat-lin-alg)
   (ensure-error (let ((x 0)) (/ x))))
 ;; => #<Test passed>
+
 
 ;;; add another, slightly more specific test
 (addtest (lisp-stat)
@@ -52,14 +57,17 @@
 ;; => #<Test passed>
 
 
-(addtest (lisp-stat-lin-alg)
-  cholesky-decomposition
-  (ensure-same
+(addtest (lisp-stat-lin-alg) cholesky-decomposition
+	 (ensure-same
 	  (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
-	  (#2A((1.7888543819998317 0.0 0.0)
-	       (1.6770509831248424 0.11180339887498929 0.0)
-	       (2.23606797749979 2.23606797749979 3.332000937312528e-8))
-	      5.000000000000003)))
+	  (values #2A((1.7888543819998317 0.0 0.0)
+		      (1.6770509831248424 0.11180339887498929 0.0)
+		      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
+		  5.000000000000003)))
+
+#+nil(progn 
+
+
 
 (addtest (lisp-stat-lin-alg)
   lu-decomposition
