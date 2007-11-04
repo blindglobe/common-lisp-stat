@@ -222,6 +222,7 @@ Returns sequence of the elements of compound item X."
 
 (defproto *compound-data-proto*)
 
+;;; FIXME: These need to be defined!!
 (defmeth *compound-data-proto* :data-length (&rest args) nil)
 (defmeth *compound-data-proto* :data-seq (&rest args) nil)
 (defmeth *compound-data-proto* :make-data (&rest args) nil)

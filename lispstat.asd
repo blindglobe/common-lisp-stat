@@ -15,11 +15,13 @@
 ;;; borrowed from Cyrus Harmon's work, for example for the ch-util.
 (defclass lispstat-lsp-source-file (cl-source-file) ())
 (defparameter *fasl-directory*
-   (make-pathname :directory '(:relative #+sbcl "sbcl-fasl"
-			      #+openmcl "openmcl-fasl"
-			      #+cmucl "cmucl-fasl"
-			      #+clisp "clisp-fasl"
-			      #-(or sbcl openmcl clisp cmucl) "fasl")))
+   (make-pathname :directory '(:relative
+			       #+sbcl "sbcl-fasl"
+			       #+openmcl "openmcl-fasl"
+			       #+cmu "cmucl-fasl"
+			       #+clisp "clisp-fasl"
+			       #-(or sbcl openmcl clisp cmucl) "fasl"
+			       )))
 
 (defmethod source-file-type ((c lispstat-lsp-source-file) (s module)) "lsp")
 (defmethod asdf::output-files :around ((operation compile-op)

@@ -507,7 +507,6 @@ a method."
 (defun get-documentation (x sym)
   (check-object x)
   (dolist (object (ls-object-preclist x))
-;;    (let ((doc-entry (find-documentation x sym nil))) ;; shouldn't object be here somewhere?
     (let ((doc-entry (find-documentation object sym nil))) ;; FIXME: verify
       (if doc-entry (return (rest doc-entry))))))
 

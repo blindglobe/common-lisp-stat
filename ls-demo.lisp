@@ -1,5 +1,20 @@
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-(load "init.lisp")
+;;; File:       ls-demo.lisp
+;;; Author:     AJ Rossini <blindglobe@gmail.com>
+;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
+;;; Purpose:    demonstrations of how one might use CLS.
+;;; Time-stamp: <>
+;;; Creation:   
+
+;;; What is this talk of 'release'? Klingons do not make software
+;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
+;;; designers and quality assurance people in its wake.
+
+(load "init.lisp")  ;; init needs to be more like the asdf-loader for lisp-stat, though it is pretty close. 
 
 ;;; checking exports.
 ;;; This is generally not how I expect it to be used.
@@ -22,7 +37,6 @@
 (normal-rand 20)
 
 ;; Matrix algebra.
-
 
 (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((1.7888543819998317 0.0 0.0)
@@ -173,5 +187,15 @@
 (binomial-cdf 1 3 0.4) ;;0.6479999999965776
 (binomial-pmf 1 3 0.4) ;;0.4320000000226171
 (binomial-rand 5 3 0.4) ;;(2 2 0 1 2)
+
+
+;;; OBJECT SYSTEM
+
+(defproto *test-proto*)
+
+*test-proto*
+
+(defmeth *test-proto* :make-data (&rest args) nil)
+
 
 
