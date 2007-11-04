@@ -44,6 +44,14 @@
 ;;      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
 ;;  5.000000000000003)
 
+(defvar my-chol-decomp-test (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5))))
+my-chol-decomp-test
+(nth 0 my-chol-decomp-test)
+(nth 1 my-chol-decomp-test)
+
+
+
+
 (lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((2.0 3.0 4.0) (1.0 1.0 1.0) (0.5 0.5 1.5)) #(0 2 2) -1.0 NIL)
 
@@ -196,8 +204,6 @@
 *test-proto*
 (defmeth *test-proto* :make-data (&rest args) nil)
 (send *test-proto* :make-data)
-
-
 
 
 ;;; Testing 
