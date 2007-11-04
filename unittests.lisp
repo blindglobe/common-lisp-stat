@@ -26,8 +26,6 @@
 
 ;;; TESTS
 
-;;; Need a waz to minimize the possibilities
-
 (defun run-lisp-stat-tests ()
   (run-tests :suite 'lisp-stat))
 
@@ -35,6 +33,17 @@
   (run-test x))
 
 (defun almost= (a b &key (tol 0.000001)) 
+   (< (abs (- a b)) tol))
+
+(defun almost=lists (a b &key (tol 0.000001)) 
+  (let ((l-a (length a)))
+    (if (and (length a) (length b))
+	;; if lists are of equal length, return true only if completely equal
+	(dolist i a
+		(almost= ia ib))
+	nil)))
+
+
    (< (abs (- a b)) tol))
 
 (deftestsuite lisp-stat () ())
@@ -57,13 +66,17 @@
 ;;   (ensure-condition division-by-zero (let ((x 0)) (/ x))))
 ;; ;; => #<Test passed>
 
-(addtest (lisp-stat-lin-alg) cholesky-decomposition
+(addtest (lisp-stat-lin-alg) cholesky-decomposition-1
 	 (ensure-same
 	  (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
-	  (values #2A((1.7888543819998317 0.0 0.0)
+	  (list #2A((1.7888543819998317 0.0 0.0)
 		      (1.6770509831248424 0.11180339887498929 0.0)
 		      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
 		  5.000000000000003)))
+
+;; (print-tests)
+;; (run-test :name 'cholesky-decomposition-1)
+;; (describe (run-test :name 'cholesky-decomposition-1))
 
 (addtest (lisp-stat-lin-alg) lu-decomposition
 	 (ensure-same
