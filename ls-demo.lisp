@@ -191,11 +191,41 @@
 
 ;;; OBJECT SYSTEM
 
+(in-package :ls-user)
 (defproto *test-proto*)
-
 *test-proto*
-
 (defmeth *test-proto* :make-data (&rest args) nil)
+(send *test-proto* :make-data)
 
+
+
+
+;;; Testing 
+
+(in-package :lisp-stat-unittests)
+(testsuites)
+(print-tests)
+(run-tests)
+(last-test-status)
+;;(failures)
+
+(testsuite-tests 'lisp-stat)
+(run-tests :suite 'lisp-stat)
+(describe (run-tests :suite 'lisp-stat))
+
+
+(run-tests :suite 'lisp-stat-probdistn)
+(describe (run-tests :suite 'lisp-stat-probdistn))
+
+
+
+(run-tests :suite 'lisp-stat-spec-fns)
+(describe (run-tests :suite 'lisp-stat-spec-fns))
+
+
+(find-testsuite 'lisp-stat-lin-alg)
+(testsuite-tests 'lisp-stat-lin-alg)
+(run-tests :suite 'lisp-stat-lin-alg)
+(describe (run-tests :suite 'lisp-stat-lin-alg))
 
 

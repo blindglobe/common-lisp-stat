@@ -34,7 +34,8 @@
 (defun run-lisp-stat-test (&rest x)
   (run-test x))
 
-
+(defun almost= (a b &key (tol 0.000001)) 
+   (< (abs (- a b)) tol))
 
 (deftestsuite lisp-stat () ())
 (deftestsuite lisp-stat-lin-alg (lisp-stat) ())
