@@ -1,6 +1,17 @@
 -*- mode: text -*-
 
 
+For a fast start: 
+
+run a common lisp (SBCL, CMUCL, CLISP) starting in the current
+directory.   We also assume that a recent version of CFFI has been
+installed and is ASDF-loadable.  Probably should include a local copy
+just in case.
+
+Step through ls-demo.lisp for a range of examples that will become
+part of the test suite.
+
+
 
 
 ===========
@@ -10,14 +21,3 @@ See Doc/INSTALL for getting this to work and run
 
 ===========
 
-Current design challenge :: we need to find a means to avoid circular
-references, especially where call-backs are concerned.
-
-Perhaps we should put the glue where it belongs, and if we use a
-package or tool which replaces it, then we no longer have to provide
-such FFI glue.
-
-This would suggest that we proceed as follows -- first make sure that
-we factor out the library loading into a separate package which is
-required, and then we embed the callback support into the individual
-libraries to make them work.
