@@ -53,39 +53,23 @@
       (and (almost= (car a) (car b) :tol tol)
 	   (almost=lists (cdr a) (cdr b) :tol tol))))
 
-(deftestsuite lisp-stat-unitsupport (lisp-stat) ())
+(deftestsuite lisp-stat-testsupport (lisp-stat)
+  ()
+  (:tests
+   
+   (;; almost=
+    ((ensure (almost= 3 3.001 :tol 0.01)))
+    ((ensure (almost= 3 3.01 :tol 0.01)))
+    ((ensure (not (almost= 3 3.1 :tol 0.01))))
+    ;; almost=lists-1
+    ((ensure (almost=lists nil nil :tol 0.01)))
+    ((ensure (almost=lists (list ) (list ) :tol 0.01)))
+    ((ensure (almost=lists (list 1.0) (list 1.0) :tol 0.01)))
+    ((ensure (almost=lists (list 1.0 1.0) (list 1.0 1.0) :tol 0.01)))
+    ((ensure (not (almost=lists (list 1.0 1.0) (list 1.0 1.1) :tol 0.01)))))))
 
-;;; FIXME THIS IS WRONG
-(add-test (lisp-stat-testsupport) almost=-1
-	  (almost= 3 3.001 :tol 0.01)
-	  (almost= 3 3.01 :tol 0.01)
-	  (almost= 3 3.1 :tol 0.01)
-	  )
 
-;;; FIXME THIS IS WRONG
-(add-test (lisp-stat-testsupport) almost=lists-1
-	  (almost=lists nil nil :tol 0.01)
-	  (almost=lists (list ) (list ) :tol 0.01)
-	  (almost=lists (list 1.0) (list 1.0) :tol 0.01)
-	  (almost=lists (list 1.0 1.0) (list 1.0 1.0) :tol 0.01)
-	  (almost=lists (list 1.0 1.0) (list 1.0 1.1) :tol 0.01)
-	  (almost=lists testlist1 testlist3 :tol 0.01)
-	  )
 
-;; ;;; and add a test to it
-;; (addtest (lisp-stat)
-;;   (ensure-same (+ 1 1) 2))
-;; ;; => #<Test passed>
-
-;; ;;; add another test using ensure-error
-;; (addtest (lisp-stat-lin-alg)
-;;   (ensure-error (let ((x 0)) (/ x))))
-;; ;; => #<Test passed>
-
-;; ;;; add another, slightly more specific test
-;; (addtest (lisp-stat)
-;;   (ensure-condition division-by-zero (let ((x 0)) (/ x))))
-;; ;; => #<Test passed>
 
 (addtest (lisp-stat-lin-alg) cholesky-decomposition-1
 	 (ensure-same
