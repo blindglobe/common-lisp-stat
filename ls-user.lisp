@@ -14,9 +14,11 @@ should be packaged up elsewhere for reproducibility.")
 	:lisp-stat-types
         :lisp-stat-float
 	:lisp-stat-basics
+	:lisp-stat-data
         :lisp-stat-math
 	:lisp-stat-matrix
 	:lisp-stat-linalg
+	:lisp-stat-descriptive-statistics
 	:lisp-stat-regression-linear)
   (:shadowing-import-from :lisp-stat-object-system
 	slot-value call-method call-next-method)
