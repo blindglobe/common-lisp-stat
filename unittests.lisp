@@ -66,17 +66,14 @@
 (deftestsuite lisp-stat-testsupport (lisp-stat)
   ()
   (:tests
-   (;; almost=
-    ((ensure (almost= 3 3.001 :tol 0.01)))
-    ((ensure (almost= 3 3.01 :tol 0.01)))
-    ((ensure (not (almost= 3 3.1 :tol 0.01))))
-    ;; almost=lists-1
-    ((ensure (almost=lists nil nil :tol 0.01)))
-    ((ensure (almost=lists (list ) (list ) :tol 0.01)))
-    ((ensure (almost=lists (list 1.0) (list 1.0) :tol 0.01)))
-    ((ensure (almost=lists (list 1.0 1.0) (list 1.0 1.0) :tol 0.01)))
-    ((ensure (not (almost=lists (list 1.0 1.0) (list 1.0 1.1) :tol 0.01)))))))
-
+   (almost=1 (ensure (almost= 3 3.001 :tol 0.01)))
+   (almost=2 (ensure (almost= 3 3.01 :tol 0.01)))
+   (almost=3 (ensure (not (almost= 3 3.1 :tol 0.01))))
+   (almost=lists1 (ensure (almost=lists nil nil :tol 0.01)))
+   (almost=lists2 (ensure (almost=lists (list ) (list ) :tol 0.01)))
+   (almost=lists3 (ensure (almost=lists (list 1.0) (list 1.0) :tol 0.01)))
+   (almost=lists4 (ensure (almost=lists (list 1.0 1.0) (list 1.0 1.0) :tol 0.01)))
+   (almost=lists5 (ensure (not (almost=lists (list 1.0 1.0) (list 1.0 1.1) :tol 0.01))))))
 
 
 

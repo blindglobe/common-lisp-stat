@@ -219,6 +219,7 @@ my-chol-decomp-test
 (run-tests :suite 'lisp-stat)
 (describe (run-tests :suite 'lisp-stat))
 
+(describe (run-tests :suite 'lisp-stat-testsupport))
 
 (run-tests :suite 'lisp-stat-probdistn)
 (describe (run-tests :suite 'lisp-stat-probdistn))
