@@ -39,11 +39,8 @@
 (deftestsuite lisp-stat-probdistn (lisp-stat) ())
 
 
-;; Need to consider a CLOSy approach for almost= to cover the range of
-;; possible data structures that we would like to be equal to a
-;; particular tolerance range.
-
 (defun almost= (a b &key (tol 0.000001)) 
+  "Numerically compares 2 values to a tolerance."
    (< (abs (- a b)) tol))
 
 (defun almost=lists (a b &key (tol 0.000001)) 
@@ -53,10 +50,22 @@
       (and (almost= (car a) (car b) :tol tol)
 	   (almost=lists (cdr a) (cdr b) :tol tol))))
 
+
+
+;; Need to consider a CLOSy approach for almost= to cover the range of
+;; possible data structures that we would like to be equal to a
+;; particular tolerance range.  For example, fill in a shell like:
+
+;; (defgeneric numerical= (a b &key tol)
+;;   (error "types not matched."))
+;; (defmethod numerical= ((real a) (real b) &key (tol 0.00001))
+;; (defmethod numerical= ((list a) (list b) &key (tol 0.00001))
+;; (defmethod numerical= ((int a) (int b) &key (tol 0.00001))
+;; (defmethod numerical= ((complex a) (complex b) &key (tol 0.00001))
+
 (deftestsuite lisp-stat-testsupport (lisp-stat)
   ()
   (:tests
-   
    (;; almost=
     ((ensure (almost= 3 3.001 :tol 0.01)))
     ((ensure (almost= 3 3.01 :tol 0.01)))
