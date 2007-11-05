@@ -32,24 +32,45 @@
 (defun run-lisp-stat-test (&rest x)
   (run-test x))
 
-(defun almost= (a b &key (tol 0.000001)) 
-   (< (abs (- a b)) tol))
-
-(defun almost=lists (a b &key (tol 0.000001)) 
-  (let ((l-a (length a)))
-    (if (and (length a) (length b))
-	;; if lists are of equal length, return true only if completely equal
-	(dolist i a
-		(almost= ia ib))
-	nil)))
-
-
-   (< (abs (- a b)) tol))
 
 (deftestsuite lisp-stat () ())
 (deftestsuite lisp-stat-lin-alg (lisp-stat) ())
 (deftestsuite lisp-stat-spec-fns (lisp-stat) ())
 (deftestsuite lisp-stat-probdistn (lisp-stat) ())
+
+
+;; Need to consider a CLOSy approach for almost= to cover the range of
+;; possible data structures that we would like to be equal to a
+;; particular tolerance range.
+
+(defun almost= (a b &key (tol 0.000001)) 
+   (< (abs (- a b)) tol))
+
+(defun almost=lists (a b &key (tol 0.000001)) 
+  "Numerically compare 2 lists using almost=."
+  (if (and (null a) (null b))
+      t
+      (and (almost= (car a) (car b) :tol tol)
+	   (almost=lists (cdr a) (cdr b) :tol tol))))
+
+(deftestsuite lisp-stat-unitsupport (lisp-stat) ())
+
+;;; FIXME THIS IS WRONG
+(add-test (lisp-stat-testsupport) almost=-1
+	  (almost= 3 3.001 :tol 0.01)
+	  (almost= 3 3.01 :tol 0.01)
+	  (almost= 3 3.1 :tol 0.01)
+	  )
+
+;;; FIXME THIS IS WRONG
+(add-test (lisp-stat-testsupport) almost=lists-1
+	  (almost=lists nil nil :tol 0.01)
+	  (almost=lists (list ) (list ) :tol 0.01)
+	  (almost=lists (list 1.0) (list 1.0) :tol 0.01)
+	  (almost=lists (list 1.0 1.0) (list 1.0 1.0) :tol 0.01)
+	  (almost=lists (list 1.0 1.0) (list 1.0 1.1) :tol 0.01)
+	  (almost=lists testlist1 testlist3 :tol 0.01)
+	  )
 
 ;; ;;; and add a test to it
 ;; (addtest (lisp-stat)
@@ -72,7 +93,11 @@
 	  (list #2A((1.7888543819998317 0.0 0.0)
 		      (1.6770509831248424 0.11180339887498929 0.0)
 		      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
-		  5.000000000000003)))
+		  5.000000000000003)
+	  :test 'almost=lists))
+
+
+
 
 ;; (print-tests)
 ;; (run-test :name 'cholesky-decomposition-1)
