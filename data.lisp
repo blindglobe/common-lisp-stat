@@ -242,9 +242,11 @@ is not nil then you are asked if you want to redefine the variable."
   `(unless (and *ask-on-redefine*
                 (boundp ',symbol)
                 (not (y-or-n-p "Variable has a value. Redefine?")))
-           (pushnew ',symbol *variables*)
-           (setf ,symbol ,value)
-           ',symbol))
+    (if (boundp ',symbol)
+	(setf ,symbol ,value)
+	(defvar ,symbol ,value))
+    (pushnew ',symbol *variables*)
+    ',symbol))
   
 (defun variables-list () 
     (mapcar #'intern (sort-data (mapcar #'string *variables*))))
