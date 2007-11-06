@@ -46,13 +46,11 @@ Last touched 1991, then in 2005--2007."
 	       (:lispstat-lsp-source-file "lsobjects")
 	       (:lispstat-lsp-source-file "cffiglue")
 	       (:lispstat-lsp-source-file "defsys")
-	       (:lispstat-lsp-source-file "fastmap")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
 
 	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("lsobjects"
-						       "fastmap"))
+					  :depends-on ("lsobjects"))
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 
@@ -143,7 +141,6 @@ Last touched 1991, then in 2005--2007."
 					     "lsbasics"
 					     "compound"
 					     "dists"
-					     "fastmap"
 					     "lstypes"
 					     "lsfloat"
 					     "lsmath"

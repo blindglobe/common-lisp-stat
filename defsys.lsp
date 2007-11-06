@@ -50,7 +50,6 @@
 (defvar *basic-files*
   (list "lsbasics"
 	"lsfloat"
-	"fastmap"
         "compound"
         "matrices"
 	"ladata"

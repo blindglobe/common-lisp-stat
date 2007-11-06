@@ -19,7 +19,6 @@
   (:use :common-lisp
 	:lisp-stat-object-system
 	:lisp-stat-types)
-  (:import-from :lisp-stat-fastmap fastmap)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value
 			  call-next-method call-method)
@@ -144,7 +143,7 @@ values."
 	     (let* ((seq (compound-data-sequence first-compound))
 		    (type (sequence-type seq)))
                (make-compound-data first-compound
-				   (apply #'fastmap type fcn args)))))))
+				   (apply #'map type fcn args)))))))
 		     
 (defun recursive-map-elements (base-fcn fcn &rest args)
 "Args: (base-fcn fcn &rest args)
@@ -158,7 +157,7 @@ for second level of compounding and use base-fcn if there is none."
 		    (type (sequence-type seq))
 		    (f (if (any-compound-elements seq) fcn base-fcn)))
                (make-compound-data first-compound
-				   (apply #'fastmap type f args)))))))
+				   (apply #'map type f args)))))))
       
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -615,11 +614,13 @@ submatrix of A is returned. SELECT can be used in setf."
 
 
 ;; Built in SET-SELECT (SETF method for SELECT)
+;; FIXME: This should be done cleaner, check the spec, something like
+;; (defun (setf select) (x &rest args)...)
 (defun set-select (x &rest args)
   (let ((indices (butlast args))
         (values (first (last args))))
     (cond
-     ((sequencep x)
+     ((typep x 'sequence)
       (if (not (consp indices)) (error "bad indices - ~a" indices))
       (let* ((indices (first indices))
              (i-list (if (fixnump indices) (list indices) indices))

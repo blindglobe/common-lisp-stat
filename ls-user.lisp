@@ -10,7 +10,6 @@ should be packaged up elsewhere for reproducibility.")
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
 	:lisp-stat-probability
-	:lisp-stat-fastmap
 	:lisp-stat-types
         :lisp-stat-float
 	:lisp-stat-basics
@@ -34,9 +33,6 @@ should be packaged up elsewhere for reproducibility.")
    ;; lsobjects :
    defproto defmeth send 
   
-   ;; fastmap :
-   fastmap
-
    ;; lstypes
    fixnump check-nonneg-fixnum check-one-fixnum
    check-one-real check-one-number
