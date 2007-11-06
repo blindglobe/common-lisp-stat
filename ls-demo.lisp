@@ -220,24 +220,17 @@ my-chol-decomp-test
 (describe (run-tests :suite 'lisp-stat))
 
 (describe (run-tests :suite 'lisp-stat-testsupport))
-
 (run-tests :suite 'lisp-stat-probdistn)
 (describe (run-tests :suite 'lisp-stat-probdistn))
-
-
-
 (run-tests :suite 'lisp-stat-spec-fns)
 (describe (run-tests :suite 'lisp-stat-spec-fns))
-
 
 (find-testsuite 'lisp-stat-lin-alg)
 (testsuite-tests 'lisp-stat-lin-alg)
 (run-tests :suite 'lisp-stat-lin-alg)
 (describe (run-tests :suite 'lisp-stat-lin-alg))
 
-
 ;;; Data Analysis test
-
 
 (in-package :ls-user)
 
@@ -253,6 +246,14 @@ absorbtion
 (standard-deviation absorbtion)
 (interquartile-range absorbtion)
 
+;;; How do I make these work?
+(bind-columns aluminum iron)
+(apply #'bind-columns (list aluminum iron))
+(bind-columns #2a((1 2)(3 4)) #(5 6))
+
+(sequencep aluminum) (sequencep iron)
+(matrixp iron)
+
 
 *variables*
 
@@ -261,3 +262,13 @@ absorbtion
 (variables)
 
 
+(defvar fit1 nil)
+(setf fit1 (regression-model absorbtion iron))
+(send fit1 :display)
+(send fit1 :residuals)
+
+
+
+
+(def m (regression-model (list iron aluminum) absorbtion))
+(send m :help) (send m :plot-residuals)
