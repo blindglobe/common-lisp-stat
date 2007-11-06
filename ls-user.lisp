@@ -29,15 +29,14 @@ should be packaged up elsewhere for reproducibility.")
 	min max logand logior logxor lognot ffloor fceiling
 	ftruncate fround signum cis)
   (:export
-
    ;; lsobjects :
    defproto defmeth send 
   
-   ;; lstypes
+   ;; lstypes :
    fixnump check-nonneg-fixnum check-one-fixnum
    check-one-real check-one-number
 
-   ;; lsmacros
+   ;; lsmacros: 
    
    ;; lsfloat :
    machine-epsilon
@@ -89,15 +88,13 @@ should be packaged up elsewhere for reproducibility.")
    make-rv-function make-rv-function-1 
 
    ;; data.lisp
-
+   open-file-dialog read-data-file read-data-columns load-data
+   load-example *variables* *ask-on-redefine*
+   def variables savevar undef
 
    ;; statistics.lsp
-   open-file-dialog read-data-file read-data-columns load-data 
-   load-example *variables* *ask-on-redefine* def variables savevar
-   undef standard-deviation quantile median interquartile-range
-   fivnum covariance-matrix difference rseq matrix print-matrix solve
-   backsolve eigenvalues eigenvectors accumulate cumsum combine
-   lowess
+   standard-deviation quantile median interquartile-range
+   fivnum sample
 
    ;; dists
    log-gamma set-seed
