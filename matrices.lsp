@@ -281,7 +281,7 @@ Example: (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
                (error "bad argument type")))
          (arg-cols (x) (if (sequencep x) 1 (num-cols x)))
          (arg-rows (x) (if (sequencep x) (length x) (num-rows x))))
-    (dolist (x args) (check-arg x))
+    (dolist (x args) (check-arg x)) ;; verify data structure conformance.
     (let ((m (arg-rows (first args)))
           (n (arg-cols (first args))))
       (declare (fixnum m n))

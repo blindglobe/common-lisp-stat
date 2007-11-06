@@ -59,12 +59,12 @@
 (defun regression-model (x y &key 
                            (intercept T) 
                            (print T) 
-                           weights
+                           (weights nil)
                            (included (repeat t (length y)))
                            predictor-names
                            response-name
                            case-labels)
-"Args: (x y &key (intercept T) (print T) weights 
+"Args: (x y &key (intercept T) (print T) (weights nil)
           included predictor-names response-name case-labels)
 X           - list of independent variables or X matrix
 Y           - dependent variable.
