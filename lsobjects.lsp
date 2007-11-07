@@ -564,6 +564,7 @@ RETURNS: method-name."
     (add-documentation object 'proto doc))
   (if set (setf (symbol-value name) object)))
 
+
 (defmacro defproto (name &optional ivars cvars parents doc)
 "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
 Makes a new object prototype with instance variables IVARS, 'class'
@@ -581,6 +582,30 @@ a list of objects. IVARS and CVARS must be lists."
                                          nil)))
          (make-prototype ,obsym ,namesym ,ivars ,cvars ,doc t)
 	 ,namesym))))
+
+
+#|
+(defmacro defproto (name &optional ivars cvars parents doc)
+  "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
+Makes a new object prototype with instance variables IVARS, 'class'
+variables CVARS and parents PARENT. PARENT can be a single object or
+a list of objects. IVARS and CVARS must be lists."
+  (if (boundp name)
+      (error "name is bound") ; fixme: use real error
+      (let ((obsym (gensym))
+	    (namesym (gensym))
+	    (parsym (gensym)))
+	`(progn
+	  (let* ((,namesym ',name)
+		 (,parsym ,parents)
+		 (,obsym (make-basic-object (if (listp ,parsym) 
+						,parsym 
+						(list ,parsym)) ;; should this be ,@parsym ? 
+					    nil)))
+	    (make-prototype ,obsym ,namesym ,ivars ,cvars ,doc t)
+	    ,namesym)))))
+|#
+
 
 
 ;; recall: 

@@ -44,8 +44,7 @@
 
 (defun set-seed (x)
   "stupid dummy function, need to implement rng seeding tool."
-  0)
-
+  (values x))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

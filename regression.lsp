@@ -429,6 +429,7 @@ Computes Cook's distances."
 
 (defun plot-points (x y &rest args)
   "FIXME!!"
+  (declare (ignore x y))
   (error "Graphics not implemented yet."))
 
 ;; Can not plot points yet!!
@@ -458,10 +459,7 @@ Returns a plot object."
          (p (plot-points x-values r
 			 :title "Bayes Residual Plot"
                          :point-labels (send self :case-labels))))
-;; AJR:FIXME
-;; the lambda needs to be something that fits into list
-;;    (map 'list
-;;	 #'(lambda (a b c d) (send p :plotline a b c d nil))
-;;	 x-values low x-values high)
+    (map 'list #'(lambda (a b c d) (send p :plotline a b c d nil))
+	 x-values low x-values high)
     (send p :adjust-to-data)
     p))

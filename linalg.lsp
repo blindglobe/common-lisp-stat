@@ -643,12 +643,13 @@ U or B for Gaussian, triangular, uniform or bisquare. The default is B."
       (if (/= 0 error) (error "bad kernel density data")))))
 
 
-
+#|
 (defun kernel-smooth-Cport (px py n width ;;wts wds ;; see above for mismatch?
 			    xs ys ns ktype)
   "Port of kernel_smooth (Lib/kernel.c) to Lisp.
 FIXME:kernel-smooth-Cport :  This is broken.
 Until this is fixed, we are using Luke's C code and CFFI as glue."
+  (declare (ignore width xs))
   (cond ((< n 1) 1.0)
 	((and (< n 2) (<= width 0)) 1.0)
 	(t (let* ((xmin (min px))
@@ -660,14 +661,13 @@ Until this is fixed, we are using Luke's C code and CFFI as glue."
 			   (ysum 0.0))
 		       (dotimes (j (- n 1))   )
 ;;;possible nasty errors...
-#|
-		       (let* 
-			     ((lwidth (if wds (* width (aref wds j)) width))
-			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
-				      (if wts (aref wts j) 1.0))))
-			   (setf wsum (+ wsum lwt))
-			   (setf ysum (if py (+ ysum (* lwt (aref py j)))))) ;; py? y?
-|#
+;;		       (let* 
+;;			     ((lwidth (if wds (* width (aref wds j)) width))
+;;			      (lwt (* (kernel-Cport (aref xs i) (aref px j) lwidth ktype) ;; px?
+;;				      (if wts (aref wts j) 1.0))))
+;;			   (setf wsum (+ wsum lwt))
+;;			   (setf ysum (if py (+ ysum (* lwt (aref py j)))))) ;; py? y?
+;;
 ;;; end of errors
 		       (if py
 			   (if (> wsum 0.0) 
@@ -675,6 +675,8 @@ Until this is fixed, we are using Luke's C code and CFFI as glue."
 			       0.0)
 			   (/ wsum n)))))
 	     (values ys)))))
+|#
+
 
 (defun kernel-Cport (x y w ktype)
   "Port of kernel() (Lib/kernel.c) to Lisp.
