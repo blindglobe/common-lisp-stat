@@ -36,6 +36,22 @@
 
 (in-package :lisp-stat-compound-data)
 
+;;; Sequences are part of ANSI CL, being a supertype of vector and
+;;; list (ordered set of things).
+;;; 
+;;; Need to use the interenal structure when possible -- silly to be
+;;; redundant!  However, this means we need to understand what
+;;; sequences were intending to do, which I'm not clear on yet.
+
+;;; The original ordering, object-wise, was to have compound
+;;; functionality passed into sequences, into other data sources.
+;;; However, at this point, we will see about inverting this and
+;;; having basic data types pushed through compound, to simplify
+;;; packaging.  In this vein, we have created a compound package to
+;;; contain the compound data and sequence structures.  Probably need
+;;; to clean this up even more.
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;                    Internal Support Functions
@@ -325,20 +341,6 @@ Returns a list of the indices where elements of sequence X are not NIL."
 	  (let ((n (length (first x))))
 	    (dotimes (i n result)
 		     (if (get-next-element x i) (add-result i)))))))
-
-
-;;; Sequences are part of ANSI CL, being a supertype of vector and
-;;; list (ordered set of things).
-;;; 
-;;; Need to use the interenal structure when possible -- silly to be
-;;; redundant!  However, this means we need to understand what
-;;; sequences were intending to do, which I'm not clear on yet.
-
-;;; The original ordering, object-wise, was to have compound
-;;; functionality passed into sequences, into other data sources.
-;;; However, at this point, we will see about inverting this and
-;;; having basic data types pushed through compound, to simplify
-;;; packaging. 
 
 ;;;                      Type Checking Functions
 
