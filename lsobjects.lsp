@@ -584,8 +584,8 @@ a list of objects. IVARS and CVARS must be lists."
 	 ,namesym))))
 
 
-#|
-(defmacro defproto (name &optional ivars cvars parents doc)
+
+(defmacro defproto2 (name &optional ivars cvars parents doc)
   "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
 Makes a new object prototype with instance variables IVARS, 'class'
 variables CVARS and parents PARENT. PARENT can be a single object or
@@ -604,7 +604,7 @@ a list of objects. IVARS and CVARS must be lists."
 					    nil)))
 	    (make-prototype ,obsym ,namesym ,ivars ,cvars ,doc t)
 	    ,namesym)))))
-|#
+
 
 
 
