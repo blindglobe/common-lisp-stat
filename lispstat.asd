@@ -148,4 +148,10 @@ Last touched 1991, then in 2005--2007."
 					     "matrices"
 					     "linalg"
 					     "statistics"
-					     "regression"))))
+					     "regression"))
+
+
+	       (:file "unittests" :depends-on ("ls-user"))
+
+	       ))
+
