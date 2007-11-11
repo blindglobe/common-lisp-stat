@@ -202,8 +202,6 @@
 	  :test 'almost=))
 
 
-#+nil(progn
-
 ;;; Probability distributions
 
 ;; This macro should be generalized, but it's a good start now.
@@ -229,6 +227,7 @@
 ;;; Normal distribution
 
 (deftestsuite lisp-stat-probdist-f (lisp-stat-probdistn)
+  ()
   (:documentation "testing for Gaussian distn results")
   (:test (ensure-same
 	  (normal-quant 0.95)
@@ -249,6 +248,7 @@
 ;;;; Cauchy distribution
 
 (deftestsuite lisp-stat-probdist-cauchy (lisp-stat-probdistn)
+  ()
   (:documentation "testing for Cachy-distn results")
   (:test (ensure-same
 	  (cauchy-quant 0.95)
@@ -261,11 +261,12 @@
 	  0.1183308127104695 ))
   (:test (ensure-same
 	  (cauchy-rand 2)
-	  (-1.06224644160405 -0.4524695943939537))))
+	  (list -1.06224644160405 -0.4524695943939537))))
 
 ;;;; Gamma distribution
 
 (deftestsuite lisp-stat-probdist-gamma (lisp-stat-probdistn)
+  ()
   (:documentation "testing for gamma distn results")
   (:test (ensure-same
 	  (gamma-quant 0.95 4.3)
@@ -278,7 +279,7 @@
 	  0.0731517686447374))
   (:test (ensure-same
 	  (gamma-rand 2 4.3)
-	  (2.454918912880936 4.081365384357454))))
+	  (list 2.454918912880936 4.081365384357454))))
 
 ;;;; Chi-square distribution
 
@@ -321,6 +322,7 @@
 ;;;; t distribution
 
 (deftestsuite lisp-stat-probdist-t (lisp-stat-probdistn)
+  ()
   (:documentation "testing for t-distn results")
   (:test (ensure-same
 	  (t-quant 0.95 3)
@@ -338,6 +340,7 @@
 ;;;; F distribution
 
 (deftestsuite lisp-stat-probdist-f (lisp-stat-probdistn)
+  ()
   (:documentation "testing for f-distn results")
   (:test (ensure-same
 	  (f-quant 0.95 3 5) 5.409451318117459))
@@ -356,7 +359,7 @@
 ;;;; Poisson distribution
 
 (deftestsuite lisp-stat-probdist-poisson (lisp-stat-probdistn)
-;;  ((  ))
+  ()
   (:documentation "testing for poisson distribution results")
   (:test (ensure-same
 	  (poisson-quant 0.95 3.2) 6))
@@ -375,7 +378,7 @@
 ;; Binomial distribution
 
 (deftestsuite lisp-stat-probdist-binomial (lisp-stat-probdistn)
-;;  ((  ))
+  ()
   (:documentation "testing for binomial distribution results")
 
   (:test (ensure-same
@@ -397,5 +400,3 @@
 	   (ensure-same 
 	    (binomial-rand 5 3 0.4)
 	    (list 2 2 0 1 2)))))
-
-)
