@@ -9,3 +9,4 @@ fasl
 _darcs
 *.flc
 *.x86f
+ASDF/*.asd

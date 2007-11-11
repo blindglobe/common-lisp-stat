@@ -10,6 +10,11 @@ default:
 git-push :
 	git push --all git+ssh://repo.or.cz/srv/git/CommonLispStat.git
 
+
+asdf-create :
+	cd ASDF ; ln -s ../external/*/*.asd .
+
+
 ## Workspace cleanup
 
 clean:
