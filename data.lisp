@@ -93,9 +93,7 @@
 
 (deftype dt-relationaldata ()
   `(satisfies (foreach unit in relationalUnit
-	       (typep unit 'dt-dataframe)))) 
-
-
+	       (typep unit 'dt-dataframe))))
 
 
 ;;; Statistical Variable Classes
@@ -110,10 +108,10 @@
 (deftype sv-categorical ()
   `(satisfies (or sv-nominal sv-ordinal)))
 ;;(deftype sv-integer )
-;;(deftype sv-real )
+;;(deftype sv-real )  ;; precision could be a secondary component of real, rational, complex.
 ;;(deftype sv-rational )
 ;;(deftype sv-complex )
-;;(deftype sv-continuous (or 'sv-integer 'sv-real 'sv-rational 'sv-complex))
+;;(deftype sv-continuous (or 'sv-integer 'sv-real 'sv-rational 'sv-complex)) ;; perhaps, call it "mostly contin..." 
 
 |#
 
@@ -121,7 +119,7 @@
 ;;; Data I/O
 
 ;; We can read 2 types of data -- those which are pure data, and those
-;; which are imprue (lisp-enables).
+;; which are impure (lisp-enabled, data as program as data thingy's).
 
 (defparameter *lisp-stat-data-formats*
   '(csv tsv))
@@ -136,7 +134,6 @@
 ;;   "Stream-handling, maintaining I/O through object typing.")
 
 ;; design-wise should these be replaced with a "with-data" form? 
-
 
 ;; DSV processing
 
