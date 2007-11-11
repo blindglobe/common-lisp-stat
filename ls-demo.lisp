@@ -83,7 +83,7 @@ my-chol-decomp-test
 ;;      (0.0 -0.7453559924999292 -1.1925695879998877)
 ;;      (0.0 0.0 -1.3416407864998738)))
 
-(rcondest #2A((2 3 4) (1 2 4) (2 4 5))) 
+(rcondest #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; 6.8157451e7
 
 (eigen #2A((2 3 4) (1 2 4) (2 4 5)))
@@ -215,11 +215,12 @@ my-chol-decomp-test
 (last-test-status)
 ;;(failures)
 
+(describe (run-tests :suite 'lisp-stat-testsupport))
+
 (testsuite-tests 'lisp-stat)
 (run-tests :suite 'lisp-stat)
 (describe (run-tests :suite 'lisp-stat))
 
-(describe (run-tests :suite 'lisp-stat-testsupport))
 (run-tests :suite 'lisp-stat-probdistn)
 (describe (run-tests :suite 'lisp-stat-probdistn))
 (run-tests :suite 'lisp-stat-spec-fns)
@@ -281,9 +282,6 @@ absorbtion
 (setf fit1 (regression-model absorbtion iron))
 (send fit1 :display)
 (send fit1 :residuals)
-
-
-
 
 (def m (regression-model (list iron aluminum) absorbtion))
 (send m :help) (send m :plot-residuals)
