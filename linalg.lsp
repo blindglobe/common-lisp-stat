@@ -111,14 +111,65 @@
 (defun qr-decomp-front (x y z u v w) 
   (ccl-qr-decomp-front x y z u v w))
 
-;;;;
-;;;; Estimate of Condition Number for Lower Triangular Matrix
-;;;;
+;;;
+;;; Estimate of Condition Number for Lower Triangular Matrix
+;;;
 
 (cffi:defcfun ("ccl_rcondest_front" ccl-rcondest-front)
     :double (x :pointer) (y :int))
 (defun rcondest-front (x y) 
   (ccl-rcondest-front x y))
+
+
+#|
+(defun rcondest-lisp-front (mat)
+  "Lisp-only version of rcondest."
+  (if (and (check-square-matrix mat)
+	   (not (is-complex mat))) ;; Complex condition estimate not available
+      (if (= 0.0 (diag mat))
+	  0.0
+	  (let ((est (aref mat 0 0)))
+	    (dotimes (j 0 n)
+
+  /* Set est to reciprocal of L1 matrix norm of A */
+  est = fabs(a[0][0]);
+  for (j = 1; j < n; j++) {
+    for (i = 0, temp = fabs(a[j][j]); i < j; i++)
+      temp += fabs(a[i][j]);
+    est = Max(est, temp);
+  }
+  est = 1.0 / est;
+  
+  /* Solve A^Tx = e, selecting e as you proceed */
+  x[0] = 1.0 / a[0][0];
+  for (i = 1; i < n; i++) p[i] = a[0][i] * x[0];
+  for (j = 1; j < n; j++) {
+    /* select ej and calculate x[j] */
+    xp = ( 1.0 - p[j]) / a[j][j];
+    xm = (-1.0 - p[j]) / a[j][j];
+    temp = fabs(xp);
+    tempm = fabs(xm);
+    for (i = j + 1; i < n; i++) {
+      pm[i] = p[i] + a[j][i] * xm;
+      tempm += fabs(pm[i] / a[i][i]);
+      p[i] += a[j][i] * xp;
+      temp += fabs(p[i] / a[i][i]);
+    }
+    if (temp >= tempm) x[j] = xp;
+    else {
+      x[j] = xm;
+      for (i = j + 1; i < n; i++) p[i] = pm[i];
+    }
+  }
+  
+  for (j = 0, xnorm = 0.0; j < n; j++) xnorm += fabs(x[j]);
+  est = est * xnorm;
+  backsolve(a, x, n, RE);
+  for (j = 0, xnorm = 0.0; j < n; j++) xnorm += fabs(x[j]);
+  if (xnorm > 0) est = est / xnorm;
+  
+|#
+
 
 ;;;;
 ;;;; Make Rotation Matrix
