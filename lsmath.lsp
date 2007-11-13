@@ -23,13 +23,15 @@
    (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
  	   asin acos atan sinh cosh tanh asinh acosh atanh float random
  	   truncate floor ceiling round minusp zerop plusp evenp oddp 
- 	   < <= = /= >= > complex conjugate realpart imagpart phase
+ 	   < <= = /= >= > ;; complex
+	   conjugate realpart imagpart phase
  	   min max logand logior logxor lognot ffloor fceiling
  	   ftruncate fround signum cis)
    (:export ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
  	   tan asin acos atan sinh cosh tanh asinh acosh atanh float random
  	   truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
- 	   /= >= > complex conjugate realpart imagpart phase min max
+ 	   /= >= > ;; complex
+	   conjugate realpart imagpart phase min max
  	   logand logior logxor lognot ffloor fceiling ftruncate fround 
  	   signum cis)
    (:documentation "Vectorization of numerical functions"))
@@ -38,8 +40,8 @@
 
 ;;; Patch up some type definitions
 
-(deftype float () 'common-lisp:float)
-(deftype complex () 'common-lisp:complex)
+;;(deftype float () 'common-lisp:float)
+;;(deftype complex () 'common-lisp:complex)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -101,7 +103,7 @@
 (make-rv-function-1 >= common-lisp:>=)
 (make-rv-function-1 > common-lisp:>)
 
-(make-rv-function-1 complex common-lisp:complex)
+;;(make-rv-function-1 complex common-lisp:complex)
 (make-rv-function realpart common-lisp:realpart x)
 (make-rv-function imagpart common-lisp:imagpart x)
 (make-rv-function conjugate common-lisp:conjugate x)

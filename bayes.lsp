@@ -24,7 +24,8 @@
 			  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
 			  asin acos atan sinh cosh tanh asinh acosh atanh float random
 			  truncate floor ceiling round minusp zerop plusp evenp oddp 
-			  < <= = /= >= > complex conjugate realpart imagpart phase
+			  < <= = /= >= > ;; complex
+			  conjugate realpart imagpart phase
 			  min max logand logior logxor lognot ffloor fceiling
 			  ftruncate fround signum cis)
   (:export *bayes-model-proto*))

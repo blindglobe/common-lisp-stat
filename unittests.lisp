@@ -17,7 +17,8 @@
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
 	asin acos atan sinh cosh tanh asinh acosh atanh float random
 	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= > complex conjugate realpart imagpart phase
+	< <= = /= >= > ;; complex
+	conjugate realpart imagpart phase
 	min max logand logior logxor lognot ffloor fceiling
 	ftruncate fround signum cis)
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
@@ -59,19 +60,19 @@
 (defgeneric numerical= (a b &key tol))
 
 (defmethod numerical= ((a real) (b real) &key (tol 0.00001)) ;; real))
-  (print (format nil " equality pred for real a=%l real b=%l" a b))
+  (print (format nil " equality pred for real a=~w real b=~w" a b))
   (< (abs (- a b)) tol))
 
 (defmethod numerical= ((a integer) (b integer) &key (tol 0.1)) ;; real))
-  (print (format nil " equality pred for int a=~l int b=~l" (list a b)))
+  (print (format nil " equality pred for int a=~w int b=~w" a b))
   (< (abs (- a b)) tol))
 
-(defmethod numerical= ((a complex) (b complex) &key (tol 0.00001)) ;; real))
-  (< (abs (- a b)) tol))
+;;(defmethod numerical= ((a complex) (b complex) &key (tol 0.00001)) ;; real))
+;;  (< (abs (- a b)) tol))
 
 ;; can we use sequence for both array and list? I think so.
 (defmethod numerical= ((a sequence) (b sequence) &key (tol 0.00001))
-  (print (format nil "checking equality for list a %l list b=%l" a b))
+  (print (format nil "checking equality for list a ~w list b=~w" a b))
   (if (and (= (length a) (length b))
 	   (> (length a) 0)
 	   (numerical= (car a) (car b) :tol tol))
@@ -130,7 +131,7 @@
 (numerical= 2.0 2.1 :tol 0.5)
 (numerical= 2 2)
 (numerical= 2 3)
-(numerical= 2.0 (list 2.1 2.0 2.2))
+;;(numerical= 2.0 (list 2.1 2.0 2.2))
 
 
 

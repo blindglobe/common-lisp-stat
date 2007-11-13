@@ -22,12 +22,13 @@
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)
  (:shadowing-import-from :lisp-stat-math
-			 expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-			 asin acos atan sinh cosh tanh asinh acosh atanh float random
-			 truncate floor ceiling round minusp zerop plusp evenp oddp 
-			 < <= = /= >= > complex conjugate realpart imagpart phase
-			 min max logand logior logxor lognot ffloor fceiling
-			 ftruncate fround signum cis)
+	 expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+	 asin acos atan sinh cosh tanh asinh acosh atanh float random
+	 truncate floor ceiling round minusp zerop plusp evenp oddp 
+	 < <= = /= >= > ;; complex 
+	 conjugate realpart imagpart phase
+	 min max logand logior logxor lognot ffloor fceiling
+	 ftruncate fround signum cis)
 
  (:export nreg-model nreg-model-proto mean-function theta-hat epsilon
 	  count-limit verbose))
