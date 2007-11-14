@@ -60,38 +60,32 @@
 (defgeneric numerical= (a b &key tol))
 
 (defmethod numerical= ((a real) (b real) &key (tol 0.00001)) ;; real))
-  (print (format nil " equality pred for real a=~w real b=~w" a b))
+  ;;(print (format nil " equality pred for real a=~w real b=~w" a b))
   (< (abs (- a b)) tol))
 
+;; can we just worry about reals if integers are a subclass?  
 (defmethod numerical= ((a integer) (b integer) &key (tol 0.1)) ;; real))
-  (print (format nil " equality pred for int a=~w int b=~w" a b))
+  ;;(print (format nil " equality pred for int a=~w int b=~w" a b))
   (< (abs (- a b)) tol))
 
 ;;(defmethod numerical= ((a complex) (b complex) &key (tol 0.00001)) ;; real))
 ;;  (< (abs (- a b)) tol))
 
-;; can we use sequence for both array and list? I think so.
+
 (defmethod numerical= ((a sequence) (b sequence) &key (tol 0.00001))
   (print (format nil "checking equality for list a ~w list b=~w" a b))
-  (if (and (= (length a) (length b))
-	   (> (length a) 0)
-	   (numerical= (car a) (car b) :tol tol))
-      (progn
-	(numerical= (cdr a) (cdr b) :tol tol))
-	nil))
-;; FIXME++++  This is too slow, a few too many comparisons.
-
-(numerical= (list 2.0 2.0 2.2) (list 2.1 2.0 2.2))
-(numerical= (list 2.1 2.0 2.2) (list 2.1 2.0 2.2))
-
-(numerical= (list 2.1 2.0 2.2 4.2) (list 2.1 2.0 2.2 4.2))
-(numerical= (list 2.1 2.0 2.3 4.0) (list 2.1 2.0 2.2 4.0))
-
-(let ((a (list 2.1 2.0 2.2 4.2))
-      (b (list 2.0 2.1 2.2 4.2)))
-  (and (= (length a) (length b))
-       (numerical= (car a) (car b))))
-  
+  ;; using sequence for both array and lists -- need to check multi-dim arrays
+  ;; FIXME++++  This is too slow, too many comparisons!
+  (if (and (null a) (null b)) 
+      t
+      (if (and (= (length a) (length b))
+	       (> (length a) 0)
+	       (numerical= (car a) (car b) :tol tol))
+	  (progn
+	    (if (= (length (cdr a)) 0)
+		t
+		(numerical= (cdr a) (cdr b) :tol tol)))
+	  nil)))
 
 ;; (defmethod numerical= ((complex a) (complex b) &key (tol 0.00001))
 ;; (defmethod numerical= ((list a) (list b) &key (tol 0.00001))
@@ -116,23 +110,21 @@
   ()
   (:tests
    (numerical=1 (ensure (numerical= 3 3.001 :tol 0.01)))
+   (numerical=1.1 (ensure    (numerical= 2 2)))
+   (numerical=1.2 (ensure (not (numerical= 2 3))))
    (numerical=2 (ensure (numerical= 3 3.01 :tol 0.01)))
    (numerical=3 (ensure (not (numerical= 3 3.1 :tol 0.01))))
    (numerical=4 (ensure (numerical= nil nil :tol 0.01)))
    (numerical=5 (ensure (numerical= (list ) (list ) :tol 0.01)))
    (numerical=6 (ensure (numerical= (list 1.0) (list 1.0) :tol 0.01)))
    (numerical=7 (ensure (numerical= (list 1.0 1.0) (list 1.0 1.0) :tol 0.01)))
-   (numerical=8 (ensure (not (numerical= (list 1.0 1.0)
+   (numerical=7.5 (ensure-error (numerical= 1.0 (list 1.0 1.0) :tol 0.01)))
+   (numerical=8 (ensure (not (numerical= (list 2.0 2.0 2.2) (list 2.1 2.0 2.2)))))
+   (numerical=9 (ensure    (numerical= (list 2.1 2.0 2.2) (list 2.1 2.0 2.2)) ))
+   (numerical=10 (ensure    (numerical= (list 2.1 2.0 2.2 4.2) (list 2.1 2.0 2.2 4.2))))
+   (numerical=11 (ensure (not (numerical= (list 2.1 2.0 2.3 4.0) (list 2.1 2.0 2.2 4.0)))))
+   (numerical=12 (ensure (not (numerical= (list 1.0 1.0)
 					 (list 1.0 1.1) :tol 0.01))))))
-
-
-(numerical= 2.0 2.0)
-(numerical= 2.0 2.1)
-(numerical= 2.0 2.1 :tol 0.5)
-(numerical= 2 2)
-(numerical= 2 3)
-;;(numerical= 2.0 (list 2.1 2.0 2.2))
-
 
 
 

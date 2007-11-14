@@ -196,7 +196,7 @@ my-chol-decomp-test
 (binomial-pmf 1 3 0.4) ;;0.4320000000226171
 (binomial-rand 5 3 0.4) ;;(2 2 0 1 2)
 
-;;; OBJECT SYSTEM
+;;;; OBJECT SYSTEM
 
 (in-package :ls-user)
 (defproto *test-proto*)
@@ -205,7 +205,7 @@ my-chol-decomp-test
 (send *test-proto* :make-data)
 
 
-;;; Testing 
+;;;; Testing 
 
 (in-package :lisp-stat-unittests)
 (testsuites)
@@ -215,6 +215,7 @@ my-chol-decomp-test
 ;;(failures)
 
 (describe (run-tests :suite 'lisp-stat-testsupport))
+(describe (run-tests :suite 'lisp-stat-testsupport2))
 
 (testsuite-tests 'lisp-stat)
 (run-tests :suite 'lisp-stat)
