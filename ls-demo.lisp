@@ -16,7 +16,7 @@
 
 (load "init.lisp")  ;; init needs to be more like the asdf-loader for lisp-stat, though it is pretty close. 
 
-;;; checking exports.
+;;; non-rigorous check for exports.
 ;;; This is generally not how I expect it to be used.
 
 (in-package :cl-user)
@@ -25,18 +25,14 @@
 (lisp-stat:normal-rand 20) ;;; DOESN'T RETURN
 
 
-;;; This is how I expect it to be used, either with work in ls-user,
-;;; or a cloned package similar to ls-user.
+;;;; THIS is how I expect it to be used, either with work in ls-user,
+;;;; or a cloned package similar to ls-user.
 
 (in-package :ls-user)
 
-;; Probability
 
-(binomial-quant 0.95 3 0.4) ; 3
-(binomial-quant 0 3 0.4) ; 0
-(normal-rand 20)
 
-;; Matrix algebra.
+;;;; Matrix algebra.
 
 (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((1.7888543819998317 0.0 0.0)
@@ -118,19 +114,23 @@ my-chol-decomp-test
 
 
 
-;;; Log-gamma function
+;;;; Special functions
+
+;; Log-gamma function
 
 (log-gamma 3.4) ;;1.0923280596789584
 
-;;; Probability functions
 
-;;; looking at these a bit more, perhaps a more CLOSy style is needed, i.e. 
-;;; (quantile :list-or-cons loc :type type (one of 'empirical 'normal 'cauchy, etc...))
-;;; similar for the cdf, density, and rand.
-;;; Probably worth figuring out how to add a new distribution
-;;; efficiently, i.e. by keeping some kind of list.
 
-;;; Normal distribution
+;;;; Probability functions
+
+;; looking at these a bit more, perhaps a more CLOSy style is needed, i.e. 
+;; (quantile :list-or-cons loc :type type (one of 'empirical 'normal 'cauchy, etc...))
+;; similar for the cdf, density, and rand.
+;; Probably worth figuring out how to add a new distribution
+;; efficiently, i.e. by keeping some kind of list.
+
+;; Normal distribution
 
 (normal-quant 0.95) ;;1.6448536279366268
 (normal-cdf 1.3) ;;0.9031995154143897
@@ -139,56 +139,56 @@ my-chol-decomp-test
 
 (bivnorm-cdf 0.2 0.4 0.6) ;;0.4736873734160288
 
-;;; Cauchy distribution
+;; Cauchy distribution
 
 (cauchy-quant 0.95) ;;6.313751514675031 
 (cauchy-cdf 1.3) ;;0.7912855998398473
 (cauchy-dens 1.3) ;;0.1183308127104695 
 (cauchy-rand 2) ;;(-1.06224644160405 -0.4524695943939537)
 
-;;; Gamma distribution
+;; Gamma distribution
 
 (gamma-quant 0.95 4.3) ;;8.178692439291645
 (gamma-cdf 1.3 4.3) ;;0.028895150986674906
 (gamma-dens 1.3 4.3) ;;0.0731517686447374
 (gamma-rand 2 4.3) ;;(2.454918912880936 4.081365384357454)
 
-;;; Chi-square distribution
+;; Chi-square distribution
 
 (chisq-quant 0.95 3) ;;7.814727903379012
 (chisq-cdf 1 5) ;;0.03743422675631789
 (chisq-dens 1 5) ;;0.08065690818083521
 (chisq-rand 2 4) ;;(1.968535826180572 2.9988646156942997)
 
-;;; Beta distribution
+;; Beta distribution
 
 (beta-quant 0.95 3 2) ;;0.9023885371149876
 (beta-cdf 0.4 2 2.4) ;;0.4247997418541529 
 (beta-dens 0.4 2 2.4) ;;1.5964741858913518 
 (beta-rand 2 2 2.4) ;;(0.8014897077282279 0.6516371997922659) 
 
-;;; t distribution
+;; t distribution
 
 (t-quant 0.95 3) ;;2.35336343484194
 (t-cdf 1 2.3) ;;0.794733624298342
 (t-dens 1 2.3) ;;0.1978163816318102
 (t-rand 2 2.3) ;;(-0.34303672776089306 -1.142505872436518)
 
-;;; F distribution
+;; F distribution
 
 (f-quant 0.95 3 5) ;;5.409451318117459
 (f-cdf 1 3.2 5.4) ;;0.5347130905510765
 (f-dens 1 3.2 5.4) ;;0.37551128864591415
 (f-rand 2 3 2) ;;(0.7939093442091963 0.07442694152491144)
 
-;;; Poisson distribution
+;; Poisson distribution
 
 (poisson-quant 0.95 3.2) ;;6
 (poisson-cdf 1 3.2) ;;0.17120125672252395
 (poisson-pmf 1 3.2) ;;0.13043905274097067
 (poisson-rand 5 3.2) ;;(2 1 2 0 3)
 
-;;; Binomial distribution
+;; Binomial distribution
 
 (binomial-quant 0.95 3 0.4) ;;; DOESN'T RETURN
 (binomial-quant 0 3 0.4) ;;; -2147483648
@@ -231,10 +231,9 @@ my-chol-decomp-test
 (run-tests :suite 'lisp-stat-lin-alg)
 (describe (run-tests :suite 'lisp-stat-lin-alg))
 
-;;; Data Analysis test
+;;;; Data Analysis test
 
 (in-package :ls-user)
-
 
 ;; LispStat 1 approach to variables
 

@@ -591,7 +591,7 @@ Makes a new object prototype with instance variables IVARS, 'class'
 variables CVARS and parents PARENT. PARENT can be a single object or
 a list of objects. IVARS and CVARS must be lists."
   (if (boundp name)
-      (error "name is bound") ; fixme: use real error
+      (error "name is bound") ; fixme: use real error or really mod object.
       (let ((obsym (gensym))
 	    (namesym (gensym))
 	    (parsym (gensym)))
@@ -600,24 +600,21 @@ a list of objects. IVARS and CVARS must be lists."
 		 (,parsym ,parents)
 		 (,obsym (make-basic-object (if (listp ,parsym) 
 						,parsym 
-						(list ,parsym)) ;; should this be ,@parsym ? 
+						(list ,@parsym)) ;; should this be ,@parsym ? 
 					    nil)))
 	    (make-prototype ,obsym ,namesym ,ivars ,cvars ,doc t)
 	    ,namesym)))))
 
-
-
-
 ;; recall: 
 ;; , => turn on evaluation again (not macro substitution)
-;; ` => 
-;; ' => regular quote (not special in this context).
+;; ` => template comes (use , to undo template and restore eval
+;; ' => regular quote (not special in this context), 'ted => (quote ted)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                   Initialize the Root Object
-;;;;
+;;;
+;;;                   Initialize the Root Object
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setf (ls-object-preclist *object*) (list *object*))
@@ -628,9 +625,9 @@ a list of objects. IVARS and CVARS must be lists."
 					; unknown slot  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                       *OBJECT* Methods
-;;;;
+;;;
+;;;                       *OBJECT* Methods
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmeth *object* :isnew (&rest args)
