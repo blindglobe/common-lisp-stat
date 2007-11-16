@@ -68,13 +68,13 @@
   ;;(print (format nil " equality pred for int a=~w int b=~w" a b))
   (< (abs (- a b)) tol))
 
-;;(defmethod numerical= ((a complex) (b complex) &key (tol 0.00001)) ;; real))
-;;  (< (abs (- a b)) tol))
-
+(defmethod numerical= ((a complex) (b complex) &key (tol 0.00001))
+  ;;(print (format nil " equality pred for cmplx a=~w cmplx b=~w" a b))
+  (< (abs (- a b)) tol))
 
 (defmethod numerical= ((a sequence) (b sequence) &key (tol 0.00001))
-  (print (format nil "checking equality for list a ~w list b=~w" a b))
-  ;; using sequence for both array and lists -- need to check multi-dim arrays
+  ;; (print (format nil "checking equality for list a ~w list b=~w" a b))
+  ;; using sequence for lists and vectors, but not arrays.
   ;; FIXME++++  This is too slow, too many comparisons!
   (if (and (null a) (null b)) 
       t
@@ -87,11 +87,20 @@
 		(numerical= (cdr a) (cdr b) :tol tol)))
 	  nil)))
 
-;; (defmethod numerical= ((complex a) (complex b) &key (tol 0.00001))
-;; (defmethod numerical= ((list a) (list b) &key (tol 0.00001))
-;; (defmethod numerical= ((array a) (array b) &key (tol 0.00001))
+;; To do.
 
-
+(defmethod numerical= ((a array) (b array) &key (tol 0.00001))
+  (print (format nil "checking equality for array a ~w and array b=~w" a b))
+  ;;; FIXME Warning!  Need to generalize past  2-d array!!
+  (if (/= (array-dimensions a) (array-dimensions b))
+      nil
+      (let* ((a-dim (array-dimensions a))
+	     (a-b-elt-eq (loop for i from 0 to (nth 0 a-dim)
+			       for j from 0 to (nth 1 a-dim)
+			       collect (numerical= (apply #'aref a (list i j))
+						   (apply #'aref b (list i j))
+						   :tol tol))))
+	(every #'(lambda (x) x) a-b-elt-eq))))
 
 (deftestsuite lisp-stat-testsupport (lisp-stat)
   ()
@@ -124,7 +133,29 @@
    (numerical=10 (ensure    (numerical= (list 2.1 2.0 2.2 4.2) (list 2.1 2.0 2.2 4.2))))
    (numerical=11 (ensure (not (numerical= (list 2.1 2.0 2.3 4.0) (list 2.1 2.0 2.2 4.0)))))
    (numerical=12 (ensure (not (numerical= (list 1.0 1.0)
-					 (list 1.0 1.1) :tol 0.01))))))
+					 (list 1.0 1.1) :tol 0.01))))
+   (numerical=C1 (ensure (numerical= #C(2 3) #C(2 3))))
+   (numerical=C2 (ensure (not(numerical= #C(2 3) #C(2 4)))))
+   (numerical=C3 (ensure (numerical= #C(2 3) #C(3 4) :tol 2)))
+   (numerical=C4 (ensure (not(numerical= #C(2 3) #C(3 4) :tol 1))))
+
+   ;;;; Tests to fix
+
+   (numerical=A1 (ensure (numerical= #1A(2 3 4) 
+				     #1A(2 3 4))))
+
+   (numerical=A2 (ensure (numerical= #2A((2 3 4) (1 2 4) (2 4 5))
+				     #2A((2 3 4) (1 2 4) (2 4 5)))))
+
+   (numerical=A3 (ensure (not (numerical= #2A((2 3 4) (1 2 4) (2 5 4))
+					  #2A((2 3 4) (1 2 4) (2 4 5))))))
+
+   (numerical=A4 (ensure (not (numerical= #1A(2 2 4) 
+					  #1A(2 3 4)))))
+
+   ))
+
+;; (describe (run-tests :suite 'lisp-stat-testsupport2))
 
 
 
@@ -136,6 +167,15 @@
 		      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
 		  5.000000000000003)
 	  :test 'almost=lists))
+
+;(addtest (lisp-stat-lin-alg) cholesky-decomposition-1a
+;	 (ensure-same
+;	  (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+;	  (list #2A((1.7888543819998317 0.0 0.0)
+;		      (1.6770509831248424 0.11180339887498929 0.0)
+;		      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
+;		  5.000000000000003)
+;	  :test 'numerical=))
 
 (addtest (lisp-stat-lin-alg) lu-decomposition
 	 (ensure-same

@@ -284,3 +284,60 @@ absorbtion
 (def m (regression-model (list iron aluminum) absorbtion))
 (send m :help) (send m :plot-residuals)
 
+
+
+;;; Example array calcs
+
+#+nil(progn
+      (functionp #'and)
+      (= (array-dimensions #2A((2 3 3 ) (2 4  4)))
+	 (array-dimensions #2A((2 3 3 ) (2 5  4))))
+      (reduce #'and (= (array-dimensions #2A((2 3) (2 4)))
+		       (array-dimensions #2A((2 3 3 ) (2 5  4)))))
+      
+      (defvar my-t-ar nil)
+      (setf my-t-ar #3A(((2 3) (2 2) (2 1))
+			((2 3) (2 2) (2 1))))
+      (defvar my-t-ar2 nil)
+      (setf my-t-ar2 #2A((1 2 3 4)
+			 (5 6 7 8)))
+      
+      (array-dimensions my-t-ar)
+      (array-dimensions my-t-ar2)
+      
+      (aref my-t-ar2 1 2) ;; GOOD
+      (aref my-t-ar2 (list 1 2)) ;; BAD
+      (apply #'aref my-t-ar2 (list 1 2)) ;; GOOD
+      ;; For extracting multiple elements
+      (mapcar #'(lambda (x) (apply #'aref my-t-ar2 x))
+	      (list (list 0 0) (list 0 1)))
+      
+      
+      (aref my-t-ar 1 2 1)
+      (aref my-t-ar 1 2 1)
+      (aref my-t-ar 1 1 0)
+      
+      (array-dimensions #3A(((2 3) (2 2) (2 1))
+			    ((2 3) (2 2) (2 1))))
+      
+      (reduce #'and (= #(2 3) #(2 4)))
+      (= #(2 3) #(2 3))
+
+(let ((a #2A((2 3 3 ) (2 5  4)))
+      (b #2A((2 3 3 ) (2 5  4))))
+  (let ((a-rank (array-rank a))
+	(a-dim (array-dimensions a))
+	(a-b-elt-eq (loop for i in 0 to (aref a-dim 0)
+			  for j in 0 to (aref a-dim 1)
+			  collect (numerical= (apply #'aref a (list i j))
+					      (apply #'aref b (list i j))))))
+    (every  #'(lambda (x) x) a-b-elt-eq))))
+
+(every #'(lambda (x) x) (list T T T))
+(every #'(lambda (x) x) (list T T nil))
+      
+      (and T T)
+      (mapcar #'(lambda (&rest args) (and args))
+	      (list (= #(2 3) #(2 4))))
+      (= #(2 3) #(2 3))
+      )
