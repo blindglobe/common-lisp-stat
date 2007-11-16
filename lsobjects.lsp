@@ -606,6 +606,20 @@ a list of objects. IVARS and CVARS must be lists."
                    ,(caddr listspec)))
          (t (error "Ill-formed: ~s" `(for ,listspec ,exp)))))
 
+(defun symstuff (l)
+   `(concatenate 'string
+      ,@(for (x :in l)
+           (cond ((stringp x)
+                  `',x)
+                 ((atom x)
+                  `',(format nil "~a" x))
+                 ((eq (car x) ':<)
+                  `(format nil "~a" ,(cadr x)))
+                 ((eq (car x) ':++)
+                  `(format nil "~a" (incf ,(cadr x))))
+                 (t
+                  `(format nil "~a" ,x))))))
+
 (defmacro build-symbol (&rest l)
    (let ((p (find-if (lambda (x) (and (consp x) (eq (car x) ':package)))
                      l)))
@@ -622,19 +636,6 @@ a list of objects. IVARS and CVARS must be lists."
                (t
                 `(values (intern ,(symstuff l))))))))
 
-(defun symstuff (l)
-   `(concatenate 'string
-      ,@(for (x :in l)
-           (cond ((stringp x)
-                  `',x)
-                 ((atom x)
-                  `',(format nil "~a" x))
-                 ((eq (car x) ':<)
-                  `(format nil "~a" ,(cadr x)))
-                 ((eq (car x) ':++)
-                  `(format nil "~a" (incf ,(cadr x))))
-                 (t
-                  `(format nil "~a" ,x))))))
 
 (defmacro defproto2 (name &optional ivars cvars parents doc)
   "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
