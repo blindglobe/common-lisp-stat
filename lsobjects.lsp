@@ -584,26 +584,75 @@ a list of objects. IVARS and CVARS must be lists."
 	 ,namesym))))
 
 
+;; Infrastructure for new defproto from Common-Lisp Cookbook!  Thanks!
+
+;(defmacro odd-define (name buildargs)
+;   `(progn (defun ,(build-symbol make-a- (:< name)) 
+;                                 ,buildargs
+;              (vector ,(length buildargs) ',name ,@buildargs))
+;           (defun ,(build-symbol test-whether- (:< name)) (x)
+;              (and (vectorp x) (eq (aref x 1) ',name))
+;           (defun ,(build-symbol (:< name) -copy) (x) 
+;              ...)
+;           (defun ,(build-symbol (:< name) -deactivate) (x) 
+;              ...))))
+
+(defmacro for (listspec exp)
+   (cond ((and (= (length listspec) 3)
+               (symbolp (car listspec))
+               (eq (cadr listspec) ':in))
+          `(mapcar (lambda (,(car listspec))
+                      ,exp)
+                   ,(caddr listspec)))
+         (t (error "Ill-formed: ~s" `(for ,listspec ,exp)))))
+
+(defmacro build-symbol (&rest l)
+   (let ((p (find-if (lambda (x) (and (consp x) (eq (car x) ':package)))
+                     l)))
+      (cond (p
+             (setq l (remove p l))))
+      (let ((pkg (cond ((eq (cadr p) 'nil)
+                        nil)
+                       (t `(find-package ',(cadr p))))))
+         (cond (p
+                (cond (pkg
+                       `(values (intern ,(symstuff l) ,pkg)))
+                      (t
+                       `(make-symbol ,(symstuff l)))))
+               (t
+                `(values (intern ,(symstuff l))))))))
+
+(defun symstuff (l)
+   `(concatenate 'string
+      ,@(for (x :in l)
+           (cond ((stringp x)
+                  `',x)
+                 ((atom x)
+                  `',(format nil "~a" x))
+                 ((eq (car x) ':<)
+                  `(format nil "~a" ,(cadr x)))
+                 ((eq (car x) ':++)
+                  `(format nil "~a" (incf ,(cadr x))))
+                 (t
+                  `(format nil "~a" ,x))))))
 
 (defmacro defproto2 (name &optional ivars cvars parents doc)
   "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
 Makes a new object prototype with instance variables IVARS, 'class'
 variables CVARS and parents PARENT. PARENT can be a single object or
 a list of objects. IVARS and CVARS must be lists."
-  (if (boundp name)
-      (error "name is bound") ; fixme: use real error or really mod object.
+  (if (not (boundp name))
       (let ((obsym (gensym))
-	    (namesym (gensym))
 	    (parsym (gensym)))
-	`(progn
-	  (let* ((,namesym ',name)
-		 (,parsym ,parents)
-		 (,obsym (make-basic-object (if (listp ,parsym) 
-						,parsym 
-						(list ,@parsym)) ;; should this be ,@parsym ? 
-					    nil)))
-	    (make-prototype ,obsym ,namesym ,ivars ,cvars ,doc t)
-	    ,namesym)))))
+	`(let* ((,parsym ,parents)
+		(,obsym (make-basic-object
+			 (if (listp ,parsym) 
+			     ,parsym 
+			     (list ,@parsym)) ;; should this be ,@parsym ? 
+			 nil)))
+	  (defvar ,(build-symbol (:< name)) nil)
+	  (make-prototype ,obsym ,name ,ivars ,cvars ,doc t)
+	  ,name))))
 
 ;; recall: 
 ;; , => turn on evaluation again (not macro substitution)
