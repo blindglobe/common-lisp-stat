@@ -202,7 +202,23 @@ my-chol-decomp-test
 (defproto *test-proto*)
 *test-proto*
 (defmeth *test-proto* :make-data (&rest args) nil)
-(send *test-proto* :make-data)
+
+(defvar my-proto-instance nil)
+(setf my-proto-instance (send *test-proto* :new))
+(send *test-proto* :own-slots)
+(send *test-proto* :has-slot 'proto-name)
+(send *test-proto* :has-slot 'PROTO-NAME)
+
+
+(defproto2 *test-proto2*)
+*test-proto2*
+(defmeth *test-proto* :make-data (&rest args) nil)
+
+(defvar my-proto-instance nil)
+(setf my-proto-instance (send *test-proto* :new))
+(send *test-proto* :own-slots)
+(send *test-proto* :has-slot 'proto-name)
+(send *test-proto* :has-slot 'PROTO-NAME)
 
 
 ;;;; Testing 
