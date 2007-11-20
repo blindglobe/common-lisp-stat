@@ -491,3 +491,32 @@
 	   (ensure-same 
 	    (binomial-rand 5 3 0.4)
 	    (list 2 2 0 1 2)))))
+
+
+
+;;;; Object System tests
+
+;;(deftestsuite lisp-stat-proto-objects (lisp-stat)
+;;  ()
+;;  (:documentation "Make sure the proto object system is valid.")
+;;  (:tests
+;;   (create-proto (ensure (object-proto-p (defproto test-me))))
+;;   (create-proto2 (ensure (object-proto-p (defproto2 test-me2))))
+;;   (instance1 (ensure (send test-me :isnew)))
+;;   (instance1-2 (ensure (send test-me2 :isnew)))
+;;   (instance2 (ensure (send test-me :has-slot 'new)))
+;;   (instance2-2 (ensure (send test-me2 :has-slot 'new)))
+
+;;   (instance5 (ensure (send test-me :has-slot 'new)))
+;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
+;;   (instance5 (ensure (send test-me :own-slots 'new)))
+;;   (instance5-2 (ensure (send test-me2 :own-slots 'new)))
+;;   (instance5 (ensure (send test-me :has-slot 'new)))
+;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
+;;   (instance5 (ensure (send test-me :has-slot 'new)))
+;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
+
+;;   ))
+
+
+   
