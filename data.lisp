@@ -45,13 +45,6 @@
 
 (in-package :lisp-stat-data)
 
-;; (deftype dataformtype (list scalar vector sequence list array relation))
-;; (deftype datareptype (list integer rational real complex string symbol=
-;; (deftype stattzpe (list 
-
-
-
-
 ;;; The purpose of this package is to manage data which will be
 ;;; processed by LispStat.  In particular, it willbe importnat to
 ;;; register variables, datasets, relational structures, and other
@@ -64,15 +57,15 @@
 (defvar *lisp-stat-data-count* 0
   "number of items currently recorded.")
 
-#|
-;;; Data Types:
+
+;;; Data (storage) Types, dt-{.*}
 ;;;
 ;;; Data types are the representation of data from a computer-science
 ;;; perspective, i.e. what it is that they contain.  These types
-;;; include particular forms of compound types (i.e. dataframe,
-;;; relationdata are compounds of arrays of different types where the
-;;; difference is row-wise, while array is a compound of elements of
-;;; the same type.
+;;; include particular forms of compound types (i.e. dataframe is
+;;; array-like, but types differ, difference is row-wise, while array
+;;; is a compound of elements of the same type.
+;;; 
 
 ;;Examples:
 ;;  (defun equidimensional (a)
@@ -82,27 +75,46 @@
 ;;    `(and (array ,type (,size ,size))
 ;;          (satisfies equidimensional))) =>  SQUARE-MATRIX
 
+(defun array-of-equal-dt-scalar-type (x) 
+  ;; return dt-scalar-type which fits (more precise that works)
+  (if x 
+      'integer
+      nil))
+
+(defun array-of-equal-dt-scalar-type-within-column (x) 
+  ;; return dt-scalar-type which fits (more precise that works)
+  (if x 
+      'integer
+      nil))
+
+
+
 (deftype dt-scalar (&optional type)
-  `(or integer double complex))
+  `(or integer double complex symbol))
 
-(deftype dt-array (&optional type)
-  `(satisfies array-of-equal-type))
+(deftype dt-array (&optional ndim dimlist)
+  `(satisfies array-of-equal-dt-scalar-type))
 
-(deftype dt-dataframe ()
-  `(satisfies array-of-equal-type-within-column))
+(deftype dt-dataframe (&optional )
+  `(satisfies array-of-equal-dt-scalar-type-within-column))
 
-(deftype dt-relationaldata ()
-  `(satisfies (foreach unit in relationalUnit
-	       (typep unit 'dt-dataframe))))
-
-
-;;; Statistical Variable Classes
+;(deftype dt-relationaldata ()
+;  `(satisfies (foreach unit in relationalUnit
+;	       (typep unit 'dt-dataframe))))
 
 
-(deftype sv-nominal (&optional length)
+;;; Statistical Variable Types, sv-{.*}
+;;; 
+;;; Statistical variable types work to represent the statistical
+;;; category represented by the variable, i.e. nominal, ordinal,
+;;; integral, continous, ratio.   This metadata can be used to hint at
+;;; appropriate analysis methods -- or perhaps more critically, to
+;;; define how these methods will fail in the final interrpretation.  
+
+(deftype sv-nominal (&optional n)
   ())
 
-(deftype sv-ordinal (ordering &optional length)
+(deftype sv-ordinal (ordering &optional n)
   ())
 
 (deftype sv-categorical ()
@@ -112,8 +124,6 @@
 ;;(deftype sv-rational )
 ;;(deftype sv-complex )
 ;;(deftype sv-continuous (or 'sv-integer 'sv-real 'sv-rational 'sv-complex)) ;; perhaps, call it "mostly contin..." 
-
-|#
 
 
 ;;; Data I/O
