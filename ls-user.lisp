@@ -31,7 +31,8 @@ should be packaged up elsewhere for reproducibility.")
 	ftruncate fround signum cis)
   (:export
    ;; lsobjects :
-   defproto defmeth send 
+   defproto defproto2
+   defmeth send 
   
    ;; lstypes :
    fixnump check-nonneg-fixnum check-one-fixnum

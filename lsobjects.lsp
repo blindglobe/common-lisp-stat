@@ -62,7 +62,8 @@
  (:shadow :call-method :call-next-method :slot-value)
  (:export ls-object objectp *object* kind-of-p make-object *message-hook*
 	  *set-slot-hook* slot-value self send call-next-method call-method
-	  defmeth defproto instance-slots proto-name))
+	  defmeth defproto defproto2
+	  instance-slots proto-name))
 
 (in-package :lisp-stat-object-system)
 
@@ -76,13 +77,13 @@
 (defvar *object-serial* 0)
 
 (defstruct (ls-object
-            (:constructor make-object-structure) ;; why not make-ls-object? 
-            (:print-function print-object-structure)
-            (:predicate objectp))  ;; why not ls-object-p?
+	     (:constructor make-object-structure) ;; why not make-ls-object? 
+	     (:print-function print-object-structure)
+	     (:predicate objectp))  ;; why not ls-object-p?
   slots
   methods 
   parents 
-  preclist 
+  preclist ;; precedence list
   (serial (incf *object-serial*)))
 
 (defun print-object-structure (object stream depth)
@@ -90,7 +91,7 @@
   (send object :print stream))
 
 (setf (documentation 'objectp 'function)
-  "Args: (x)
+      "Args: (x)
 Returns T if X is an object, NIL otherwise.")
 
 (defvar *object* (make-object-structure)
@@ -98,23 +99,26 @@ Returns T if X is an object, NIL otherwise.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
-;;;;                          Utility Functions
+;;;;                          Utilities
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; special variable to hold current value of SELF.  Assign to current
-;;; object that we are working with.  AJR:FIXME:Is this going to cause
-;;; issues with concurrency?  (need to appropriately handle
-;;; interrupts).
-(defvar *self* nil)
+;;; 
+;;; AJR:FIXME:Is this going to cause issues with concurrency/threading?
+;;; (need to appropriately handle interrupts).
+(defvar *self* nil
+  "special variable to hold current value of SELF.
+Assign to current object that we are working with.")
 
-;;; FIXME: better as macro?  maybe not?
 (defun get-self ()
+  "FIXME?  better as macro?."
   (if (not (objectp *self*))
       (error "not in a method"))
   *self*)
 
 (defun has-duplicates (list)
+  "predicate: takes a list, and returns true if duplicates.  
+This should be simpler, right?"
   (do ((next list (rest next)))
       ((not (consp next)) nil)
     (if (member (first next) (rest next)) (return t))))
@@ -126,20 +130,21 @@ Returns T if X is an object, NIL otherwise.")
     (if (eq (car i) item) (return i))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;               Predicate and Checking Functions
-;;;;
+;;;
+;;;               Predicates for Consistency Checking
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun check-non-nil-symbol (x)
   (unless (and x (symbolp x)) (error "bad symbol - ~s" x)))
 
 (defun check-object (x)
+  "Returns self if true, throws an error otherwise."
   (if (objectp x) x (error "bad object - ~s" x)))
 
 (defun kind-of-p (x y)
 "Args: (x y)
-Returns T is X and Y are objects and X inherits from Y, NIL otherwise."
+Returns T if X and Y are objects and X inherits from Y, NIL otherwise."
   (if (and (objectp x) (objectp y))
       (if (member y (ls-object-preclist x)) t nil)
       nil))
@@ -255,6 +260,7 @@ predecessors, so only the first position is checked."
           (cons object (ls-object-preclist parent))))))
 
 (defun check-parents (parents)
+  "Ensure valid parents: They must be null, object, or consp without duplicates."
   (cond
    ((or (null parents) (objectp parents)) parents)
    ((consp parents)
@@ -264,6 +270,14 @@ predecessors, so only the first position is checked."
    (t (error "bad parents - ~s" parents))))
 
 (defun make-basic-object (parents object)
+  "Creates a basic object for the prototype system by ensuring that it
+can be placed into the storage heirarchy.   
+If object is not initialized, instantiate the structure.  
+Place into parental structure.
+If parents is null, use root *object*,
+if parents is a single object, use it (encapsulate as list)
+otherwise, use parents"
+
   (check-parents parents)
   
   (if (not (objectp object)) (setf object (make-object-structure)))
@@ -385,10 +399,8 @@ named SLOT."
 (defun set-method-entry-method (x v) (setf (rest x) v))
 (defsetf method-entry-method set-method-entry-method)
 
-;(defun find-own-method (x selector)
-;  (if (objectp x) (assoc selector (ls-object-methods x))))
 (defun find-own-method (x selector)
-  (if (objectp x) (assoc-eq selector (ls-object-methods x))))
+  (if (objectp x) (assoc-eq selector (ls-object-methods x)))) ;; prev was assoc not assoc-eq
 
 (defun find-lsos-method (x selector)
   (if (objectp x)
@@ -421,9 +433,9 @@ named SLOT."
       (unless no-err (error "no method for selector ~s" selector)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                   Message Sending Functions
-;;;;
+;;;
+;;;                   Message Sending Functions
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar *current-preclist* nil)
@@ -465,23 +477,17 @@ Funcalls next method for current selector and precedence list. Can only be
 used in a method."
   (sendmsg *self* *current-selector* (rest *current-preclist*) args))
          
-;;;; call-method - call method belonging to another object on current object
-
-;; ugly cruft, need better solution for SBCL packagelocks
-;; #+sbcl(declare (sb-ext:disable-package-locks ls-objects:call-method))
-
 (defun call-method (object selector &rest args)
 "Args (object selector &rest args)
 Funcalls method for SELECTOR found in OBJECT to SELF. Can only be used in 
-a method."
+a method.
+Call method belonging to another object on current object."
   (sendmsg *self* selector (ls-object-preclist object) args))
-
-;; #+sbcl(declare (sb-ext:enable-package-locks ls-objects:call-method))
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                  Object Documentation Functions
-;;;;
+;;;
+;;;                  Object Documentation
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun find-documentation (x sym add)
@@ -534,9 +540,9 @@ RETURNS: method-name."
        ,name)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;             Prototype Construction Functions and Macros
-;;;;
+;;;
+;;;             Prototype Construction
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun find-instance-slots (x slots)
@@ -553,10 +559,8 @@ RETURNS: method-name."
   (setf ivars (find-instance-slots object ivars))
   (add-slot object 'instance-slots ivars)
   (add-slot object 'proto-name name)
-  
   (dolist (slot ivars)
     (add-slot object slot (get-initial-slot-value object slot)))
-  
   (dolist (slot cvars)
     (add-slot object slot nil))
     
@@ -597,52 +601,54 @@ a list of objects. IVARS and CVARS must be lists."
 ;           (defun ,(build-symbol (:< name) -deactivate) (x) 
 ;              ...))))
 
-(defmacro for (listspec exp)
-   (cond ((and (= (length listspec) 3)
-               (symbolp (car listspec))
-               (eq (cadr listspec) ':in))
-          `(mapcar (lambda (,(car listspec))
-                      ,exp)
-                   ,(caddr listspec)))
-         (t (error "Ill-formed: ~s" `(for ,listspec ,exp)))))
+;(defmacro for (listspec exp)
+;   (cond ((and (= (length listspec) 3)
+;               (symbolp (car listspec))
+;               (eq (cadr listspec) ':in))
+;          `(mapcar (lambda (,(car listspec))
+;                      ,exp)
+;                   ,(caddr listspec)))
+;         (t (error "Ill-formed: ~s" `(for ,listspec ,exp)))))
 
-(defun symstuff (l)
-   `(concatenate 'string
-      ,@(for (x :in l)
-           (cond ((stringp x)
-                  `',x)
-                 ((atom x)
-                  `',(format nil "~a" x))
-                 ((eq (car x) ':<)
-                  `(format nil "~a" ,(cadr x)))
-                 ((eq (car x) ':++)
-                  `(format nil "~a" (incf ,(cadr x))))
-                 (t
-                  `(format nil "~a" ,x))))))
+;(defmacro symstuff (l)
+;   `(concatenate 'string
+;      ,@(for (x :in l)
+;           (cond ((stringp x)
+;                  `',x)
+;                 ((atom x)
+;                  `',(format nil "~a" x))
+;                 ((eq (car x) ':<)
+;                  `(format nil "~a" ,(cadr x)))
+;                 ((eq (car x) ':++)
+;                  `(format nil "~a" (incf ,(cadr x))))
+;                 (t
+;                  `(format nil "~a" ,x))))))
 
-(defmacro build-symbol (&rest l)
-   (let ((p (find-if (lambda (x) (and (consp x) (eq (car x) ':package)))
-                     l)))
-      (cond (p
-             (setq l (remove p l))))
-      (let ((pkg (cond ((eq (cadr p) 'nil)
-                        nil)
-                       (t `(find-package ',(cadr p))))))
-         (cond (p
-                (cond (pkg
-                       `(values (intern ,(symstuff l) ,pkg)))
-                      (t
-                       `(make-symbol ,(symstuff l)))))
-               (t
-                `(values (intern ,(symstuff l))))))))
-
+;(defmacro build-symbol (&rest l)
+;   (let ((p (find-if (lambda (x)
+;		       (and (consp x)
+;			    (eq (car x) ':package)))
+;                     l)))
+;     (cond (p
+;	    (setq l (remove p l))))
+;     (let ((pkg (cond ((eq (cadr p) 'nil)
+;		       nil)
+;		      (t `(find-package ',(cadr p))))))
+;       (cond (p
+;	      (cond (pkg
+;		     `(values (intern ,(symstuff l) ,pkg)))
+;		    (t
+;		     `(make-symbol ,(symstuff l)))))
+;	     (t
+;	      `(values (intern ,(symstuff l))))))))
 
 (defmacro defproto2 (name &optional ivars cvars parents doc)
   "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
 Makes a new object prototype with instance variables IVARS, 'class'
 variables CVARS and parents PARENT. PARENT can be a single object or
 a list of objects. IVARS and CVARS must be lists."
-  (if (not (boundp name))
+  (if (boundp name)
+      (error "can not rebind a prototype object yet")
       (let ((obsym (gensym))
 	    (parsym (gensym)))
 	`(let* ((,parsym ,parents)
@@ -651,7 +657,7 @@ a list of objects. IVARS and CVARS must be lists."
 			     ,parsym 
 			     (list ,@parsym)) ;; should this be ,@parsym ? 
 			 nil)))
-	  (defvar ,(build-symbol (:< name)) nil)
+	  (defvar ,name nil) ;; (build-symbol (:< name)) nil)
 	  (make-prototype ,obsym ,name ,ivars ,cvars ,doc t)
 	  ,name))))
 
