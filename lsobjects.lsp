@@ -74,6 +74,12 @@
 
 ;;; Structure Implementation of Lisp-Stat Object System
 
+;; We might consider a global rewrite if it doesn't seem to break
+;; anything.  In particular, the real name ought to be
+;; proto-sys-object or similar so that we can ensure that the right
+;; interpretation is made for this.   Call it the prototype object
+;; system, and possibly be done with it then.
+
 (defvar *object-serial* 0)
 
 (defstruct (ls-object
@@ -649,17 +655,19 @@ variables CVARS and parents PARENT. PARENT can be a single object or
 a list of objects. IVARS and CVARS must be lists."
   (if (boundp name)
       (error "can not rebind a prototype object yet")
-      (let ((obsym (gensym))
+      (let ((namesym (gensym)
+	    (obsym (gensym))
 	    (parsym (gensym)))
-	`(let* ((,parsym ,parents)
-		(,obsym (make-basic-object
+	`(progn 
+	  (let* ((,namesym ,name)
+		 (,parsym ,parents)
+		 (,obsym (make-basic-object
 			 (if (listp ,parsym) 
 			     ,parsym 
 			     (list ,@parsym)) ;; should this be ,@parsym ? 
 			 nil)))
-	  (defvar ,name nil) ;; (build-symbol (:< name)) nil)
-	  (make-prototype ,obsym ,name ,ivars ,cvars ,doc t)
-	  ,name))))
+	    (make-prototype ,obsym ,name ,ivars ,cvars ,doc t)
+	    ,name)))))
 
 ;; recall: 
 ;; , => turn on evaluation again (not macro substitution)
