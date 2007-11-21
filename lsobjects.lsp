@@ -655,7 +655,7 @@ variables CVARS and parents PARENT. PARENT can be a single object or
 a list of objects. IVARS and CVARS must be lists."
   (if (boundp name)
       (error "can not rebind a prototype object yet")
-      (let ((namesym (gensym)
+      (let ((namesym (gensym))
 	    (obsym (gensym))
 	    (parsym (gensym)))
 	`(progn 
@@ -667,7 +667,7 @@ a list of objects. IVARS and CVARS must be lists."
 			     (list ,@parsym)) ;; should this be ,@parsym ? 
 			 nil)))
 	    (make-prototype ,obsym ,name ,ivars ,cvars ,doc t)
-	    ,name))))))
+	    ,name)))))
 
 ;; recall: 
 ;; , => turn on evaluation again (not macro substitution)
