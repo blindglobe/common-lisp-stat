@@ -667,7 +667,7 @@ a list of objects. IVARS and CVARS must be lists."
 			     (list ,@parsym)) ;; should this be ,@parsym ? 
 			 nil)))
 	    (make-prototype ,obsym ,name ,ivars ,cvars ,doc t)
-	    ,name)))))
+	    ,name))))))
 
 ;; recall: 
 ;; , => turn on evaluation again (not macro substitution)
