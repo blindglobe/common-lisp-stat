@@ -30,8 +30,6 @@
 
 (in-package :ls-user)
 
-
-
 ;;;; Matrix algebra.
 
 (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
@@ -44,8 +42,6 @@
 my-chol-decomp-test
 (nth 0 my-chol-decomp-test)
 (nth 1 my-chol-decomp-test)
-
-
 
 
 (lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
@@ -210,7 +206,7 @@ my-chol-decomp-test
 (send *test-proto* :has-slot 'PROTO-NAME)
 
 
-(defproto2 *test-proto2*)
+(defproto2 *test-proto3*)
 *test-proto2*
 (defmeth *test-proto* :make-data (&rest args) nil)
 
