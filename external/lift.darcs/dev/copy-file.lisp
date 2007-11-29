@@ -2,6 +2,7 @@
 ;;; directly pullled from metatilities, sigh
 
 (in-package #:lift)
+;(in-package #:metatilities)
         
 (define-condition source/target-file-error (file-error)
                   ((pathname :reader source-pathname
@@ -13,16 +14,12 @@
                      (source-pathname c) (target-pathname c))))
   (:documentation "General condition for file errors that have a source and target."))
 
-;;; ---------------------------------------------------------------------------
-
 (define-condition source/target-target-already-exists-error (source/target-file-error)
                   ()
   (:report (lambda (c s)
              (format s "File action failed because target ~S already exists"
                      (target-pathname c))))
   (:documentation "This error is signaled when the target pathname already exists."))
-
-;;; ---------------------------------------------------------------------------
 
 (define-condition source/target-source-does-not-exist-error
     (source/target-file-error)
@@ -31,8 +28,6 @@
              (format s "File action failed because source ~S does not exist"
                      (source-pathname c))))
   (:documentation "This error is signaled when the source file does not exist."))
-
-;;; ---------------------------------------------------------------------------
 
 (defun copy-file (from to &key (if-does-not-exist :error)
                        (if-exists :error))
@@ -88,10 +83,35 @@ designator does not exist.
 		  (if-exists :error))
   (declare (dynamic-extent args)
 	   (ignore if-exists if-does-not-exist))
-  #+allegro
-  (excl.osi:rename (namestring from) (namestring to))
-  #-allegro
-  (when (apply #'copy-file (namestring from) (namestring to) args)
+  (when (apply #'copy-file from to args)
     (delete-file from)))
 
-  
+;;; borrowed from asdf-install -- how did this ever work ?!
+;; for non-SBCL we just steal this from SB-EXECUTABLE
+#-(or :digitool)
+(defvar *stream-buffer-size* 8192)
+#-(or :digitool)
+(defun copy-stream (from to)
+  "Copy into TO from FROM until end of the input stream, in blocks of
+*stream-buffer-size*.  The streams should have the same element type."
+  (unless (subtypep (stream-element-type to) (stream-element-type from))
+    (error "Incompatible streams ~A and ~A." from to))
+  (let ((buf (make-array *stream-buffer-size*
+			 :element-type (stream-element-type from))))
+    (loop
+      (let ((pos #-(or :clisp :cmu) (read-sequence buf from)
+                 #+:clisp (ext:read-byte-sequence buf from :no-hang nil)
+                 #+:cmu (sys:read-n-bytes from buf 0 *stream-buffer-size* nil)))
+        (when (zerop pos) (return))
+        (write-sequence buf to :end pos)))))
+
+#+:digitool
+(defun copy-stream (from to)
+  "Perform copy and map EOL mode."
+  (multiple-value-bind (reader reader-arg) (ccl::stream-reader from)
+    (multiple-value-bind (writer writer-arg) (ccl::stream-writer to)
+      (let ((datum nil))
+        (loop (unless (setf datum (funcall reader reader-arg))
+                (return))
+              (funcall writer writer-arg datum))))))
+

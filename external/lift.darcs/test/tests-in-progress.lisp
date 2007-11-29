@@ -155,3 +155,22 @@ the methods that should be run to do the tests for this test."))
 
 
 
+(deftestsuite warnings-and-errors ()
+  ())
+
+(defun warnings-and-errors-function (mode)
+  (ecase mode
+    (:warn (warn "this is a warning all by itself"))
+    (:error (error "this is an error all by itself"))
+    (:warn-error (warn "first we warn") (error "then we error"))
+    (:error-warn (error "first we error") (warn "then we warn"))))
+
+(addtest (warnings-and-errors)
+  warning-does-not-hide-error-1
+  (ensure-error (warnings-and-errors-function :warn-error)))
+
+(addtest (warnings-and-errors)
+  warning-does-not-hide-error-2
+  (ensure-warning (warnings-and-errors-function :warn-error)))
+
+

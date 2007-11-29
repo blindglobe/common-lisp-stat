@@ -60,6 +60,7 @@
 	    
 	    suite
 	    find-testsuite
+	    find-test-case
 	    ensure-random-cases-failure
 	    random-instance-for-suite
 	    defrandom-instance
@@ -152,8 +153,6 @@ the class itself is not included in the mapping. Proper? defaults to nil."
   '(:initform :initarg :reader :writer 
     :accessor :documentation :type
     :allocation))
-
-;;; ---------------------------------------------------------------------------
 
 (defun parse-brief-slot
        (slot &optional
@@ -269,8 +268,6 @@ All other CLOS slot options are processed normally."
       ;; finish-new-slot cleans up duplicates
       (finish-new-slot (nreverse new-slot)))))
 
-;;; ---------------------------------------------------------------------------
-
 (defun convert-clauses-into-lists (clauses-and-options clauses-to-convert)
   ;; This is useful (for me at least!) for writing macros
   (let ((parsed-clauses nil))
@@ -315,12 +312,14 @@ All other CLOS slot options are processed normally."
 (defvar *testsuite-test-count* nil
   "Temporary variable used to 'communicate' between deftestsuite and addtest.")
 (defvar *lift-debug-output* *debug-io*
-  "Messages from LIFT will be sent to this stream. It can set to nil or to an output stream. It defaults to *debug-io*.")
+  "Messages from LIFT will be sent to this stream. It can set to nil or 
+to an output stream. It defaults to *debug-io*.")
 
 (defvar *test-break-on-errors?* nil)
 (defvar *test-do-children?* t)
 (defparameter *test-ignore-warnings?* nil
-  "If true, LIFT will not cause a test to fail if a warning occurs while the test is running. Note that this may interact oddly with ensure-warning.")
+  "If true, LIFT will not cause a test to fail if a warning occurs while
+the test is running. Note that this may interact oddly with ensure-warning.")
 (defparameter *test-print-when-defined?* nil)
 (defparameter *test-evaluate-when-defined?* t)
 (defparameter *test-scratchpad* nil
@@ -360,13 +359,16 @@ All other CLOS slot options are processed normally."
   "The current testsuite.")
 
 (defvar *lift-dribble-pathname* nil
-  "If bound, then test output from run-tests will be sent to this file in addition to *lift-standard-output*. It can be set to nil or to a pathname.")
+  "If bound, then test output from run-tests will be sent to this file in  
+in addition to *lift-standard-output*. It can be set to nil or to a pathname.")
 
 (defvar *lift-standard-output* *standard-output*
-  "Output from tests will be sent to this stream. If can set to nil or to an output stream. It defaults to *standard-output*.")
+  "Output from tests will be sent to this stream. If can set to nil or 
+to an output stream. It defaults to *standard-output*.")
 
 (defvar *lift-if-dribble-exists* :append
-  "Specifies what to do to any existing file at *lift-dribble-pathname*. It can be :supersede, :append, or :error.")
+  "Specifies what to do to any existing file at *lift-dribble-pathname*. It 
+can be :supersede, :append, or :error.")
   
 ;;; ---------------------------------------------------------------------------
 ;;; Error messages and warnings
@@ -388,7 +390,9 @@ All other CLOS slot options are processed normally."
   "Could not find test: ~S.~S")
 
 (defparameter +run-tests-null-test-case+
-  "There is no current testsuite (possibly because none have been defined yet?). You can specify the testsuite to test by evaluating (run-tests :suite <suitename>).")
+  "There is no current testsuite (possibly because 
+   none have been defined yet?). You can specify the 
+   testsuite to test by evaluating (run-tests :suite <suitename>).")
 
 (defparameter +lift-unable-to-parse-test-name-and-class+ 
   "")
@@ -420,8 +424,7 @@ All other CLOS slot options are processed normally."
 (defun signal-lift-error (context message &rest arguments)
   (let ((c (make-condition  
             'lift-compile-error
-            :lift-message (apply #'build-lift-error-message 
-				 context message arguments))))
+            :lift-message (apply #'build-lift-error-message context message arguments))))
     (unless (signal c)
       (error c))))
 
@@ -792,10 +795,10 @@ the methods that should be run to do the tests for this test."))
 (defgeneric initialize-test (test)
   (:documentation ""))
 
-(defgeneric run-test-internal (case name result)
+(defgeneric run-test-internal (suite name result)
   (:documentation ""))
 
-(defgeneric run-tests-internal (case &key result)
+(defgeneric run-tests-internal (suite &key result)
   (:documentation ""))
 
 (defgeneric start-test (result case method-name)
@@ -859,7 +862,8 @@ the thing being defined.")
   (let ((current (assoc name *current-definition*)))
     (if current
       (setf (cdr current) value)
-      (push (cons name value) *current-definition*)))  
+      (push (cons name value) *current-definition*)))
+  
   (values value))
 
 (defun def (name &optional (definition *current-definition*))
@@ -1297,11 +1301,12 @@ Test options are one of :setup, :teardown, :test, :tests, :documentation, :expor
          (*current-test* (make-testsuite suite args)))
     (unless result
       (setf result (make-test-result suite :single)))
-    (setf *current-case-method-name* name 
+    (setf *current-case-method-name* (find-test-case suite name)
           *current-suite-class-name* suite)
     (do-testing *current-test* result 
                 (lambda () 
-                  (run-test-internal *current-test* name result)))))
+                  (run-test-internal
+		   *current-test* *current-case-method-name* result)))))
 
 (defun make-testsuite (suite args)
   (let ((make-instance-args nil))
@@ -1413,13 +1418,15 @@ control over where in the test hierarchy the search begins."
 		  (result (make-test-result (or suite config) :multiple))
 					;run-setup
 		  &allow-other-keys)
-  "Run all of the tests in a suite. Arguments are :suite, :result, :do-children? and :break-on-errors?" 
+  "Run all of the tests in a suite. Arguments are :suite, :result, ~
+:do-children? and :break-on-errors?" 
   (remf args :suite)
   (remf args :break-on-errors?)
   (remf args :run-setup)
   (remf args :dribble)
   (cond ((and suite config)
-	 (error "Specify either configuration file or test suite but not both."))
+	 (error "Specify either configuration file or test suite 
+but not both."))
 	(config
 	 (run-tests-from-file config))
 	((or suite (setf suite *current-suite-class-name*))
@@ -1447,7 +1454,8 @@ control over where in the test hierarchy the search begins."
 	   (setf (tests-run result) (reverse (tests-run result)))
 	   (values result)))
 	(t
-	 (error "There is not a current test suite and neither suite nor configuration file options were specified."))))
+	 (error "There is not a current test suite and neither suite 
+nor configuration file options were specified."))))
 
 (defun maybe-add-dribble (stream dribble-stream)
   (if dribble-stream
@@ -1492,7 +1500,7 @@ control over where in the test hierarchy the search begins."
     (dolist (key.value (current-values testsuite))
       (setf (test-environment-value (car key.value)) (cdr key.value))))
 
-(defmethod run-test-internal ((case test-mixin) (name symbol) result) 
+(defmethod run-test-internal ((suite test-mixin) (name symbol) result) 
   (when (and *test-print-test-case-names*
 	     (eq (test-mode result) :multiple))
     (print-lift-message "~&  run: ~a" name))
@@ -1508,7 +1516,7 @@ control over where in the test hierarchy the search begins."
                         (lambda (cond)
                           (setf problem 
                                 (report-test-problem
-				 'test-error result case name cond
+				 'test-error result suite name cond
 				 :backtrace (get-backtrace cond)))
                           (if *test-break-on-errors?*
                             (invoke-debugger cond)
@@ -1518,32 +1526,32 @@ control over where in the test hierarchy the search begins."
                        (t (lambda (cond)
                             (setf problem 
                                   (report-test-problem
-				   'test-error result case name cond
+				   'test-error result suite name cond
 				   :backtrace (get-backtrace cond))))))
           (setf problem nil
-		(current-method case) name)
-          (start-test result case name)
-          (setup-test case)
+		(current-method suite) name)
+          (start-test result suite name)
+          (setup-test suite)
           (unwind-protect
 	       (let ((result nil))
 		 (declare (ignorable result))
-		 (setf (current-step case) :testing
+		 (setf (current-step suite) :testing
 		       result
 		       (measure
-			   (getf (test-data case) :seconds)
-			   (getf (test-data case) :conses)
-			 (lift-test case name)))
-		 (check-for-surprises result case name))
-            (teardown-test case)	    
-            (end-test result case name)))
+			   (getf (test-data suite) :seconds)
+			   (getf (test-data suite) :conses)
+			 (lift-test suite name)))
+		 (check-for-surprises result suite name))
+            (teardown-test suite)	    
+            (end-test result suite name)))
         (ensure-failed (cond) 
 	  (setf problem 
 		(report-test-problem
-		 'test-failure result case name cond)))
+		 'test-failure result suite name cond)))
         (retry-test () :report "Retry the test." 
                     (go :test-start)))
       :test-end))
-  (setf (third (first (tests-run result))) (test-data case))
+  (setf (third (first (tests-run result))) (test-data suite))
   (setf *test-result* result))
 
 (define-condition unexpected-success-failure (test-condition)
@@ -2245,6 +2253,46 @@ control over where in the test hierarchy the search begins."
 	  (t 
 	   (error "There are several test suites named ~s: they are ~{~s~^, ~}"
 		  suite-name possibilities)))))
+			     
+(defun test-case-p (suite-class name)
+  (find-method #'lift-test nil `(,suite-class (eql ,name)) nil)) 
+
+#+(or)
+(test-case-p 
+ (find-class (find-testsuite 'test-cluster-indexing-locally) nil)
+ 'db.agraph.tests::index-them)
+
+#+(or)
+(find-test-case (find-class (find-testsuite 'test-cluster-indexing-locally))
+		'index-themxx)
+
+(defmethod find-test-case ((suite symbol) name)
+  (find-test-case (find-class (find-testsuite suite)) name)) 
+
+(defmethod find-test-case ((suite test-mixin) name)
+  (find-test-case (class-of suite) name))
+
+(defmethod find-test-case ((suite-class standard-class) (name symbol))
+  (or (and (test-case-p suite-class name) name)
+      (find-test-case suite-class (symbol-name name))))
+
+(defmethod find-test-case ((suite test-mixin) (name string))
+  (find-test-case (class-of suite) name))
+
+(defmethod find-test-case ((suite-class standard-class) (name string))
+  (let* ((temp nil)
+	 (possibilities (remove-duplicates 
+			 (loop for p in (list-all-packages) 
+			    when (and (setf temp (find-symbol name p))
+				      (test-case-p suite-class temp)) collect
+			    temp))))
+    (cond ((null possibilities) 
+	   (error 'test-class-not-defined :test-class-name name))
+	  ((= (length possibilities) 1)
+	   (first possibilities))
+	  (t 
+	   (error "There are several test cases of ~s named ~s: they are ~{~s~^, ~}"
+		  suite-class name possibilities)))))
 			     
 (defun last-test-status ()
   (cond ((typep *test-result* 'test-result)

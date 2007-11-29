@@ -46,7 +46,7 @@ use property-list format
 :testing
 
 run-tests-internal
-  do-testing
+  do-testing with testsuite-run
 
 do-testing (suite)
   testsuite-setup *
@@ -66,6 +66,10 @@ run-test-internal
   teardown-test *
   end-test - setf :end-time *
   (add test-data to tests-run of result)
+
+run-test 
+  do-testing with run-test-internal
+
 |#
 
 ;; when it doubt, add a special
@@ -200,7 +204,7 @@ run-test-internal
 		   (length (errors result)))))
 
     (when (or (expected-errors result) (expected-failures result))
-      (format stream "~&<h3>~[~:;~:*Expected failure~:p: ~a~]~[~:;, ~]~[~:;~:*Expected error~:p: ~a~]</h3>~%" 
+      (format stream "~&<h3>~[~:;~:*Expected failure~p: ~:*~a~]~[~:;, ~]~[~:;~:*Expected error~p: ~:*~a~]</h3>~%" 
 	      (length (expected-failures result))
 	      ;; zero if only one or the other (so we don't need a separator...)
 	      (* (length (expected-failures result))
@@ -398,30 +402,31 @@ run-test-internal
 (defmethod generate-detailed-reports (result stream (format (eql :html)))
   (loop for (suite test-name datum)  in (tests-run result)
      when (getf datum :problem) do
-     (let ((output-pathname (merge-pathnames
-			     (details-link stream suite test-name) 
-			     stream)))
-       (ensure-directories-exist output-pathname)
-       (with-open-file (out output-pathname
-			    :direction :output
-			    :if-does-not-exist :create
-			    :if-exists :supersede)
-	 (html-header 
-	  out 
-	  (format nil "Test ~a details | ~a" 
-		  test-name (test-result-property result :title))
-	  (test-result-property result :style-sheet))
-	 (format out "~&<h2>Test ~a details</h2>" test-name)
-	 (format out "~&<a href=\"~a\">Back</a>"
-		 (namestring (make-pathname :name (pathname-name stream)
-					    :type (pathname-type stream))))
-	 (format out "~&<pre>")
-	 (format out "~a"
-		 (encode-pre 
-		  (with-output-to-string (s)
-		    (print-test-problem "" (getf datum :problem) s))))
-	 (format out "~&</pre>") 
-	 (html-footer out)))))
+     (let ((*print-right-margin* 64))
+       (let ((output-pathname (merge-pathnames
+			       (details-link stream suite test-name) 
+			       stream)))
+	 (ensure-directories-exist output-pathname)
+	 (with-open-file (out output-pathname
+			      :direction :output
+			      :if-does-not-exist :create
+			      :if-exists :supersede)
+	   (html-header 
+	    out 
+	    (format nil "Test ~a details | ~a" 
+		    test-name (test-result-property result :title))
+	    (test-result-property result :style-sheet))
+	   (format out "~&<h2>Test ~a details</h2>" test-name)
+	   (format out "~&<a href=\"~a\">Back</a>"
+		   (namestring (make-pathname :name (pathname-name stream)
+					      :type (pathname-type stream))))
+	   (format out "~&<pre>")
+	   (format out "~a"
+		   (encode-pre 
+		    (with-output-to-string (s)
+		      (print-test-problem "" (getf datum :problem) s))))
+	   (format out "~&</pre>") 
+	   (html-footer out))))))
 
 #+(or)
 (defmethod summarize-test-environment (result stream format)
@@ -622,3 +627,4 @@ run-test-internal
 (progn
   (setf (test-result-property *test-result* :if-exists) :supersede)
   (test-result-report *test-result*  #p"/tmp/report.n3" :turtle))
+

@@ -208,8 +208,6 @@ failure because no error will be generated.")
 
 (run-tests :suite 'lift-examples)
 
-(describe (run-tests :suite 'lift-examples))
-
 ;;; ---------------------------------------------------------------------------
 ;;; 
 ;;; ---------------------------------------------------------------------------
@@ -288,5 +286,4 @@ failure because no error will be generated.")
    ((ensure-same 0 (+ -1 1)))
    ((ensure-error (+ 'foo 4)))
    ((ensure-same 0 (+ 1 1) :report "This should fail."))))
-
 
