@@ -206,7 +206,8 @@ my-chol-decomp-test
 (send *test-proto* :has-slot 'PROTO-NAME)
 
 
-(defproto2 *test-proto3*)
+(defproto2 *test-proto3* (list) (list) (list) "test doc" t)
+(defproto2 *test-proto4*)
 *test-proto2*
 (defmeth *test-proto* :make-data (&rest args) nil)
 
