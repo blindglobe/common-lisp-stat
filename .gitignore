@@ -10,3 +10,5 @@ _darcs
 *.flc
 *.x86f
 ASDF/*.asd
+external/lift.darcs/resources
+external/lift.darcs/website
