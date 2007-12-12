@@ -22,8 +22,7 @@
 (in-package :cl-user)
 (lisp-stat:binomial-quant 0.95 3 0.4) ;;; 3
 (lisp-stat:binomial-quant 0 3 0.4) ;;; 0
-(lisp-stat:normal-rand 20) ;;; DOESN'T RETURN
-
+(lisp-stat:normal-rand 20) ;;; 20 numbers :-)
 
 ;;;; THIS is how I expect it to be used, either with work in ls-user,
 ;;;; or a cloned package similar to ls-user.
@@ -77,6 +76,7 @@ my-chol-decomp-test
 
 (rcondest #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; 6.8157451e7
+;;; CURRENTLY FAILS!!
 
 (eigen #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#(10.656854249492381 -0.6568542494923802 -0.9999999999999996)

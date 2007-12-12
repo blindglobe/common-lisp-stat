@@ -1,5 +1,11 @@
 -*- mode: text -*-
 
+===========
+
+See Doc/README* for history and design considerations
+See Doc/INSTALL for getting this to work and run
+
+===========
 
 For a fast start: 
 
@@ -12,12 +18,29 @@ Step through ls-demo.lisp for a range of examples that will become
 part of the test suite.
 
 
+So basically ..   
+
+1. change directory into the CommonLispStat working directory.
+2. start your lisp
+3. follow the commands in the ls-demo.lisp file, i.e.
+
+   a. (load "init.lisp")
+   b. (in-package :ls-user)
+   c. (normal-rand 20)
+   d. (setf mytest (normal-rand 20))
+
+   and see if they work (basic CFFI functionality for external C
+   library, LIFT package for unit-testing framework to ensure run time
+   stability).
+
+4. Tell me ( <blindglobe@gmail.com> ) if there is any thing wrong (or
+   if anything happens to work.
 
 
-===========
+What to expect:
 
-See Doc/README* for history and design considerations
-See Doc/INSTALL for getting this to work and run
+CMUCL and SBCL work justfine at this stage.
 
-===========
-
+CLISP is finicky regarding the problems that we have with CFFI
+conversation.  In particular that we can not really do typing that we
+need to take care of.  
