@@ -87,3 +87,8 @@ that, after cloning the repository as above, you would:
 
  	 git push origin mob 
 
+
+The only catch is that this incantation isn't quite right.  Need to
+fix...
+
+
