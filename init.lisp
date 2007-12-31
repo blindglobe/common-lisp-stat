@@ -1,5 +1,5 @@
 ;;; Basic initialization for LispStat
-;;; Time-stamp: <2007-06-25 19:58:14 ROSSIAN6>
+;;; Time-stamp: <2007-12-26 18:23:24 rossini>
 ;;; Created: <2007-05-30 17:09:47 ROSSIAN6>
 
 ;; Goal:
@@ -25,13 +25,18 @@
 ;; things; currently this will not do the other setups.
 
 (progn
-  (defvar *lispstat-home-dir* #p"/home/tony/sandbox/CLS.git/"
+  (defvar *lispstat-home-dir*
+    ;; #p"/home/tony/sandbox/CommonLispStat.git/"
+    ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
+    ;; #p"/Users/ungil/lisp/CommonLispStat/")
+    #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
     "Value considered \"home\" for our data")
 
   (setf *lispstat-home-dir*
-	;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
+	;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
 	;; #p"/home/tony/sandbox/CommonLispStat.git/"
-	#p"/home/tony/sandbox/CLS.git/")
+	;; #p"/Users/ungil/lisp/CommonLispStat/")
+	#p"/home/rossini/public_html/GIT.repos/CommonLispStat/")
   
   (defmacro ls-dir (root-str)
     `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))

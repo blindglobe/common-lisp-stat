@@ -14,7 +14,9 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(load "init.lisp")  ;; init needs to be more like the asdf-loader for lisp-stat, though it is pretty close. 
+(load "init.lisp")
+;; init needs to be more like the asdf-loader for lisp-stat, though it
+;; is pretty close.
 
 ;;; non-rigorous check for exports.
 ;;; This is generally not how I expect it to be used.
@@ -349,8 +351,8 @@ absorbtion
 (every #'(lambda (x) x) (list T T T))
 (every #'(lambda (x) x) (list T T nil))
       
-      (and T T)
-      (mapcar #'(lambda (&rest args) (and args))
-	      (list (= #(2 3) #(2 4))))
-      (= #(2 3) #(2 3))
-      )
+(and T T)
+(mapcar #'(lambda (&rest args) (and args))
+	(list (= #(2 3) #(2 4))))
+(= #(2 3) #(2 3))
+

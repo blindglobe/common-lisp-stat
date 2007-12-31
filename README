@@ -1,11 +1,5 @@
 -*- mode: text -*-
 
-===========
-
-See Doc/README* for history and design considerations
-See Doc/INSTALL for getting this to work and run
-
-===========
 
 For a fast start: 
 
@@ -17,30 +11,79 @@ just in case.
 Step through ls-demo.lisp for a range of examples that will become
 part of the test suite.
 
+    
 
 So basically ..   
-
+  
 1. change directory into the CommonLispStat working directory.
 2. start your lisp
 3. follow the commands in the ls-demo.lisp file, i.e.
-
+ 
    a. (load "init.lisp")
    b. (in-package :ls-user)
    c. (normal-rand 20)
    d. (setf mytest (normal-rand 20))
 
+
    and see if they work (basic CFFI functionality for external C
    library, LIFT package for unit-testing framework to ensure run time
    stability).
-
+  
 4. Tell me ( <blindglobe@gmail.com> ) if there is any thing wrong (or
    if anything happens to work.
-
-
-What to expect:
 
 CMUCL and SBCL work justfine at this stage.
 
 CLISP is finicky regarding the problems that we have with CFFI
 conversation.  In particular that we can not really do typing that we
-need to take care of.  
+need to take care of.
+
+
+
+===========
+
+See Doc/README* for history and design considerations
+See Doc/INSTALL for getting this to work and run
+
+===========
+
+
+
+Working on this with git:
+
+
+
+    git clone git://repo.or.cz/CommonLispStat.git 
+
+
+will pull the whole repository, and create a "master" branch to work
+on.  Probably, you don't want to use the master branch, but more to
+use a topic-centric branch, so you might:
+
+    git checkout -b myTopicBranch
+
+and then work on myTopicBranch, pulling back to the master branch when
+needed by
+
+
+
+    git checkout master
+    git pull . myTopicBranch
+
+
+of course, perhaps you want to contribute to the mob branch.   For
+that, after cloning the repository as above, you would:
+
+
+    git checkout -b mob remotes/origin/mob
+
+<work, work, work... through a cycle of
+
+         <edit>
+	 git add <files just edited>
+	 git commit -m "what I just did"
+
+ ad-nauseum.  When ready to commit, then just >
+
+ 	 git push origin mob 
+
