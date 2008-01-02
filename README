@@ -95,4 +95,12 @@ Another approach would be to pull from the topic branch into the mob
 branch before uploading.   Will work on a formal example soon.
 
 
+(but the basic principle is that instead of the edit cycle on mob, do
+something like:
 
+  git checkout mob
+  git pull . myTopicBranch
+  git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
+
+
+)
