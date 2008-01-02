@@ -85,12 +85,14 @@ that, after cloning the repository as above, you would:
 
  ad-nauseum.  When ready to commit, then just >
 
- 	 git push origin mob 
+	 git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
 
 
-The only catch is that this incantation isn't quite right.  Need to
-fix...
+
+and it'll be put on the mob branch, as a proposal for merging.
+
+Another approach would be to pull from the topic branch into the mob
+branch before uploading.   Will work on a formal example soon.
 
 
-test
-#2
+
