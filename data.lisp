@@ -5,7 +5,8 @@
 
 ;;; File:       data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending on how it arrives. 
+;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
+;;;             on how it arrives.  
 ;;; Purpose:    data package for lispstat
 ;;; Time-stamp: <2006-05-19 12:33:41 rossini> 
 ;;; Creation:   <2006-05-17 21:34:07 rossini> 
@@ -17,12 +18,15 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
-;;; conside    that dataa has 3 genotypic chracteristrics.  The first
+;;; conside    that data has 3 genotypic chracteristrics.  The first
 ;;; would be form -- scalar, vector, array.   second would be
 ;;; datarep type.  in particular integer, real, string, symbol.  The last
 ;;; would be statistical type.  augmenting datarep type with use in a
 ;;; statistical context, i.e. that would include nominal, ordinal,
-;;; integer, continous, interval (orderable subtypes)
+;;; integer, continous, interval (orderable subtypes).  Clearly, the
+;;; statistical type can be inherited, likewise the numerical type as
+;;; well.  The form can be pushed up or simplified as necessary, but
+;;; this can be challenging.
 
 (in-package :cl-user)
 
