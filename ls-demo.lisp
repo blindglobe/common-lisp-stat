@@ -3,12 +3,12 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
+;;; Time-stamp: <2008-03-09 09:21:50 user>
+;;; Creation:   
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
 ;;; Purpose:    demonstrations of how one might use CLS.
-;;; Time-stamp: <>
-;;; Creation:   
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
