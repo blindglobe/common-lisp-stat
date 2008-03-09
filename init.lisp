@@ -29,14 +29,17 @@
     ;; #p"/home/tony/sandbox/CommonLispStat.git/"
     ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
     ;; #p"/Users/ungil/lisp/CommonLispStat/")
-    #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
+    ;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
+    #p"/home/user/sandbox/CommonLispStat/"
     "Value considered \"home\" for our data")
 
   (setf *lispstat-home-dir*
 	;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
 	;; #p"/home/tony/sandbox/CommonLispStat.git/"
 	;; #p"/Users/ungil/lisp/CommonLispStat/")
-	#p"/home/rossini/public_html/GIT.repos/CommonLispStat/")
+	;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
+	#p"/home/user/sandbox/CommonLispStat/"
+	)
   
   (defmacro ls-dir (root-str)
     `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))
