@@ -5,7 +5,8 @@
 
 ;;; File:       model.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending on how it arrives. 
+;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
+;;;             on how it arrives.
 ;;; Purpose:    models as a data summarization tools.
 ;;; Time-stamp: <2006-05-19 12:33:41 rossini> 
 ;;; Creation:   <2006-05-17 21:34:07 rossini> 
@@ -94,6 +95,8 @@
 (defclass generalized-linear-regression-model (statistical-model))
 
 (defclass nonlinear-linear-regression-model (statistical-model))
+
+
 
 
 ;;; garbage follows
