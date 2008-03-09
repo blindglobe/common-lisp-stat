@@ -235,6 +235,7 @@ Returns sequence of the elements of compound item X."
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defvar *compound-data-proto*)
 (defproto *compound-data-proto*)
 
 ;;; FIXME: These need to be defined!!

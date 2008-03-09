@@ -194,6 +194,7 @@
 ;;;; Mode Info Prototype
 ;;;;
 
+(defvar minfo-proto)
 (defproto minfo-proto '(internals))
 
 #+xlisp (send minfo-proto :add-method :isnew #'|minfo-isnew|)
@@ -392,6 +393,7 @@ control the behavior of simplex algorithm."
 ;;; Simplex Prototype
 ;;;
 
+(defvar simplex-proto)
 (defproto simplex-proto '(f simplex))
 
 ;;;

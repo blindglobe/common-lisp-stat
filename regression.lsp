@@ -45,6 +45,7 @@
 
 ;;; Regresion Model Prototype
 
+(defvar regression-model-proto)
 (defproto regression-model-proto
           '(x y intercept sweep-matrix basis weights 
               included
