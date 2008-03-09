@@ -576,10 +576,11 @@ RETURNS: method-name."
 
 
 (defmacro defproto (name &optional ivars cvars parents doc)
-"Syntax (defproto name &optional ivars cvars (parent *object*) doc)
-Makes a new object prototype with instance variables IVARS, 'class'
-variables CVARS and parents PARENT. PARENT can be a single object or
-a list of objects. IVARS and CVARS must be lists."
+  "Syntax (defproto name &optional ivars cvars (parent *object*) doc)
+Makes a new object prototype with instantiated/set variables IVARS,
+'class' variables CVARS (class or 'cleared'??)) and parents
+PARENT. PARENT can be a single object or a list of objects. IVARS and
+CVARS must be lists."
   (let ((obsym (gensym))
         (namesym (gensym))
         (parsym (gensym)))
