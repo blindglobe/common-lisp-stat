@@ -3,6 +3,12 @@
 
 For a fast start: 
 
+Make the shared library liblispstat with an ANSI C compiler (only gcc
+tested at this point):
+
+       cd lib
+       make
+
 run a common lisp (SBCL, CMUCL, CLISP) starting in the current
 directory.   We also assume that a recent version of CFFI has been
 installed and is ASDF-loadable.  Probably should include a local copy
