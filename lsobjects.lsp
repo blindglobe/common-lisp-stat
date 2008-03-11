@@ -522,11 +522,9 @@ Call method belonging to another object on current object."
     (let ((doc-entry (find-documentation object sym nil))) ;; FIXME: verify
       (if doc-entry (return (rest doc-entry))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;;                         DEFMETH Macro
 ;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro defmeth (object name arglist first &rest body)
   "Syntax: (defmeth object method-name lambda-list [doc] {form}*)
@@ -545,11 +543,9 @@ RETURNS: method-name."
                    #'(lambda (self ,@arglist) (block ,name ,first ,@body)))
        ,name)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;             Prototype Construction
 ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun find-instance-slots (x slots)
   (let ((result (nreverse (delete-duplicates (copy-list slots)))))
