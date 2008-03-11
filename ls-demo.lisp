@@ -206,6 +206,10 @@ my-chol-decomp-test
 (send *test-proto* :own-slots)
 (send *test-proto* :has-slot 'proto-name)
 (send *test-proto* :has-slot 'PROTO-NAME)
+(send *test-proto* :has-slot 'make-data)
+(send *test-proto* :has-slot 'MAKE-DATA)
+(send *test-proto* :has-method 'make-data)
+(send *test-proto* :has-method 'MAKE-DATA)
 
 
 (defproto2 *test-proto3* (list) (list) (list) "test doc" t)
