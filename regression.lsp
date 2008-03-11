@@ -146,8 +146,9 @@ Recomputes the estimates. For internal use by other messages"
                 (error "no columns could be swept"))))))
 
 (defmeth regression-model-proto :needs-computing (&optional set)
-  (if set (setf (slot-value 'sweep-matrix) nil))
-  (null (slot-value 'sweep-matrix)))
+   ;;(declare (ignore self))	 
+   (if set (setf (slot-value 'sweep-matrix) nil))
+   (null (slot-value 'sweep-matrix)))
   
 (defmeth regression-model-proto :display ()
 "Message args: ()
@@ -269,10 +270,11 @@ With no argument returns the predictor names. NAMES sets the names."
   (slot-value 'predictor-names))
 
 (defmeth regression-model-proto :response-name (&optional (name "Y" set))
-"Message args: (&optional name)
+   "Message args: (&optional name)
 With no argument returns the response name. NAME sets the name."
-  (if set (setf (slot-value 'response-name) (if name (string name) "Y")))
-  (slot-value 'response-name))
+   ;;(declare (ignore self))
+   (if set (setf (slot-value 'response-name) (if name (string name) "Y")))
+   (slot-value 'response-name))
 
 (defmeth regression-model-proto :case-labels (&optional (labels nil set))
 "Message args: (&optional labels)
@@ -431,7 +433,7 @@ Computes Cook's distances."
 
 (defun plot-points (x y &rest args)
   "FIXME!!"
-  (declare (ignore x y))
+  (declare (ignore x y args))
   (error "Graphics not implemented yet."))
 
 ;; Can not plot points yet!!
@@ -447,7 +449,7 @@ link-views function. Returns a plot object."
 
 (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)
-"Message args: (&optional x-values)
+  "Message args: (&optional x-values)
 Opens a window with a plot of the standardized residuals and two standard
 error bars for the posterior distribution of the actual deviations from the
 line. See Chaloner and Brant. If X-VALUES are not supplied  the fitted values

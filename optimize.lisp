@@ -346,11 +346,14 @@ of iteration information. COUNT-LIMIT limits the number of iterations"
         (cons (send minfo :x) (- (send minfo :fvals)))
         (send minfo :x))))
 
-;;;;
-;;;;
-;;;; Nelder-Mead Simplex Method
-;;;;
-;;;;
+;;;
+;;; Nelder-Mead Simplex Method
+;;;
+
+;;; Simplex Prototype
+
+(defvar simplex-proto)
+(defproto simplex-proto '(f simplex))
 
 (defun nelmeadmax (f start &key 
                      (size 1)
@@ -389,12 +392,6 @@ control the behavior of simplex algorithm."
                       (send s :point-value (send s :best-point)))))))
           
 
-;;;
-;;; Simplex Prototype
-;;;
-
-(defvar simplex-proto)
-(defproto simplex-proto '(f simplex))
 
 ;;;
 ;;; Simplex Points
