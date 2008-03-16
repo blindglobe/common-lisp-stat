@@ -360,3 +360,32 @@ absorbtion
 	(list (= #(2 3) #(2 4))))
 (= #(2 3) #(2 3))
 
+;;; examples of using CLEM
+
+(in-package :clem-user)
+
+(defvar m1 (make-instance 'double-float-matrix :rows 10 :cols 5))
+m1
+
+(defvar m2 (make-instance 'number-matrix :rows 10 :cols 5))
+m2
+
+
+;;; Not defined but documented?   Actually somewhere in clem/print.lisp
+(setf *matrix-print-row-limit* 2)
+(setf *matrix-print-col-limit* 2)
+m2
+(print m2)
+
+
+(mat-log m2)
+(mat-abs m2)
+(min m2)
+(max m2)
+
+(setf (mref m2 1 1) 5)
+m2
+(setf (mref m2 0 0) 5)
+m2
+
+
