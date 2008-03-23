@@ -40,4 +40,10 @@
 (defgeneric extract  (dataform what into-form))
 
 (defmethod extract ((ds dataset) what into-form)
+  (reshape (get ds what) into-form))
+
+
+
+(defclass data-format())
+
 
