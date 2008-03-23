@@ -275,7 +275,9 @@ absorbtion
 
 ;; Simple univariate variable-specific descriptions.
 (fivnum absorbtion)
-(median absorbtion) (sort absorbtion) (rank absorbtion)
+(median absorbtion)
+(sort absorbtion) ;; CLISP error
+(rank absorbtion)
 (standard-deviation absorbtion)
 (interquartile-range absorbtion)
 
@@ -283,16 +285,6 @@ absorbtion
 (bind-columns aluminum iron)
 (apply #'bind-columns (list aluminum iron))
 (bind-columns #2a((1 2)(3 4)) #(5 6))
-
-(sequencep aluminum)
-(sequencep iron)
-(matrixp iron)
-
-*variables*
-
-(variables)
-(undef 'iron)
-(variables)
 
 
 (defvar fit1 nil)
@@ -303,6 +295,16 @@ absorbtion
 (def m (regression-model (list iron aluminum) absorbtion))
 (send m :help) (send m :plot-residuals)
 
+
+(sequencep aluminum)
+(sequencep iron)
+(matrixp iron)
+
+*variables*
+
+(variables)
+(undef 'iron)
+(variables)
 
 
 ;;; Example array calcs
