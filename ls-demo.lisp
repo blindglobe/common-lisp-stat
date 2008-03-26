@@ -4,7 +4,7 @@
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
 ;;; Time-stamp: <2008-03-09 09:21:50 user>
-;;; Creation:   
+;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
