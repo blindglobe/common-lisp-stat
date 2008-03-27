@@ -26,7 +26,7 @@
   (:use :common-lisp
 	:clem ;;?? or :matlisp , or :...?
 	)
-  (:export dataset extract set))
+  (:export dataset varNames caseNames))
 
 (in-package :lisp-stat-data-clos)
 
@@ -54,8 +54,8 @@
 		:accessor case-labels)
    (var-labels :initform nil
 	       :initarg :var-labels
-	       :accessor var-labels)))
-;;  (:documentation "Standard Cases by Variables Dataset."))
+	       :accessor var-labels))
+  (:documentation "Standard Cases by Variables Dataset."))
 
 ;; Need to set up dataset as a table or a relation.  One way or
 ;; another it should all work out.  TODO:  How do we do multiple
@@ -74,10 +74,21 @@ my-ds-1
 			     :case-labels (list "a" "b" "c" "d" "e")
 			     :var-labels (list "x" "y")))
 my-ds-2
+
+(slot-value my-ds-2 'store)
 (dataset my-ds-2)
+(eq (dataset my-ds-2) (slot-value my-ds-2 'store))
+
 (doc-string my-ds-2)
 (case-labels my-ds-2)
 (var-labels my-ds-2)
+;; need to ensure that for things like the following, that we protect
+;; this a bit more so that the results are not going to to be wrong.
+;; That would be a bit nasty if the dataset becomes inconsistent.
+(setf (var-labels my-ds-2) (list "a" "b"))
+
+
+
 
 (defun print-structure-table (ds)
   "example of what we want the methods to look like.  Should be sort
@@ -119,9 +130,44 @@ structure."
 (defun reorder-by-permutation (x perm &key (by-row t))
   " .")
 
-;;; need a setter for case and var names.  I think we can do that in
-;;; the class definitinon?
 
+;;; Variable-name handling for Tables.  Needs error checking.
+(defun varNames (ds)
+  (var-labels ds))
+
+(defun set-varNames (ds vN)
+  (if (= (length (var-labels ds))
+	 (length vN))
+      (setf (var-labels ds) vN)
+      (error "wrong size.")))
+
+(defsetf varNames set-varNames)
+
+(varNames my-ds-2)
+(setf (varNames my-ds-2) (list "a" "b"))
+(varNames my-ds-2)
+
+
+;;; Case-name handling for Tables.  Needs error checking.
+(defun caseNames (ds)
+  (case-labels ds))
+
+(defun set-caseNames (ds vN)
+  (if (= (length (case-labels ds))
+	 (length vN))
+      (setf (case-labels ds) vN)
+      (error "wrong size.")))
+
+(defsetf caseNames set-caseNames)
+
+(caseNames my-ds-2)
+(setf (caseNames my-ds-2) (list "a" "b" "c" 4 5))
+(caseNames my-ds-2)
+
+
+
+		 
+    
 
 
 
