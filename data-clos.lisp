@@ -17,15 +17,20 @@
 
 ;;; data-clos.lisp
 ;;; 
-;;; redoing regression in a CLOS based framework.
-;;; See regression.lsp for basis of work.
+;;; redoing data structures in a CLOS based framework.
+;;;
+;;; No real basis for work, there is a bit of new-ness and R-ness to
+;;; this work. In particular, the notion of relation is key and
+;;; integral to the analysis.  Tables are related and matched
+;;; vectors,for example.  "column" vectors are related observations
+;;; (by measure/recording) while "row" vectors are related readings
+;;; (by case)
 
 (in-package :cl-user)
 
 (defpackage :lisp-stat-data-clos
   (:use :common-lisp
-	:clem ;;?? or :matlisp , or :...?
-	)
+	:clem )
   (:export dataset varNames caseNames))
 
 (in-package :lisp-stat-data-clos)
@@ -45,16 +50,22 @@
 (defclass dataset ()
   ((store :initform nil
 	  :initarg :storage
-	  :accessor dataset)
+	  :accessor dataset
+	  :documentation "Data storage slot.  Should be an array or a
+relation,")
    (documentation-string :initform nil
 			 :initarg :doc
-			 :accessor doc-string)
+			 :accessor doc-string
+			 :documentation "Information about dataset.")
    (case-labels :initform nil
 		:initarg :case-labels 
-		:accessor case-labels)
+		:accessor case-labels
+		:documentation "labels used for describing cases (doc
+metadata), possibly used for merging.")
    (var-labels :initform nil
 	       :initarg :var-labels
-	       :accessor var-labels))
+	       :accessor var-labels
+	       :documentation "Variable names."))
   (:documentation "Standard Cases by Variables Dataset."))
 
 ;; Need to set up dataset as a table or a relation.  One way or
@@ -66,14 +77,25 @@
 (setf my-ds-1 (make-instance 'dataset))
 my-ds-1
 
+
+(defun consistent-dataset-p (ds)
+  "Test that dataset is internally consistent with metadata.
+Ensure that dims of stored data are same as case and var labels."
+  (equal (array-dimensions (dataset ds))
+       (list (length (var-labels ds))
+	     (length (case-labels ds)))))
+
 (defvar my-ds-2 nil 
   "test ds for experiment.")
 (setf my-ds-2 (make-instance 'dataset
-			     :storage #2((1 2 3 4 5) (10 20 30 40 50))
+			     :storage #2A((1 2 3 4 5) (10 20 30 40 50))
 			     :doc "This is an interesting dataset"
 			     :case-labels (list "a" "b" "c" "d" "e")
 			     :var-labels (list "x" "y")))
+
+(consistent-dataset-p my-ds-2)
 my-ds-2
+(make-array (list 3 5))
 
 (slot-value my-ds-2 'store)
 (dataset my-ds-2)
@@ -86,8 +108,10 @@ my-ds-2
 ;; this a bit more so that the results are not going to to be wrong.
 ;; That would be a bit nasty if the dataset becomes inconsistent.
 (setf (var-labels my-ds-2) (list "a" "b"))
-
-
+(setf (var-labels my-ds-2) (list "a" "b" "c")) ;; Should error!
+(consistent-dataset-p my-ds-2) ;; F
+(setf (var-labels my-ds-2) (list "a" "b"))
+(consistent-dataset-p my-ds-2) ;; T
 
 
 (defun print-structure-table (ds)
@@ -106,7 +130,7 @@ structure."
     (print-as-row (var-labels ds))
     (let ((j -1))
       (dolist (i (case-labels ds))
-	(princ "%i %v" i (row-extract (dataset ds) (incr j))))))
+	(princ "%i %v" i (row-extract (dataset ds) (incr j)))))))
   
 
 
