@@ -154,6 +154,16 @@ structure."
 (defun reorder-by-permutation (x perm &key (by-row t))
   " .")
 
+;;; Need to consider modification APIs
+;;; actions are:
+;;; - get/set row names (case names)
+;;; -         column names (variable names)
+;;; -         dataset values
+;;; -         annotation/metadata
+;;; - extract a reformed version of the dataset (no additional input).
+;;; -         either overwriting or not, i.e. with or without copy.
+;;; - check consistency
+;;; - 
 
 ;;; Variable-name handling for Tables.  Needs error checking.
 (defun varNames (ds)
@@ -187,12 +197,5 @@ structure."
 (caseNames my-ds-2)
 (setf (caseNames my-ds-2) (list "a" "b" "c" 4 5))
 (caseNames my-ds-2)
-
-
-
-		 
-    
-
-
 
 
