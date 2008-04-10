@@ -31,7 +31,13 @@
 (defpackage :lisp-stat-data-clos
   (:use :common-lisp
 	:clem )
-  (:export dataset varNames caseNames))
+  (:export dataset ;; primary tool/structure
+	   modifyData ;; metadata mods
+	   importData ;; get it in
+	   reshapeData  ;; data mods
+
+	   varNames caseNames
+	   ))
 
 (in-package :lisp-stat-data-clos)
 
@@ -156,13 +162,19 @@ structure."
 
 ;;; Need to consider modification APIs
 ;;; actions are:
+;;; - import 
 ;;; - get/set row names (case names)
 ;;; -         column names (variable names)
 ;;; -         dataset values
 ;;; -         annotation/metadata
-;;; - extract a reformed version of the dataset (no additional input).
+;;; -    make sure that we do coherency checking in the exported
+;;; -    functions.
+;;; -    ... 
+;;; - extract/reformat/reshapr a reformed version of the dataset (no
+;;;           additional input). 
 ;;; -         either overwriting or not, i.e. with or without copy.
-;;; - check consistency
+;;; - check consistency of resulting data with metadata and related
+;;;           data information.
 ;;; - 
 
 ;;; Variable-name handling for Tables.  Needs error checking.
@@ -194,8 +206,41 @@ structure."
 
 (defsetf caseNames set-caseNames)
 
-(caseNames my-ds-2)
+(defvar origCaseNames nil)
+(setf origCaseNames (caseNames my-ds-2))
 (setf (caseNames my-ds-2) (list "a" "b" "c" 4 5))
 (caseNames my-ds-2)
+(setf (caseNames my-ds-2) (list "a" "b" 4 5))
+(setf (caseNames my-ds-2) origCaseNames)
+
+
+(defgeneric importData (source featureList)
+  "command to get data into CLS.  Specific methods will need to handle
+  files, internal data structures, and DBMS's.")
+
+(defmethod importData ((fileHandle pathfile)
+		       (fmt sourceTypes))
+  "File-based input for data."
+  (let ((newData (getData fileHandle 'csv)))
+    (progn
+      (if (colnames-in fmt)
+	  (setf (varNames newData) (var 1 newData))
+	  (setf (varNames newData) nil))
+      (if (rownames-in fmt)
+	  (setf (caseNames newData) (var 1 newData))
+	  (setf (caseNames newData) nil)))))
+
+      
+(defmethod importData ((ds array) (fmt list))
+  "mapping arrays into CLS data.")
+
+
+(defmethod importData ((dsSpec DBMSandSQLextract)
+		       (fmt mappingTypes))
+  "mapping DBMS into CLS data.")
+
+
+(defgeneric reshapeData (ds spec copy-p)
+  "Subset, augment, reshape a table into a table.")
 
 
