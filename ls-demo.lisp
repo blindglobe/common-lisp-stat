@@ -391,3 +391,14 @@ m2
 m2
 
 
+;;; prop list demo
+
+
+(defvar tplist (list :this 'though :that 'there :thee 'tony))
+(setf (symbol-plist tplist) (list :this 'though :that 'there :thee 'tony))
+(get 'tplist :THIS)
+tplist
+(defvar tlist (list :this 'though :that 'there :thee 'tony))
+(setf tlist (list :this 'though :that 'there :thee 'tony))
+(listp tlist)
+(getf tlist :THIS)
