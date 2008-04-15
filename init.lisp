@@ -30,7 +30,7 @@
     ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
     ;; #p"/Users/ungil/lisp/CommonLispStat/")
     ;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
-    #p"/home/user/sandbox/CLS.git/"
+    #p"/home/tony/Desktop/sandbox/CLS.git/"
     "Value considered \"home\" for our data")
 
   (setf *lispstat-home-dir*
@@ -38,7 +38,7 @@
 	;; #p"/home/tony/sandbox/CommonLispStat.git/"
 	;; #p"/Users/ungil/lisp/CommonLispStat/")
 	;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
-	#p"/home/user/sandbox/CLS.git/"
+	#p"/home/tony/Desktop/sandbox/CLS.git/"
 	)
   
   (defmacro ls-dir (root-str)
@@ -69,7 +69,7 @@
   (asdf:oos 'asdf:load-op :lift)     ;; Unit Testing 
 
   ;; soon...
-  #+nil(asdf:oos 'asdf:load-op :clem)     ;; matrix stuff
+  (asdf:oos 'asdf:load-op :clem)     ;; matrix stuff
   #+nil(asdf:oos 'asdf:load-op :clem-test)
   #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
 
