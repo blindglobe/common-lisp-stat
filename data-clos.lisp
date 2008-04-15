@@ -38,6 +38,7 @@
 	   importData ;; get it in
 	   reshapeData  ;; data mods
 
+	   consistent-dataset-p
 	   varNames caseNames))
 
 (in-package :lisp-stat-data-clos)
@@ -79,10 +80,6 @@ metadata), possibly used for merging.")
 ;; another it should all work out.  TODO:  How do we do multiple
 ;; inheritance or composite structures?
 
-(defvar my-ds-1 nil 
-  "test ds for experiment.")
-(setf my-ds-1 (make-instance 'dataset))
-my-ds-1
 
 
 (defun consistent-dataset-p (ds)
@@ -120,18 +117,15 @@ structure."
 (defmethod reshapeData ((ds dataset) what into-form)
   (reshape (get ds what) into-form))
 
-
-(defmethod reshapeData ((ds array) (sp specList) copy-p)
+(defmethod reshapeData ((ds array) (sp list) copy-p)
   "Array via specList specialization: similar to the common R
 approaches to redistribution."
-  (let ((widep (getf specList :toWide))
-	(primaryKey (getf specList :primaryKey)))
+  (let ((widep (getf sp :toWide))
+	(primaryKey (getf sp :primaryKey)))
     ))
 
 
-
 (defclass data-format())
-
 
 (defun transpose (x)
   "map NxM to MxN.")
@@ -171,8 +165,6 @@ approaches to redistribution."
 
 (defsetf varNames set-varNames)
 
-
-
 ;;; Case-name handling for Tables.  Needs error checking.
 (defun caseNames (ds)
   (case-labels ds))
@@ -187,19 +179,19 @@ approaches to redistribution."
 
 
 (defgeneric importData (source featureList)
-  "command to get data into CLS.  Specific methods will need to handle
-  files, internal data structures, and DBMS's.  We would like to be
-  able to do:
+  (:documentation "command to get data into CLS.  Specific methods
+  will need to handle files, internal data structures, and DBMS's.  We
+  would like to be able to do:
 
 
 
-")
+"))
 
 
 (defun pathname-example (name) 
-  (let ((path (parse-namestring name)))) 
-    (values (pathname-name path :case :common) 
-            (pathname-name path :case :local)))) 
+  (let ((my-path (parse-namestring name)))) 
+    (values (pathname-name my-path :case :common) 
+            (pathname-name my-path :case :local)))
 
 (defvar sourceTypes (list 'csv 'lisp 'tsv 'special)
   "list of possible symbols used to specify source formats that might
@@ -209,7 +201,7 @@ appropriately.")
 
 ;;; WRONG LOGIC.
 (defmethod importData ((fileHandle pathname)
-		       (fmt sourceTypes))
+		       (fmt list)) ;sourceTypes))
   "File-based input for data.
 Usually used by:
  (importData (parse-namestring 'path/to/file')
@@ -229,10 +221,11 @@ Usually used by:
 (defmethod importData ((ds array) (fmt list))
   "mapping arrays into CLS data.")
 
+#|
 (defmethod importData ((dsSpec DBMSandSQLextract)
 		       (fmt mappingTypes))
   "mapping DBMS into CLS data.")
-
+|#
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -247,6 +240,17 @@ Usually used by:
 	:lisp-stat-data-clos))
 
 (in-package :lisp-stat-data-clos-example)
+
+;;;
+;;; Use of this package:  To see what gets exported for use in others,
+;;; and how much corruption can be done to objects within a package.
+;;;
+
+
+(defvar my-ds-1 nil 
+  "test ds for experiment.")
+(setf my-ds-1 (make-instance 'dataset))
+my-ds-1
 
 
 (defvar my-ds-2 nil 
@@ -263,6 +267,7 @@ my-ds-2
 
 (slot-value my-ds-2 'store)
 (dataset my-ds-2)
+
 (eq (dataset my-ds-2) (slot-value my-ds-2 'store))
 
 (doc-string my-ds-2)
