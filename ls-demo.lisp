@@ -402,3 +402,12 @@ tplist
 (setf tlist (list :this 'though :that 'there :thee 'tony))
 (listp tlist)
 (getf tlist :THIS)
+
+;;; CL-SDL demos
+
+
+(clc:clc-require :sdl-demos)
+;;(sdl-test:start) ; locks up SBCL.?
+;;; where <n> is 2-11, 16, :solar-system, :vertex-arrays,
+(nehe:run-tutorial 2)
+
