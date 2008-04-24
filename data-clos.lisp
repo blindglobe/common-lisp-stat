@@ -31,15 +31,17 @@
 
 (defpackage :lisp-stat-data-clos
   (:use :common-lisp
-	:clem )
-  (:export dataset ;; primary tool/structure
+	;;:clem
+	)
+  (:export statistical-dataset ;; primary class for working.
 
 	   modifyData ;; metadata mods
 	   importData ;; get it in
 	   reshapeData  ;; data mods
 
-	   consistent-dataset-p
-	   varNames caseNames))
+	   consistent-statistical-dataset-p
+	   varNames caseNames ;; metadata explicit modifiers
+	   ))
 
 (in-package :lisp-stat-data-clos)
 
@@ -72,13 +74,14 @@ metadata), possibly used for merging.")
   (:documentation "Standard Cases by Variables Statistical-Dataset."))
 
 ;;
-;; statistical-dataset is the basic cases by variables framework.  Need to embed
-;; this within other structures which allow for generalized relations.
-;; Goal is to ensure that relations imply and drive the potential for
-;; statistical relativeness such as correlation, interference, and
-;; similar concepts.
+;; statistical-dataset is the basic cases by variables framework.
+;; Need to embed this within other structures which allow for
+;; generalized relations.  Goal is to ensure that relations imply and
+;; drive the potential for statistical relativeness such as
+;; correlation, interference, and similar concepts.
 ;;
 ;; Actions on a statistical data structure.
+;;
 
 (defgeneric consistent-statistical-dataset-p (ds)
   (:documentation "methods to check for consistency."))
@@ -126,7 +129,7 @@ approaches to redistribution."
     ))
 
 
-(defclass data-format())
+(defclass data-format () ())
 
 (defun transpose (x)
   "map NxM to MxN.")
@@ -178,6 +181,7 @@ approaches to redistribution."
 
 (defsetf caseNames set-caseNames)
 
+;;; General modification approaches.
 
 (defgeneric importData (source featureList)
   (:documentation "command to get data into CLS.  Specific methods
@@ -235,9 +239,12 @@ Usually used by:
 
 (in-package :cl-user)
 
+;; if needed, but need to set the ASDf path first...!
+;; (asdf:oos 'asdf:load-op :lift)
+
 (defpackage :lisp-stat-data-clos-example
   (:use :common-lisp
-	:clem
+	:lift
 	:lisp-stat-data-clos))
 
 (in-package :lisp-stat-data-clos-example)
@@ -266,23 +273,29 @@ my-ds-1
 my-ds-2
 (make-array (list 3 5))
 
-(slot-value my-ds-2 'store)
-(dataset my-ds-2)
+(ignore-errors (slot-value my-ds-2 'store))  ;; should fail, this and next.
+(ignore-errors (dataset my-ds-2))
 
-(eq (dataset my-ds-2) (slot-value my-ds-2 'store))
+(slot-value my-ds-2 'lisp-stat-data-clos::store)
+(lisp-stat-data-clos::dataset my-ds-2)
 
-(doc-string my-ds-2)
-(case-labels my-ds-2)
-(var-labels my-ds-2)
+
+(eq (lisp-stat-data-clos::dataset my-ds-2)
+    (slot-value my-ds-2 'lisp-stat-data-clos::store))
+
+;; NEVER DO THE FOLLOWING, UNLESS YOU WANT TO MUCK UP STRUCTURES...
+(lisp-stat-data-clos::doc-string my-ds-2)
+(lisp-stat-data-clos::case-labels my-ds-2)
+(lisp-stat-data-clos::var-labels my-ds-2)
 
 
 ;; need to ensure that for things like the following, that we protect
 ;; this a bit more so that the results are not going to to be wrong.
 ;; That would be a bit nasty if the statistical-dataset becomes inconsistent.
-(setf (var-labels my-ds-2) (list "a" "b"))
-(setf (var-labels my-ds-2) (list "a" "b" "c")) ;; Should error!
-(consistent-statistical-dataset-p my-ds-2) ;; F
-(setf (var-labels my-ds-2) (list "a" "b"))
+(setf (lisp-stat-data-clos::var-labels my-ds-2) (list "a" "b"))
+(setf (lisp-stat-data-clos::var-labels my-ds-2) (list "a" "b" "c")) ;; Should error!
+(consistent-statistical-dataset-p my-ds-2) ;; Nil
+(setf (lisp-stat-data-clos::var-labels my-ds-2) (list "a" "b"))
 (consistent-statistical-dataset-p my-ds-2) ;; T
 
 ;; This is now done by:
@@ -291,10 +304,9 @@ my-ds-2
 (setf (varNames my-ds-2) (list "a" "b"))
 (varNames my-ds-2)
 
-
 (defvar origCaseNames nil)
 (setf origCaseNames (caseNames my-ds-2))
 (setf (caseNames my-ds-2) (list "a" "b" "c" 4 5))
 (caseNames my-ds-2)
-(setf (caseNames my-ds-2) (list "a" "b" 4 5))
+(ignore-errors (setf (caseNames my-ds-2) (list "a" "b" 4 5)))
 (setf (caseNames my-ds-2) origCaseNames)
