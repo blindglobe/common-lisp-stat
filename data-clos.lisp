@@ -140,6 +140,24 @@ approaches to redistribution."
 (defun reorder-by-permutation (x perm &key (by-row t))
   " .")
 
+;;; verbs vs semantics for dt conversion -- consider the possibily of
+;;; how adverbs and verbs relate, where to put which semantically to
+;;; allow for general approach.
+
+;;; eg. Kasper's talk on the FUSION collection of parsers.
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;;; Need to consider modification APIs
 ;;; actions are:
 ;;; - import 
@@ -244,15 +262,32 @@ Usually used by:
 
 (defpackage :lisp-stat-data-clos-example
   (:use :common-lisp
-	:lift
+	:lift  :lisp-stat-unittests
 	:lisp-stat-data-clos))
 
 (in-package :lisp-stat-data-clos-example)
+
 
 ;;;
 ;;; Use of this package:  To see what gets exported for use in others,
 ;;; and how much corruption can be done to objects within a package.
 ;;;
+
+
+(deftestsuite lisp-stat-dataclos (lisp-stat)
+  ()
+  (:tests
+   (initdata (ensure-true ))))
+
+
+
+(addtest (lisp-stat-dataclos) testnameData
+	 (ensure-same
+	  (dataset (list a b c d) :form (list 2 2))
+	  #2A((a b) (c d))
+	  :test 'eql))
+
+
 
 
 (defvar my-ds-1 nil 
@@ -268,13 +303,20 @@ my-ds-1
 			     :doc "This is an interesting statistical-dataset"
 			     :case-labels (list "a" "b" "c" "d" "e")
 			     :var-labels (list "x" "y")))
-
-(consistent-statistical-dataset-p my-ds-2)
 my-ds-2
 (make-array (list 3 5))
 
-(ignore-errors (slot-value my-ds-2 'store))  ;; should fail, this and next.
-(ignore-errors (dataset my-ds-2))
+
+(addtest (lisp-stat-dataclos) consData
+	 (ensure-true
+	  (consistent-statistical-dataset-p my-ds-2)
+	  ))
+
+(addtest (lisp-stat-dataclos) badAccess1
+	 (ensure-error
+	   (ignore-errors (slot-value my-ds-2 'store)) 
+	   (ignore-errors (dataset my-ds-2))))
+
 
 (slot-value my-ds-2 'lisp-stat-data-clos::store)
 (lisp-stat-data-clos::dataset my-ds-2)
@@ -312,56 +354,4 @@ my-ds-2
 (setf (caseNames my-ds-2) origCaseNames)
 
 
-;;; This is semi-external to lispstat core packages.  The dependency
-;;; should be that lispstat packages are dependencies for the unit
-;;; tests.  However, where they will end up is still to be
-;;; determined. 
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-unittests-dataclos
-  (:use :common-lisp :lift :lisp-stat :lisp-stat-unittests)
-  (:shadowing-import-from :lisp-stat
-	slot-value call-method call-next-method ;; objects
-	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
-	asin acos atan sinh cosh tanh asinh acosh atanh float random
-	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= > ;; complex
-	conjugate realpart imagpart phase
-	min max logand logior logxor lognot ffloor fceiling
-	ftruncate fround signum cis)
-  (:export unittest-data))
-
-(in-package :lisp-stat-unittests-dataclos)
-
-;;; TESTS
-
-(defun run-lisp-stat-tests ()
-  (run-tests :suite 'lisp-stat))
-
-(defun run-lisp-stat-test (&rest x)
-  (run-test x))
-
-
-(deftestsuite lisp-stat-dataclos (lisp-stat)
-  ()
-  (:tests
-   (initdata (ensure-true ))))
-
-
-
-(deftestsuite lisp-stat-testsupport (lisp-stat)
-  ()
-  (:tests
-   (almost=1 (ensure (almost= 3 3.001 :tol 0.01)))
-
-
-
-(addtest (lisp-stat-dataclos) testnameData
-	 (ensure-same
-	  (dataset (list a b c d) :form (list 2 2))
-	  #2A((a b) (c d))
-	  :test 'eql))
-
-
-o
