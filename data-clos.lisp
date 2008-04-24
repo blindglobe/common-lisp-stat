@@ -50,12 +50,7 @@
 ;; block (considering 1-1 mappings using row ID as a relation).  
 ;; Is this a worthwhile generalization?
 
-
-(defclass table ())
-
-(defclass relation ())
-
-(defclass dataset ()
+(defclass statistical-dataset ()
   ((store :initform nil
 	  :initarg :storage
 	  :accessor dataset
@@ -64,7 +59,7 @@ relation,")
    (documentation-string :initform nil
 			 :initarg :doc
 			 :accessor doc-string
-			 :documentation "Information about dataset.")
+			 :documentation "Information about statistical-dataset.")
    (case-labels :initform nil
 		:initarg :case-labels 
 		:accessor case-labels
@@ -74,16 +69,22 @@ metadata), possibly used for merging.")
 	       :initarg :var-labels
 	       :accessor var-labels
 	       :documentation "Variable names."))
-  (:documentation "Standard Cases by Variables Dataset."))
+  (:documentation "Standard Cases by Variables Statistical-Dataset."))
 
-;; Need to set up dataset as a table or a relation.  One way or
-;; another it should all work out.  TODO:  How do we do multiple
-;; inheritance or composite structures?
+;;
+;; statistical-dataset is the basic cases by variables framework.  Need to embed
+;; this within other structures which allow for generalized relations.
+;; Goal is to ensure that relations imply and drive the potential for
+;; statistical relativeness such as correlation, interference, and
+;; similar concepts.
+;;
+;; Actions on a statistical data structure.
 
+(defgeneric consistent-statistical-dataset-p (ds)
+  (:documentation "methods to check for consistency."))
 
-
-(defun consistent-dataset-p (ds)
-  "Test that dataset is internally consistent with metadata.
+(defmethod consistent-statistical-dataset-p ((ds statistical-dataset))
+  "Test that statistical-dataset is internally consistent with metadata.
 Ensure that dims of stored data are same as case and var labels."
   (equal (array-dimensions (dataset ds))
        (list (length (var-labels ds))
@@ -114,7 +115,7 @@ structure."
 (defgeneric reshapeData  (dataform into-form as-copy)
   (:documentation "pulling data into a new form"))
 
-(defmethod reshapeData ((ds dataset) what into-form)
+(defmethod reshapeData ((ds statistical-dataset) what into-form)
   (reshape (get ds what) into-form))
 
 (defmethod reshapeData ((ds array) (sp list) copy-p)
@@ -249,19 +250,19 @@ Usually used by:
 
 (defvar my-ds-1 nil 
   "test ds for experiment.")
-(setf my-ds-1 (make-instance 'dataset))
+(setf my-ds-1 (make-instance 'statistical-dataset))
 my-ds-1
 
 
 (defvar my-ds-2 nil 
   "test ds for experiment.")
-(setf my-ds-2 (make-instance 'dataset
+(setf my-ds-2 (make-instance 'statistical-dataset
 			     :storage #2A((1 2 3 4 5) (10 20 30 40 50))
-			     :doc "This is an interesting dataset"
+			     :doc "This is an interesting statistical-dataset"
 			     :case-labels (list "a" "b" "c" "d" "e")
 			     :var-labels (list "x" "y")))
 
-(consistent-dataset-p my-ds-2)
+(consistent-statistical-dataset-p my-ds-2)
 my-ds-2
 (make-array (list 3 5))
 
@@ -277,12 +278,12 @@ my-ds-2
 
 ;; need to ensure that for things like the following, that we protect
 ;; this a bit more so that the results are not going to to be wrong.
-;; That would be a bit nasty if the dataset becomes inconsistent.
+;; That would be a bit nasty if the statistical-dataset becomes inconsistent.
 (setf (var-labels my-ds-2) (list "a" "b"))
 (setf (var-labels my-ds-2) (list "a" "b" "c")) ;; Should error!
-(consistent-dataset-p my-ds-2) ;; F
+(consistent-statistical-dataset-p my-ds-2) ;; F
 (setf (var-labels my-ds-2) (list "a" "b"))
-(consistent-dataset-p my-ds-2) ;; T
+(consistent-statistical-dataset-p my-ds-2) ;; T
 
 ;; This is now done by:
 	
