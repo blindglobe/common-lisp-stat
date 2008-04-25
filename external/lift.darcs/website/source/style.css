@@ -1,0 +1,100 @@
+pre { padding:5px; background-color:#e0e0e0;
+	overflow: auto;
+}
+
+body {
+	background: white;
+	margin: 2px;
+	padding-left: 3em;
+	padding-right: 3em;
+}
+
+.note {
+	border: 2px inset gray;
+	padding: 0.5em;
+	margin-right: 2em;
+	margin-left: 2em;
+}
+
+#footer {
+	margin-top: 2em;
+	border-top-style: inset;
+	border-top-width: 2px;
+}
+
+#header {
+	text-align: left;
+	border-top: 1px none black;
+	border-collapse: collapse;
+	border-bottom: 1px dotted black;
+	margin-bottom: 1em;
+}
+
+#navigation li {
+	display: inline;
+	border-right-style: dotted;
+	border-right-width: 1px;
+	border-left-style: dotted;
+	border-left-width: 1px;
+	border-collapse: collapse;
+	padding-right: 0.25em;
+	padding-left: 0.25em;
+	margin-right: 1em;
+}
+
+#navigation {
+	text-align: center;
+}
+
+#timestamp {
+	font-size: 80%;
+	text-align: right;
+}
+a.none { text-decoration: none; color:black }
+a.none:visited { text-decoration: none; color:black }
+a.none:active { text-decoration: none; color:black }
+a.none:hover { text-decoration: none; color:black }
+a { text-decoration: none; }
+a:visited { text-decoration: none; }
+a:active { text-decoration: underline; }
+a:hover { text-decoration: underline; }
+
+.note {
+	
+}
+
+.windows {
+	
+}
+
+/* @group toc */
+
+.table-of-contents {
+	font-size: 90%;
+}
+
+.table-of-contents h1, h2, h3, h4, h5, h6, h7 {
+	font-size: inherit;
+}
+
+.table-of-contents h2 {
+	position: relative;
+	left: 2em;
+}
+
+.table-of-contents h3 {
+	position: relative;
+	left: 4em;
+}
+
+.table-of-contents h4 {
+	position: relative;
+	left: 6em;
+}
+
+.table-of-contents h5 {
+	position: relative;
+	left: 8px;
+}
+	
+/* @end */

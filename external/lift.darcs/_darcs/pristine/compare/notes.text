@@ -1,0 +1,45 @@
+RT
+
+non-interactive
+  no, can use *do-tests-when-defined*
+samep only??
+  equalp-with-case
+
+more verbose than RT
+
++ optimization settings
++ expected failures
++ notes
+
+(rem-all-tests)
+(deftest :zero-check -0.0 0.0)
+(do-test)
+
+
+;;; ---------------------------------------------------------------------------
+FiveAM
+
+No hierarchy
+No setup / teardown
+"is" is nice but seems 
+
+requires arnesi
+
+includes random testing (cf. Click Check)
+
+;;; ---------------------------------------------------------------------------
+LIFT
+
+
+;;; ---------------------------------------------------------------------------
+xlunit
+
+#|
+no dependencies 
+
+How can you run all of the tests in a hierarchy?
+Verbose
+
+It times the tests
+|#
+

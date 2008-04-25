@@ -1,0 +1,23 @@
+Starting with tag:
+[TAG version-1.2.0
+Gary King <gwking@metabang.com>**20061231201218] 
+[updated copyright; reformatted system defs
+Gary King <gwking@metabang.com>**20070119012601] 
+[Clean up of several SBCL warnings; hacky fix for :functions not being properly inherited by sub-suites
+Gary King <gwking@metabang.com>**20070204014459] 
+[Added macros.lisp (for benchmarking; not used yet).
+Gary King <gwking@metabang.com>**20070204014552] 
+[Added total-bytes-allocated (only for Allegro so far).
+Gary King <gwking@metabang.com>**20070204014622] 
+[Moved export to lift.lisp's defpackage; some reformattig; fixed a declare ignorable warning
+Gary King <gwking@metabang.com>**20070204014702] 
+[bumped version
+Gary King <gwking@metabang.com>**20070204014803] 
+[TAG version-1.2.1
+Gary King <gwking@metabang.com>**20070204014826] 
+[Added test/finding-tests.lisp (also to test system file)
+Gary King <gwking@metabang.com>**20070208160758] 
+[Pulled in patch from Stefan Lang (via e-mail). This changes LIFT behavior so that it no longer interns all test names in the lift package. The benefit is easier test organzation; the loss is that you need to specify full packages. To ameilorate this, I added find-test-suite (an internal function). This uses the symbol you give if it is a test suite; if it's not, then it looks in all packages to find any test-suite the share the symbol-name. If there is only one, then that suite will be used. If there are none, well then you aren't talking about a test If there are many, it raises an error.
+Gary King <gwking@metabang.com>**20070208161056] 
+[bumped version
+Gary King <gwking@metabang.com>**20070208161128] 
