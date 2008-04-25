@@ -60,6 +60,11 @@
 
 	   consistent-statistical-dataset-p
 	   varNames caseNames ;; metadata explicit modifiers
+
+	   extract
+	   ;; and later, we remove the following, exposing only
+	   ;; through the above method.
+	   extract-1 extract-row extract-col extract-idx
 	   ))
 
 (in-package :lisp-stat-data-clos)
@@ -117,14 +122,23 @@ Ensure that dims of stored data are same as case and var labels."
 (defun extract-1 (sds index1 index2)
   (aref (dataset sds) index1 index2))
 
-(defun extract-column (sds index1)
+(defun gen-seq (n)
+  "There has to be a better way -- I'm sure of it!"
+  (if (> n 0)
+      (append (gen-seq (- n 1)) (list n))))
+;; (gen-seq 4)
+
+(defun extract-col (sds index)
   (map 'sequence
-       #'(lambda (x) (extract-1 sds index1 x))
-       (doloop 1(array-dimensions (dataset sds)))))
+       #'(lambda (x) (extract-1 sds index x))
+       (gen-seq (nth 2 (array-dimensions (dataset sds))))))
 
-(defun extract-row (sds row-index1))
+(defun extract-row (sds index)
+  (map 'sequence
+       #'(lambda (x) (extract-1 sds x index))
+       (gen-seq (nth 1 (array-dimensions (dataset sds))))))
 
-(defun extract-range (sds rowIdxLst colIdxLst)
+(defun extract-idx (sds rowIdxLst colIdxLst)
   "return a rectangular structure of row X col dims."
   )
 
@@ -140,7 +154,7 @@ of like a spreadsheet if the storage is a table."
   (print-as-row (var-labels ds))
   (let ((j -1))
     (dolist (i (case-labels ds))
-      (princ (format "%i %v"  i (row-extract (dataset ds) (incr j)))))))
+      (princ (format "%i %v"  i (extract-row (dataset ds) (incr j)))))))
 
 (defun print-structure-relational (ds)
   "example of what we want the methods to look like.  Should be sort
@@ -150,7 +164,7 @@ structure."
     (print-as-row (var-labels ds))
     (let ((j -1))
       (dolist (i (case-labels ds))
-	(princ "%i %v" i (row-extract (dataset ds) (incr j)))))))
+	(princ "%i %v" i (extract-row (dataset ds) (incr j)))))))
   
 
 
@@ -314,21 +328,12 @@ Usually used by:
 ;;;
 
 
-(deftestsuite lisp-stat-dataclos (lisp-stat)
-  ()
-  (:tests
-   (initdata (ensure-true ))))
+(deftestsuite lisp-stat-dataclos () ()) ;;(lisp-stat) ())
 
-
-
-(addtest (lisp-stat-dataclos) testnameData
-	 (ensure-same
-	  (dataset (list 'a 'b 'c 'd) :form (list 2 2))
-	  #2A(('a 'b) ('c 'd))
-	  :test 'eql))
-
-
-
+(addtest (lisp-stat-dataclos) equaltestnameData
+	 (ensure
+	  (eql (dataset (list 'a 'b 'c 'd) :form (list 2 2))
+	       #2A(('a 'b) ('c 'd)))))
 
 (defvar my-ds-1 nil 
   "test ds for experiment.")
@@ -350,9 +355,8 @@ my-ds-2
 
 
 (addtest (lisp-stat-dataclos) consData
-	 (ensure-true
-	  (consistent-statistical-dataset-p my-ds-2)
-	  ))
+	 (ensure
+	  (consistent-statistical-dataset-p my-ds-2)))
 
 (addtest (lisp-stat-dataclos) badAccess1
 	 (ensure-error
@@ -373,22 +377,22 @@ my-ds-2
 
 
 (addtest (lisp-stat-dataclos) badAccess5
-	 (ensure-true
+	 (ensure
 	  (eq (lisp-stat-data-clos::dataset my-ds-2)
 	      (slot-value my-ds-2 'lisp-stat-data-clos::store))))
 
 
 ;; NEVER DO THE FOLLOWING, UNLESS YOU WANT TO MUCK UP STRUCTURES...
-(addtest (lisp-stat-dataclos) badAccess5
-	 (ensure-true
+(addtest (lisp-stat-dataclos) badAccess6
+	 (ensure
 	  (lisp-stat-data-clos::doc-string my-ds-2)))
 
-(addtest (lisp-stat-dataclos) badAccess5
-	 (ensure-true
+(addtest (lisp-stat-dataclos) badAccess7
+	 (ensure
 	  (lisp-stat-data-clos::case-labels my-ds-2)))
 
-(addtest (lisp-stat-dataclos) badAccess5
-	 (ensure-true
+(addtest (lisp-stat-dataclos) badAccess8
+	 (ensure
 	  (lisp-stat-data-clos::var-labels my-ds-2)))
 
 ;; need to ensure that for things like the following, that we protect
@@ -396,34 +400,34 @@ my-ds-2
 ;; That would be a bit nasty if the statistical-dataset becomes
 ;; inconsistent.
 
-(addtest (lisp-stat-dataclos) badAccess5
-	 (ensure-true
+(addtest (lisp-stat-dataclos) badAccess9
+	 (ensure
 	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		(list "a" "b"))))
 
-(addtest (lisp-stat-dataclos) badAccess5
+(addtest (lisp-stat-dataclos) badAccess10
 	 (ensure-error
 	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		(list "a" "b" "c")))) ;; Should error!
 
-(addtest (lisp-stat-dataclos) badAccess5
+(addtest (lisp-stat-dataclos) badAccess11
 	 (ensure-error
 	  (consistent-statistical-dataset-p my-ds-2))) ;; Nil
 
-(addtest (lisp-stat-dataclos) badAccess5
+(addtest (lisp-stat-dataclos) badAccess12
 	 (ensure
 	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		(list "a" "b"))))
 
 
-(addtest (lisp-stat-dataclos) badAccess5
+(addtest (lisp-stat-dataclos) badAccess13
 	 (ensure
 	  (consistent-statistical-dataset-p my-ds-2))) ;; T
 
 ;; This is now done by:
 
-(addtest (lisp-stat-dataclos) badAccess5
-	 (ensure-true
+(addtest (lisp-stat-dataclos) badAccess14
+	 (ensure-error
 	  (progn
 	    (varNames my-ds-2)
 	    (setf (varNames my-ds-2) (list "a" "b"))
@@ -432,7 +436,7 @@ my-ds-2
 ;; break this up.
 (defvar origCaseNames nil)
 
-(addtest (lisp-stat-dataclos) badAccess5
+(addtest (lisp-stat-dataclos) badAccess15
 	 (ensure
 	  (progn
 	    (setf origCaseNames (caseNames my-ds-2))
