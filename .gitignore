@@ -6,9 +6,7 @@ fasl
 *.fas
 *.lib
 *.o
-_darcs
 *.flc
 *.x86f
-ASDF/*.asd
-external/lift.darcs/resources
-external/lift.darcs/website
+external/tmp
+
