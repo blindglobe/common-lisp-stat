@@ -112,6 +112,27 @@ Ensure that dims of stored data are same as case and var labels."
        (list (length (var-labels ds))
 	     (length (case-labels ds)))))
 
+;;; Extraction
+
+(defun extract-1 (sds index1 index2)
+  (aref (dataset sds) index1 index2))
+
+(defun extract-column (sds index1)
+  (map 'sequence
+       #'(lambda (x) (extract-1 sds index1 x))
+       (doloop 1(array-dimensions (dataset sds)))))
+
+(defun extract-row (sds row-index1))
+
+(defun extract-range (sds rowIdxLst colIdxLst)
+  "return a rectangular structure of row X col dims."
+  )
+
+(defgeneric extract (sds whatAndRange)
+  (:documentation "data extraction approach"))
+
+
+
 
 (defun print-structure-table (ds)
   "example of what we want the methods to look like.  Should be sort
@@ -324,6 +345,8 @@ my-ds-1
 			     :var-labels (list "x" "y")))
 my-ds-2
 (make-array (list 3 5))
+
+(array-dimensions (lisp-stat-data-clos::dataset my-ds-2))
 
 
 (addtest (lisp-stat-dataclos) consData
