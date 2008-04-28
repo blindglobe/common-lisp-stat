@@ -9,4 +9,4 @@ fasl
 *.flc
 *.x86f
 external/tmp
-
+test-results/
