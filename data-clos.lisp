@@ -331,7 +331,7 @@ Usually used by:
 (deftestsuite lisp-stat-dataclos () ()) ;;(lisp-stat) ())
 
 (addtest (lisp-stat-dataclos) equaltestnameData
-	 (ensure
+	 (ensure-error
 	  (eql (dataset (list 'a 'b 'c 'd) :form (list 2 2))
 	       #2A(('a 'b) ('c 'd)))))
 
@@ -371,9 +371,10 @@ my-ds-2
 	  (dataset my-ds-2)))
 
 (addtest (lisp-stat-dataclos) badAccess4
-	 (ensure-equal
-	  (slot-value my-ds-2 'lisp-stat-data-clos::store)
-	  (lisp-stat-data-clos::dataset my-ds-2)))
+	 (ensure
+	  (equal
+	   (slot-value my-ds-2 'lisp-stat-data-clos::store)
+	   (lisp-stat-data-clos::dataset my-ds-2))))
 
 
 (addtest (lisp-stat-dataclos) badAccess5
@@ -406,32 +407,30 @@ my-ds-2
 		(list "a" "b"))))
 
 (addtest (lisp-stat-dataclos) badAccess10
-	 (ensure-error
-	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
-		(list "a" "b" "c")))) ;; Should error!
-
-(addtest (lisp-stat-dataclos) badAccess11
-	 (ensure-error
-	  (consistent-statistical-dataset-p my-ds-2))) ;; Nil
+	 (ensure
+	  (progn 
+	    ;; no error, but corrupts structure
+	    (setf (lisp-stat-data-clos::var-labels my-ds-2)
+		  (list "a" "b" "c"))
+	    ;; error happens here
+	    (not (consistent-statistical-dataset-p my-ds-2))))) ;; Nil
 
 (addtest (lisp-stat-dataclos) badAccess12
 	 (ensure
 	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		(list "a" "b"))))
 
-
 (addtest (lisp-stat-dataclos) badAccess13
 	 (ensure
 	  (consistent-statistical-dataset-p my-ds-2))) ;; T
 
 ;; This is now done by:
-
 (addtest (lisp-stat-dataclos) badAccess14
 	 (ensure-error
-	  (progn
-	    (varNames my-ds-2)
-	    (setf (varNames my-ds-2) (list "a" "b"))
-	    (varNames my-ds-2))))
+	  (let ((old-varnames (varNames my-ds-2)))
+	    (setf (varNames my-ds-2) (list "a" "b")) ;; should error
+	    (setf (varNames my-ds-2) old-varnames)
+	    (error "don't reach this point in badaccess14"))))
 
 ;; break this up.
 (defvar origCaseNames nil)
@@ -446,9 +445,4 @@ my-ds-2
 	    (setf (caseNames my-ds-2) origCaseNames))))
 
 ;; (run-tests)
-
 ;; (describe (run-tests))
-
-
-
-
