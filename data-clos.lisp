@@ -119,18 +119,18 @@ Ensure that dims of stored data are same as case and var labels."
 
 ;;; Extraction
 
-(defun extract-1 (sds index1 index2)
+(defun extract-1 (sds idx1 idx2)
   "Returns a scalar."
-  (aref (dataset sds) index1 index2))
+  (aref (dataset sds) idx1 idx2))
 
-(defun extract-1-as-sds (sds index1 index2)
+(defun extract-1-as-sds (sds idx1 idx2)
   "Need a version which returns a dataset."
   (make-instance 'statistical-dataset
-		 :storage #2A((extract-1 sds index1 index2))
+		 :storage #2A((extract-1 sds idx1 idx2))
 		 ;; ensure copy for this and following
-		 :doc (documentation sds)
+		 :doc (doc-string sds)
 		 :case-labels (caseNames sds)
-		 :var-labels (varNames sds))
+		 :var-labels (varNames sds)))
 
 (defun gen-seq (n &optional (start 1))
   "There has to be a better way -- I'm sure of it!  Always count from 1."
@@ -162,19 +162,29 @@ Ensure that dims of stored data are same as case and var labels."
        #'(lambda (x) (extract-1 sds x index))
        (gen-seq (nth 1 (array-dimensions (dataset sds))))))
 
-(defun extract-idx (sds rowIdxLst colIdxLst)
+(defun extract-idx (sds idx1Lst idx2Lst)
   "return an array, row X col dims."
-  )
+  (let ((my-pre-array (list)))
+    (dolist (x idx1Lst)
+      (dolist (y idx2Lst)
+	(append my-pre-array (extract-1 sds x y))))
+    (make-array (list (length idx1Lst idx2Lst))
+		:store my-pre-array)))
 
-(defun extract-idx-sds (sds rowIdxLst colIdxLst)
+
+(defun extract-idx-sds (sds idx1Lst idx2Lst)
   "return a dataset encapsulated version of extract-idx."
-  )
+  (make-instance 'statistical-dataset
+		 :storage #2A((extract-idx sds idx1Lst idx2Lst))
+		 ;; ensure copy for this and following
+		 :doc (doc-string sds)
+		 :case-labels (caseNames sds)
+		 :var-labels (varNames sds)))
 
 (defgeneric extract (sds whatAndRange)
   (:documentation "data extraction approach"))
 
-
-
+;;; Printing methods and support.
 
 (defun print-structure-table (ds)
   "example of what we want the methods to look like.  Should be sort
