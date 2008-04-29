@@ -120,26 +120,54 @@ Ensure that dims of stored data are same as case and var labels."
 ;;; Extraction
 
 (defun extract-1 (sds index1 index2)
+  "Returns a scalar."
   (aref (dataset sds) index1 index2))
 
-(defun gen-seq (n)
-  "There has to be a better way -- I'm sure of it!"
-  (if (> n 0)
-      (append (gen-seq (- n 1)) (list n))))
+(defun extract-1-as-sds (sds index1 index2)
+  "Need a version which returns a dataset."
+  (make-instance 'statistical-dataset
+		 :storage #2A((extract-1 sds index1 index2))
+		 ;; ensure copy for this and following
+		 :doc (documentation sds)
+		 :case-labels (caseNames sds)
+		 :var-labels (varNames sds))
+
+(defun gen-seq (n &optional (start 1))
+  "There has to be a better way -- I'm sure of it!  Always count from 1."
+  (if (>= n start)
+      (append (gen-seq (- n 1) start) (list n))))
 ;; (gen-seq 4)
+;; =>  (1 2 3 4)
+;; (gen-seq 0)
+;; => nil
+;; (gen-seq 5 3)
+;; => 3 4 5
+;; 
 
 (defun extract-col (sds index)
+  "Returns data as sequence."
+  (map 'sequence
+       #'(lambda (x) (extract-1 sds index x))
+       (gen-seq (nth 2 (array-dimensions (dataset sds))))))
+
+(defun extract-col-as-sds (sds index)
+  "Returns data as SDS, copied."
   (map 'sequence
        #'(lambda (x) (extract-1 sds index x))
        (gen-seq (nth 2 (array-dimensions (dataset sds))))))
 
 (defun extract-row (sds index)
+  "Returns row as sequence."
   (map 'sequence
        #'(lambda (x) (extract-1 sds x index))
        (gen-seq (nth 1 (array-dimensions (dataset sds))))))
 
 (defun extract-idx (sds rowIdxLst colIdxLst)
-  "return a rectangular structure of row X col dims."
+  "return an array, row X col dims."
+  )
+
+(defun extract-idx-sds (sds rowIdxLst colIdxLst)
+  "return a dataset encapsulated version of extract-idx."
   )
 
 (defgeneric extract (sds whatAndRange)
