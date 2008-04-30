@@ -374,15 +374,15 @@ Usually used by:
 
 (addtest (lisp-stat-dataclos) genseq
 	 (ensure
-	  (eql (gen-seq 4) (list 1 2 3 4))))
+	  (equal (lisp-stat-data-clos::gen-seq 4) (list 1 2 3 4))))
 
 (addtest (lisp-stat-dataclos) genseq-null
 	 (ensure
-	  (eql (gen-seq 0) nil)))
+	  (equal (lisp-stat-data-clos::gen-seq 0) nil)))
 
 (addtest (lisp-stat-dataclos) genseq-offset
 	 (ensure
-	  (eql (gen-seq 4 2) (list 2 3 4))))
+	  (equal (lisp-stat-data-clos::gen-seq 4 2) (list 2 3 4))))
 
 (addtest (lisp-stat-dataclos) equaltestnameData
 	 (ensure-error
