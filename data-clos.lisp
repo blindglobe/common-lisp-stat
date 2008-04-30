@@ -126,7 +126,9 @@ Ensure that dims of stored data are same as case and var labels."
 (defun extract-1-as-sds (sds idx1 idx2)
   "Need a version which returns a dataset."
   (make-instance 'statistical-dataset
-		 :storage #2A((extract-1 sds idx1 idx2))
+		 :storage (make-array
+			   (list 1 1)
+			   :initial-contents (extract-1 sds idx1 idx2))
 		 ;; ensure copy for this and following
 		 :doc (doc-string sds)
 		 :case-labels (caseNames sds)
@@ -163,19 +165,21 @@ Ensure that dims of stored data are same as case and var labels."
        (gen-seq (nth 1 (array-dimensions (dataset sds))))))
 
 (defun extract-idx (sds idx1Lst idx2Lst)
-  "return an array, row X col dims."
+  "return an array, row X col dims.  FIXME TESTME"
   (let ((my-pre-array (list)))
     (dolist (x idx1Lst)
       (dolist (y idx2Lst)
 	(append my-pre-array (extract-1 sds x y))))
-    (make-array (list (length idx1Lst idx2Lst))
-		:store my-pre-array)))
+    (make-array (list (length idx1Lst) (length idx2Lst))
+		:initial-contents my-pre-array)))
 
 
 (defun extract-idx-sds (sds idx1Lst idx2Lst)
   "return a dataset encapsulated version of extract-idx."
   (make-instance 'statistical-dataset
-		 :storage #2A((extract-idx sds idx1Lst idx2Lst))
+		 :storage (make-array
+			   (list (length idx1Lst) (length idx2Lst))
+				 :initial-contents (dataset sds))
 		 ;; ensure copy for this and following
 		 :doc (doc-string sds)
 		 :case-labels (caseNames sds)
@@ -367,6 +371,18 @@ Usually used by:
 
 
 (deftestsuite lisp-stat-dataclos () ()) ;;(lisp-stat) ())
+
+(addtest (lisp-stat-dataclos) genseq
+	 (ensure
+	  (eql (gen-seq 4) (list 1 2 3 4))))
+
+(addtest (lisp-stat-dataclos) genseq-null
+	 (ensure
+	  (eql (gen-seq 0) nil)))
+
+(addtest (lisp-stat-dataclos) genseq-offset
+	 (ensure
+	  (eql (gen-seq 4 2) (list 2 3 4))))
 
 (addtest (lisp-stat-dataclos) equaltestnameData
 	 (ensure-error
