@@ -186,7 +186,7 @@
 		     :html))
 	 (unique-name (test-result-property *test-result* :unique-name)))
     (when (and unique-name (not (streamp dest)))
-      (setf dest (unique-filename dest)))
+	(setf dest (unique-filename dest)))
     (with-standard-io-syntax 
       (let ((*print-readably* nil))
 	(handler-bind 

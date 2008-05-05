@@ -499,7 +499,7 @@ See file COPYING for license
   helper-equality-test
   (let ((result (run-test :suite 'test-error-catching-helper-equality-test
 			  :name 'equality-test)))
-    (ensure-same 1 (length (lift::suites-run result)))
+    (ensure-same 0 (length (lift::suites-run result))) ;hmmm
     (ensure-same 1 (length (errors result)))))
 
 ;;;;
@@ -549,6 +549,7 @@ See file COPYING for license
 
 (addtest (test-expected-errors-helper
 	  :expected-error t)
+  test-1
   (error "this is an error"))
 
 (addtest (test-expected-errors)
@@ -558,6 +559,37 @@ See file COPYING for license
     (ensure-same 1 (length (tests-run result)))
     (ensure-same 0 (length (errors result)))
     (ensure-same 1 (length (expected-errors result)))
+    ))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter *test-expected-errors-helper-2* nil))
+
+(deftestsuite test-expected-errors-helper-2 ()
+  ())
+
+(addtest (test-expected-errors-helper-2
+	  :expected-error *test-expected-errors-helper-2*)
+  test-1
+  (error "this is an error"))
+
+(addtest (test-expected-errors)
+  test-expected-error-helper-true
+  (let* ((*test-expected-errors-helper-2* t)
+	 (result (run-tests :suite 'test-expected-errors-helper-2
+			   :report-pathname nil)))
+    (ensure-same 1 (length (tests-run result)))
+    (ensure-same 0 (length (errors result)))
+    (ensure-same 1 (length (expected-errors result)))
+    ))
+
+(addtest (test-expected-errors)
+  test-expected-error-helper-false
+  (let* ((*test-expected-errors-helper-2* nil)
+	 (result (run-tests :suite 'test-expected-errors-helper-2
+			   :report-pathname nil)))
+    (ensure-same 1 (length (tests-run result)))
+    (ensure-same 1 (length (errors result)))
+    (ensure-same 0 (length (expected-errors result)))
     ))
 
 (addtest (test-expected-errors)
@@ -617,7 +649,9 @@ See file COPYING for license
   ())
 
 (deftestsuite test-break-on-failure-helper ()
-  ())
+  ()
+  ;; :categories (foo bar)
+  )
 
 (addtest (test-break-on-failure-helper)
   failing-test
@@ -648,3 +682,30 @@ See file COPYING for license
 	(setf *test-scratchpad* t)))
     (ensure-null result)
     (ensure-same *test-scratchpad* t :test 'eq)))
+
+;;;;
+
+(deftestsuite ensure-no-warning (lift-test)
+  ())
+
+(deftestsuite ensure-no-warning-helper ()
+  ())
+
+(addtest (ensure-no-warning-helper)
+  test-1
+  (ensure-no-warning (ensure-same (+ 2 2) 4)))
+
+(addtest (ensure-no-warning-helper)
+  test-2
+  (ensure-no-warning (ensure-same (+ 2 2) 4)
+		     (warn "I like math")))
+
+(addtest (ensure-no-warning)
+  run-tests
+  (let ((result (run-tests :suite 'ensure-no-warning-helper
+			   :report-pathname nil)))
+    (ensure-same (length (tests-run result)) 2)
+    (ensure-same (length (failures result)) 1)
+    (ensure-same (length (errors result)) 0)))
+
+

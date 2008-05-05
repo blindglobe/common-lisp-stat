@@ -1,3 +1,32 @@
 Starting with tag:
 [TAG version-1.4.1
-Gary King <gwking@metabang.com>**20080302223445] 
+Gary King <gwking@metabang.com>**20080302223445] [Added tests for expected testsuite failures and errors.
+Gary King <gwking@metabang.com>**20080312221201] 
+[Add ensure-no-warning
+Gary King <gwking@metabang.com>**20080312221531] 
+[Added :expected-error and :expected-failure as testsuite options
+Gary King <gwking@metabang.com>**20080312221726] 
+[cleanup how test results print and describe themselves just a little
+Gary King <gwking@metabang.com>**20080312224148] 
+[playing with some improvements in where reports and html goes
+Gary King <gwking@metabang.com>**20080312224316] 
+[Test options (like :expected-error) are evaluated now.
+Gary King <gwking@metabang.com>**20080312224430] 
+[minor cleanup and tweaking
+Gary King <gwking@metabang.com>**20080312224457] 
+[hack to prevent warnings in Allegro about multiple random instance definitions.
+Gary King <gwking@metabang.com>**20080312224530] 
+[bumped version
+Gary King <gwking@metabang.com>**20080312224619] 
+[TAG version-1.4.2
+Gary King <gwking@metabang.com>**20080312224632] 
+[Nicer formatting for ensure-expected-condition
+Gary King <gwking@metabang.com>**20080323222826] 
+[testsuites can now be :expected-failures or :expected-errors as a whole
+Gary King <gwking@metabang.com>**20080323222915] 
+[Fix case111 - need to declare symbol-macrolets for functions as ignorable
+Gary King <gwking@metabang.com>**20080504001949] 
+[bumped version
+Gary King <gwking@metabang.com>**20080504002402] 
+[TAG version-1.4.3
+Gary King <gwking@metabang.com>**20080504002416] 

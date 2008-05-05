@@ -266,6 +266,7 @@ The following macros can be used outside of LIFT where they will function very m
 {docs ensure-condition macro}
 {docs ensure-warning macro}
 {docs ensure-error macro}
+{docs ensure-no-warning}
 {docs ensure-cases macro}
 
 ### Running tests 
@@ -285,6 +286,7 @@ when calling [run-test][] or [run-tests][] or when interactively defining new te
 
 {docs *test-ignore-warnings?* variable}
 {docs *test-break-on-errors?* variable}
+{docs *test-break-on-failures?* variable}
 {docs *test-maximum-time* variable}
 {docs *test-print-testsuite-names* variable}
 {docs *test-print-test-case-names* variable}
@@ -316,6 +318,8 @@ when calling [run-test][] or [run-tests][] or when interactively defining new te
 {docs testsuite-p}
 {docs failures}
 {docs errors}
+{docs expected-failures}
+{docs expected-errors}
 
 ### Random testing
 

@@ -56,6 +56,7 @@
 	    ensure-condition
 	    ensure-warning
 	    ensure-error
+	    ensure-no-warning
           
 	    ;;?? Not yet
 	    ;; with-test
@@ -309,7 +310,7 @@ All other CLOS slot options are processed normally."
 
 (defparameter *make-testsuite-arguments*
   '(:run-setup :test-slot-names :equality-test :log-file :timeout
-    :default-initargs :profile))
+    :default-initargs :profile :expected-failure :expected-error))
 
 (defvar *current-testsuite-name* nil)
 (defvar *current-test-case-name* nil)
@@ -498,17 +499,29 @@ can be :supersede, :append, or :error.")
 		     (assertion c) (value c) (message c)))))
 
 (define-condition ensure-expected-condition (test-condition) 
-                  ((expected-condition-type
-                    :initform nil
-                    :accessor expected-condition-type
-                    :initarg :expected-condition-type)
-                   (the-condition
+  ((expected-condition-type
+    :initform nil
+    :accessor expected-condition-type
+    :initarg :expected-condition-type)
+   (the-condition
+    :initform nil
+    :accessor the-condition
+    :initarg :the-condition))
+  (:report (lambda (c s)
+	     (let ((the-condition (the-condition c)))
+	       (format s "Expected ~S but got ~S~@[:~_   ~A~]" 
+		       (expected-condition-type c)
+		       (type-of the-condition)
+		       (and (typep the-condition 'condition)
+			    the-condition))))))
+
+(define-condition ensure-expected-no-warning-condition (test-condition) 
+                  ((the-condition
                     :initform nil
                     :accessor the-condition
                     :initarg :the-condition))
   (:report (lambda (c s)
-             (format s "Expected ~A but got ~S" 
-                     (expected-condition-type c)
+             (format s "Expected no warnings but got ~S" 
                      (the-condition c)))))
 
 (define-condition ensure-not-same (test-condition) 
@@ -625,7 +638,8 @@ details."
                                   :expected-condition-type ',condition
                                   :the-condition cond
                                   ,@(when report
-                                      `(:message (format nil ,report ,arguments))))))
+                                      `(:message 
+					(format nil ,report ,arguments))))))
                           (if (find-restart 'ensure-failed)
                             (invoke-restart 'ensure-failed c) 
                             (warn c)))))
@@ -640,6 +654,25 @@ details."
 		 ,@(when report
 			 `(:message (format nil ,report ,arguments))))) 
                (warn "Ensure-condition didn't get the condition it expected."))))))))
+
+(defmacro ensure-no-warning (&body body)
+  "This macro is used to make sure that body produces no warning."
+  (let ((g (gensym))
+	(gcondition (gensym)))
+    `(let ((,g nil)
+	   (,gcondition nil))
+       (unwind-protect
+	    (handler-case 
+		(progn ,@body)
+	      (warning (c)
+		(setf ,gcondition c ,g t)))
+	 (when ,g
+	   (let ((c (make-condition 
+		    'ensure-expected-no-warning-condition
+		    :the-condition ,gcondition)))
+	    (if (find-restart 'ensure-failed)
+		(invoke-restart 'ensure-failed c) 
+		(warn c))))))))
 
 (defmacro ensure-warning (&body body)
   "Ensure-warning evaluates its body. If the body does *not* signal a 
@@ -843,6 +876,16 @@ error, then ensure-error will generate a test failure."
 	   (push (type-of testsuite) (suites-run result))
            (setf (current-step testsuite) :testsuite-setup)))
 
+(defgeneric testsuite-expects-error (testsuite)
+  (:documentation "Returns whether or not the testsuite as a whole expects an error.")
+  (:method ((testsuite test-mixin))
+    nil))
+
+(defgeneric testsuite-expects-failure (testsuite)
+  (:documentation "Returns whether or not the testsuite as a whole expects to fail.")
+  (:method ((testsuite test-mixin))
+    nil))
+
 (defgeneric testsuite-run (testsuite result)
   (:documentation "Run the cases in this suite and it's children."))
 
@@ -1003,11 +1046,14 @@ the thing being defined.")
 				     (priority (cdr name.cb))))))
 
 (defmacro with-test-slots (&body body)
-  `(symbol-macrolet ((lift-result (getf (test-data *current-test*) :result)))   
+  `(symbol-macrolet ((lift-result (getf (test-data *current-test*) :result)))
+     ;; case111 - LW complains otherwise
+     (declare (ignorable lift-result))
      (symbol-macrolet
 	 ,(mapcar #'(lambda (local)
 		      `(,local (test-environment-value ',local)))
 		  (test-slots (def :testsuite-name)))
+       (declare (ignorable ,@(test-slots (def :testsuite-name))))
        (macrolet
 	   ,(mapcar (lambda (spec)
 		      (destructuring-bind (name arglist) spec
@@ -1079,6 +1125,18 @@ the thing being defined.")
  (lambda () (def :equality-test))
  '((setf (def :equality-test) (cleanup-parsed-parameter value)))
  'build-test-equality-test)
+
+(add-code-block
+ :expected-error 0 :methods
+ (lambda () (def :expected-error))
+ '((setf (def :expected-error) (cleanup-parsed-parameter value)))
+ 'build-testsuite-expected-error)
+
+(add-code-block
+ :expected-failure 0 :methods
+ (lambda () (def :expected-failure))
+ '((setf (def :expected-failure) (cleanup-parsed-parameter value)))
+ 'build-testsuite-expected-failure)
 
 (add-code-block
  :log-file 0 :class-def
@@ -1733,11 +1791,13 @@ nor configuration file options were specified."))))))
 
 (defun testcase-expects-error-p (&optional (test *current-test*))
   (let* ((options (getf (test-data test) :options)))
-    (second (member :expected-error options))))
+    (or (testsuite-expects-error test)
+	(second (member :expected-error options)))))
 
 (defun testcase-expects-failure-p (&optional (test *current-test*))
   (let* ((options (getf (test-data test) :options)))
-    (second (member :expected-failure options))))
+    (or (testsuite-expects-failure test)
+	(second (member :expected-failure options)))))
 
 (defun testcase-expects-problem-p (&optional (test *current-test*))
   (let* ((options (getf (test-data test) :options)))
@@ -1864,7 +1924,7 @@ nor configuration file options were specified."))))))
 	   (expected-failures (- (length (expected-failures tr))
 				 non-failure-failures)))	     
       (print-unreadable-object (tr stream)
-        (cond ((null (tests-run tr))
+        (cond ((and (null (tests-run tr)) complete-success?)
                (format stream "~A: no tests defined" (results-for tr)))
               ((eq (test-mode tr) :single)
                (cond ((test-interactive? tr)
@@ -1932,35 +1992,49 @@ nor configuration file options were specified."))))))
 		     (subclasses 'unexpected-success-failure :proper? nil)))
 	   (expected-failures result)))
 	 (number-of-expected-failures (- (length (expected-failures result))
-					 non-failure-failures)))	     
+					 non-failure-failures))
+	 (*print-level* (get-test-print-level))
+	 (*print-length* (get-test-print-length)))
     (unless *test-is-being-defined?*
-      (format stream "~&Test Report for ~A: ~D test~:P run" 
-              (results-for result) (length (tests-run result))))
-    (flet ((show-details ()
-	     (when show-details-p
-	       (format stream "~%~%")             
-	       (print-test-result-details 
-		stream result show-expected-p show-code-p))))
-      (let* ((*print-level* (get-test-print-level))
-           (*print-length* (get-test-print-length)))
-      (cond ((or (failures result) (errors result)
-		 (expected-failures result) (expected-errors result))
-             (format stream "~[~:;, ~:*~A Failure~:P~]~[~:;, ~:*~A Expected failure~:P~]~[~:;, ~:*~A Successful Surprise~:P~]~[~:;, ~:*~A Error~:P~]~[~:;, ~:*~A Expected error~:P~]." 
-                     number-of-failures
+      (print-test-summary result stream)
+      (when (and show-details-p
+		 (or number-of-failures
                      number-of-expected-failures
-		     non-failure-failures
-                     number-of-errors
-                     number-of-expected-errors)
-	     (show-details))
-	    ((or (expected-failures result) (expected-errors result))
-             (format stream ", all passed *~[~:;, ~:*~A Expected failure~:P~]~[~:;, ~:*~A Expected error~:P~])." 
-                     number-of-expected-failures
-                     number-of-expected-errors)
-	     (show-details))
-	    (t
-             (unless *test-is-being-defined?*
-               (format stream ", all passed!")))))    
-    (values))))
+	             number-of-errors
+                     number-of-expected-errors))
+	(format stream "~%~%")             
+	(print-test-result-details
+	 stream result show-expected-p show-code-p)
+	(print-test-summary result stream)))))
+
+(defun print-test-summary (result stream)
+  (let* ((number-of-failures (length (failures result)))
+	 (number-of-errors (length (errors result)))
+	 (number-of-expected-errors (length (expected-errors result)))
+	 (non-failure-failures
+	  (count-if 
+	   (lambda (failure) 
+	     (member (class-of (test-condition failure))
+		     (subclasses 'unexpected-success-failure :proper? nil)))
+	   (expected-failures result)))
+	 (number-of-expected-failures (- (length (expected-failures result))
+					 non-failure-failures)))	     
+    (format stream "~&Test Report for ~A: ~D test~:P run" 
+	    (results-for result) (length (tests-run result)))
+    (cond ((or (failures result) (errors result)
+	       (expected-failures result) (expected-errors result))
+	   (format stream "~[~:;, ~:*~A Error~:P~]~[~:;, ~:*~A Failure~:P~]~[~:;, ~:*~A Expected error~:P~]~[~:;, ~:*~A Expected failure~:P~]~[~:;, ~:*~A Successful Surprise~:P~]." 
+		   number-of-errors
+		   number-of-failures
+		   number-of-expected-errors
+		   number-of-expected-failures
+		   non-failure-failures))
+	  ((or (expected-failures result) (expected-errors result))
+	   (format stream ", all passed *~[~:;, ~:*~A Expected error~:P~]~[~:;, ~:*~A Expected failure~:P~])." 
+		   number-of-expected-errors
+		   number-of-expected-failures))
+	  (t
+	   (format stream ", all passed!")))))
 
 (defun print-test-result-details (stream result show-expected-p show-code-p)
   (loop for report in (errors result) do
@@ -2163,6 +2237,22 @@ nor configuration file options were specified."))))))
        (defmethod equality-test ((testsuite ,test-name))
 	 ,equality-test))))
 
+(defun build-testsuite-expected-error ()
+  (let ((test-name (def :testsuite-name))
+        (expected-error (def :expected-error)))
+    `(progn
+       (defmethod testsuite-expects-error ((testsuite ,test-name))
+	 (with-test-slots
+	   ,expected-error)))))
+
+(defun build-testsuite-expected-failure ()
+  (let ((test-name (def :testsuite-name))
+        (expected-failure (def :expected-failure)))
+    `(progn
+       (defmethod testsuite-expects-failure ((testsuite ,test-name))
+	 (with-test-slots
+	   ,expected-failure)))))
+
 (defun build-test-teardown-method ()
   (let ((test-name (def :testsuite-name))
         (slot-names (def :direct-slot-names))
@@ -2254,7 +2344,9 @@ nor configuration file options were specified."))))))
 	       (append (testsuite-tests ',test-class) (list ',test-name))))
        (defmethod lift-test ((testsuite ,test-class) (case (eql ',test-name)))
 	 ,@(when options
-		 `((setf (getf (test-data testsuite) :options) ',options))) 
+		 `((setf (getf (test-data testsuite) :options) 
+			 (list ,@(loop for (k v) on options by #'cddr append
+				      (list k v))))))
 	 (with-test-slots ,@body))
        (setf *current-test-case-name* ',test-name)
        (when (and *test-print-when-defined?*
@@ -2583,6 +2675,7 @@ control over where in the test hierarchy the search begins."
        (consp (suites-run result))
        (find suite (suites-run result))))
 
+;; FIXME -- abstract and merge with unique-directory
 (defun unique-filename (pathname)
   (let ((date-part (date-stamp)))
     (loop repeat 100
@@ -2598,6 +2691,36 @@ control over where in the test hierarchy the search begins."
 	   (return-from unique-filename name)))
     (error "Unable to find unique pathname for ~a" pathname)))
 	    
+;; FIXME -- abstract and merge with unique-filename
+(defun unique-directory (pathname)
+  (when (or (pathname-name pathname) (pathname-type pathname))
+    (setf pathname (make-pathname 
+		    :name :unspecific
+		    :type :unspecific
+		    :directory `(,@(pathname-directory pathname)
+				   ,(format nil "~a~@[.~a~]"
+					    (pathname-name pathname) 
+					    (pathname-type pathname)))
+		    :defaults pathname)))
+  (or (and (not (probe-file pathname)) pathname)
+      (let ((date-part (date-stamp)))
+	(loop repeat 100
+	   for index from 1
+	   for name = 
+	   (merge-pathnames 
+	    (make-pathname
+	     :name :unspecific
+	     :type :unspecific
+	     :directory `(:relative 
+			  ,(format nil "~@[~a-~]~a-~d" 
+				   (and (stringp (pathname-name pathname))
+					(pathname-name pathname))
+				   date-part index)))
+	    pathname) do
+	   (unless (probe-file name)
+	     (return name))))
+      (error "Unable to find unique pathname for ~a" pathname)))
+
 (defun date-stamp (&key (datetime (get-universal-time)) (include-time? nil))
   (multiple-value-bind
 	(second minute hour day month year day-of-the-week)

@@ -88,7 +88,9 @@
  'build-random-instances-method)
 
 (defun build-random-instances-method ()
-  `(progn ,@(mapcar (lambda (instance)
+  `(let (#+allegro
+	 (excl:*redefinition-warnings* nil))
+     ,@(mapcar (lambda (instance)
 		      (let ((atype (first instance))
 			    (body (second instance)))
 			`(defrandom-instance ,atype test-mixin ,body)))

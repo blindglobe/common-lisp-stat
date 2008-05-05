@@ -18,6 +18,7 @@
 		:depends-on ("setup")
 		:components ((:file "test-dynamic-variables")
 			     (:file "equality-tests")
+			     (:file "testsuite-expects")
 			     (:file "finding-tests")
 			     (:file "order-of-operations")
 				     #+(or)
