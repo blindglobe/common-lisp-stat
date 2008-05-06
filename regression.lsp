@@ -59,33 +59,35 @@
           "Normal Linear Regression Model")
 
 (defun regression-model (x y &key 
-                           (intercept T) 
-                           (print T) 
-                           (weights nil)
-                           (included (repeat t (length y)))
-                           predictor-names
-                           response-name
-                           case-labels)
-"Args: (x y &key (intercept T) (print T) (weights nil)
+			 (intercept T) 
+			 (print T) 
+			 (weights nil)
+			 (included (repeat t (length y)))
+			 predictor-names
+			 response-name
+			 case-labels)
+  "Args: (x y &key (intercept T) (print T) (weights nil)
           included predictor-names response-name case-labels)
 X           - list of independent variables or X matrix
 Y           - dependent variable.
 INTERCEPT   - T to include (default), NIL for no intercept
 PRINT       - if not NIL print summary information
-WEIGHTS     - if supplied should be the same length as Y; error variances are
+WEIGHTS     - if supplied should be the same length as Y; error
+              variances are  
               assumed to be inversely proportional to WEIGHTS
 PREDICTOR-NAMES, RESPONSE-NAME, CASE-LABELS
             - sequences of strings or symbols.
-INCLUDED    - if supplied should be the same length as Y, with elements nil
-              to skip a in computing estimates (but not in residual analysis). 
+INCLUDED    - if supplied should be the same length as Y, with
+ 	      elements nil to skip a in computing estimates (but not
+              in residual analysis).
 Returns a regression model object. To examine the model further assign the
 result to a variable and send it messages.
-Example (data are in file absorbtion.lsp in the sample data directory/folder):
+Example (data are in file absorbtion.lsp in the sample data directory): 
   (def m (regression-model (list iron aluminum) absorbtion))
   (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
 	    ((matrixp x) x)
-	    ((vectorp x) (list x))
+	    ((typep x 'vector) (list x))
 	    ((and (consp x) (numberp (car x))) (list x))
 	    (t x)))
         (m (send regression-model-proto :new)))
@@ -450,12 +452,15 @@ link-views function. Returns a plot object."
 (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)
   "Message args: (&optional x-values)
-Opens a window with a plot of the standardized residuals and two standard
-error bars for the posterior distribution of the actual deviations from the
-line. See Chaloner and Brant. If X-VALUES are not supplied  the fitted values
-are used. The plot can be linked to other plots with the link-views function.
-Returns a plot object."
-  (let* ((r (/ (send self :residuals) (send self :sigma-hat)))
+
+Opens a window with a plot of the standardized residuals and two
+standard error bars for the posterior distribution of the actual
+deviations from the line. See Chaloner and Brant. If X-VALUES are not
+supplied the fitted values are used. The plot can be linked to other
+plots with the link-views function.  Returns a plot object."
+
+  (let* ((r (/ (send self :residuals)
+	       (send self :sigma-hat)))
          (d (* 2 (sqrt (send self :leverages))))
          (low (- r d))
          (high (+ r d))

@@ -294,11 +294,12 @@ absorbtion
 (send fit1 :residuals)
 
 (def m (regression-model (list iron aluminum) absorbtion))
+(def m (regression-model (bind-columns iron aluminum) absorbtion))
 (send m :help) (send m :plot-residuals)
 
 
-(sequencep aluminum)
-(sequencep iron)
+(typep aluminum 'sequence)
+(typep iron 'sequence)
 (matrixp iron)
 
 *variables*
