@@ -90,10 +90,14 @@ Returns number of columns in X."
 Returns the matrix product of matrices a, b, etc. If a is a vector it is
 treated as a row vector; if b is a vector it is treated as a column vector."
   ;; fixme: why does SBCL claim this is unreachable?
-  (let ((rtype (cond ((and (matrixp a) (matrixp b)) 'matrix)
-                     ((and (sequencep a) (sequencep b)) 'number)
-                     ((sequencep a) (if (consp a) 'list 'vector))
-                     ((sequencep b) (if (consp b) 'list 'vector)))))
+  (let ((rtype (cond ((and (typep a 'matrix)
+			   (typep b 'matrix)) 'matrix)
+                     ((and (typep a 'sequence)
+			   (typep b 'sequence)) 'number)
+                     ((typep a 'sequence)
+		      (if (consp a) 'list 'vector))
+                     ((typep b 'sequence)
+		      (if (consp b) 'list 'vector)))))
              
     (if (sequencep a) 
       (setf a (vector-to-array (coerce a 'vector) (list 1 (length a)))))
@@ -138,12 +142,12 @@ Returns the identity matrix of rank N."
 If X is a matrix, returns the diagonal of X. If X is a sequence, returns a
 diagonal matrix of rank (length X) with diagonal elements eq to the elements
 of X."
-  (cond ((matrixp x)
+  (cond ((typep x 'matrix)
 	 (let* ((n (min (num-rows x) (num-cols x)))
 		(result (make-array n)))
 	   (dotimes (i n (coerce result 'list)) 
 		    (setf (aref result i) (aref x i i)))))
-	((sequencep x)
+	((typep x 'sequence)
 	 (let* ((x (coerce x 'vector))
 		(n (length x))
 		(result (make-array (list n n) :initial-element 0)))
@@ -311,10 +315,11 @@ The ARGS can be matrices, vectors, or lists. Arguments are bound into a matrix
 along their rows.
 Example: (bind-rows #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2)(3 4)(5 6))"
   (flet ((check-arg (x)
-           (if (not (or (sequencep x) (matrixp x)))
+           (if (not (or (typep x 'sequence)
+			(typep x 'matrix)))
                (error "bad argument type")))
-         (arg-cols (x) (if (sequencep x) (length x) (num-cols x)))
-         (arg-rows (x) (if (sequencep x) 1 (num-rows x))))
+         (arg-cols (x) (if (typep x 'sequence) (length x) (num-cols x)))
+         (arg-rows (x) (if (typep x 'sequence) 1 (num-rows x))))
     (dolist (x args) (check-arg x))
     (let ((m (arg-rows (first args)))
           (n (arg-cols (first args))))
@@ -328,7 +333,7 @@ Example: (bind-rows #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2)(3 4)(5 6))"
             (x (first args) (first args)))
            ((null args) result)
         (cond
-         ((sequencep x)
+         ((typep x 'sequence)
           (let ((cx (make-next-element x)))
             (dotimes (i n)
               (setf (aref result firstrow i) (get-next-element cx i)))))

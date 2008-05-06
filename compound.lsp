@@ -512,7 +512,7 @@ in the original array."
 ;;;; is x an ordered sequence of nonnegative positive integers?
 (defun ordered-nneg-seq(x)
   ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
-  (if (sequencep x)
+  (if (typep x 'sequence)
       (let ((n (length x))
             (cx (make-next-element x))
             (m 0))
