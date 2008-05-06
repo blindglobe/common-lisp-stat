@@ -276,14 +276,15 @@ absorbtion
 ;; Simple univariate variable-specific descriptions.
 (fivnum absorbtion)
 (median absorbtion)
-(sort absorbtion) ;; CLISP error
+(sort-data absorbtion)
 (rank absorbtion)
 (standard-deviation absorbtion)
 (interquartile-range absorbtion)
 
-;;; How do I make these work?
+(lisp-stat-matrix::bind-columns aluminum iron)
 (bind-columns aluminum iron)
 (apply #'bind-columns (list aluminum iron))
+(lisp-stat-matrix::bind-columns  #2a((1 2)(3 4)) #(5 6))
 (bind-columns #2a((1 2)(3 4)) #(5 6))
 
 

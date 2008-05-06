@@ -277,10 +277,10 @@ The ARGS can be matrices, vectors, or lists. Arguments are bound into a matrix
 along their columns.
 Example: (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
   (flet ((check-arg (x)
-           (if (not (or (sequencep x) (matrixp x)))
+           (if (not (or (typep x 'sequence) (typep x 'matrix)))
                (error "bad argument type")))
-         (arg-cols (x) (if (sequencep x) 1 (num-cols x)))
-         (arg-rows (x) (if (sequencep x) (length x) (num-rows x))))
+         (arg-cols (x) (if (typep x 'sequence) 1 (num-cols x)))
+         (arg-rows (x) (if (typep x 'sequence) (length x) (num-rows x))))
     (dolist (x args) (check-arg x)) ;; verify data structure conformance.
     (let ((m (arg-rows (first args)))
           (n (arg-cols (first args))))
@@ -294,15 +294,15 @@ Example: (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
             (x (first args) (first args)))
            ((null args) result)
         (cond
-         ((sequencep x)
-          (let ((cx (make-next-element x)))
+	  ((typep x 'sequence)
+	   (let ((cx (make-next-element x)))
             (dotimes (i m)
               (setf (aref result i firstcol) (get-next-element cx i)))))
-         (t
-          (let ((k (arg-cols x)))
-            (dotimes (i m)
-              (dotimes (j k)
-                (setf (aref result i (+ firstcol j)) (aref x i j)))))))
+	  (t
+	   (let ((k (arg-cols x)))
+	     (dotimes (i m)
+	       (dotimes (j k)
+		 (setf (aref result i (+ firstcol j)) (aref x i j)))))))
         (incf firstcol (arg-cols x))))))
 
 (defun bind-rows (&rest args)

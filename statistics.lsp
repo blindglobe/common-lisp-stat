@@ -56,7 +56,7 @@ Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."
          (low (floor np))
          (high (ceiling np)))
     (/ (+ (select x low) (select x high)) 2)))
-    
+
 (defun median (x) 
 "Args: (x)
 Returns the median of the elements of X."

@@ -602,23 +602,24 @@ in the original array."
 
 (defun select (x &rest args)
 "Args: (a &rest indices)
-A can be a list or an array. If A is a list and INDICES is a single number
-then the appropriate element of A is returned. If  is a list and INDICES is
-a list of numbers then the sublist of the corresponding elements is returned.
-If A in an array then the number of INDICES must match the ARRAY-RANK of A.
-If each index is a number then the appropriate array element is returned.
-Otherwise the INDICES must all be lists of numbers and the corresponding
-submatrix of A is returned. SELECT can be used in setf."
+
+A can be a list or an array. If A is a list and INDICES is a single
+number then the appropriate element of A is returned. If is a list and
+INDICES is a list of numbers then the sublist of the corresponding
+elements is returned.  If A in an array then the number of INDICES
+must match the ARRAY-RANK of A.  If each index is a number then the
+appropriate array element is returned.  Otherwise the INDICES must all
+be lists of numbers and the corresponding submatrix of A is
+returned. SELECT can be used in setf."
   (cond
    ((every #'fixnump args)
-    (if (listp x) (nth (first args) x) (apply #'aref x args)))
-   ((sequencep x) (sequence-select x (first args)))
-   (t (subarray-select x args))))
+    (if (typep x 'list) (nth (first args) x) (apply #'aref x args)))
+   ((typep x 'sequence) (sequence-select x (first args)))
+   ((typep x 'array (subarray-select x args)))
+   (t (error "compound.lsp:select: Not a valid type."))))
 
 
 ;; Built in SET-SELECT (SETF method for SELECT)
-;; FIXME: This should be done cleaner, check the spec, something like
-;; (defun (setf select) (x &rest args)...)
 (defun set-select (x &rest args)
   (let ((indices (butlast args))
         (values (first (last args))))
