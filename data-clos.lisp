@@ -205,6 +205,7 @@ of like a spreadsheet if the storage is a table."
       (print-as-row (append (list i)
 			    (extract-row (dataset ds) (incf j)))))))
 
+#|
 (defun print-structure-relational (ds)
   "example of what we want the methods to look like.  Should be sort
 of like a graph of spreadsheets if the storage is a relational
@@ -218,6 +219,7 @@ structure."
 	   (append (list i)
 		   (extract-row (dataset currentRelationSet)
 				(incf j)))))))))
+|#
   
 
 ;;; Shaping for computation
@@ -238,47 +240,30 @@ approaches to redistribution.")
   (let ((result (list))
 	(nrows (nth 0 (array-dimensions ary)))
 	(ncols (nth 1 (array-dimensions ary))))
-    (dotimes (i (0 ncols))
-      (dotimes (j (0 nrows))
-	(nappend list (aref ary i j))))))
+    (dotimes (i ncols)
+      (dotimes (j nrows)
+	(nappend result (aref ary i j))))))
 
 (defun col-order-as-list (ary)
   "Pull out data in row order into a list."
   (let ((result (list))
 	(nrows (nth 0 (array-dimensions ary)))
 	(ncols (nth 1 (array-dimensions ary))))
-    (dotimes (i (0 nrows))
-      (dotimes (j (0 ncols))
-	(nappend list (aref ary i j))))))
-
-	
-(nth 1 (list 1 2 3))
+    (dotimes (i nrows)
+      (dotimes (j ncols)
+	(nappend result (aref ary i j))))))
 
 (defun transpose (ary)
   "map NxM to MxN."
   (make-array (reverse (array-dimensions ary))
-      :storage (col-order-as-list ary)))
+      :initial-contents (col-order-as-list ary)))
 
-
-
-(defun reorder-by-rank (x order &key (by-row t))
-  " .")
-
-(defun reorder-by-permutation (x perm &key (by-row t))
-  " .")
 
 ;;; verbs vs semantics for dt conversion -- consider the possibily of
 ;;; how adverbs and verbs relate, where to put which semantically to
 ;;; allow for general approach.
 
 ;;; eg. Kasper's talk on the FUSION collection of parsers.
-
-
-
-
-
-
-
 
 
 
@@ -330,13 +315,15 @@ approaches to redistribution.")
 
 (defgeneric importData (source featureList)
   (:documentation "command to get data into CLS.  Specific methods
-  will need to handle files, internal data structures, and DBMS's.  We
-  would like to be able to do:
+  will need to handle pathnames, internal data structures, and
+  external services such as DBMS's.  We would like to be able to do
+  thinks like: 
+     (importData MyPathName '(:formattype 'csvString))
+     (importData '(sqlConnection :server host.domain.net :port 666)
+                 '(:formattype 'table   
+  and so on."))
 
-
-
-"))
-
+#|
 
 (defun pathname-example (name) 
   (let ((my-path (parse-namestring name)))
@@ -371,15 +358,13 @@ Usually used by:
 (defmethod importData ((ds array) (fmt list))
   "mapping arrays into CLS data.")
 
-#|
 (defmethod importData ((dsSpec DBMSandSQLextract)
 		       (fmt mappingTypes))
   "mapping DBMS into CLS data.")
 |#
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; EXPERIMENT
+;;; Unit-testing
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (in-package :cl-user)
@@ -394,12 +379,10 @@ Usually used by:
 
 (in-package :lisp-stat-data-clos-example)
 
-
 ;;;
 ;;; Use of this package:  To see what gets exported for use in others,
 ;;; and how much corruption can be done to objects within a package.
 ;;;
-
 
 (deftestsuite lisp-stat-dataclos () ()) ;;(lisp-stat) ())
 
