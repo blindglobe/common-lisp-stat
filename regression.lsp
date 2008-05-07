@@ -45,18 +45,20 @@
 
 ;;; Regresion Model Prototype
 
-(defvar regression-model-proto)
+(defvar regression-model-proto nil
+  "Prototype for all regression model instances.")
 (defproto regression-model-proto
-          '(x y intercept sweep-matrix basis weights 
-              included
-              total-sum-of-squares
-              residual-sum-of-squares
-              predictor-names
-              response-name
-              case-labels)
-          ()
-          *object*
-          "Normal Linear Regression Model")
+    '(x y intercept sweep-matrix basis weights 
+      included
+      total-sum-of-squares
+      residual-sum-of-squares
+      predictor-names
+      response-name
+      case-labels
+      doc)
+  ()
+  *object*
+  "Normal Linear Regression Model")
 
 (defun regression-model (x y &key 
 			 (intercept T) 
@@ -65,7 +67,9 @@
 			 (included (repeat t (length y)))
 			 predictor-names
 			 response-name
-			 case-labels)
+			 case-labels
+			 (doc "Undocumented Regression Model Instance")
+			 (debug T))
   "Args: (x y &key (intercept T) (print T) (weights nil)
           included predictor-names response-name case-labels)
 X           - list of independent variables or X matrix
@@ -88,9 +92,12 @@ Example (data are in file absorbtion.lsp in the sample data directory):
   (let ((x (cond 
 	    ((matrixp x) x)
 	    ((typep x 'vector) (list x))
-	    ((and (consp x) (numberp (car x))) (list x))
+	    ((and (consp x)
+		  (numberp (car x))) (list x))
 	    (t x)))
         (m (send regression-model-proto :new)))
+    (format t "~%")
+    (send m :doc doc)
     (send m :x (if (matrixp x) x (apply #'bind-columns x)))
     (send m :y y)
     (send m :intercept intercept)
@@ -99,6 +106,12 @@ Example (data are in file absorbtion.lsp in the sample data directory):
     (send m :predictor-names predictor-names)
     (send m :response-name response-name)
     (send m :case-labels case-labels)
+    (if debug
+	(progn
+	  (format t "~%")
+	  (format t "~S~%" (send m :doc))
+	  (format t "X: ~S~%" (send m :x))
+	  (format t "Y: ~S~%" (send m :y))))
     (if print (send m :display))
     m))
 
@@ -128,7 +141,7 @@ Recomputes the estimates. For internal use by other messages"
          (intercept (send self :intercept))
          (weights (send self :weights))
          (w (if weights (* included weights) included))
-         (m (make-sweep-matrix x y w))
+         (m (make-sweep-matrix x y w)) ;;; ERROR HERE
          (n (array-dimension x 1))
          (p (- (array-dimension m 0) 1))
          (tss (aref m p p))
@@ -186,6 +199,15 @@ are marked as aliased."
 
 ;;; Slot accessors and mutators
 
+(defmeth regression-model-proto :doc (&optional new-doc)
+"Message args: (&optional new-doc)
+With no argument returns the DOC-STRING as supplied to m. With an argument
+NEW-DOC sets the DOC-STRING to NEW-DOC."
+  (when (and new-doc (stringp new-doc))
+        (setf (slot-value 'doc) new-doc))
+  (slot-value 'doc))
+
+
 (defmeth regression-model-proto :x (&optional new-x)
 "Message args: (&optional new-x)
 With no argument returns the x matrix as supplied to m. With an argument
@@ -199,9 +221,10 @@ NEW-X sets the x matrix to NEW-X and recomputes the estimates."
 "Message args: (&optional new-y)
 With no argument returns the y sequence as supplied to m. With an argument
 NEW-Y sets the y sequence to NEW-Y and recomputes the estimates."
-  (when (and new-y (or (matrixp new-y) (sequencep new-y)))
-        (setf (slot-value 'y) new-y)
-        (send self :needs-computing t))
+  (when (and new-y
+	     (or (matrixp new-y) (typep  new-y 'sequence)))
+    (setf (slot-value 'y) new-y)
+    (send self :needs-computing t))
   (slot-value 'y))
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))

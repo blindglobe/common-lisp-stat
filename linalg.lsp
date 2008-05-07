@@ -881,7 +881,7 @@ Returns unnormalized Fourier transform of X, or inverse transform if INVERSE
 is true."
   (check-sequence x)
   (let* ((n (length x))
-	 (mode (la-data-mode x))
+	 ;;(mode (la-data-mode x))
 	 (isign (if inverse -1 1))
 	 (result (if (consp x) (make-list n) (make-array n))))
     (let ((px (la-data-to-vector x +mode-cx+))
@@ -1102,8 +1102,17 @@ MULTREG documentation.) If supplied, TOLERANCES should be a list of real
 numbers the same length as INDICES. An index will only be swept if its pivot
 element is larger than the corresponding element of TOLERANCES."
   (check-matrix a)
+
+  (if (not (typep columns 'sequence))
+      (setf columns (list columns)))
   (check-sequence columns)
-  (if tolerances (check-sequence tolerances))
+
+  (if tolerances
+      (progn
+	(if (not (typep tolerances 'sequence))
+	    (setf tolerances (list tolerances)))
+	(check-sequence tolerances)))
+
   (check-real a)
   (check-fixnum columns)
   (if tolerances (check-real tolerances))
@@ -1263,4 +1272,4 @@ to T speeds up the computation."
   (let ((x (if sorted x (sort-data x)))
         (y (if sorted y (select y (order x))))
         (delta (if (> delta 0.0) delta (/ (- (max x) (min x)) 50))))
-    (list x)));; (|base-lowess| x y f steps delta))))
+    (list x y delta f steps)));; (|base-lowess| x y f steps delta))))
