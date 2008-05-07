@@ -348,11 +348,13 @@ Returns a list of the indices where elements of sequence X are not NIL."
 (defun check-sequence (a)
   ;; FIXME:AJR: does this handle consp as well?  (Luke had an "or"
   ;; with consp).
-  (if (not (typep a 'sequence))
-      (error "not a sequence - ~s" a)))
+  (if (not (or (typep a 'sequence)
+	       (consp a)))
+      (error "not a sequence or cons - ~s" a)))
+
+
 
 ;;;                       Sequence Element Access
-
 
 ;;; (elt x i) -- NOT.  This is more like "pop".
 (defun get-next-element (x i)
@@ -599,6 +601,21 @@ in the original array."
 ;;;
 ;;; SELECT function
 ;;;
+
+(defgeneric select (x &rest args)
+  "Selection of data, Args: (a &rest indices)
+
+A can be a list or an array. If A is a list and INDICES is a single
+number then the appropriate element of A is returned. If is a list and
+INDICES is a list of numbers then the sublist of the corresponding
+elements is returned.  If A in an array then the number of INDICES
+must match the ARRAY-RANK of A.  If each index is a number then the
+appropriate array element is returned.  Otherwise the INDICES must all
+be lists of numbers and the corresponding submatrix of A is
+returned. SELECT can be used in setf.")
+
+;;(defmethod select ((x list) &rest args))
+;;(defmethod select ((x array) &rest args))
 
 (defun select (x &rest args)
 "Args: (a &rest indices)
