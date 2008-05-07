@@ -440,7 +440,15 @@ in the original array."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun subarray-select (a indexlist &optional (values nil set_values))
-  "extract or set subarray for the indices from a displaced array." 
+  "extract or set subarray for the indices from a displaced array a.
+
+a :  array
+indexlist:  ??
+values : 
+nil : 
+set_values : 
+
+and it's poorly documented." 
   (let ((indices nil)
         (index)
         (dim)
@@ -602,6 +610,7 @@ in the original array."
 ;;; SELECT function
 ;;;
 
+#|
 (defgeneric select (x &rest args)
   "Selection of data, Args: (a &rest indices)
 
@@ -614,8 +623,11 @@ appropriate array element is returned.  Otherwise the INDICES must all
 be lists of numbers and the corresponding submatrix of A is
 returned. SELECT can be used in setf.")
 
-;;(defmethod select ((x list) &rest args))
-;;(defmethod select ((x array) &rest args))
+(defmethod select ((x list) &rest args))
+(defmethod select ((x array) &rest args))
+
+
+|#
 
 (defun select (x &rest args)
 "Args: (a &rest indices)
@@ -629,10 +641,11 @@ appropriate array element is returned.  Otherwise the INDICES must all
 be lists of numbers and the corresponding submatrix of A is
 returned. SELECT can be used in setf."
   (cond
-   ((every #'fixnump args)
-    (if (typep x 'list) (nth (first args) x) (apply #'aref x args)))
+   ((every #'fixnump args) (if (typep x 'list)
+			       (nth (first args) x)
+			       (apply #'aref x args)))
    ((typep x 'sequence) (sequence-select x (first args)))
-   ((typep x 'array (subarray-select x args)))
+   ((typep x 'array) (subarray-select x args))
    (t (error "compound.lsp:select: Not a valid type."))))
 
 
