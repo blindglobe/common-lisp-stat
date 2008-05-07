@@ -261,9 +261,15 @@ Returns the residual sum of squares for the model."
 
 (defmeth regression-model-proto :basis ()
 "Message args: ()
-Returns the indices of the variables used in fitting the model."
-  (if (send self :needs-computing) (send self :compute))
-  (slot-value 'basis))
+Returns the indices of the variables used in fitting the model, in a sequence."
+  (if (send self :needs-computing)
+      (send self :compute))
+  (if (typep (slot-value 'basis) 'sequence)
+      (slot-value 'basis)
+      (list (slot-value 'basis))))
+  
+	  
+  
 
 (defmeth regression-model-proto :sweep-matrix ()
 "Message args: ()
@@ -407,7 +413,7 @@ Returns the OLS (ordinary least squares) estimates of the regression
 coefficients. Entries beyond the intercept correspond to entries in basis."
   (let ((n (array-dimension (send self :x) 1))
         (indices (if (send self :intercept) 
-                     (cons 0 (+ 1 (send self :basis)))
+                     (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
                      (+ 1 (send self :basis))))
         (m (send self :sweep-matrix)))
     (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))

@@ -301,6 +301,7 @@ iron
 (send fit1a :x)
 (send fit1a :y)
 (send fit1a :compute)
+(send fit1a :basis)
 (send fit1a :display)
 (send fit1a :residuals)
 
