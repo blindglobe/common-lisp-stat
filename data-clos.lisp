@@ -324,17 +324,17 @@ approaches to redistribution.")
   and so on."))
 
 #|
-
 (defun pathname-example (name) 
   (let ((my-path (parse-namestring name)))
     (values (pathname-name my-path :case :common) 
             (pathname-name my-path :case :local))))
 
 (defvar sourceTypes (list 'csv 'lisp 'tsv 'special)
-  "list of possible symbols used to specify source formats that might
-be supported for input.  CSV and TSV are standard, LISP refers to
-forms, and SPECIAL refers to a FUNCTION which parses as
-appropriately.") 
+  "list of possible symbols.
+
+Thsees are used to specify source formats that might be supported for
+input.  CSV and TSV are standard, LISP refers to forms, and SPECIAL
+refers to a FUNCTION which parses as appropriately.")
 
 ;;; WRONG LOGIC.
 (defmethod importData ((fileHandle pathname)
@@ -362,4 +362,8 @@ Usually used by:
 		       (fmt mappingTypes))
   "mapping DBMS into CLS data.")
 |#
+
+
+;;(defmacro with-dataframe (env &rest progn) 
+;;  "Compute using variable names with with.data.frame type semantics.")
 
