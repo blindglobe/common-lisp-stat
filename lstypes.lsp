@@ -23,9 +23,16 @@ Returns T if X is a fixnum; NIL otherwise."
   (typep x 'fixnum))
 
 (defun check-nonneg-fixnum (x)
+  "Ensure that x or all elts of x are non-negative fixnums."
+  (cond ((listp x)
+	 (map 'list #'check-one-nonneg-fixnum x))
+	(t (check-one-nonneg-fixnum x))))
+
+(defun check-one-nonneg-fixnum (x)
+  "return value if true, throw error otherwise."
   (if (and (fixnump x) (<= 0 x))
       x
-      (error "not a non-negative fixnum")))
+      (error "Expected non-negative fixnum, but got ~A" x)))
 
 (defun check-one-fixnum (x)
   (if (not (fixnump x))
