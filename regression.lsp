@@ -261,7 +261,9 @@ Returns the residual sum of squares for the model."
 
 (defmeth regression-model-proto :basis ()
 "Message args: ()
-Returns the indices of the variables used in fitting the model, in a sequence."
+
+Returns the indices of the variables used in fitting the model, in a
+sequence."
   (if (send self :needs-computing)
       (send self :compute))
   (if (typep (slot-value 'basis) 'sequence)
@@ -279,7 +281,11 @@ Returns the swept sweep matrix. For internal use"
 
 (defmeth regression-model-proto :included (&optional new-included)
 "Message args: (&optional new-included)
-With no argument,  NIL means a case is not used in calculating estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence of length of y of nil and t to select cases.  Estimates are recomputed."
+
+With no argument, NIL means a case is not used in calculating
+estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence
+of length of y of nil and t to select cases.  Estimates are
+recomputed."
   (when (and new-included 
              (= (length new-included) (send self :num-cases)))
         (setf (slot-value 'included) (copy-seq new-included)) 
@@ -409,12 +415,15 @@ the regression."
 
 (defmeth regression-model-proto :coef-estimates ()
 "Message args: ()
+
 Returns the OLS (ordinary least squares) estimates of the regression
-coefficients. Entries beyond the intercept correspond to entries in basis."
+coefficients. Entries beyond the intercept correspond to entries in
+basis."
   (let ((n (array-dimension (send self :x) 1))
-        (indices (if (send self :intercept) 
+        (indices (flatten-list
+		  (if (send self :intercept) 
                      (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
-                     (+ 1 (send self :basis))))
+                     (list (+ 1 (send self :basis))))))
         (m (send self :sweep-matrix)))
     (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))
 

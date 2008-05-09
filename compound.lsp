@@ -450,8 +450,7 @@ nil :
 set_values : 
 
 and it's poorly documented." 
-  (let ((local-indexlist (flatten-list indexlist))
-	(indices nil)
+  (let ((indices nil)
         (index)
         (dim)
         (vdim)
@@ -465,12 +464,15 @@ and it's poorly documented."
     (declare (fixnum rank n))
 
     (if (or (sequencep a)
-	    (not (arrayp a))) (error "not an array - ~a" a))
-    (if (not (listp local-indexlist))  (error "bad index list - ~a" indices)) ;; ???
-    (if (/= (length local-indexlist)  (array-rank a))
+	    (not (arrayp a)))
+	(error "not an array - ~a" a))
+    (if (not (listp indexlist))
+	(error "bad index list - ~a" indexlist)) ;; ?indices?
+    (if (/= (length indexlist)
+	    (array-rank a))
 	(error "wrong number of indices"))
     
-    (setf indices (coerce local-indexlist 'vector))
+    (setf indices (coerce indexlist 'vector))
     (setf olddim (coerce (array-dimensions a) 'vector))
     
     ;; compute the result dimension vector and fix up the indices
