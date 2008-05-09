@@ -1,74 +1,118 @@
 ;;; -*- mode: lisp -*-
+;;;
+;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
+;;; Common Lisp.  
 
-;;; File:       data.lisp
-;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
-;;; Purpose:    data package for lispstat
-;;; Time-stamp: <2008-03-11 19:18:48 user>
-;;; Creation:   <2008-03-11 19:18:34 user> 
-
-;;; What is this talk of 'release'? Klingons do not make software
-;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
-;;; designers and quality assurance people in its wake.
-
-;;; This organization and structure is new to the 21st Century
-;;; version.
-
-;;; regression-clos.lisp
-;;; 
-;;; redoing regression in a CLOS based framework.
-;;; See regression.lsp for basis of work.
+;;;;
+;;;; regression.lsp XLISP-STAT regression model proto and methods
+;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
+;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
+;;;; You may give out copies of this software; for conditions see the file
+;;;; COPYING included with this distribution.
+;;;;
+;;;;
+;;;; Incorporates modifications suggested by Sandy Weisberg.
+;;;;
 
 (in-package :cl-user)
 
-(defpackage :lisp-stat-regression-linear-clos
+(defpackage :lisp-stat-regression-linear
   (:use :common-lisp
-	:clem )
-
-  (:export regression-model regression-model-obj x y intercept sweep-matrix
+	:clem
+	:lisp-stat-object-system
+	:lisp-stat-basics
+	:lisp-stat-compound-data
+	:lisp-stat-math
+	:lisp-stat-matrix
+	:lisp-stat-linalg
+	:lisp-stat-descriptive-statistics)
+  (:shadowing-import-from :lisp-stat-object-system
+			  slot-value call-method call-next-method)
+  (:shadowing-import-from :lisp-stat-math
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > ;; complex
+      conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis)
+  (:export regression-model regression-model-proto x y intercept sweep-matrix
 	   basis weights included total-sum-of-squares residual-sum-of-squares
 	   predictor-names response-name case-labels))
 
-(in-package :lisp-stat-regression-linear-clos)
+(in-package :lisp-stat-regression-linear)
 
-;;; Regresion Model CLOS
+;;; Regresion Model Prototype
 
-(defclass regression-model-clos (statistical-model)
-  ((x :initform nil :initarg :x :accessor x)
-   (y :initform nil :initarg :y :accessor y)
-   (included :initform nil :initarg :y :accessor y)
-   (total-sum-of-squares :initform nil :initarg :y :accessor y)
-   (residual-sum-of-squares :initform nil :initarg :y :accessor y)
-   (predictor-names :initform nil :initarg :y :accessor y)
-   (response-name :initform nil :initarg :y :accessor y)
-   (case-labels :initform nil :initarg :y :accessor y)
-   (needs-computing :initform T :initarg :compute? :accessor compute?)
-  (:documentation "Normal Linear Regression Model through CLOS."))
+(defvar regression-model-proto nil
+  "Prototype for all regression model instances.")
+(defproto regression-model-proto
+    '(x y intercept sweep-matrix basis weights 
+      included
+      total-sum-of-squares
+      residual-sum-of-squares
+      predictor-names
+      response-name
+      case-labels
+      doc)
+  ()
+  *object*
+  "Normal Linear Regression Model")
 
-(defmethod fit ((regr-inst regression-model-clos))
-  "Args: (regr-inst regressino-model-clos)
-
-Returns a fitted regression model object. To examine the model further
-assign the result to a variable and send it messages.  Example (data
-are in file absorbtion.lsp in the sample data directory/folder):
- (def fit-m (fit (new 'regression-model-clos (list iron aluminum) absorbtion)))
- (print fit-m)
- (plot  fit-m :feature 'residuals)"
+(defun regression-model (x y &key 
+			 (intercept T) 
+			 (print T) 
+			 (weights nil)
+			 (included (repeat t (length y)))
+			 predictor-names
+			 response-name
+			 case-labels
+			 (doc "Undocumented Regression Model Instance")
+			 (debug T))
+  "Args: (x y &key (intercept T) (print T) (weights nil)
+          included predictor-names response-name case-labels)
+X           - list of independent variables or X matrix
+Y           - dependent variable.
+INTERCEPT   - T to include (default), NIL for no intercept
+PRINT       - if not NIL print summary information
+WEIGHTS     - if supplied should be the same length as Y; error
+              variances are  
+              assumed to be inversely proportional to WEIGHTS
+PREDICTOR-NAMES, RESPONSE-NAME, CASE-LABELS
+            - sequences of strings or symbols.
+INCLUDED    - if supplied should be the same length as Y, with
+ 	      elements nil to skip a in computing estimates (but not
+              in residual analysis).
+Returns a regression model object. To examine the model further assign the
+result to a variable and send it messages.
+Example (data are in file absorbtion.lsp in the sample data directory): 
+  (def m (regression-model (list iron aluminum) absorbtion))
+  (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
 	    ((matrixp x) x)
-	    ((vectorp x) (list x))
-	    ((and (consp x) (numberp (car x))) (list x))
+	    ((typep x 'vector) (list x))
+	    ((and (consp x)
+		  (numberp (car x))) (list x))
 	    (t x)))
         (m (send regression-model-proto :new)))
+    (format t "~%")
+    (send m :doc doc)
     (send m :x (if (matrixp x) x (apply #'bind-columns x)))
-    (setf (slot-value 'y) y)
+    (send m :y y)
     (send m :intercept intercept)
     (send m :weights weights)
     (send m :included included)
     (send m :predictor-names predictor-names)
     (send m :response-name response-name)
     (send m :case-labels case-labels)
+    (if debug
+	(progn
+	  (format t "~%")
+	  (format t "~S~%" (send m :doc))
+	  (format t "X: ~S~%" (send m :x))
+	  (format t "Y: ~S~%" (send m :y))))
     (if print (send m :display))
     m))
 
@@ -98,7 +142,7 @@ Recomputes the estimates. For internal use by other messages"
          (intercept (send self :intercept))
          (weights (send self :weights))
          (w (if weights (* included weights) included))
-         (m (make-sweep-matrix x y w))
+         (m (make-sweep-matrix x y w)) ;;; ERROR HERE
          (n (array-dimension x 1))
          (p (- (array-dimension m 0) 1))
          (tss (aref m p p))
@@ -156,6 +200,15 @@ are marked as aliased."
 
 ;;; Slot accessors and mutators
 
+(defmeth regression-model-proto :doc (&optional new-doc)
+"Message args: (&optional new-doc)
+With no argument returns the DOC-STRING as supplied to m. With an argument
+NEW-DOC sets the DOC-STRING to NEW-DOC."
+  (when (and new-doc (stringp new-doc))
+        (setf (slot-value 'doc) new-doc))
+  (slot-value 'doc))
+
+
 (defmeth regression-model-proto :x (&optional new-x)
 "Message args: (&optional new-x)
 With no argument returns the x matrix as supplied to m. With an argument
@@ -169,9 +222,10 @@ NEW-X sets the x matrix to NEW-X and recomputes the estimates."
 "Message args: (&optional new-y)
 With no argument returns the y sequence as supplied to m. With an argument
 NEW-Y sets the y sequence to NEW-Y and recomputes the estimates."
-  (when (and new-y (or (matrixp new-y) (sequencep new-y)))
-        (setf (slot-value 'y) new-y)
-        (send self :needs-computing t))
+  (when (and new-y
+	     (or (matrixp new-y) (typep  new-y 'sequence)))
+    (setf (slot-value 'y) new-y)
+    (send self :needs-computing t))
   (slot-value 'y))
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))
@@ -208,9 +262,17 @@ Returns the residual sum of squares for the model."
 
 (defmeth regression-model-proto :basis ()
 "Message args: ()
-Returns the indices of the variables used in fitting the model."
-  (if (send self :needs-computing) (send self :compute))
-  (slot-value 'basis))
+
+Returns the indices of the variables used in fitting the model, in a
+sequence."
+  (if (send self :needs-computing)
+      (send self :compute))
+  (if (typep (slot-value 'basis) 'sequence)
+      (slot-value 'basis)
+      (list (slot-value 'basis))))
+  
+	  
+  
 
 (defmeth regression-model-proto :sweep-matrix ()
 "Message args: ()
@@ -220,7 +282,11 @@ Returns the swept sweep matrix. For internal use"
 
 (defmeth regression-model-proto :included (&optional new-included)
 "Message args: (&optional new-included)
-With no argument,  NIL means a case is not used in calculating estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence of length of y of nil and t to select cases.  Estimates are recomputed."
+
+With no argument, NIL means a case is not used in calculating
+estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence
+of length of y of nil and t to select cases.  Estimates are
+recomputed."
   (when (and new-included 
              (= (length new-included) (send self :num-cases)))
         (setf (slot-value 'included) (copy-seq new-included)) 
@@ -350,12 +416,15 @@ the regression."
 
 (defmeth regression-model-proto :coef-estimates ()
 "Message args: ()
+
 Returns the OLS (ordinary least squares) estimates of the regression
-coefficients. Entries beyond the intercept correspond to entries in basis."
+coefficients. Entries beyond the intercept correspond to entries in
+basis."
   (let ((n (array-dimension (send self :x) 1))
-        (indices (if (send self :intercept) 
-                     (cons 0 (+ 1 (send self :basis)))
-                     (+ 1 (send self :basis))))
+        (indices (flatten-list
+		  (if (send self :intercept) 
+                     (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
+                     (list (+ 1 (send self :basis))))))
         (m (send self :sweep-matrix)))
     (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))
 
@@ -422,12 +491,15 @@ link-views function. Returns a plot object."
 (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)
   "Message args: (&optional x-values)
-Opens a window with a plot of the standardized residuals and two standard
-error bars for the posterior distribution of the actual deviations from the
-line. See Chaloner and Brant. If X-VALUES are not supplied  the fitted values
-are used. The plot can be linked to other plots with the link-views function.
-Returns a plot object."
-  (let* ((r (/ (send self :residuals) (send self :sigma-hat)))
+
+Opens a window with a plot of the standardized residuals and two
+standard error bars for the posterior distribution of the actual
+deviations from the line. See Chaloner and Brant. If X-VALUES are not
+supplied the fitted values are used. The plot can be linked to other
+plots with the link-views function.  Returns a plot object."
+
+  (let* ((r (/ (send self :residuals)
+	       (send self :sigma-hat)))
          (d (* 2 (sqrt (send self :leverages))))
          (low (- r d))
          (high (+ r d))
