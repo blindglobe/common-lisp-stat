@@ -32,7 +32,8 @@
 	   get-next-element make-next-element set-next-element
 	   sequencep iseq ordered-nneg-seq
 	   select split-list which
-	   difference rseq))
+	   difference rseq
+	   flatten-list ))
 
 (in-package :lisp-stat-compound-data)
 
@@ -449,7 +450,8 @@ nil :
 set_values : 
 
 and it's poorly documented." 
-  (let ((indices nil)
+  (let ((local-indexlist (flatten-list indexlist))
+	(indices nil)
         (index)
         (dim)
         (vdim)
@@ -462,13 +464,13 @@ and it's poorly documented."
         (k 0))
     (declare (fixnum rank n))
 
-    (if (or (sequencep a) (not (arrayp a))) (error "not an array - ~a" a))
-    (if (not (listp indexlist))  (error "bad index list - ~a" indices))
-    (if (/= (length indexlist)  (array-rank a))
+    (if (or (sequencep a)
+	    (not (arrayp a))) (error "not an array - ~a" a))
+    (if (not (listp local-indexlist))  (error "bad index list - ~a" indices)) ;; ???
+    (if (/= (length local-indexlist)  (array-rank a))
 	(error "wrong number of indices"))
     
-    (setf indices (coerce indexlist 'vector))
-    
+    (setf indices (coerce local-indexlist 'vector))
     (setf olddim (coerce (array-dimensions a) 'vector))
     
     ;; compute the result dimension vector and fix up the indices
@@ -661,7 +663,7 @@ returned. SELECT can be used in setf."
              (v-list (if (fixnump indices) (list values) values)))
         (sequence-select x i-list v-list)))
      ((arrayp x)
-      (subarray-select x indices values))
+      (subarray-select x (flatten-list indices) values))
      (t (error "bad argument type - ~a" x)))
     values))
 
@@ -716,3 +718,20 @@ Example: (split-list '(1 2 3 4 5 6) 2) returns ((1 2 3) (4 5 6))"
                 (t 
                  (setf (rest end) c-sub)
                  (setf end (rest end)))))))))
+
+
+;;; List flattening
+;;; need to figure out how to make
+;;; '((1 2 3) (4 5) 6 7 (8)) into '(1 2 3 4 5 6 7 8)
+(defun flatten-list (lst)
+  "Flattens a list of lists into a single list.  Only useful when
+we've mucked up data.  Sign of usage means poor coding!"
+  (cond ((null lst) ;; endp?
+	 nil)
+        ((listp lst)
+         (append (flatten-list (car lst)) (flatten-list (cdr lst))))
+        (t
+	 (list lst))))
+
+;; (flatten-list (list 1 (list 1 2) (list 4 5 6 )))
+;; (flatten-list '(1 (1 2) 3 (4 5 6)))
