@@ -201,6 +201,7 @@ are marked as aliased."
 
 (defmeth regression-model-proto :doc (&optional new-doc)
 "Message args: (&optional new-doc)
+
 With no argument returns the DOC-STRING as supplied to m. With an argument
 NEW-DOC sets the DOC-STRING to NEW-DOC."
   (when (and new-doc (stringp new-doc))
@@ -210,8 +211,11 @@ NEW-DOC sets the DOC-STRING to NEW-DOC."
 
 (defmeth regression-model-proto :x (&optional new-x)
 "Message args: (&optional new-x)
-With no argument returns the x matrix as supplied to m. With an argument
-NEW-X sets the x matrix to NEW-X and recomputes the estimates."
+
+With no argument returns the x matrix as supplied to m. With an
+argument, NEW-X sets the x matrix to NEW-X and recomputes the
+estimates."
+
   (when (and new-x (matrixp new-x))
         (setf (slot-value 'x) new-x)
         (send self :needs-computing t))
@@ -219,8 +223,10 @@ NEW-X sets the x matrix to NEW-X and recomputes the estimates."
 
 (defmeth regression-model-proto :y (&optional new-y)
 "Message args: (&optional new-y)
-With no argument returns the y sequence as supplied to m. With an argument
-NEW-Y sets the y sequence to NEW-Y and recomputes the estimates."
+
+With no argument returns the y sequence as supplied to m. With an
+argument, NEW-Y sets the y sequence to NEW-Y and recomputes the
+estimates."
   (when (and new-y
 	     (or (matrixp new-y) (typep  new-y 'sequence)))
     (setf (slot-value 'y) new-y)
@@ -229,9 +235,11 @@ NEW-Y sets the y sequence to NEW-Y and recomputes the estimates."
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))
 "Message args: (&optional new-intercept)
-With no argument returns T if the model includes an intercept term, nil if
-not. With an argument NEW-INTERCEPT the model is changed to include or
-exclude an intercept, according to the value of NEW-INTERCEPT."
+
+With no argument returns T if the model includes an intercept term,
+nil if not. With an argument NEW-INTERCEPT the model is changed to
+include or exclude an intercept, according to the value of
+NEW-INTERCEPT."
   (when set 
         (setf (slot-value 'intercept) val)
         (send self :needs-computing t))
@@ -239,9 +247,10 @@ exclude an intercept, according to the value of NEW-INTERCEPT."
 
 (defmeth regression-model-proto :weights (&optional (new-w nil set))
 "Message args: (&optional new-w)
-With no argument returns the weight sequence as supplied to m; NIL means
-an unweighted model. NEW-W sets the weights sequence to NEW-W and
-recomputes the estimates."
+
+With no argument returns the weight sequence as supplied to m; NIL
+means an unweighted model. NEW-W sets the weights sequence to NEW-W
+and recomputes the estimates."
   (when set 
         (setf (slot-value 'weights) new-w) 
         (send self :needs-computing t))
@@ -249,12 +258,14 @@ recomputes the estimates."
 
 (defmeth regression-model-proto :total-sum-of-squares ()
 "Message args: ()
+
 Returns the total sum of squares around the mean."
   (if (send self :needs-computing) (send self :compute))
   (slot-value 'total-sum-of-squares))
 
 (defmeth regression-model-proto :residual-sum-of-squares () 
 "Message args: ()
+
 Returns the residual sum of squares for the model."
   (if (send self :needs-computing) (send self :compute))
   (slot-value 'residual-sum-of-squares))
@@ -275,6 +286,7 @@ sequence."
 
 (defmeth regression-model-proto :sweep-matrix ()
 "Message args: ()
+
 Returns the swept sweep matrix. For internal use"
   (if (send self :needs-computing) (send self :compute))
   (slot-value 'sweep-matrix))
@@ -296,6 +308,7 @@ recomputed."
 
 (defmeth regression-model-proto :predictor-names (&optional (names nil set))
 "Message args: (&optional (names nil set))
+
 With no argument returns the predictor names. NAMES sets the names."
   (if set (setf (slot-value 'predictor-names) (mapcar #'string names)))
   (let ((p (array-dimension (send self :x) 1))
@@ -308,6 +321,7 @@ With no argument returns the predictor names. NAMES sets the names."
 
 (defmeth regression-model-proto :response-name (&optional (name "Y" set))
    "Message args: (&optional name)
+
 With no argument returns the response name. NAME sets the name."
    ;;(declare (ignore self))
    (if set (setf (slot-value 'response-name) (if name (string name) "Y")))
