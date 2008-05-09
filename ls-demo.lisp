@@ -300,6 +300,8 @@ my-chol-decomp-test
 iron
 (defvar fit1a nil)
 (setf fit1a (regression-model absorbtion iron :print nil))
+(send fit1a :doc)
+(setf (send fit1a :doc) "this")
 (send fit1a :x)
 (send fit1a :y)
 (send fit1a :compute)
