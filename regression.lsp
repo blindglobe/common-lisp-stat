@@ -425,6 +425,7 @@ basis."
                      (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
                      (list (+ 1 (send self :basis))))))
         (m (send self :sweep-matrix)))
+    (format t "~%REMOVEME: Coef-ests: ~A ~% ~A ~% ~A" m n indices)
     (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))
 
 (defmeth regression-model-proto :xtxinv () 

@@ -60,9 +60,10 @@ Displaces vector V to array with dimensions DIMS"
 ;;;;
 
 (defun check-matrix (a)
-  (if (not (and (arrayp a) (= (array-rank a) 2)))
+  (if (not (and (typep a' array)
+		(= (array-rank a) 2)))
       (error "not a matrix - ~s" a)
-    t))
+      t))
 
 (defun check-square-matrix (a)
   (if (and (check-matrix a)
@@ -73,7 +74,8 @@ Displaces vector V to array with dimensions DIMS"
 (defun matrixp (x)
 "Args: (x)
 Returns T if X is a matrix, NIL otherwise."
-  (and (arrayp x) (= (array-rank x) 2)))
+  (and (typep x 'array)
+       (= (array-rank x) 2)))
 
 (defun num-rows (x)
 "Args: (x)
@@ -85,6 +87,8 @@ Returns number of rows in X."
 Returns number of columns in X."
   (array-dimension x 1))
 
+
+;;; Look at this!  Prime target for generic function dispatch!
 (defun matmult (a b &rest args)
   "Args: (a b &rest args)
 Returns the matrix product of matrices a, b, etc. If a is a vector it is
@@ -92,6 +96,10 @@ treated as a row vector; if b is a vector it is treated as a column vector."
   ;; fixme: why does SBCL claim this is unreachable?
   (let ((rtype (cond ((and (typep a 'matrix)
 			   (typep b 'matrix)) 'matrix)
+                     ((and (typep a 'matrix)
+			   (typep b 'sequence)) 'vector)
+                     ((and (typep a 'sequence)
+			   (typep b 'matrix)) 'vector)
                      ((and (typep a 'sequence)
 			   (typep b 'sequence)) 'number)
                      ((typep a 'sequence)
@@ -99,9 +107,9 @@ treated as a row vector; if b is a vector it is treated as a column vector."
                      ((typep b 'sequence)
 		      (if (consp b) 'list 'vector)))))
              
-    (if (sequencep a) 
+    (if (typep a 'sequence) 
       (setf a (vector-to-array (coerce a 'vector) (list 1 (length a)))))
-    (if (sequencep b)
+    (if (typep b 'sequence)
       (setf b (vector-to-array (coerce b 'vector) (list (length b) 1))))
     (if (not (= (array-dimension a 1) (array-dimension b 0)))
       (error "dimensions do not match"))
@@ -114,15 +122,16 @@ treated as a row vector; if b is a vector it is treated as a column vector."
 	     x)
         (declare (fixnum n m p))
 	(dotimes (i n)
-		 (declare (fixnum i))
-		 (dotimes (j m)
-			  (declare (fixnum j))
-			  (setq x 0)
-			  (dotimes (k p)
-				   (declare (fixnum k))
-				   (setq x (+ x 
-					      (* (aref a i k) (aref b k j)))))
-			  (setf (aref c i j) x)))
+	  (declare (fixnum i))
+	  (dotimes (j m)
+	    (declare (fixnum j))
+	    (setq x 0)
+	    (dotimes (k p)
+	      (declare (fixnum k))
+	      (setq x (+ x 
+			 (* (aref a i k)
+			    (aref b k j)))))
+	    (setf (aref c i j) x)))
         (case rtype
           (matrix c)
           (number (aref c 0 0))
