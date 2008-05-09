@@ -377,14 +377,18 @@ Returns a new object with parents PARENTS. If PARENTS is NIL, (list *OBJECT*) is
       (set-slot-entry-value slot-entry value)
       #+:constrainthooks (check-constraint-hooks x slot t))
      (t
-      (if (find-slot x slot)
+      (if (find-slot x slot) ;; either way we error...?
         (error "object does not own slot ~s" slot)
         (error "no slot named ~s in this object" slot))))))
 
+;;; FIXME: THIS IS EVIL -- need to rename to proto-slot-value or similar, so
+;;; that we can take advantage of CLOS.
 (defun slot-value (slot)
 "Args: (slot)
+
 Must be used in a method. Returns the value of current objects slot
-named SLOT."
+named SLOT.
+EVIL -- it conflicts with CLOS object slots."
   (get-slot-value (get-self) slot))
 
 (defun slot-value-setf (slot value)
@@ -475,6 +479,10 @@ named SLOT."
 Applies first method for SELECTOR found in OBJECT's precedence list to
 OBJECT and ARGS."
   (sendmsg object selector (ls-object-preclist object) args))
+
+;;;FIXME: Need to include a "setter" for "send".
+
+
 
 ;;;; call-next-method - call inherited version of current method
 (defun call-next-method (&rest args)
