@@ -301,7 +301,7 @@ iron
 (defvar fit1a nil)
 (setf fit1a (regression-model absorbtion iron :print nil))
 (send fit1a :doc)
-(setf (send fit1a :doc) "this")
+(setf (send fit1a :doc) "this") ;; FIXME: this is a more naturualo
 (send fit1a :x)
 (send fit1a :y)
 (send fit1a :compute)
@@ -313,6 +313,9 @@ iron
        (array-dimension #2A ((1)) 0)
        ;; more tests
        )
+
+;;; FIXME: need to get multiple-linear regression working -- clearly
+;;; simple linear is working above!
 (def m (regression-model (list iron aluminum) absorbtion))
 (def m (regression-model (bind-columns iron aluminum) absorbtion))
 (send m :help) (send m :plot-residuals)
