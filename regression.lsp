@@ -151,6 +151,9 @@ Recomputes the estimates. For internal use by other messages"
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
               (sweep-operator m (iseq 0 n) (cons 0.0 tol)))))
+    (format t
+	   "~%REMOVEME: regr-mdl-prto :compute =~A~%~A~%~A~%~A~%~A~%"
+	   included x y m tss)
     (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
@@ -439,7 +442,8 @@ basis."
                      (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
                      (list (+ 1 (send self :basis))))))
         (m (send self :sweep-matrix)))
-    (format t "~%REMOVEME: Coef-ests: ~A ~% ~A ~% ~A" m n indices)
+    (format t "~%REMOVEME2: Coef-ests: ~A ~% ~A ~% ~A ~% ~A"
+	    m n indices (send self :basis))
     (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))
 
 (defmeth regression-model-proto :xtxinv () 
