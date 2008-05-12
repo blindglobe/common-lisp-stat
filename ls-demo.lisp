@@ -316,9 +316,14 @@ iron
 
 ;;; FIXME: need to get multiple-linear regression working -- clearly
 ;;; simple linear is working above!
-(def m (regression-model (list iron aluminum) absorbtion))
+(defvar m nil "holding variable.")
+(def m (regression-model (list iron aluminum) absorbtion :print nil)) 
+(send m :compute)
+(send m :display) ;; ERROR...
 (def m (regression-model (bind-columns iron aluminum) absorbtion))
-(send m :help) (send m :plot-residuals)
+(send m :help)
+(send m :help 'display)
+(send m :plot-residuals)
 
 
 (typep aluminum 'sequence)
