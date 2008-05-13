@@ -699,7 +699,7 @@ a list of objects. IVARS and CVARS must be lists."
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmeth *object* :nop ()
+(defmeth *object* :nop (&rest args)
 "Method args: ()
 
 Do a NOP.  Used to quiet compiler warnings."
