@@ -240,10 +240,14 @@ Returns sequence of the elements of compound item X."
 (defproto *compound-data-proto*)
 
 ;;; FIXME: These need to be defined!!
-(defmeth *compound-data-proto* :data-length (&rest args) nil)
-(defmeth *compound-data-proto* :data-seq (&rest args) nil)
-(defmeth *compound-data-proto* :make-data (&rest args) nil)
-(defmeth *compound-data-proto* :select-data (&rest args) nil)
+(defmeth *compound-data-proto* :data-length (&rest args)
+	 (send self :nop args))
+(defmeth *compound-data-proto* :data-seq (&rest args)
+	 (send self :nop args))
+(defmeth *compound-data-proto* :make-data (&rest args)
+	 (send self :nop args))
+(defmeth *compound-data-proto* :select-data (&rest args)
+	 (send self :nop args))
 
 (defun compound-object-p (x) (kind-of-p x *compound-data-proto*))
 
@@ -257,12 +261,14 @@ Returns sequence of the elements of compound item X."
 
 (defun sort-data (x)
 "Args: (sequence)
+
 Returns a sequence with the numbers or strings in the sequence X in order."
   (flet ((less (x y) (if (numberp x) (< x y) (string-lessp x y))))
     (stable-sort (copy-seq (compound-data-seq x)) #'less)))
 
 (defun order (x)
 "Args (x)
+
 Returns a sequence of the indices of elements in the sequence of numbers
 or strings X in order."
   (let* ((seq (compound-data-seq x))
