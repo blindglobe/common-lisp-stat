@@ -305,6 +305,7 @@ iron
 (send fit1a :x)
 (send fit1a :y)
 (send fit1a :compute)
+(send fit1a :sweep-matrix)
 (send fit1a :basis)
 (send fit1a :residuals)
 (send fit1a :display)
@@ -319,6 +320,8 @@ iron
 (defvar m nil "holding variable.")
 (def m (regression-model (list iron aluminum) absorbtion :print nil)) 
 (send m :compute)
+(send m :sweep-matrix)
+(format t "~%~A~%" (send m :sweep-matrix))
 (send m :display) ;; ERROR...
 (def m (regression-model (bind-columns iron aluminum) absorbtion))
 (send m :help)
