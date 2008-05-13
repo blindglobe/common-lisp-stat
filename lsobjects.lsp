@@ -539,7 +539,7 @@ Call method belonging to another object on current object."
 OBJECT must evaluate to an existing object. Installs a method for NAME in
 the value of OBJECT and installs DOC in OBJECTS's documentation.
 RETURNS: method-name."
-  (declare (ignorable self))  ;; hints for the compiler that sometimes it isn't used
+  ;; (declare (ignorable self))  ;; compiler hint that it isn't always used.
   (if (and body (stringp first)) 
     `(progn ;; first=docstring + body
        (add-lsos-method ,object ,name
@@ -699,6 +699,12 @@ a list of objects. IVARS and CVARS must be lists."
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmeth *object* :nop ()
+"Method args: ()
+
+Do a NOP.  Used to quiet compiler warnings."
+  (format nil "NOP"))
+
 (defmeth *object* :isnew (&rest args)
 "Method args: (&rest args)
 Checks ARGS for keyword arguments matching slots and uses them to
@@ -838,9 +844,11 @@ Default object printing method."
     (t (format stream "#<Object: ~D>" (ls-object-serial self)))))
 
 (defmeth *object* :slot-value (sym &optional (val nil set))
-	 "Method args: (sym &optional val)
+"Method args: (sym &optional val)
+
 Sets and retrieves value of slot named SYM. Signals an error if slot
 does not exist."
+    (send self :nop)
     (if set (setf (slot-value sym) val))
     (slot-value sym))
 

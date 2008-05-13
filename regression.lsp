@@ -153,7 +153,7 @@ Recomputes the estimates. For internal use by other messages"
               (sweep-operator m (iseq 0 n) (cons 0.0 tol)))))
     (format t
 	   "~%REMOVEME: regr-mdl-prto :compute =~A~%~A~%~A~%~A~%~A~%"
-	   included x y m tss)
+	   sweep-result x y m tss)
     (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
@@ -164,12 +164,17 @@ Recomputes the estimates. For internal use by other messages"
                 (error "no columns could be swept"))))))
 
 (defmeth regression-model-proto :needs-computing (&optional set)
-   ;;(declare (ignore self))	 
+"Message args: ( &optional set )
+
+If value given, sets the flag for whether (re)computation is needed to
+update the model fits."	 
+   (send self :nop)
    (if set (setf (slot-value 'sweep-matrix) nil))
    (null (slot-value 'sweep-matrix)))
   
 (defmeth regression-model-proto :display ()
 "Message args: ()
+
 Prints the least squares regression summary. Variables not used in the fit
 are marked as aliased."
   (let ((coefs (coerce (send self :coef-estimates) 'list))
@@ -202,13 +207,21 @@ are marked as aliased."
 
 ;;; Slot accessors and mutators
 
-(defmeth regression-model-proto :doc (&optional new-doc)
+(defmeth regression-model-proto :doc (&optional new-doc append)
 "Message args: (&optional new-doc)
 
-With no argument returns the DOC-STRING as supplied to m. With an argument
-NEW-DOC sets the DOC-STRING to NEW-DOC."
+Returns the DOC-STRING as supplied to m.  
+Additionally, with an argument NEW-DOC, sets the DOC-STRING to
+NEW-DOC.  In this setting, when APPEND is T, append NEW-DOC to DOC
+rather than doing replacement."
+  (send self :nop)
   (when (and new-doc (stringp new-doc))
-        (setf (slot-value 'doc) new-doc))
+        (setf (slot-value 'doc)
+	      (if append
+		  (concatenate 'string
+			       (slot-value 'doc)
+			       new-doc)
+		  new-doc)))
   (slot-value 'doc))
 
 
@@ -218,7 +231,6 @@ NEW-DOC sets the DOC-STRING to NEW-DOC."
 With no argument returns the x matrix as supplied to m. With an
 argument, NEW-X sets the x matrix to NEW-X and recomputes the
 estimates."
-
   (when (and new-x (matrixp new-x))
         (setf (slot-value 'x) new-x)
         (send self :needs-computing t))
@@ -284,14 +296,13 @@ sequence."
       (slot-value 'basis)
       (list (slot-value 'basis))))
   
-	  
-  
 
 (defmeth regression-model-proto :sweep-matrix ()
 "Message args: ()
 
 Returns the swept sweep matrix. For internal use"
-  (if (send self :needs-computing) (send self :compute))
+  (if (send self :needs-computing)
+      (send self :compute))
   (slot-value 'sweep-matrix))
 
 (defmeth regression-model-proto :included (&optional new-included)
@@ -326,7 +337,7 @@ With no argument returns the predictor names. NAMES sets the names."
    "Message args: (&optional name)
 
 With no argument returns the response name. NAME sets the name."
-   ;;(declare (ignore self))
+   (send self :nop)
    (if set (setf (slot-value 'response-name) (if name (string name) "Y")))
    (slot-value 'response-name))
 
