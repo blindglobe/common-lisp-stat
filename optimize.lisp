@@ -275,6 +275,9 @@
     (list val grad hess)))
 
 (defmeth minfo-proto :copy ()
+"Method: ()
+
+Make a copy of an minfo instance."
   (let ((obj (make-object minfo-proto))
 	(internals (copy-seq (slot-value 'internals))))
     (dotimes (i (length internals))
