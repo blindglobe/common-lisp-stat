@@ -6,10 +6,13 @@
 
 (in-package :cl-user)
 
+
 (defpackage :lisp-stat-types
- (:use :common-lisp)
- (:export fixnump check-nonneg-fixnum check-one-fixnum
-          check-one-real check-one-number))
+  (:documentation "Provides some typeing for LispStat, but is clearly
+                   a bit incomplete.")
+  (:use :common-lisp)
+  (:export fixnump check-nonneg-fixnum check-one-fixnum
+	   check-one-real check-one-number))
 
 (in-package :lisp-stat-types)
 
@@ -18,13 +21,14 @@
 
 (defun fixnump (x)
   "Args: (x)
+
 Returns T if X is a fixnum; NIL otherwise."
   (declare (inline typep))
   (typep x 'fixnum))
 
 (defun check-nonneg-fixnum (x)
   "Ensure that x or all elts of x are non-negative fixnums."
-  (cond ((listp x)
+  (cond ((typep x 'sequence) ;; seq rather than list, allows for vector?
 	 (map 'list #'check-one-nonneg-fixnum x))
 	(t (check-one-nonneg-fixnum x))))
 
