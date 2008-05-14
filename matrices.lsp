@@ -73,19 +73,28 @@ Displaces vector V to array with dimensions DIMS"
 
 (defun matrixp (x)
 "Args: (x)
-Returns T if X is a matrix, NIL otherwise."
+
+Returns:
+   T if X is a 2-d array (i.e. a matrix), 
+   NIL otherwise."
   (and (typep x 'array)
        (= (array-rank x) 2)))
 
 (defun num-rows (x)
-"Args: (x)
+  "Args: (x)
+
 Returns number of rows in X."
-  (array-dimension x 0))
+  (if (matrixp x)
+      (array-dimension x 0)
+      (error "only useful for matrices.")))
 
 (defun num-cols (x)
-"Args: (x)
+  "Args: (x)
+
 Returns number of columns in X."
-  (array-dimension x 1))
+  (if (matrixp x)
+      (array-dimension x 1)
+      (error "only useful for matrices.")))
 
 
 ;;; Look at this!  Prime target for generic function dispatch!
@@ -165,7 +174,8 @@ of X."
 	(t (error "argument must be a matrix or a sequence"))))
 	   		  
 (defun row-list (x)
-"Args: (m)
+  "Args: (m)
+
 Returns a list of the rows of M as vectors"
   (check-matrix x)
   (let ((m (num-rows x))
@@ -183,7 +193,8 @@ Returns a list of the rows of M as vectors"
         (setf result (cons (get-row (- m i 1)) result))))))
         
 (defun column-list (x)
-"Args: (m)
+  "Args: (m)
+
 Returns a list of the columns of M as vectors"
   (check-matrix x)
   (let ((m (num-rows x))
@@ -201,7 +212,8 @@ Returns a list of the columns of M as vectors"
         (setf result (cons (get-col (- n i 1)) result))))))
 
 (defun inner-product (x y)
-"Args: (x y)
+  "Args: (x y)
+
 Returns inner product of sequences X and Y."
   (check-sequence x)
   (check-sequence y)
@@ -214,13 +226,16 @@ Returns inner product of sequences X and Y."
     (dotimes (i n result) 
       (declare (fixnum i))
       (setf result 
-            (+ result (* (get-next-element cx i) (get-next-element cy i)))))))
+            (+ result (* (get-next-element cx i)
+			 (get-next-element cy i)))))))
 
 (defun outer-product (x y &optional (f #'*))
-"Args: (x y &optional (fcn #'*))
+  "Args: (x y &optional (fcn #'*))
+
 Returns the generalized outer product of x and y, using fcn. Tat is, the result
 is a matrix of dimension ((length x) (length y)) and the (i j) element of the
 result is computed as (apply fcn (aref x i) (aref y j))."
+
   (let* ((x (coerce x 'vector))
          (y (coerce y 'vector))
          (m (length x))
@@ -234,9 +249,11 @@ result is computed as (apply fcn (aref x i) (aref y j))."
         (setf (aref a i j) (funcall f (aref x i) (aref y j)))))))
 
 (defun cross-product (x)
-"Args: (x)
+  "Args: (x)
+
 If X is a matrix returns (matmult (transpose X) X). If X is a vector returns
 (inner-product X X)."
+
   (check-matrix x)
   (let* ((n (num-rows x))
          (p (num-cols x))
@@ -285,10 +302,12 @@ Returns the transpose of the matrix M."
           (setf (aref tx j i) (aref x i j))))))))
 
 (defun bind-columns (&rest args)
-"Args (&rest args)
+  "Args (&rest args)
+
 The ARGS can be matrices, vectors, or lists. Arguments are bound into a matrix
-along their columns.
-Example: (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
+along their columns.  Example:
+    (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
+
   (flet ((check-arg (x)
            (if (not (or (typep x 'sequence) (typep x 'matrix)))
                (error "bad argument type")))
@@ -319,10 +338,12 @@ Example: (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
         (incf firstcol (arg-cols x))))))
 
 (defun bind-rows (&rest args)
-"Args (&rest args)
+  "Args (&rest args)
+
 The ARGS can be matrices, vectors, or lists. Arguments are bound into a matrix
-along their rows.
-Example: (bind-rows #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2)(3 4)(5 6))"
+along their rows. Example:
+   (bind-rows #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2)(3 4)(5 6))"
+
   (flet ((check-arg (x)
            (if (not (or (typep x 'sequence)
 			(typep x 'matrix)))
@@ -352,28 +373,29 @@ Example: (bind-rows #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2)(3 4)(5 6))"
               (dotimes (j k)
                 (setf (aref result (+ firstrow j) i) (aref x j i)))))))
         (incf firstrow (arg-rows x))))))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;                           Copying Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;;
-;;; COPY-VECTOR function
+;;; Copying Functions
 ;;;
 
 (defun copy-vector (x)
-"Args: (x)
+  "Args: (x)
+
 Returns a copy of the vector X"
   (copy-seq x))
 
-;;;
-;;; COPY-ARRAY function
-;;;
-
 (defun copy-array (a)
-"Args: (a)
+  "Args: (a)
+
 Returns a copy of the array A"
   (vector-to-array (copy-seq (array-data-vector a))
 		   (array-dimensions a)))
+
+(defgeneric copy (x)
+   (:documentation "methods for copying linaar algebra forms."))
+
+(defmethod copy ((x vector)))
+
+(defmethod copy ((x matrix)))
 
