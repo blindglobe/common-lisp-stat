@@ -65,16 +65,16 @@
 (progn 
   ;; Load needed packages
 
-  (asdf:oos 'asdf:load-op :cffi)     ;; FFI
-  (asdf:oos 'asdf:load-op :lift)     ;; Unit Testing 
-
-  ;; soon...
-  (asdf:oos 'asdf:load-op :clem)     ;; matrix stuff
+  (asdf:oos 'asdf:load-op :cffi)            ;; FFI
+  (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
+  #+nil(asdf:oos 'asdf:load-op :lift-test)  
+  
+  
+  
+  (asdf:oos 'asdf:load-op :clem)            ;; matrix stuff
   #+nil(asdf:oos 'asdf:load-op :clem-test)
   #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
-
-  ;; Constraint System
-  ;;(asdf:oos 'asdf:load-op :cells)
+  #+nil(asdf:oos 'asdf:load-op :cells)
 
   ;; Finally...
   (asdf:oos 'asdf:load-op :lispstat)
