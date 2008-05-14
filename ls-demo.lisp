@@ -14,6 +14,7 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
+(in-package :cl-user)
 (load "init.lisp")
 ;; init needs to be more like the asdf-loader for lisp-stat, though it
 ;; is pretty close.
