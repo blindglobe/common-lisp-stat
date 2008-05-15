@@ -1,19 +1,22 @@
 ;;; Basic initialization for LispStat
-;;; Time-stamp: <2007-12-26 18:23:24 rossini>
-;;; Created: <2007-05-30 17:09:47 ROSSIAN6>
+;;; Time-stamp: <2008-05-15 08:26:47 tony>
+;;; Created: <2007-05-30 17:09:47 blindglobe>
 
 ;; Goal:
 ;; 
-;; Associate ASDF directory for loading.
-;; Make sure that we have initialized any locally defined global variables
-;; ensure appropriate tools are linked in for loading.
-;; i.e. if features don't exist, load from particular locations in
-;; this directory structure.
-
+;; - 1. Associate ASDF directory for loading.
+;; - 2. Make sure that we have initialized any locally defined global variables
+;; 3. ensure appropriate tools are linked in for loading.
+;;    i.e. if features don't exist, load from particular locations in
+;;    this directory structure.
+;; 4. Print out and capture environmental features, i.e. presence and
+;;    version of packages.
+;; 5.  
 
 ;; (setf *my-base-directory*
 ;;       #p"/home/tony/sandbox/CLS.git/"
 ;;       #p"/Users/ungil/lisp/CommonLispStat/")
+
 
 
 
@@ -67,30 +70,38 @@
 
   (asdf:oos 'asdf:load-op :cffi)            ;; FFI
   (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
-  #+nil(asdf:oos 'asdf:load-op :lift-test)  
   
-  
-  
-  (asdf:oos 'asdf:load-op :clem)            ;; matrix stuff
-  #+nil(asdf:oos 'asdf:load-op :clem-test)
-  #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
-  #+nil(asdf:oos 'asdf:load-op :cells)
-
   ;; Finally...
   (asdf:oos 'asdf:load-op :lispstat)
   )
 
+
+;; Things to never automatically do...
+
 #+nil(progn
+
+       ;; loading
+       (asdf:oos 'asdf:load-op :lift-test)  
+
+       ;; compiling
        (asdf:oos 'asdf:compile-op :cffi)
-       (asdf:oos 'asdf:compile-op :lisp-unit)
+       ;; (asdf:oos 'asdf:compile-op :lisp-unit)
        (asdf:oos 'asdf:compile-op :lift)
        (asdf:oos 'asdf:compile-op :rclg)
        (asdf:oos 'asdf:compile-op :cl-cairo2)
-;; (asdf:operate 'asdf:load-op 'cffi)
-;; (asdf:operate 'asdf:load-op 'rclg)
+       ;; (asdf:operate 'asdf:load-op 'cffi)
+       ;; (asdf:operate 'asdf:load-op 'rclg)
        (asdf:oos 'asdf:load-op :celtk)
        (asdf:oos 'asdf:compile-op :lispstat :force t)
-;; (asdf:operate 'asdf:compile-op 'lispstat)
+       ;; (asdf:operate 'asdf:compile-op 'lispstat)
+
+       ;; Things to do later...
+
+       #+nil(asdf:oos 'asdf:load-op :clem) ;; matrix stuff
+       #+nil(asdf:oos 'asdf:load-op :clem-test)
+       #+nil(asdf:oos 'asdf:load-op :clem-benchmark)
+       #+nil(asdf:oos 'asdf:load-op :cells)
+
        )
 
 

@@ -1,10 +1,60 @@
 ;;  -*- mode: lisp -*-
+;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
+;;; ASDF packaging for CommonLisp Stat
+;;; License: BSD, see the top level directory file LICENSE for details.
+;;; Time-stamp: <2008-05-15 12:51:47 tony>
+;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
-;;; Copyright (c) 2005--2006, by AJ Rossini <blindglobe@gmail.com>
-;;; ASDF packaging for CommonLispStat
-;;; Provided under a BSD license.
 
-;;(asdf:oos 'asdf:load-op 'cffi)
+;; (setf *my-base-directory*
+;;       #p"/home/tony/sandbox/CLS.git/"
+;;       #p"/Users/ungil/lisp/CommonLispStat/")
+
+
+
+
+;; What package should we be in?  Contaminating cl-user is probably EVIL.
+(in-package :cl-user)
+
+
+(defvar *lispstat-home-dir*
+  ;; #p"/home/tony/sandbox/CommonLispStat.git/"
+  ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
+  ;; #p"/Users/ungil/lisp/CommonLispStat/")
+  ;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
+  #p"/home/tony/Desktop/sandbox/CLS.git/"
+  "Value considered \"home\" for our data")
+
+(setf *lispstat-home-dir*
+      ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
+      ;; #p"/home/tony/sandbox/CommonLispStat.git/"
+      ;; #p"/Users/ungil/lisp/CommonLispStat/")
+      ;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
+      #p"/home/tony/Desktop/sandbox/CLS.git/"
+      )
+
+(macrolet ((ls-dir (root-str)
+	     `(pathname (concatenate 'string
+				     (namestring *lispstat-home-dir*) ,root-str)))
+
+	   (ls-defdir (target-dir-var  root-str)
+	     `(defvar ,target-dir-var (ls-dir ,root-str))))
+
+  ;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+  ;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+  ;;(macroexpand-1 '(ls-dir "ASDF"))
+
+  (ls-defdir *lispstat-asdf-dir* "ASDF/")
+  (ls-defdir *lispstat-data-dir* "data/")
+  (ls-defdir *lispstat-external-dir* "external/")
+  (ls-defdir *lispstat-examples-dir* "examples/"))
+
+(pushnew *lispstat-asdf-dir* asdf:*central-registry*)
+;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
+
+;;; back to our regularly scheduled work...
+
+(in-package :cl-user)
 
 (defpackage #:lispstat-system
     (:use :asdf :common-lisp))
