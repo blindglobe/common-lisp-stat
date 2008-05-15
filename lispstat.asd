@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-05-15 18:29:24 tony>
+;;; Time-stamp: <2008-05-15 18:39:49 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
@@ -200,8 +200,13 @@ Last touched 1991, then in 2005--2007."
 					     "statistics"
 					     "regression"))
 
-
 	       (:file "unittests" :depends-on ("ls-user"))
+	       (:file "unittests-lstypes" :depends-on ("ls-user"
+						       "lstypes"))
+	       ;; (:file "unittests-data-clos" :depends-on ("ls-user"))
+	       ;; (:file "unittests-regression" :depends-on ("ls-user"))
 
+	       (:static-file "LICENSE")
+	       (:static-file "README")
 	       ))
 
