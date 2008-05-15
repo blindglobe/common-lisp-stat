@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-05-15 18:39:49 tony>
+;;; Time-stamp: <2008-05-15 18:51:22 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
@@ -89,7 +89,7 @@
   :license "BSD"
   :description "CommonLispStat (CLS): A System for Statistical Computing with Common Lisp;
 based on CLS by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
-Last touched 1991, then in 2005--2007."
+Last touched 1991, then in 2005--2008."
   :serial t
   :depends-on (:cffi :lift) ;;  :clem) not yet but soon!
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
@@ -210,3 +210,19 @@ Last touched 1991, then in 2005--2007."
 	       (:static-file "README")
 	       ))
 
+#|
+;; preparation for modulization...
+
+((:module
+  "lisp-stat-proto-objects"
+  :pathname "src/prototype/"
+  :comonents ((:lispstat-lsp-source-file "lsobjects"))))
+
+((:module
+  "lisp-stat-testing"
+  :pathname "src/unittests/"
+  :components ((:file "unittests" :depends-on ("ls-user"))
+	       (:file "unittests-lstypes" :depends-on ("ls-user"
+						       "lstypes")))))
+
+|#
