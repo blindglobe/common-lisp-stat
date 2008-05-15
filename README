@@ -1,8 +1,5 @@
 -*- mode: text -*-
 
-BROKEN!  Need to fix so that we can work out of a standard ASDF or CLC
-setting.
-
 For a fast start: 
 
 Make the shared library liblispstat with an ANSI C compiler (only gcc
@@ -12,9 +9,13 @@ tested at this point):
        make
 
 run a common lisp (SBCL, CMUCL, CLISP) starting in the current
-directory.   We also assume that a recent version of CFFI has been
-installed and is ASDF-loadable.  Probably should include a local copy
-just in case.
+directory.  We also assume that a recent version of CFFI and LIFT have
+been installed and are ASDF-loadable.  Probably should include a local
+copy just in case.
+
+(on Debian: can use CLC or SBCL approaches, i.e.  ~/.clc/systems  or
+~/.sbcl/systems should contain softlinks to the lispstat, cffi, and
+lift ASDF files (i.e. lispstat.asd, cffi.asd, and lift.asd)).
 
 Step through ls-demo.lisp for a range of examples that will become
 part of the test suite.
