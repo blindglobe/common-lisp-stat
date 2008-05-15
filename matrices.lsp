@@ -23,7 +23,8 @@
   (:use :common-lisp
 	:cffi
 	:lisp-stat-compound-data)
-  (:export matrixp num-rows num-cols matmult identity-matrix diagonal
+  (:export matrixp ;;  matrix -- conflicts!
+	   num-rows num-cols matmult identity-matrix diagonal
 	   row-list column-list inner-product outer-product
 	   cross-product transpose bind-columns bind-rows
 	   array-data-vector vector-to-array
@@ -392,10 +393,12 @@ Returns a copy of the array A"
   (vector-to-array (copy-seq (array-data-vector a))
 		   (array-dimensions a)))
 
+
+#|
 (defgeneric copy (x)
    (:documentation "methods for copying linaar algebra forms."))
 
 (defmethod copy ((x vector)))
 
 (defmethod copy ((x matrix)))
-
+|#
