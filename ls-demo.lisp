@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-03-09 09:21:50 user>
+;;; Time-stamp: <2008-05-15 12:54:08 tony>
 ;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,9 +15,8 @@
 ;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
-(load "init.lisp")
-;; init needs to be more like the asdf-loader for lisp-stat, though it
-;; is pretty close.
+;;(load "init.lisp") ;; merged into lispstat asdf loader.
+(asdf:oos 'asdf:load-op 'lispstat)
 
 ;;; non-rigorous check for exports.
 ;;; This is generally not how I expect it to be used.
