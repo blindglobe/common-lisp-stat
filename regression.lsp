@@ -45,6 +45,17 @@
 
 ;;; Regresion Model Prototype
 
+
+;; The general strategy behind the fitting of models using prototypes
+;; is that we need to think about want the actual fits are, and then
+;; the fits can be used to recompute as components are changes.  One
+;; catch here is that we'd like some notion of trace-ability, in
+;; particular, there is not necessarily a fixed way to take care of the
+;; audit trail.  save-nd-die might be a means of recording the final
+;; approach, but we are challenged by the problem of using advice and
+;; other such features to capture stages and steps that are considered
+;; along the goals of estimating a model.
+
 (defvar regression-model-proto nil
   "Prototype for all regression model instances.")
 (defproto regression-model-proto
@@ -243,9 +254,11 @@ With no argument returns the y sequence as supplied to m. With an
 argument, NEW-Y sets the y sequence to NEW-Y and recomputes the
 estimates."
   (when (and new-y
-	     (or (matrixp new-y) (typep  new-y 'sequence)))
-    (setf (slot-value 'y) new-y)
-    (send self :needs-computing t))
+	     (or (matrixp new-y)
+		 (typep  new-y 'sequence)))
+    (let ((mat-y (coerce-seq-to-1d-col-matrix new-y)))
+      (setf (slot-value 'y) new-y)
+      (send self :needs-computing t)))
   (slot-value 'y))
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))
