@@ -1,1 +1,1 @@
-../external/clem/ch-util.asd
+../external/ch-util.git/ch-util.asd

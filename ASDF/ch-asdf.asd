@@ -1,1 +1,1 @@
-../external/ch-asdf/ch-asdf.asd
+../external/ch-asdf.git/ch-asdf.asd
