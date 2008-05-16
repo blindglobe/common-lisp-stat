@@ -1,3 +1,5 @@
+Getting required external files.
+
 
 Commands for external DARCS
 
@@ -6,11 +8,20 @@ Commands for external DARCS
   darcs get http://common-linsp.net/project/cffi/darcs/cffi
   cd cffi.darcs ; darcs pull
 
+  Need to find a script that will help us convert and update from the
+  actual darcs repository.
+
+
 Commands for external GIT:
 
   cd $(LISPSTAT-GIT-TOPLEVEL-DIR) # from here, cd .. (hopefully!)
-  git submodule add git://cyrusharmon.org/pub/git/ch-asdf.git  external/ch-asdf.git
-  git submodule add git://cyrusharmon.org/pub/git/ch-util.git  external/ch-util.git
+  git submodule add git://cyrusharmon.org/pub/git/ch-asdf.git \
+      	external/ch-asdf.git
+  git submodule add git://cyrusharmon.org/pub/git/ch-util.git \
+      	external/ch-util.git
   git submodule status
-  git submodule update
   git status
+
+
+  ## How do we update locally?   
+  git submodule update ...??  (test using the submodule that we need to get when connected).
