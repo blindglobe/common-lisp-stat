@@ -1,1 +1,0 @@
-../ch-util/ch-util-test.asd
