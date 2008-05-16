@@ -1,0 +1,1347 @@
+[Initial revision
+jbielman**20050607202929] 
+[Clean up CLISP support some, will need CVS version of CLISP to properly
+jbielman**20050607220508
+ Clean up CLISP support some, will need CVS version of CLISP to properly
+ handle looking up symbols in all loaded foreign libraries.
+ 
+ Add preliminary support for CMU CL (tested in 19b-pre on OS X).
+ 
+] 
+[Remove this bogus file.
+jbielman**20050607220700] 
+[Update the comments about the status of our CLISP support.
+jbielman**20050607220858] 
+[Call malloc and free directly when allocating foreign memory instead
+jbielman**20050608065952
+ Call malloc and free directly when allocating foreign memory instead
+ of using aliens to prevent compiler notes in CMU CL.
+ 
+ Convert :POINTER to SYSTEM-AREA-POINTER instead of (ALIEN (* T)) .
+ 
+] 
+[Add foreign enumerated types that automatically convert from keywords
+jbielman**20050608070132
+ Add foreign enumerated types that automatically convert from keywords
+ to integers when passed or returned to/from foreign functions.
+ 
+] 
+[Fix typo in comment.
+jbielman**20050608072818
+ Fix typo in comment.
+ Apparently I don't know what year it is...
+ 
+] 
+[Remove this file, we have the spec instead.
+jbielman**20050610130047] 
+[Add unit testing framework using RT.
+jbielman**20050611052654
+ Add unit testing framework using RT.
+ Lots of manual and CFFI-SYS updates.
+ Add passing a double float to sprintf in examples.lisp.
+ Update the syntax of the nested structure example.
+ Add the INC-PTR function to the CFFI-SYS backends.
+ Add the shareable byte vector interface to the CFFI-SYS backends.
+ Started writing support for aggregate structure slots.  Not used yet.
+ 
+] 
+[Remove obsolete shlibs and tests.
+jbielman**20050611071624] 
+[Ignore errors when Lisp implementations aren't found while testing.
+jbielman**20050611071811] 
+[Some progress on better CLISP support, requires CVS CLISP.
+jbielman**20050611080628] 
+[Clean up the way tests are run a bit.
+jbielman**20050612082119] 
+[Fairly major cleanup to the foreign type system:
+jbielman**20050612082351
+ Fairly major cleanup to the foreign type system:
+ * All foreign types at the CFFI user level are now represented by CLOS
+   instances.  In particular, there is a FOREIGN-BUILT-IN-TYPE class that
+   represents a built-in type keyword understood by CFFI-SYS.
+ * Canonicalization, size, and alignment of foreign types is now handled
+   via generic functions defined on each type class.
+ * FOREIGN-ENUM is now a subclass of FOREIGN-TYPEDEF.
+ 
+] 
+[Initialize foreign strings to empty in case the foreign function
+jbielman**20050612082516
+ Initialize foreign strings to empty in case the foreign function
+ calling mechanism doesn't work.  Prevents the Lisp from running off
+ trying to convert MOST-POSITIVE-FIXNUM bytes into a string.
+ 
+] 
+[Very preliminary Lispworks support.
+jbielman**20050612082708
+ Very preliminary Lispworks support.
+ Calling foreign functions is not implemented, and will probably require
+ vendor support as a necessary primitive does not seem to be exported.
+ 
+] 
+[Fix typo in method definitions of AGGREGATEP.
+jbielman**20050612082825] 
+[Don't bother trying to define FFI:FOREIGN-VARIABLE in CLISP 2.33.2 and
+jbielman**20050612083348
+ Don't bother trying to define FFI:FOREIGN-VARIABLE in CLISP 2.33.2 and
+ earlier as there is no hope of supporting it anyway.
+ 
+] 
+[Remove obsolete file.
+jbielman**20050612083615] 
+[First implementation of embedded structures and arrays, still needs tests.
+jbielman**20050612091327] 
+[Define and export FOREIGN-SLOT-ADDRESS.
+jbielman**20050613094503] 
+[Fresh-line before printing the header when running tests.
+jbielman**20050613094608] 
+[Add a (not-yet-working) example of complex aggregate struct slot access.
+jbielman**20050613095632] 
+[Add initial specification of proposed block memory operations.
+jbielman**20050613095658] 
+[Add proposed shareable byte vector interface.
+jbielman**20050613105629] 
+[Describe MAKE-SHAREABLE-BYTE-VECTOR a little.
+jbielman**20050613131834] 
+[Reorder the documentation for MAKE-SHAREABLE-BYTE-VECTOR to make sense.
+jbielman**20050613132718] 
+[Update supported implementations in README.
+jbielman**20050613141701] 
+[Add more unit tests for dereferencing unsigned integers and floats.
+jbielman**20050614022318] 
+[Add support for foreign unions and a file for their unit tests.
+jbielman**20050614033113] 
+[Add a simple test for foreign unions.
+jbielman**20050614033543] 
+[Add basic tests for foreign structures.
+jbielman**20050623001311] 
+[Add some commentary about the how to implement UFFI
+jbielman**20050623054422
+ Add some commentary about the how to implement UFFI
+ array types and unions correctly.
+ 
+] 
+[Fix comment typo.
+jbielman**20050623055150] 
+[Change &KEYWORD back to &OPTIONAL in MEM-VECTOR interface.
+jbielman**20050627184929] 
+[Export pointerp from cffi-sys (openmcl)
+Luis Oliveira <loliveira@common-lisp.net>**20050703013832] 
+[Preliminary foreign variables for cmucl/sbcl/openmcl/clisp
+Luis Oliveira <loliveira@common-lisp.net>**20050704031609] 
+[Preliminary port to Allegro CL
+Luis Oliveira <loliveira@common-lisp.net>**20050705002935] 
+[Add convert-external-name to cffi-allegro.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20050705025245] 
+[implement ecl backend
+James Bielman  <jamesjb@jamesjb.com>**20050705075324] 
+[fix misplaced comment in ecl backend
+James Bielman  <jamesjb@jamesjb.com>**20050705083800] 
+[life is officially grand
+James Bielman  <jamesjb@jamesjb.com>**20050705110100] 
+[Fix conflict?
+Luis Oliveira <loliveira@common-lisp.net>**20050705135052] 
+[use low-level interface for memory access on ecl
+James Bielman  <jamesjb@jamesjb.com>**20050705164350] 
+[use SYSTEM-AREA-POINTER for :pointer like CMU CL
+James Bielman  <jamesjb@jamesjb.com>**20050705193828] 
+[use WITH-PINNED-OBJECTS instead of WITHOUT-GCING on SBCL
+James Bielman  <jamesjb@jamesjb.com>**20050705223418] 
+[Add (in-package #:cl-user) to package.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20050707005106] 
+[Some notes about Allegro's internals.
+Luis Oliveira <loliveira@common-lisp.net>**20050711022020] 
+[Pass -q switch to clisp in Makefile
+Luis Oliveira <loliveira@common-lisp.net>**20050711043643] 
+[Make test depend on test-clisp and not on test-allegro
+Luis Oliveira <loliveira@common-lisp.net>**20050711043729] 
+[Update port for Allegro.
+Luis Oliveira <loliveira@common-lisp.net>**20050711043851
+ 
+  - cleaned up the code/comments
+  - doh, use ff:with-stack-object in with-foreign-ptr
+  - convert-foreign-type takes a context argument because
+    system::ff-funcall (and ff:def-foreign-call) want
+    :foreign-address instead of '(* :void)
+  - better way of geting the alignment
+  - defcfun-helper, using ff:def-foreign-call
+  - changed foreign-var-ptr to be a macro
+ 
+ This still needs some more cleaning up :-) Ah and this
+ patch probably depends on the patches to DEFCFUN and DEFCVAR.
+] 
+[New DEFCFUN tests based on the FUNCALL tests.
+Luis Oliveira <loliveira@common-lisp.net>**20050711044713] 
+[Make foreign-var-ptr a macro, make DEFCVAR type a normal arg
+Luis Oliveira <loliveira@common-lisp.net>**20050711044934] 
+[Implement FOREIGN-VAR-PTR and DEFCFUN-HELPER (thus DEFCFUN) for Lispworks.
+Luis Oliveira <loliveira@common-lisp.net>**20050711045136] 
+[Implement DEFCFUN-HELPER idea.
+Luis Oliveira <loliveira@common-lisp.net>**20050711045325
+ 
+  - cffi-sys implementations can now define a defcfun-helper
+    function that returns two forms, a prelude and a caller.
+    (todo: explain this better in the code/doc)
+  - changed foreign-funcall-1 to translate-objects
+    (also todo: document translate-objects)
+] 
+[Add in-package :cl-user to tests/package.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20050711045738] 
+[Bug fix. Forgot to canonicalize the return type (and added test)
+Luis Oliveira <loliveira@common-lisp.net>**20050711052929] 
+[parse-c-type on load-time
+Luis Oliveira <loliveira@common-lisp.net>**20050711061611] 
+[Rename DEFCFUN-HELPER to DEFCFUN-HELPER-FORMS.
+Luis Oliveira <loliveira@common-lisp.net>**20050713224259] 
+[Convert docs to Texinfo format.
+Luis Oliveira <loliveira@common-lisp.net>**20050730160328] 
+[Bugfix: clisp converts NULL to NIL
+Luis Oliveira <loliveira@common-lisp.net>**20050802021638
+ 
+ Added workaround in the pointer operations because of this.
+ Also added test: deref.pointer.null
+] 
+[Use fboundp instead of find-symbol to define default defcfun helper.
+Luis Oliveira <loliveira@common-lisp.net>**20050803002935] 
+[:cffi/no-foreign-funcall and unexport foreign-var-ptr
+Luis Oliveira <loliveira@common-lisp.net>**20050804043827
+ 
+ * Push :cffi/no-foreign-funcall to *features* when the host
+   lisp does not support it.
+ * Don't run the funcall tests when #+cffi/no-foreign-funcall
+ * Unexport foreign-var-ptr, it's meant to be used by defcvar
+   only.
+] 
+[Minor simplification to test-op in cffi-tests.asd
+Luis Oliveira <loliveira@common-lisp.net>**20050805183631] 
+[New type translation interface.
+Luis Oliveira <loliveira@common-lisp.net>**20050805184509
+ 
+ - Removed define-type-translator, added define-type-translation with
+   a new interface.
+ - Make with-object-translated, translate-objects and the string
+   type use the new interface.
+] 
+[New callback interface.
+Luis Oliveira <loliveira@common-lisp.net>**20050805185915
+ 
+ - New interface: DEFCALLBACK, CALLBACK, GET-CALLBACK
+ - New CALLBACK.* tests.
+ - Implementations of CFFI-SYS:MAKE-CALLBACK:
+     - Allegro, passes all tests on linux/x86 and win32
+       fails CALLBACKS.CHAR/UNSIGNED-CHAR/SHORT/UNSIGNED-SHORT
+       on darwin/ppc, looks like an Allegro bug.
+     - clisp, passes all tests.
+     - cmucl, passes all tests on linux/x86, on darwin/ppc fails
+       CALLBACKS.CHAR/UNSIGNED-CHAR/SHORT/UNSIGNED-SHORT, looks
+       like a bug in cmucl/ppc too.
+     - sbcl, x86 only, passes all tests except its callbacks
+       can't handle sap's yet, that'd be bug in sbcl too.
+     - openmcl, fails CALLBACKS.FLOAT/DOUBLE, I reported this
+       bug in openmcl, and it has been confirmed.
+     - Lispworks, passes all tests on darwin/ppc, on linux/x86
+       and win32 there are issues unrelated to callbacks.
+] 
+[Allegro port update, bug fixes.
+Luis Oliveira <loliveira@common-lisp.net>**20050805191454
+ 
+ - Convert chars to signed-byte instead of unsigned-byte (need
+   to figure out the issues between signed vs. unsigned char, btw)
+ - WITH-FOREIGN-PTR was evaluating SIZE twice.
+] 
+[Lispworks bug fixes.
+Luis Oliveira <loliveira@common-lisp.net>**20050805191902
+ 
+ - FLI:INCF-POINTER didn't increment the pointers at all.
+   Implemented CFFI-SYS:INC-PTR using FLI:MAKE-POINTER and
+   FLI:POINTER-ADDRESS instead.
+ - FLI:WITH-DYNAMIC-FOREIGN-OBJECTS was causing troubles on
+   all platforms, heap allocate for the time being.
+ - Missing (convert-foreign-type rettype) when defining a
+   foreign function. 
+ - FOREIGN-VAR-PTR was trying to access the var too soon,
+   simplified it a bit too.
+] 
+[Make DEFCVAR use the type translation mechanism.
+Luis Oliveira <loliveira@common-lisp.net>**20050805192631
+ 
+ - Also added new tests. Note, Lispworks on x86 starts behaving
+   erratically after runing the FOREIGN-GLOBALS.SET.STRING test
+   and eventually dies an horrible death. Also, Allegro doesn't
+   like its memory being free()d by C. doc/allegro-internals.txt
+   has some info on this. Should be easy to figure out.
+] 
+[Small change to DEFCFUN-HELPER-FORMS.
+Luis Oliveira <loliveira@common-lisp.net>**20050805193417
+ 
+ - Make it take an extra argument "lisp-name". Hopefully I got
+   this stuff right this time, I'm not sure yet.
+] 
+[SBCL: use SB-SYS:FOREIGN-SYMBOL-SAP
+Luis Oliveira <loliveira@common-lisp.net>**20050805193658
+ 
+ - SBCL 0.9.3 renamed SB-SYS:FOREIGN-SYMBOL-ADDRESS to
+   SB-SYS:FOREIGN-SYMBOL-SAP. Use this instead.
+] 
+[Minor edits and changed SQRTF test.
+Luis Oliveira <loliveira@common-lisp.net>**20050805193844
+ 
+ - Commented out some unused forms in src/functions.lisp.
+ - Defined our own SQRTF in libtest.c since it's not available
+   on win32.
+] 
+[Initial support for Corman Lisp.
+Luis Oliveira <loliveira@common-lisp.net>**20050806040043
+ 
+ - A few bugs and issues left, fails 5 tests. (the tests
+   won't run automatically because Corman Lisp binds
+   *load-truename* to NIL, so the code in tests/bindings.lisp
+   doesn't find the C test library).
+] 
+[Broken "support" for GCL.
+Luis Oliveira <loliveira@common-lisp.net>**20050806041119
+ 
+ - Basic pointer operations and memory access is working.
+ - Calling foreign functions too, probably, untested.
+] 
+[Lispworks: use :byte for cffi's :char types
+Luis Oliveira <loliveira@common-lisp.net>**20050810010007] 
+[Clisp: use FOREIGN-ADDRESS-NULL in NULL-PTR-P
+Luis Oliveira <loliveira@common-lisp.net>**20050811044353] 
+[A couple of minor changes.
+Luis Oliveira <loliveira@common-lisp.net>**20050821133513
+ 
+ - Move #-cffi/no-foreign-funcall from cffi-tests.asd to
+   tests/funcall.lisp and have the lisps that don't support this
+   push the feature in cffi-<lisp>.lisp instead of defpackage.
+ - New file: utils.lisp 
+ - Make Allegro, CMUCL, Corman and OpenMCL use callback-symbol-name  (from cffi-utils) to safely intern callback symbol names (James)
+ - Clisp: consider (pointerp NIL) => T
+] 
+[Type system improvements and more.
+Luis Oliveira <loliveira@common-lisp.net>**20050826144708
+ 
+ - New tests: tests/enums.lisp (4 tests) and tests/misc-types.lisp (3 tests).
+ - New file: objects.lisp, skeleton of the safe typed pointer interface. I
+   also added a :boolean type here, it's looking for a better home still.
+ - (early-types.lisp): type parsers, DEFINE-TYPE-SPEC-PARSER and PARSE-TYPE.
+   Added abbility to have anonymous types (ie. a name is no longer required
+   for FOREIGN-TYPE). Moved DEFCTYPE to types.lisp.
+ - (enum.lisp): improved DEFCENUM, the values for each keyword are now
+   optional, like in C. Added the anonymous type (:enum ...)
+ - (types.lisp):
+     - Renamed :TO-C-ARG to :TO-C-DYNAMIC.
+     - Renamed FOREIGN-AREF to MEM-AREF and implemented compiler macros
+       for it.
+     - New exported macro: DEFINE-FOREIGN-TYPE for parameterized types.
+     - Change DEFINE-TYPE-TRANSLATOR back to the previous interface,
+       translators take a type argument now and we have translators
+       available at runtime now too.
+     - FOREIGN-TYPEDEF's now inherit their parent type's translators.
+     - New :wrapper type, for anonymous typedefs with translators.
+ - (strings.lisp): Renamed string to :string. Added new type, :string+ptr.
+ - (utils.lisp): renamed let-if to bif.
+ - (tests/callbacks.lisp): two tests were not being run for SBCL
+   because I thought it triggered a bug but it's actually only one that
+   triggers the bug. Fixed that.
+ - Updated examples and tests to use :string instead of string.
+] 
+[Oops
+Luis Oliveira <loliveira@common-lisp.net>**20050827030127
+ 
+ - Forgot to add new file objects.lisp in last patch.
+ - Bogus type got sent by mistake in early-types.lisp
+ - Make DEFINE-FOREIGN-TYPE return the type name.
+] 
+[More oops.
+Luis Oliveira <loliveira@common-lisp.net>**20050827080900
+ 
+ - clisp: foreign-address-null is deprecated.
+ - types: fixed bug, regarding expanders + anonymous types.
+ - added documentation to the :boolean type
+] 
+[Documentation, bug fixes and tweaks
+Luis Oliveira <loliveira@common-lisp.net>**20050830025906
+ 
+ Bug fixes / tweaks:
+ - fixed typo in foreign-enum-value.
+ - defcenum: renamed argument, allow a docstring.
+ - defcvar and defcfun: also accept symbols as names.
+ - defcvar: added (declare (ignore value)) when read-only is true.
+ - foreign-funcall: fixed bug; premature canonicalization of the
+   return-type. added regression test for this.
+ - defcfun and defcallback: use the make-gensym-list utility
+ - defcallback: return the callback name;
+ - strings.lisp: fixed the docstrings for the :string translators;
+ - mem-aref: fixed bug/typo in its setf-expander; added regression
+   test for this.
+ - defcstruct and defcunion: allow a docstring.
+ - new tests: callbacks.qsort and funcall.string.3
+ 
+ 
+ Documentation:
+ - New file doc/Makefile for generating docs and uploading them to
+   c-l.net.
+ - Added every cffi function/macro that is currently exported.
+   documented half of them or so.
+ - colorize-lisp-examples.lisp: little script to colorize the examples
+   in the texinfo-generated html docs.
+ - gendocs.sh: generate the docs in various formats as well as an
+   index page from gendocs_template.
+ - further tweaks to doc/style.css.
+] 
+[%foreign-funcall-ptr and small fixes
+Luis Oliveira <loliveira@common-lisp.net>**20050831022358
+ 
+ - New CFFI-SYS operator: %foreign-funcall-ptr. Implemented for
+   Allegro, CLISP, CMUCL, SBCL and OpenMCL.
+ - foreign-funcall can now take either a string or a pointer as its
+   first argument. It'll decide at macroexpansion time whether to call
+   %foreign-funcall or %foreign-funcall-ptr.
+ - Updated foreign-funcall's documentation.
+ - Allegro tweaks: fix the lisp-type specification of (* :void)
+   pointers and :unsigned-char's. In the future, it might be better
+   to simply not specify anything were not necessary, though.
+ - Fixed silly bug in foreign-vars.lisp.
+] 
+[Win32 tweaks to the test library...
+Luis Oliveira <loliveira@common-lisp.net>**20050831063013
+ 
+ ... in order to work with the MSVC++ free toolkit.
+ 
+ - correctly load the test library.
+ - and __declspec(dllexport) to the test library functions
+ - implement a strdup, used in 2 tests
+ - added a compile.bat, the free toolkit doesn't seem to have
+   nmake. Also, I don't know how to make ASDF automatically
+   compile the lib under win32 like I did for *nix.
+] 
+[Well, lets support MINGW too.
+Luis Oliveira <loliveira@common-lisp.net>**20050831064645
+ Tweaked the Makefile a bit to support MINGW too.
+] 
+[Slight change to defcenum to make Corman Lisp happier.
+Luis Oliveira <loliveira@common-lisp.net>**20050901073604] 
+[Fix struct bug, defcvar bug and tweaked bindings.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20050902044050
+ 
+ - defcvar now works (more) correctly with aggregate types.
+ - struct types now carry alignment information which is now
+   correctly calculated (for unions too) according to the x86
+   ABI (tested on darwin/ppc too, but should study other ABI
+   docs at some point).
+ - also tail padding is now correctly added to structs, when
+   necessary. (also according to the x86 ABI).
+ - 4 new tests for this struct bug (reported by Wilco Greven).
+ - tweaked tests/bindings.lisp to correctly load the library on
+   Lispworks and to make it more portable across win/nix/etc..
+] 
+[CFFI User Manual update.
+Luis Oliveira <loliveira@common-lisp.net>**20050902075750] 
+[Handle empty structures gracefully
+Luis Oliveira <loliveira@common-lisp.net>**20050907053119
+ 
+ - Fixed notice-foreign-structure-definition to handle empty
+   struct definitions correctly.
+ - Added new test for this: STRUCT.ALIGNMENT.5
+] 
+[Fixed Allegro warning, removed #-sbcl from callback test
+Luis Oliveira <loliveira@common-lisp.net>**20050908061253
+ 
+ - Don't use call-direct on functions with 0 arguments.
+ - Added a regression test for this and a test to see what
+   void functions return. (the latter will probably fail on
+   some ports)
+ - SBCL has fixed the callback bug in version 0.9.4.11,
+   removed the #-sbcl before the test that was triggering
+   the bug.
+] 
+[foreign-alloc and uffi-compat
+Luis Oliveira <loliveira@common-lisp.net>**20050909010022
+ 
+ - removed foreign-object-alloc, added cffi:foreign-alloc with new options
+   (including the functionality foreign-object-alloc provided).
+ - renamed the cffi-sys:foreign-alloc's to cffi-sys:%foreign-alloc.
+ - updated respective documentation.
+ - improved mem-aref's documentation including new examples.
+ - fixed with buf with lisp-string-to-foreign not handling empty strings
+   correctly. added regression test.
+ - fixed translate-to-c and translate-from-c (not exported yet)
+ - fixed uffi-compat bugs, implemented all operators (including a bunch
+   that aren't documented in UFFI's manual) except a foreign-string-length
+   which is weird and not used anywhere. 
+ - added "UFFI" as a nickname for the cffi-uffi-compat package.
+] 
+[Fixed bug in cffi-lispworks
+Luis Oliveira <loliveira@common-lisp.net>**20050912031053
+ 
+ - foreign-alloc now uses type :byte.
+ - make-callback specifies more options to define-foreign-callable.
+] 
+[Stack allocation in cffi-lispworks and tweak to run-tests
+Luis Oliveira <loliveira@common-lisp.net>**20050912065252
+ 
+ - Lispworks's with-foreign-ptr stack allocates again.
+ - run-tests now asks if we want to run the tests several times.
+] 
+[Changes to callbacks.
+Luis Oliveira <loliveira@common-lisp.net>**20050913054015
+ 
+ - Renamed make-callback to %defcallback and shifted the responsability
+   of storing the address in the callback-ptr property to the cffi-sys
+   backend. Previously in allegro and lispworks the host ffi's callback
+   definitions were non toplevel, which is probably not right.
+ - Use gensyms instead of callback-symbol-name (removed that function
+   from utils.lisp)
+] 
+[Documentation and new test
+Luis Oliveira <loliveira@common-lisp.net>**20050914002507
+ 
+ - Added detailed node listing to the User Manual.
+ - New regression test: WITH-FOREIGN-PTR.EVALX2 (checks if the size
+   argument is not evaluated twice by mistake)
+ - Also removed an old comment-out test function from cffi-lispworks.lisp
+] 
+[make clean -> rm *.fsl too.
+Luis Oliveira <loliveira@common-lisp.net>**20050914203204] 
+[Missing DLLEXPORTs in libtest.c
+Luis Oliveira <loliveira@common-lisp.net>**20050915001414] 
+[Removed test, tweaked tests/Makefile
+Luis Oliveira <loliveira@common-lisp.net>**20050915013027
+ 
+ - Commented out the test STRUCT.ALIGNMENT.5 because an empty struct is
+   not valid standard C and some compilers, namely VC++, won't compile it.
+ - Add -ansi -pedantic to the compiler flags to catch things like this
+   sooner next time.
+] 
+[Corman Lisp update and note added to the manual.
+Luis Oliveira <loliveira@common-lisp.net>**20050915043423
+ 
+ - Added note to the User Manual that it reflects what's in
+   cffi-luis, not the main branch.
+ - Updated cffi-corman.lisp and fixed a critical bug.
+   Now only 7 tests fail.
+] 
+[Fix bug with arrays in uffi-compat.
+Luis Oliveira <loliveira@common-lisp.net>**20050915142238] 
+[Don't free lisp allocated memory on the C side.
+Luis Oliveira <loliveira@common-lisp.net>**20050916004700] 
+[foreign-symbol-ptr
+Luis Oliveira <loliveira@common-lisp.net>**20050920173532
+ 
+ - new cffi-sys primitive: foreign-symbol-ptr (still needs semantics to
+   be defined when dealing with undefined foreign symbols)
+ - defcvar now uses this /at load-time/.
+] 
+[Support for my asdf setup.
+Luis Oliveira <loliveira@common-lisp.net>**20050924200146
+ 
+ Well, support for asdf setups that don't put fasl files next to
+ the source files. The Makefile will delete the .fasls directories
+ on make clean (that's where my setup puts the fasls) and bindings.lisp
+ will save the shared library's location at compile-time.
+] 
+[foreign-symbol-ptr and defcvar, etc..
+Luis Oliveira <loliveira@common-lisp.net>**20050924201305
+ 
+ - defcvar's expansion will now lookup the foreign symbol at runtime.
+   get-var-ptr too.
+ - Changed a few implementations to return NIL when foreign symbol
+   doesn't exist (instead of, say, raising an error): clisp, cmucl,
+   lispworks and sbcl.
+ - Exported foreign-symbol-ptr from the CFFI package and added it to
+   the user manual.
+ - Also added missing word to foreign-free's description.
+ - Fixed typo in cffi-corman-lisp.
+] 
+[load-foreign-library
+Luis Oliveira <loliveira@common-lisp.net>**20050925044242
+ 
+ - extend load-foreign-library to accept a pathname as an argument.
+ - change tests/bindings.lisp to pass a pathname.
+] 
+[Fixed bogus getters in setf expanders.
+Luis Oliveira <loliveira@common-lisp.net>**20050925193602
+ 
+ Bug report and initial bugfixes courtesy of Marco Gidde.
+ 
+ - fixed setf expanders for mem-ref, mem-aref, and foreign-slot-value.
+   (also mem-aref was evaluating the type argument twice)
+ - likewise fixed cmucl's, openmcl's and sbcl's setf expanders for %mem-ref.
+ - regression tests: mem-aref.eval-type-x2, mem-ref.nested, mem-aref.nested
+   and struct.nested-setf.  
+] 
+[New test: void callback
+Luis Oliveira <loliveira@common-lisp.net>**20050926234141] 
+[pointer-eq and bug fixes
+Luis Oliveira <loliveira@common-lisp.net>**20051002122416
+ 
+ - New CFFI-SYS primitive: POINTER-EQ. Implemented for all Lisps except
+   ECL and GCL. Exported it from the CFFI package.
+ - Added POINTER-EQ to the user manual.
+ - Bug fix: dereferencing an aggregate type should return a pointer to
+   it, not dereference it as a :pointer.
+ - Bug fix: mem-aref setf expander was returning a bogus getter (mem-ref
+   instead of mem-aref).
+ - Two regressions tests for the bugs above: DEREF.AGGREGATE and
+   DEREF.ARRAY-OF-AGGREGATES.
+] 
+[Fixed bug in uffi-compat, added new type.
+Luis Oliveira <loliveira@common-lisp.net>**20051003142016
+ 
+ - make the uffi-array-type be aggregate. (hopefully this didn't break
+   uses of this type in other situations)
+ - add uffi's :struct-pointer type. (not well tested, but passes all
+   tests from uffi's regression suite) 
+] 
+[64-bit enhancements for OpenMCL
+Luis Oliveira <loliveira@common-lisp.net>**20051006001347
+ 
+ - Use the :int instead of :signed-fullword, etc..
+] 
+[cffi-openmcl 64-bit patches
+Luis Oliveira <loliveira@common-lisp.net>**20051007003251
+ 
+ - Port to openmcl darwin/ppc64, courtesy Gary Byers.
+] 
+[Makefile tweak for 64-bit platforms
+Luis Oliveira <loliveira@common-lisp.net>**20051011123357
+ 
+ - x86-64 support courtesy Juho Snellman.
+ - G5 support courtesy Bryan O'Connor.
+] 
+[Fix memory leak in test FOREIGN-GLOBALS.REF.STRING
+Luis Oliveira <loliveira@common-lisp.net>**20051027142855] 
+[Updated ECL support
+Luis Oliveira <loliveira@common-lisp.net>**20051027143948
+ 
+ - Updated cffi-ecl.lisp, courtesy of Michael Goffioul.
+   (Includes some ECL specific workarounds in the portable
+    bits of CFFI.)
+] 
+[New chapter: Implementation support and known issues.
+Luis Oliveira <loliveira@common-lisp.net>**20051102153220] 
+[Light reformating of the ECL changes to fit 80 columns.
+Luis Oliveira <loliveira@common-lisp.net>**20051102153416] 
+[Support for the (unsigned) long long type.
+Luis Oliveira <loliveira@common-lisp.net>**20051102203613
+ 
+ - New CFFI primitive types :unsigned-long-long and :long-long.
+ - Implemented in the following backends: OpenMCL, SBCL and CMUCL.
+ - Implementations that don't support long long push :cffi/no-long-long
+   into *features*: Allegro, CLISP, Corman, ECL and Lispworks.
+ - New tests: FOREIGN-GLOBALS.REF.LONG-LONG, 
+   FOREIGN-GLOBALS.REF.UNSIGNED-LONG-LONG, FUNCALL.LONG-LONG,
+   CALLBACKS.LONG-LONG, CALLBACKS.UNSIGNED-LONG-LONG and DEFCFUN.LONG-LONG.
+ - libtest.c is now compiled with -std=c99 instead of -ansi.
+ - Add information about the new type in the manual and Mention known
+   issues in the various implementations.
+] 
+[Export foreign-library-types from cffi-uffi-compat
+Luis Oliveira <loliveira@common-lisp.net>**20051103133245] 
+[uffi-compat fixes
+Luis Oliveira <loliveira@common-lisp.net>**20051104101358
+ 
+ - Implement uffi:make-pointer and export uffi:pointer-address.
+] 
+[pointer-address was exported twice from cffi-uffi-compatt
+Luis Oliveira <loliveira@common-lisp.net>**20051104121605] 
+[Add information about linux/ppc to the manual.
+Luis Oliveira <loliveira@common-lisp.net>**20051104200531] 
+[Add missing information about SBCL on linux/ppc
+Luis Oliveira <loliveira@common-lisp.net>**20051104202843] 
+[New test foreign-globals.set.long-long
+Luis Oliveira <loliveira@common-lisp.net>**20051104230305] 
+[Manual: OpenMCL fails FOREIGN-GLOBALS.SET.LONG-LONG
+Luis Oliveira <loliveira@common-lisp.net>**20051104232143] 
+[darwin/ppc32 ABI structure alignment
+Luis Oliveira <loliveira@common-lisp.net>**20051114194120
+ 
+ - Normalize the different implementation features (:powerpc, :macos,
+   :macosx32) into :ppc32 and :darwin.
+ - Force Allegro, CLISP, Lispworks, SBCLto return 8 as :double's
+   alignment on darwin/ppc32
+ - Correctly calculate alignments for darwin/ppc32's strange ABI.
+ - New tests: STRUCT.ALIGNMENT.[567].
+] 
+[add and export WITH-FOREIGN-STRINGS to uffi-compat
+James Bielman <jamesjb@jamesjb.com>**20051115022728] 
+[makefiles, defcstruct, foreign-string-alloc/with-foreign-string
+Luis Oliveira <loliveira@common-lisp.net>**20051202075637
+ 
+ - Use variables for the lisps' paths so that one can easily pick
+   different versions to run the tests with. eg:
+     CMUCL=/path/to/lisp make test-cmucl
+ - FOREIGN-STRING-ALLOC and WITH-FOREIGN-STRING: check if what we're
+   passing as a string is actually a string. This avoids
+   (foreign-string-alloc nil) => <pointer to empty C string>
+ - DEFCSTRUCT now takes an optional :size option and each slot takes
+   an optional :offset parameter that overrides the normal offset. This
+   enables partial definitions of C structs. 
+ - The previous change forces to make the COUNT option for the slots
+   to be a keyword option. Update the examples accordingly.
+ - tests/Makefile: support for SunOS. 
+] 
+[Documention changes
+Luis Oliveira <loliveira@common-lisp.net>**20051203011223
+ 
+ - commented out some example structures that use unimplemented features.
+ - documented the recent DEFCSTRUCT changes; added related example.
+ - mention that lisps that don't support FOREIGN-FUNCALL support
+   DEFCFUN anyway.
+ - new example with FOREIGN-FUNCALL
+ - fix the comments in types.lisp about ABIs.
+ - (non doc related) make cffi-tests :use REGRESSION-TEST instead of RT.
+] 
+[Missing changes in last patch...
+Luis Oliveira <loliveira@common-lisp.net>**20051203034826] 
+[Apply translations for simple slots.
+Luis Oliveira <loliveira@common-lisp.net>**20051205014628
+ 
+ - Make the foreign-slot-value method on simple-struct-slot apply the
+   adequate type translator. Same thing for the setter.
+ - Test this in STRUCT.STRING.1 and STRUCT.STRING.2
+] 
+[defcunion :count option for slots
+Luis Oliveira <loliveira@common-lisp.net>**20051208063412
+ 
+ - Make the defcunion slots' count option be a keyword
+ like defcstruct. Fix the related docs and tests.
+] 
+[Remove objects.lisp (new file: late-types.lisp)
+Luis Oliveira <loliveira@common-lisp.net>**20051208065807] 
+[Lots of renaming and 2 new functions
+Luis Oliveira <loliveira@common-lisp.net>**20051209022821
+ 
+ - Renamed: null-ptr -> null-pointer, null-ptr-p -> null-pointer,
+   inc-ptr -> inc-pointer, with-foreign-ptr -> with-foreign-pointer,
+   with-foreign-ptr-as-string -> with-foreign-pointer-as-string,
+   foreign-slot-address -> foreign-slot-pointer, 
+   get-var-ptr -> get-var-pointer and
+   foreign-symbol-ptr -> foreign-symbol-pointer.
+ - Updated various references to the old names in the cffi code itself,
+   examples, tests and the manual.
+ - New functions: cffi(-sys):pointer-address and cffi(-sys):make-pointer.
+ - Use these in uffi-compat.
+ - Documented them in the manual.
+ - New tests: POINTER.1 and POINTER.2
+] 
+[Update manual: CMUCL passes all tests.
+Luis Oliveira <loliveira@common-lisp.net>**20051209053051] 
+[Type translation refactoring
+Luis Oliveira <loliveira@common-lisp.net>**20051211052201
+ 
+ - Refactoring of the type translation mechanism, now based on
+   generic functions. The only user-visible changes is that you can
+   now specialize the on the argument of the translator, and there's
+   no type argument now (which was useless too for user-defined types).
+ - Don't export define-type-spec-parser since it's useless on its own.
+ - The anonymous :enum type is gone.
+ - Updated manual.
+] 
+[Oops
+Luis Oliveira <loliveira@common-lisp.net>**20051211053118
+ 
+ - Missing comma in define-type-translator.
+ - Also, it almost but not quite accepted the method specifiers. Fixed.
+] 
+[Added GETENV to uffi-compat
+Luis Oliveira <loliveira@common-lisp.net>**20051211064557] 
+[Fix uffi-compat wrt to the ptr->pointer changes
+Luis Oliveira <loliveira@common-lisp.net>**20051211100102] 
+[Bug fixes
+Luis Oliveira <loliveira@common-lisp.net>**20051212053739
+ 
+ - WITH-FOREIGN-OBJECT should eval the type parameter. Fixed this
+   as well as the examples and tests that assumed it wasn't evaluated.
+ - document WITH-FOREIGN-OBJECT in the manual.
+ - removed the pseudo ability to specialize arguments on
+   define-type-translator. That didn't quite work, doh.
+ - removed dead code from cffi-uffi-compat::foreign-type-size
+   specialized on the uffi-array-type.
+ - uffi-compat: parse (:array <type>) as (:array <type> 1)
+ - uffi-compat: reflect the fact that CFFI:WITH-FOREIGN-OBJECT now
+   evaluates the type parameter.
+] 
+[Fix parsing of types to match UFFI's behaviour
+Luis Oliveira <loliveira@common-lisp.net>**20051214110839
+ 
+ Basically, extra quoting is supposed to be ignored.
+ Thus 'foo, ''foo, '''foo, are all valid types.
+] 
+[Preliminary support for close-foreign-library
+Luis Oliveira <loliveira@common-lisp.net>**20051215095834
+ 
+ Unimplemented for ECL and Corman. Lously implemented in CMUCL (and possibly
+ in the other ports too). Not exported.
+] 
+[Untabify cffi-ecl.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20051215154526] 
+[Forgot to export %close-foreign-library from cffi-lispworks.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20051220035858] 
+[CFFI-SYS-SPEC manual updates & Texinfo idioms
+Luis Oliveira <loliveira@common-lisp.net>**20051220043849
+   
+ Patch from: Stephen Compall <s11@member.fsf.org>
+   
+ - Use @var for arguments, rather than @code.
+ - Use @deftpx for a chain of type defns, rather than repeated @deftp
+   blocks.
+ - Use @result{} instead of explicit =>.
+ - Use @r with appropriate formatting for comments in
+   @examples/@lisps. [didn't apply these changes since they didn't
+   play well with the colorize script in the HTML output --luis]
+ - Introduction: Convert naming convention to a list of general
+   conventions, and define "foreign type".
+ - Rename the pointer functions.
+ - Document new functions.
+ - Use new @impnote macro to add notes, so they can be conditionally
+   removed from the manual.
+] 
+[Use fli:make-pointer instead of fli:*null-pointer*
+Luis Oliveira <loliveira@common-lisp.net>**20051221105427
+ 
+ Use FLI:MAKE-POINTER here instead of FLI:*NULL-POINTER* for
+ implementing CFFI-SYS:NULL-POINTER since old versions of
+ Lispworks don't seem to have the latter.
+ 
+ Patch courtesy of: Vebjorn Ljosa <vebjorn(@)ljosa.com>
+] 
+[Make typedefs for structs work.
+Luis Oliveira <loliveira@common-lisp.net>**20051221170235
+ 
+ - Make get-slot-info (and thus foreign-slot-value) work on typedefs
+   to a struct type.
+ - Regression test: STRUCT.4
+] 
+[ffi:memory-as is a perfect match for %mem-ref
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051209172237] 
+[use ffi:foreign-variable in foreign-symbol-pointer
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051214133725] 
+[foreign-slot-value|set compiler-macro update
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051214133908] 
+[cffi-clisp:%defcallback: simplify it
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051215085649] 
+[Add background info on free'ing callbacks
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051220111627] 
+[Fix indentation.
+Luis Oliveira <loliveira@common-lisp.net>**20051222162055] 
+[Make defcfun accept a docstring
+Luis Oliveira <loliveira@common-lisp.net>**20051222170147] 
+[Push :cffi to *features*
+Luis Oliveira <loliveira@common-lisp.net>**20051222193904] 
+[fix bugs in example implementation of mem-vector functions
+James Bielman <jamesjb@jamesjb.com>**20051223014350] 
+[fix foreign-struct-*-form thus enable foreign-slot-value optimization
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051222141506] 
+[clisp: inline %mem-ref when given constant type
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051222141931] 
+[fix foreign-struct-set-form & enable foreign-slot-set optimization
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051222151302] 
+[Fix conflict and missing "value". Oops.
+Luis Oliveira <loliveira@common-lisp.net>**20051223101748] 
+[Revert brainfart. What missing value?
+Luis Oliveira <loliveira@common-lisp.net>**20051223102106] 
+[Free old callbacks on clisp.
+Luis Oliveira <loliveira@common-lisp.net>**20051223091139] 
+[uffi-compat optimization on deref-array
+Luis Oliveira <loliveira@common-lisp.net>**20051223091203
+ 
+ Determine the element type at macro-expansion time when
+ the array type is constant.
+] 
+[export %MEM-SET from cffi-sys and use instead of (SETF %MEM-REF)
+James Bielman  <jamesjb@jamesjb.com>**20051223110805] 
+[macrology to OAOO definition of %MEM-REF and %MEM-SET
+James Bielman  <jamesjb@jamesjb.com>**20051223113523] 
+[inform rt of expected test failures under openmcl
+James Bielman  <jamesjb@jamesjb.com>**20051223113330] 
+[with-foreign-object: optimize constant type case + use eval
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051223123549] 
+[clisp: (setf %mem-ref) is gone, optimize %mem-set
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051223123712] 
+[precision of wording (offset in bytes) & typo
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051223131305] 
+[more tests: verify left to right evaluation rule
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051223131408] 
+[clisp %mem-set use unexported ffi::stuff to enforce left-to-right evaluation
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20051223135321] 
+[define type translators at compile time
+James Bielman  <jamesjb@jamesjb.com>**20051223144701] 
+[pull out and improve some cffi examples
+James Bielman  <jamesjb@jamesjb.com>**20051223144749] 
+[remove bogus extra right parenthesis
+James Bielman  <jamesjb@jamesjb.com>**20051223153500] 
+[Don't save (anonymous) parsed types in *foreign-types*
+Luis Oliveira <loliveira@common-lisp.net>**20051226135322
+ 
+ Don't save parsed types in the *foreign-types* hashtable. This
+ way they can be garbage collected and the hashtable won't grow
+ indefinitely.
+ 
+ Issue reported by Novikov Leonid <ln (at) bk.ru>
+] 
+[cffi-uffi-compat:allocate-foreign-object optimization
+Luis Oliveira <loliveira@common-lisp.net>**20051226135806
+ 
+ Convert TYPE to the equivalent UFFI type at macro-expansion time
+ when constant.
+] 
+[Fix compiler macros on foreign-slot-value/set
+Luis Oliveira <loliveira@common-lisp.net>**20051227154753
+ 
+ - foreign-struct-slot-value-form and foreign-struct-slot-set-form
+   were not quoting the type in the resulting mem-ref form.
+ - struct.5, regression test.
+] 
+[New TODO list and updated README.
+Luis Oliveira <loliveira@common-lisp.net>**20051228150424
+ 
+ - New file: TODO. 46 items!
+ - Removed the outdated paragraph about implementation support from
+   the README file.
+] 
+[Add some links to the TODO file.
+Luis Oliveira <loliveira@common-lisp.net>**20051228151536] 
+[FOREIGN-SLOT-NAMES and FOREIGN-SLOT-OFFSET
+Luis Oliveira <loliveira@common-lisp.net>**20051228195843
+ 
+ - New functions: FOREIGN-SLOT-NAMES and FOREIGN-SLOT-OFFSET.
+ - Test FOREIGN-SLOT-NAMES: STRUCT.NAMES
+ - Removed respective TODO item and added a new one: document these.
+] 
+[Document FOREIGN-SLOT-NAMES and FOREIGN-SLOT-OFFSET.
+Luis Oliveira <loliveira@common-lisp.net>**20051228235427] 
+[Fix the struct.names test and update some CLISP comments.
+Luis Oliveira <loliveira@common-lisp.net>**20051230074303] 
+[add scripts/ directory and release script
+James Bielman  <jamesjb@jamesjb.com>**20051230081818] 
+[Fix foreign-free example in the documentation.
+Luis Oliveira <loliveira@common-lisp.net>**20051230121846] 
+[Fix more typos in cffi-manual.
+Luis Oliveira <loliveira@common-lisp.net>**20051230215218] 
+[support Allegro CL and CLISP modern modes
+James Bielman  <jamesjb@jamesjb.com>**20051230233959] 
+[load-foreign-library changes
+Luis Oliveira <loliveira@common-lisp.net>**20060103004525
+ 
+ - Pass :foreign t to LOAD on Allegro.
+ - Use sys::load-object-file on CMUCL.
+] 
+[new type translator implementation
+James Bielman  <jamesjb@jamesjb.com>**20051223194115] 
+[specify :argument-precedence-order for translator generics
+James Bielman  <jamesjb@jamesjb.com>**20051223195127] 
+[fix unused variable warnings
+James Bielman  <jamesjb@jamesjb.com>**20051223195348] 
+[new translator interface updates
+James Bielman  <jamesjb@jamesjb.com>**20051228172421
+ 
+ - Add UNPARSE generic function for unparsing types.
+ - Reverse the order of the type name and class in translator GFs.
+ - Add NEXT-* versions of the translator GFs.
+ 
+] 
+[new file, translator example
+James Bielman  <jamesjb@jamesjb.com>**20051228173014] 
+[remove obsolete comment in MAKE-LOAD-FORM method
+James Bielman  <jamesjb@jamesjb.com>**20051228174102] 
+[fix missing newline issues
+James Bielman  <jamesjb@jamesjb.com>**20060101043915] 
+[new translator GF protocol, as discussed in IRC
+James Bielman  <jamesjb@jamesjb.com>**20060101091535] 
+[remove DEFINE-TYPE-TRANSLATOR from package exports
+James Bielman  <jamesjb@jamesjb.com>**20060101091727] 
+[properly handle alloc param chain for typedef translators
+James Bielman  <jamesjb@jamesjb.com>**20060101093028] 
+[ignore NAME in :wrapper UNPARSE method
+James Bielman  <jamesjb@jamesjb.com>**20060101093154] 
+[ramble a bit in comments about the new interface
+James Bielman  <jamesjb@jamesjb.com>**20060101100935] 
+[document new type translator interface in the manual
+James Bielman  <jamesjb@jamesjb.com>**20060103092448] 
+[clisp defcallback: free unless invalid (possibly from old image)
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060102152202] 
+[with-foreign-pointer [cmucl,sbcl]: forgot one instance of EVAL (constantp case)
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060102152957] 
+[TODO: foreign-alloc needs testcases
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060103153527] 
+[ffi:with-c-var's symbol-macrolet repeatedly applies foreign-value, avoid it
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060103153551] 
+[gensym name and typo fixes
+James Bielman  <jamesjb@jamesjb.com>**20060103202816] 
+[add todo list entry about implementing :uint8 and friends
+James Bielman  <jamesjb@jamesjb.com>**20060105091444] 
+[add todo list entry about setting union size
+James Bielman  <jamesjb@jamesjb.com>**20060106074708] 
+[add :size option to defcunion as with defcstruct
+James Bielman  <jamesjb@jamesjb.com>**20060106082957] 
+[New TODO item about CLISP fasl portability
+Luis Oliveira <loliveira@common-lisp.net>**20060107015454] 
+[Pushing cffi-features symbols to *features*
+Luis Oliveira <loliveira@common-lisp.net>**20060107015644
+ 
+ - Renamed :cffi/no-foreign-funcall and :cffi/no-long-long to
+   cffi-features:foreign-funcall and cffi-features:long-long respectively
+   (with the opposite meanings of course).
+ - Also new features (in the cffi-features package): darwin, unix, windows,
+   ppc32 and x86. More could be added. The cffi-sys backends are
+   responsible for pushing these features.
+] 
+[Foreign library changes
+Luis Oliveira <loliveira@common-lisp.net>**20060107020805
+ 
+ - Fix loading of foreign libraries in cffi-allegro. Now tries to load
+   whatever is passed to %load-foreign-library instead of refusing to 
+   load files with types that aren't in excl::*load-foreign-types*.
+ - Changes to %close-foreign-library in CMUCL and SBCL. Use string=
+   instead of string-equal to match libraries.
+ - Lispworks: use :connection-style :immediate in %load-foreign-library.
+ - New foreign library interface.
+] 
+[Remove old comments in cffi-clisp and cffi-sbcl
+Luis Oliveira <loliveira@common-lisp.net>**20060107021001] 
+[%foreign-funcall-pointer for ECL
+Luis Oliveira <loliveira@common-lisp.net>**20060107021126] 
+[Remove the TODO item related to load-foreign-library
+Luis Oliveira <loliveira@common-lisp.net>**20060107021348] 
+[Substitute missing ensure-string.
+Luis Oliveira <loliveira@common-lisp.net>**20060107021835] 
+[New types. Sized ints and aliases.
+Luis Oliveira <loliveira@common-lisp.net>**20060107031709
+ 
+ - Defined the :[u]int{8,16,32,64} types by looking at the sizes of
+   the built-in types.
+ - Removed :[u]int{8,16,32,64} from cffi-clisp.
+ - New typedefs: :uchar, :ushort, :uint, :ulong, :llong, and :ullong.
+ - New test: misc-types.sized-ints.
+ - Removed the related TODO items.
+] 
+[fix callbacks in saved images in clisp, sbcl, allegro, and openmcl
+James Bielman  <jamesjb@jamesjb.com>**20060106030839] 
+[implement new callback interface for lispworks
+James Bielman  <jamesjb@jamesjb.com>**20060106034217] 
+[implement new callback interface for cmucl
+James Bielman  <jamesjb@jamesjb.com>**20060106045753
+ 
+ Unsolved problems still prevent CFFI from working in a saved image
+ on CMU CL.
+] 
+[implement new callback interface for ecl
+James Bielman  <jamesjb@jamesjb.com>**20060106050125
+ 
+ Untested: the ECL backend does not seem to build for me.
+] 
+[implement new callback interface for corman
+James Bielman  <jamesjb@jamesjb.com>**20060106050325] 
+[signal an error when trying to load undefined "logical" foreign libraries
+James Bielman  <jamesjb@jamesjb.com>**20060107053455] 
+[remove some finished items from the TODO list
+James Bielman  <jamesjb@jamesjb.com>**20060107110558] 
+[allow t in library feature expression as default
+James Bielman  <jamesjb@jamesjb.com>**20060107061452] 
+[add :default expression to auto-append library suffixes
+James Bielman  <jamesjb@jamesjb.com>**20060107061526] 
+[update uffi-compat to new translator interface
+James Bielman  <jamesjb@jamesjb.com>**20060109074053
+ 
+ Patch courtesy of: Robert J. Macomber <xbxyh8 at rojoma.com>
+] 
+[fix DISCARD-DOCSTRING to not treat a singleton string as a docstring
+James Bielman  <jamesjb@jamesjb.com>**20060110135750
+ 
+ - Callback bodies consisting of only one string literal were treated
+   as docstrings instead of being returned.
+ - Added a test case in callbacks.lisp for this.
+   
+ Thanks to ignas on #lisp for the bug report.
+] 
+[fix load-foreign-library bug
+Luis Oliveira <loliveira@common-lisp.net>**20060111162918
+ 
+ When loading a library defined with DEFINE-FOREIGN-LIBRARY, it was
+ processing all the clauses that returned true instead of only the
+ first.
+ 
+ Thanks to Stephen Compall for the bug report.
+] 
+[Import the tutorial
+Stephen Compall <scompall@nocandysw.com>**20060111183840
+ 
+ - "An Introduction to Foreign Interfaces and CFFI" added to manual.
+] 
+[Massage doc/colorize-lisp-examples.lisp a bit
+Luis Oliveira <loliveira@common-lisp.net>**20060111213859
+ 
+ - Small hack to colorize-lisp-examples to make it treat "smalllisp"
+   blocks like the normal "lisp" code blocks.
+] 
+[Documentation changes
+Luis Oliveira <loliveira@common-lisp.net>**20060112185201
+ 
+ - Add some comments about define-foreign-library's new features. The
+   t clause and :default.
+ - Remove (setf get-callback) from the documentation.
+] 
+[untabify a few files
+James Bielman  <jamesjb@jamesjb.com>**20060114093347] 
+[Lispworks: fix override in %foreign-type-alignment
+Luis Oliveira <loliveira@common-lisp.net>**20060115010647
+ 
+ Oversight when :ppc32 was renamed to cffi-features:ppc32.
+] 
+[Fix bug in libaries.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20060115011033
+ 
+ try-foreign-library-alternatives and load-foreign-library-name
+ were shadowing %load-foreign-library's return value and returning
+ nil even when a library was successfully loaded.
+ 
+ Bug reported by Stephen Compall and Edi Weitz.
+] 
+[varargs support in defcfun
+Luis Oliveira <loliveira@common-lisp.net>**20060116175753
+ 
+ For now this is in DEFCFUN itself. Not sure yet if this should be moved
+ to a DEFCFUN-VARARGS or something similar.
+] 
+[tests: explicitly load msvcrt.dll on sbcl/win32
+Luis Oliveira <loliveira@common-lisp.net>**20060116175903] 
+[Fix bug in default-library-suffix
+Luis Oliveira <loliveira@common-lisp.net>**20060117005805] 
+[FOREIGN-FUNCALL(-POINTER) support for Lispworks
+Luis Oliveira <loliveira@common-lisp.net>**20060117013113
+ 
+ Implementation %foreign-funcall and %foreign-funcall-pointer
+ in cffi-lispworks by creating and caching one foreign funcallable
+ per function signature at macroexpansion-time.
+   
+ Patch courtesy of Edi Weitz <edi at agharta dot de>
+] 
+[New test: FUNCALL.INT.2
+Luis Oliveira <loliveira@common-lisp.net>**20060117225544] 
+[point libc manual refs to gnu.org
+Stephen Compall <scompall@nocandysw.com>**20060118192501
+ 
+ - In doc/gendocs.sh, HTML files are now modified with sed to point to
+   the glibc manual hosted on gnu.org whenever a link to that manual
+   appears.
+] 
+[Fix bug in Lispworks's %%foreign-funcall
+Luis Oliveira <loliveira@common-lisp.net>**20060121025557] 
+[Signal an error when defcstruct/defcunion is passed a :void
+Luis Oliveira <loliveira@common-lisp.net>**20060121030713] 
+["added one declare ignore"
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060116143820] 
+[register-callback clisp: use only ffi:exported functions
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060121032249] 
+[%foreign-funcall-pointer/clisp: constant fold with load-time-value
+Joerg-Cyril Hoehle <hoehle@users.sourceforge.net>**20060121032336] 
+[Fix override in clisp's %foreign-type-alignment
+Luis Oliveira <loliveira@common-lisp.net>**20060121032350] 
+[Do argument promotion on variadic functions
+Luis Oliveira <loliveira@common-lisp.net>**20060121033736
+ 
+ - New macro foreign-funcall-varargs that does argument promotion.
+ - Make defcfun use this when &rest is used.
+ - New tests: DEFCFUN.VARARGS.{CHAR,SHORT,INT,LONG,FLOAT,DOUBLE,STRING}.
+] 
+[Fix foreign-funcall sprintf tests' return types.
+Luis Oliveira <loliveira@common-lisp.net>**20060121033819] 
+[New TODO items.
+Luis Oliveira <loliveira@common-lisp.net>**20060121034720
+ 
+ - Underspecifed Semantics: doubles/floats
+ - Known Issues: cffi-tests.asd's bogus :c-test-lib
+] 
+[update manual Introduction and Foreign types, texinfo idioms throughout
+Stephen Compall <scompall@nocandysw.com>**20060119185920
+ 
+ - Remove note on cffi-luis branch.
+ - Write introductory chapter.
+ - Acronym/sc-ify CL implementation names.
+ - Use @cffi{} instead of CFFI.
+ - Use @impnote for notes from luis and james.
+ - Split existing type translator explanation to make "Defining
+   typedefs" and rewrite the former.
+ - Invent an example for defcstruct, and explain its limitations.
+ - Write "Allocating Foreign Objects".
+ - Move with-foreign-object(s) to Pointers chapter, to group it with
+   foreign-alloc.
+ - Use @sc and @result to make REPL examples pretty, and move them into
+   @example sections.
+ - Remove commented-out sections; they can be readded later from darcs
+   repo if need be.
+] 
+[document new library interface, some other manual stuff
+Stephen Compall <scompall@nocandysw.com>**20060123040605
+ 
+ - New macro @Variable.
+ - Fix 2 @end examples.
+ - In "Arguments and Values" headings, use @var for tables of
+   variables, as they act as metasyntactic variables in this situation.
+ - Document new library interface.
+ - Use @unnumberedsec in dictionary nodes instead of @heading, and
+   @code the names.
+ - Platform-specific features: new appendix.
+ - define-curl-option-setter: curl-code is not a keyword
+ - Use new @seealso macro for "See Also" xrefs.
+ - Merge all indexes into cp.
+] 
+[documentation changes
+Luis Oliveira <loliveira@common-lisp.net>**20060123165541
+ 
+ - removed known issue about modern mode as it should work now.
+ - removed note about callbacks being linux/x86 only.
+ - fixed typo: supported -> unsupported.
+ - remove note about [u]int{8,16,32,64} not being implemented.
+ - add documentation about uint, uchar, ulong, ullong.
+ - fix foreign-alloc's function signature.
+ - update info regarding lispworks's new foreign-funcall.
+ - add example for *darwin-framework-directories*.
+ - fixed define-foreign-library's syntax.
+ - comment out sentence about use-foreign-library setting the current
+   foreign library as it doesn't do that yet.
+ - remove the (setf (callback ...)) example. this isn't allowed anymore.
+ - rename foreign-funcall and long-long to no-foreign-funcall and
+   no-long-long. 
+ - long-long is a standard C99 type, remove mention of GNU there.
+ 
+ - removed TODO item: there's already a tutorial.
+ - added TODO item: document defcfun's new capabilities
+ 
+] 
+[stabilize the last few doc changes
+Stephen Compall <scompall@nocandysw.com>**20060124165502
+ 
+ - display Luis's name with an accent
+ - @sc the warranty
+ - remove @code from section headings and @seealso
+ - reword no-long-long note again
+ - hey, define-foreign-library supports multiple libraries
+ - clarify what *darwin-framework-directories* is actually used for
+ - reorganize *foreign-library-directories* description
+ - in gendocs.sh, fix libtool links as well
+] 
+[more doc changes; renamed features
+Luis Oliveira <loliveira@common-lisp.net>**20060125004215
+ 
+ - change "docs" to be the default target in doc/Makefile.
+ - add Stephen the list of authors in cffi-manual
+ - rename "Index" to "Comprehensive Index" so that Index.html doesn't
+   clash with index.html on OSX.
+ - add varargs example for defcfun
+ - rename features (again) foreign-funcall -> no-foreign-funcall,
+   long-long -> no-long-long.
+] 
+[Use l-t-v in lispworks's %foreign-funcall
+Luis Oliveira <loliveira@common-lisp.net>**20060126041652] 
+[Comment about why cffi-features:no-*
+Luis Oliveira <loliveira@common-lisp.net>**20060126041743] 
+[Add option to defcenum
+Luis Oliveira <loliveira@common-lisp.net>**20060130174114
+ 
+ New option to defcenum in order to be able a base type different
+ from the default, :int.
+] 
+[Add check for FreeBSD and remove some redundant assignments.
+keriax@gmail.com**20060201124058] 
+[Make defcenum accept duplicate values.
+Luis Oliveira <loliveira@common-lisp.net>**20060201191712
+ 
+ DEFCENUM will discard the previous value->keyword mapping (though not
+ the respective keyword->value mapping of course) when it find a
+ duplicate value.
+] 
+[Fix allegro's %load-foreign-library
+Luis Oliveira <loliveira@common-lisp.net>**20060202035729
+ 
+ Versions prior to 7.0 don't have a :foreign keyword argument
+ for LOAD. Reported by Andrew Philpot.
+] 
+[Implement defbitfield
+Luis Oliveira <loliveira@common-lisp.net>**20060202124753
+ 
+ - New macros and functions: DEFBITFIELD, FOREIGN-BITFIELD-VALUE,
+   FOREIGN-BITFIELD-SYMBOLS.
+] 
+[Evaluate define-foreign-librare earlier for CMUCL
+Luis Oliveira <loliveira@common-lisp.net>**20060202124908
+ 
+ Since we're wrapping use-foreign-library with an eval-when to load
+ foreign library at compile-time, we need to do the samething with
+ define-foreign-library otherwise use-foreign-library will try to
+ load an undefined library.
+] 
+[Add an optimization for defining non-translatable types.
+James Bielman  <jamesjb@jamesjb.com>**20060203004128
+ 
+ - New generic function on types: TRANSLATE-P.  This is true for all types
+   except built-in foreign types and typedefs defined non-translatable.
+ - Incompatible change: DEFCTYPE now accepts keyword arguments :TRANSLATE-P
+   and :DOCUMENTATION instead of an optional docstring.
+ - Define the standard integers types as non-translatable.
+] 
+[Add ERRORP keyword argument to FOREIGN-ENUM-VALUE / FOREIGN-ENUM-KEYWORD.
+James Bielman  <jamesjb@jamesjb.com>**20060203011213
+ 
+ - If ERRORP is false, converting nonexistent enum values and keywords
+   will return NIL instead of signalling an error.
+] 
+[Remove documentation string from test type.
+James Bielman  <jamesjb@jamesjb.com>**20060203013009] 
+[Add TODO entry to compile a 32-bit libtest on 64-bit Linux.
+James Bielman  <jamesjb@jamesjb.com>**20060203071013] 
+[Parse and lift declarations properly for DEFCALLBACK.
+James Bielman  <jamesjb@jamesjb.com>**20060203065249
+ 
+ - Add a new utility function PARSE-BODY to CFFI-UTILS to pull the
+   documentation string and declarations out of a body of code.
+ - Use CFFI-UTILS:PARSE-BODY in DEFCALLBACK.
+] 
+[Fix INVERSE-TRANSLATE-OBJECTS to respect TRANSLATE-P.
+James Bielman  <jamesjb@jamesjb.com>**20060203072438] 
+[Add tests for non-translatable typedefs.
+James Bielman  <jamesjb@jamesjb.com>**20060203072547
+ 
+ - Test as arguments and return value to a foreign function.
+ - Test as arguments and return value from a callback.
+] 
+[Update documentation for DEFCTYPE.
+James Bielman  <jamesjb@jamesjb.com>**20060203073557] 
+[Minor documentation updates.
+James Bielman  <jamesjb@jamesjb.com>**20060203080354
+ 
+ - Comment out sections that refer to unimplemented functionality.
+ - Remove obsolete references to DEFINE-TYPE-TRANSLATOR.
+ - Document the ERRORP argument to FOREIGN-ENUM-TYPE / FOREIGN-ENUM-KEYWORD.
+ - Remove the documentation of the unimplemented slot name chaining feature
+   in FOREIGN-SLOT-VALUE.
+] 
+[Remove outdated comment about foreign-slot-value
+Luis Oliveira <loliveira@common-lisp.net>**20060203080734] 
+[New test: callbacks.funcall
+Luis Oliveira <loliveira@common-lisp.net>**20060203080758
+ 
+ Tests both declarations in a callback's body and foreign-funcalling
+ a cffi callback.
+] 
+[Add CFFI-FEATURES:X86-64 and push it on *FEATURES* on AMD64 Lisps.
+James Bielman  <jamesjb@jamesjb.com>**20060203082954
+ 
+ - Currently this is supported under SBCL and CLISP.  It would be nice to
+   implement this for Allegro on AMD64 as well, but I don't have a copy.
+] 
+[Add two new tests for MAKE-POINTER and INC-POINTER.
+James Bielman  <jamesjb@jamesjb.com>**20060203161210] 
+[Add tests for keyword arguments to FOREIGN-ALLOC.
+James Bielman  <jamesjb@jamesjb.com>**20060203195705] 
+[Disable test DEFCFUN.VARARGS.FLOAT for now.
+James Bielman  <jamesjb@jamesjb.com>**20060204022835] 
+[Don't add CFFI-FEATURES:UNIX to *FEATURES* on SBCL/Win32
+James Bielman  <jamesjb@jamesjb.com>**20060204050240] 
+[Build an additional 32-bit libtest.so on x86-64 Linux.
+James Bielman  <jamesjb@jamesjb.com>**20060203163602] 
+[Use DEFINE-FOREIGN-LIBRARY to load the test shared library.
+James Bielman  <jamesjb@jamesjb.com>**20060203163636] 
+[Update system definition version to 0.9.0.
+James Bielman  <jamesjb@jamesjb.com>**20060204082814] 
