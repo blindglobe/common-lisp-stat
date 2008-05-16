@@ -8,5 +8,4 @@ fasl
 *.o
 *.flc
 *.x86f
-external/*
 test-results/

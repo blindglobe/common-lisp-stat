@@ -1,0 +1,6 @@
+[submodule "external/ch-asdf.git"]
+	path = external/ch-asdf.git
+	url = git://cyrusharmon.org/pub/git/ch-asdf.git
+[submodule "external/ch-util.git"]
+	path = external/ch-util.git
+	url = git://cyrusharmon.org/pub/git/ch-util.git
