@@ -2,6 +2,21 @@
 
 For a fast start: 
 
+You probably did:
+
+    git clone git://repo.or.cz/CLS.git
+
+(or perhaps:
+    git clone http://repo.or.cz/w/CLS.git
+)
+
+and now you should:
+
+    git submodules init
+    git submodules update
+
+to get the whole package.
+
 Make the shared library liblispstat with an ANSI C compiler (only gcc
 tested at this point):
 
@@ -9,9 +24,9 @@ tested at this point):
        make
 
 run a common lisp (SBCL, CMUCL, CLISP) starting in the current
-directory.  We also assume that a recent version of CFFI and LIFT have
-been installed and are ASDF-loadable.  Probably should include a local
-copy just in case.
+directory.   Recent versions of CFFI and LIFT can be found in the
+external/ subdirectory, and should be autoload-able, assuming that you
+are using a Lisp implementation supporting ASDF.
 
 (on Debian: can use CLC or SBCL approaches, i.e.  ~/.clc/systems  or
 ~/.sbcl/systems should contain softlinks to the lispstat, cffi, and
@@ -28,26 +43,23 @@ So basically ..
 2. start your lisp
 3. follow the commands in the ls-demo.lisp file, i.e.
  
-   a. (load "init.lisp")
+   a. (asdf:oos 'asdf:load-op 'lispstat) ;; use ASDF to load lispstat
    b. (in-package :ls-user)
    c. (normal-rand 20)
    d. (setf mytest (normal-rand 20))
-
 
    and see if they work (basic CFFI functionality for external C
    library, LIFT package for unit-testing framework to ensure run time
    stability).
   
-4. Tell me ( <blindglobe@gmail.com> ) if there is any thing wrong (or
-   if anything happens to work.
+4. Tell me ( mailto:blindglobe@gmail.com ) if there is any thing wrong
+   (or if anything happens to work.
 
 CMUCL and SBCL work justfine at this stage.
 
 CLISP is finicky regarding the problems that we have with CFFI
 conversation.  In particular that we can not really do typing that we
 need to take care of.
-
-
 
 ===========
 
@@ -60,29 +72,25 @@ See Doc/INSTALL for getting this to work and run
 
 Working on this with git:
 
-
-
     git clone git://repo.or.cz/CommonLispStat.git 
-
+    cd CommonLispStat.git
+    git submodules init
+    git submodules update
 
 will pull the whole repository, and create a "master" branch to work
-on.  Probably, you don't want to use the master branch, but more to
-use a topic-centric branch, so you might:
+on.  If you are making edits, Probably, you don't want to use the
+master branch, but more to use a topic-centric branch, so you might:
 
     git checkout -b myTopicBranch
 
 and then work on myTopicBranch, pulling back to the master branch when
 needed by
 
-
-
     git checkout master
     git pull . myTopicBranch
 
-
 of course, perhaps you want to contribute to the mob branch.   For
 that, after cloning the repository as above, you would:
-
 
     git checkout -b mob remotes/origin/mob
 
@@ -94,22 +102,20 @@ that, after cloning the repository as above, you would:
 
  ad-nauseum.  When ready to commit, then just >
 
-	 git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
+     git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
 
-
+>
 
 and it'll be put on the mob branch, as a proposal for merging.
 
 Another approach would be to pull from the topic branch into the mob
 branch before uploading.   Will work on a formal example soon.
 
-
-(but the basic principle is that instead of the edit cycle on mob, do
+(the basic principle is that instead of the edit cycle on mob, do
 something like:
 
   git checkout mob
   git pull . myTopicBranch
   git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
-
 
 )
