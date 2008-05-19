@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-05-15 18:51:22 tony>
+;;; Time-stamp: <2008-05-18 10:37:43 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
@@ -53,6 +53,11 @@
 ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
 
 ;;; back to our regularly scheduled work...
+;;; We should not need these, I think, but?
+(asdf:oos 'asdf:compile-op :cffi)            ;; FFI
+(asdf:oos 'asdf:compile-op :lift)            ;; Unit Testing 
+(asdf:oos 'asdf:load-op :cffi)            ;; FFI
+(asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
 
 (in-package :cl-user)
 

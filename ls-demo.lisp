@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-05-15 12:54:08 tony>
+;;; Time-stamp: <2008-05-17 09:37:01 tony>
 ;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,7 +15,6 @@
 ;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
-;;(load "init.lisp") ;; merged into lispstat asdf loader.
 (asdf:oos 'asdf:load-op 'lispstat)
 
 ;;; non-rigorous check for exports.
@@ -24,7 +23,7 @@
 (in-package :cl-user)
 (lisp-stat:binomial-quant 0.95 3 0.4) ;;; 3
 (lisp-stat:binomial-quant 0 3 0.4) ;;; 0
-(lisp-stat:normal-rand 20) ;;; 20 numbers :-)
+(lisp-stat:normal-rand 20) ;;; 20 floating-point numbers :-)
 
 ;;;; THIS is how I expect it to be used, either with work in ls-user,
 ;;;; or a cloned package similar to ls-user.
