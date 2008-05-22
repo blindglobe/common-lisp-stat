@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-05-18 10:37:43 tony>
+;;; Time-stamp: <2008-05-22 08:27:09 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
@@ -58,6 +58,8 @@
 (asdf:oos 'asdf:compile-op :lift)            ;; Unit Testing 
 (asdf:oos 'asdf:load-op :cffi)            ;; FFI
 (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
+
+(load "../matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
