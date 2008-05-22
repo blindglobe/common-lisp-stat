@@ -1095,18 +1095,19 @@ is true."
       (if (/= 0 swept) t nil))))
 
 (defun sweep-operator (a columns &optional tolerances)
-"Args: (a indices &optional tolerances)
-A is a matrix, INDICES a sequence of the column indices to be swept. Returns
-a list of the swept result and the list of the columns actually swept. (See
-MULTREG documentation.) If supplied, TOLERANCES should be a list of real
-numbers the same length as INDICES. An index will only be swept if its pivot
-element is larger than the corresponding element of TOLERANCES."
-  (check-matrix a)
+  "Args: (a indices &optional tolerances)
 
+A is a matrix, INDICES a sequence of the column indices to be
+swept. Returns a list of the swept result and the list of the columns
+actually swept. (See MULTREG documentation.) If supplied, TOLERANCES
+should be a list of real numbers the same length as INDICES. An index
+will only be swept if its pivot element is larger than the
+corresponding element of TOLERANCES."
+
+  (check-matrix a)
   (if (not (typep columns 'sequence))
       (setf columns (list columns)))
   (check-sequence columns)
-
   (if tolerances
       (progn
 	(if (not (typep tolerances 'sequence))
