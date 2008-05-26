@@ -240,8 +240,9 @@ will only be swept if its pivot element is larger than the
 corresponding element of TOLERANCES."
 
   ;; Why we should use generics/methods....
-  (if (not (typep a 'matlisp:matrix-real))
+  (if (not (typep a 'real-matrix))
       (error "a is not a matrix"))
+  ;; following: we need integer?
   (if (and (not (typep columns 'sequence))
 	   (not (typep (setf columns (list columns)) 'sequence)))
       (error "columns not coerceable to sequence"))
@@ -250,7 +251,7 @@ corresponding element of TOLERANCES."
 	       (not (setf tolerances (list tolerances))))
 	  (error "tolerances not coercable to sequence.")))
 
-  (check-real a)
+  ;; (check-real a) done by matlisp.
   (check-fixnum columns)
   (if tolerances (check-real tolerances))
 
@@ -261,7 +262,8 @@ corresponding element of TOLERANCES."
        (tolerances (if (consp tolerances) (coerce tolerances 'list))
 		   (if (consp tolerances) (cdr tolerances))))
       ((null columns) (list result swept-columns))
-      (let ((col (first columns))
+    ;; this should be done in the context of matlisp, I think...?
+    (let ((col (first columns))
 	    (tol (if (consp tolerances) (first tolerances) tol)))
 	(if (sweep-in-place result col tol)
 	    (setf swept-columns (cons col swept-columns))))))
