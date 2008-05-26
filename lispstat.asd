@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-05-22 08:27:09 tony>
+;;; Time-stamp: <2008-05-23 17:40:10 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
@@ -16,22 +16,31 @@
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
 (in-package :cl-user)
 
+;; returns location of LISPSTAT ASDF file -- but can't work until 
+;; we load it.   Not going to do the right thing, I think.  
+;; more importantly we need to think about what it is tht we are doing
+;; to self-initialize.
 
 (defvar *lispstat-home-dir*
   ;; #p"/home/tony/sandbox/CommonLispStat.git/"
   ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
   ;; #p"/Users/ungil/lisp/CommonLispStat/")
   ;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
-  #p"/home/tony/Desktop/sandbox/CLS.git/"
+  ;; #p"/home/tony/Desktop/sandbox/CLS.git/"
+  (directory-namestring (truename (asdf:system-definition-pathname
+				   :lispstat)))
   "Value considered \"home\" for our data")
 
-(setf *lispstat-home-dir*
+#|
+  (setf *lispstat-home-dir*
       ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"
       ;; #p"/home/tony/sandbox/CommonLispStat.git/"
       ;; #p"/Users/ungil/lisp/CommonLispStat/")
       ;; #p"/home/rossini/public_html/GIT.repos/CommonLispStat/"
-      #p"/home/tony/Desktop/sandbox/CLS.git/"
-      )
+      ;; #p"/home/tony/Desktop/sandbox/CLS.git/"
+      (directory-namestring (truename (asdf:system-definition-pathname
+				       :lispstat))))
+|#
 
 (macrolet ((ls-dir (root-str)
 	     `(pathname (concatenate 'string
@@ -59,7 +68,8 @@
 (asdf:oos 'asdf:load-op :cffi)            ;; FFI
 (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
 
-(load "../matlisp.git/start.lisp")
+;; MAJOR HACK, FIXME!
+(load "/home/tony/Desktop/sandbox/matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
