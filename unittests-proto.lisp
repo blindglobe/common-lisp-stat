@@ -10,8 +10,8 @@
 
 (in-package :cl-user)
 
-(defpackage :lisp-stat-unittests
-  (:use :common-lisp :lift :lisp-stat)
+(defpackage :lisp-stat-unittests-proto
+  (:use :common-lisp :lift :lisp-stat :lisp-stat-unittests)
   (:shadowing-import-from :lisp-stat
 	slot-value call-method call-next-method ;; objects
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
@@ -21,44 +21,23 @@
 	conjugate realpart imagpart phase
 	min max logand logior logxor lognot ffloor fceiling
 	ftruncate fround signum cis)
-  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
-	   almost= almost=lists numerical=)) ; compare
+  (:export lisp-stat-ut-proto)) ;; unit tests -- rename?
 
-(in-package :lisp-stat-unittests)
+(in-package :lisp-stat-unittests-proto)
 
-;;; TESTS
-
-(defun run-lisp-stat-tests ()
-  (run-tests :suite 'lisp-stat))
-
-(defun run-lisp-stat-test (&rest x)
-  (run-test x))
+;;; Object System tests
 
 (deftestsuite lisp-stat-proto (lisp-stat) ())
 
-;;;; Object System tests
+;; need to ensure stability of add, display, send, instantiate and
+;; similar actions.
 
-;;(deftestsuite lisp-stat-proto-objects (lisp-stat)
-;;  ()
-;;  (:documentation "Make sure the proto object system is valid.")
-;;  (:tests
-;;   (create-proto (ensure (object-proto-p (defproto test-me))))
-;;   (create-proto2 (ensure (object-proto-p (defproto2 test-me2))))
-;;   (instance1 (ensure (send test-me :isnew)))
-;;   (instance1-2 (ensure (send test-me2 :isnew)))
-;;   (instance2 (ensure (send test-me :has-slot 'new)))
-;;   (instance2-2 (ensure (send test-me2 :has-slot 'new)))
+(deftestsuite lisp-stat-ut-proto (lisp-stat)
+  ()
+  (:tests
+   (create-proto (ensure  (typep (defproto test-me) 'instance)))
+   (instance1 (ensure (send test-me :isnew)))
+   (instance2 (ensure (send test-me :has-slot 'new)))
+   (instance5 (ensure (send test-me :own-slots 'new)))))
 
-;;   (instance5 (ensure (send test-me :has-slot 'new)))
-;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
-;;   (instance5 (ensure (send test-me :own-slots 'new)))
-;;   (instance5-2 (ensure (send test-me2 :own-slots 'new)))
-;;   (instance5 (ensure (send test-me :has-slot 'new)))
-;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
-;;   (instance5 (ensure (send test-me :has-slot 'new)))
-;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
-
-;;   ))
-
-
-   
+;; (run-tests :suite 'lisp-stat-ut-proto)

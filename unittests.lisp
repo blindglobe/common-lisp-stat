@@ -35,10 +35,10 @@
   (run-test x))
 
 
-(deftestsuite lisp-stat () ())
-(deftestsuite lisp-stat-lin-alg (lisp-stat) ())
-(deftestsuite lisp-stat-spec-fns (lisp-stat) ())
-(deftestsuite lisp-stat-probdistn (lisp-stat) ())
+(deftestsuite lisp-stat-ut () ())
+(deftestsuite lisp-stat-ut-lin-alg (lisp-stat-ut) ())
+(deftestsuite lisp-stat-ut-spec-fns (lisp-stat-ut) ())
+(deftestsuite lisp-stat-ut-probdistn (lisp-stat-ut) ())
 
 
 (defun almost= (a b &key (tol 0.000001)) 
@@ -103,7 +103,7 @@
 						   :tol tol))))
 	(every #'(lambda (x) x) a-b-elt-eq))))
 
-(deftestsuite lisp-stat-testsupport (lisp-stat)
+(deftestsuite lisp-stat-ut-testsupport (lisp-stat-ut)
   ()
   (:tests
    (almost=1 (ensure (almost= 3 3.001 :tol 0.01)))
@@ -116,7 +116,7 @@
    (almost=lists5 (ensure (not (almost=lists (list 1.0 1.0)
 					     (list 1.0 1.1) :tol 0.01))))))
 
-(deftestsuite lisp-stat-testsupport2 (lisp-stat)
+(deftestsuite lisp-stat-ut-testsupport2 (lisp-stat-ut)
   ()
   (:tests
    (numerical=1 (ensure (numerical= 3 3.001 :tol 0.01)))
@@ -156,13 +156,13 @@
 
    ))
 
-;; (describe (run-tests :suite 'lisp-stat-testsupport2))
+;; (describe (run-tests :suite 'lisp-stat-ut-testsupport2))
 
 
 
 ;;;; Log-gamma function
 
-(addtest (lisp-stat-spec-fns) log-gamma-fn
+(addtest (lisp-stat-ut-spec-fns) log-gamma-fn
 	 (ensure-same 
 	  (log-gamma 3.4)
 	  1.0923280596789584
@@ -177,23 +177,23 @@
 ;;			  cdf-params cdf-answer
 ;;			  pmf-params pmf-answer
 ;;			  rand-params rand-answer)
-;;  (deftestsuite lisp-stat-probdist-,prefixName (lisp-stat-probdistn)
+;;  (deftestsuite lisp-stat-ut-probdist-,prefixName (lisp-stat-ut-probdistn)
 ;;    ;;  ((  ))
 ;;    (:documentation "testing for ,testName distribution results")
 ;;    (:test (ensure-same
-;;	    (lisp-stat-basics:,testName-quant ,quant-params) ,quant-answer))
+;;	    (lisp-stat-ut-basics:,testName-quant ,quant-params) ,quant-answer))
 ;;    (:test (ensure-same
-;;	    (lisp-stat-basics:,testName-cdf ,cdf-params) ,cdf-answer))
+;;	    (lisp-stat-ut-basics:,testName-cdf ,cdf-params) ,cdf-answer))
 ;;    (:test (ensure-same
-;;	    (lisp-stat-basics:,testName-pmf ,pmf-params) ,pmf-answer))
+;;	    (lisp-stat-ut-basics:,testName-pmf ,pmf-params) ,pmf-answer))
 ;;    (:test (progn
 ;;	     (set-seed 234)
 ;;	     (ensure-same
-;;	      (lisp-stat-basics:,testName-rand ,rand-params) ,rand-answer)))))
+;;	      (lisp-stat-ut-basics:,testName-rand ,rand-params) ,rand-answer)))))
 
 ;;; Normal distribution
 
-(deftestsuite lisp-stat-probdist-f (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-f (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for Gaussian distn results")
   (:test (ensure-same
@@ -214,7 +214,7 @@
 
 ;;;; Cauchy distribution
 
-(deftestsuite lisp-stat-probdist-cauchy (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-cauchy (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for Cachy-distn results")
   (:test (ensure-same
@@ -232,7 +232,7 @@
 
 ;;;; Gamma distribution
 
-(deftestsuite lisp-stat-probdist-gamma (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-gamma (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for gamma distn results")
   (:test (ensure-same
@@ -250,7 +250,7 @@
 
 ;;;; Chi-square distribution
 
-(deftestsuite lisp-stat-probdist-chisq (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-chisq (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for Chi-square distn results")
   (:test (ensure-same
@@ -270,7 +270,7 @@
 
 ;;;; Beta distribution
 
-(deftestsuite lisp-stat-probdist-beta (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-beta (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for beta distn results")
   (:test (ensure-same
@@ -288,7 +288,7 @@
 
 ;;;; t distribution
 
-(deftestsuite lisp-stat-probdist-t (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-t (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for t-distn results")
   (:test (ensure-same
@@ -306,7 +306,7 @@
 
 ;;;; F distribution
 
-(deftestsuite lisp-stat-probdist-f (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-f (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for f-distn results")
   (:test (ensure-same
@@ -325,7 +325,7 @@
 
 ;;;; Poisson distribution
 
-(deftestsuite lisp-stat-probdist-poisson (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-poisson (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for poisson distribution results")
   (:test (ensure-same
@@ -344,7 +344,7 @@
 
 ;; Binomial distribution
 
-(deftestsuite lisp-stat-probdist-binomial (lisp-stat-probdistn)
+(deftestsuite lisp-stat-ut-probdist-binomial (lisp-stat-ut-probdistn)
   ()
   (:documentation "testing for binomial distribution results")
 
@@ -368,31 +368,6 @@
 	    (binomial-rand 5 3 0.4)
 	    (list 2 2 0 1 2)))))
 
-
-
-;;;; Object System tests
-
-;;(deftestsuite lisp-stat-proto-objects (lisp-stat)
-;;  ()
-;;  (:documentation "Make sure the proto object system is valid.")
-;;  (:tests
-;;   (create-proto (ensure (object-proto-p (defproto test-me))))
-;;   (create-proto2 (ensure (object-proto-p (defproto2 test-me2))))
-;;   (instance1 (ensure (send test-me :isnew)))
-;;   (instance1-2 (ensure (send test-me2 :isnew)))
-;;   (instance2 (ensure (send test-me :has-slot 'new)))
-;;   (instance2-2 (ensure (send test-me2 :has-slot 'new)))
-
-;;   (instance5 (ensure (send test-me :has-slot 'new)))
-;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
-;;   (instance5 (ensure (send test-me :own-slots 'new)))
-;;   (instance5-2 (ensure (send test-me2 :own-slots 'new)))
-;;   (instance5 (ensure (send test-me :has-slot 'new)))
-;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
-;;   (instance5 (ensure (send test-me :has-slot 'new)))
-;;   (instance5-2 (ensure (send test-me2 :has-slot 'new)))
-
-;;   ))
 
 
    
