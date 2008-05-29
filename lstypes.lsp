@@ -11,8 +11,9 @@
   (:documentation "Provides some typeing for LispStat, but is clearly
                    a bit incomplete.")
   (:use :common-lisp)
-  (:export fixnump check-nonneg-fixnum check-one-fixnum
-	   check-one-real check-one-number))
+  (:export fixnump
+	   check-nonneg-fixnum check-one-nonneg-fixnum
+	   check-one-fixnum check-one-real check-one-number))
 
 (in-package :lisp-stat-types)
 
