@@ -28,7 +28,7 @@
 (in-package #:cl-user)
 
 (defpackage #:cffi
-  (:use #:common-lisp #:cffi-sys #:cffi-utils)
+  (:use #:common-lisp #:cffi-sys #:cffi-utils #:alexandria #:babel-encodings)
   (:import-from #:cffi-features #:cffi-feature-p)
   (:export
    ;; Types.
@@ -54,6 +54,7 @@
    #:with-pointer-to-vector-data
 
    ;; Foreign string operations.
+   #:*default-foreign-encoding*
    #:foreign-string-alloc
    #:foreign-string-free
    #:foreign-string-to-lisp
@@ -89,6 +90,7 @@
    #:defbitfield
    #:define-foreign-type
    #:define-parse-method
+   #:define-c-struct-wrapper
    #:foreign-enum-keyword
    #:foreign-enum-keyword-list
    #:foreign-enum-value

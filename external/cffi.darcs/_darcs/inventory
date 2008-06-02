@@ -309,3 +309,241 @@ Luis Oliveira <loliveira@common-lisp.net>**20080406233331]
 Luis Oliveira <loliveira@common-lisp.net>**20080406233631] 
 [cffi-tests: Lispworks needs to have libm.so loaded
 Luis Oliveira <loliveira@common-lisp.net>**20080407111146] 
+[TAG before cffi+lotsastuff merge
+Luis Oliveira <loliveira@common-lisp.net>**20080531141112] 
+[Integrate cffi-grovel
+Luis Oliveira <loliveira@common-lisp.net>**20070617231923
+ 
+ Added a groveller based on Dan Knap's and Matthew Backes's cffi-grovel
+ and Stelian Ionescu's fork iolib-grovel.  cffi-grovel is inspired by
+ SBCL's groveller.  This is a preliminary version.
+ 
+ Includes a new wrapper generator syntax to simplify the writing of
+ C glue libraries among other minor features.
+ 
+ - Updated TODO items related to grovelling.
+ - Integrated documentation into the CFFI manual.
+ - src/libraries: use ".so" as the default library suffix.
+] 
+[manual: Use @deffn instead of @itemize for grovel forms.
+Luis Oliveira <loliveira@common-lisp.net>**20070618082056] 
+[Encoding support using Babel
+Luis Oliveira <loliveira@common-lisp.net>**20070608022612
+ 
+ - Preliminary (likely buggy) version.  Includes documentation and tests.
+ - New cffi-features: big-endian and little-endian determined with CFFI
+   code.
+ - Needs cleaning up.
+] 
+[add :null-teminated-p keyword param to foreign-string-alloc
+tomi.borbely@gmail.com**20070625144637] 
+[Added :byte-size-variable keyword arg to with-foreign-string
+attila.lendvai@gmail.com**20070625145836] 
+[Added remove-from-plist into cffi-utils, copied from alexandria
+attila.lendvai@gmail.com**20070625145923] 
+[Use the foreign-pointer type in strings.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20070628154056] 
+[WITH-FOREIGN-STRING changes
+Luis Oliveira <loliveira@common-lisp.net>**20070629204256
+ 
+ - WITH-FOREIGN-STRING's new syntax:
+     with-foreign-string (binding &rest args) &body
+       binding  := { var | (var &optional byte-size-var) }
+ - Update the documentation, not complete.
+ - New test: STRING.CONVERSION.BASIC.2
+] 
+[cffi-manual: small change to the grovel example
+Luis Oliveira <loliveira@common-lisp.net>**20070629205005] 
+[cffi-grovel: slightly better handling of packages
+Luis Oliveira <loliveira@common-lisp.net>**20070629205115
+ 
+ - in-package now has a read time effect on *package* which will determine
+   to which package various symbols (such as type names) will belong to.
+] 
+[Don't autoexport grovel definitions.
+Luis Oliveira <loliveira@common-lisp.net>**20070706003642] 
+[cffi-grovel: defwrapper: handle foreign/lisp names
+Luis Oliveira <loliveira@common-lisp.net>**20070706003836] 
+[with-foreign-pointer-as-string: take additional arguments
+Luis Oliveira <loliveira@common-lisp.net>**20070706130018
+ 
+ Changed to match the new WITH-FOREIGN-STRING syntax.  Document later.
+] 
+[Foreign string changes
+Luis Oliveira <loliveira@common-lisp.net>**20070708034538
+ 
+ - LISP-STRING-TO-FOREIGN takes new arguments START, END and OFFSET.  Also,
+   instead of bailing out when STRING needs more octets than BUFSIZE, it
+   fills in as much as possible.
+ - test STRING.SHORT-WRITE.1 now passes.
+ - FOREIGN-STRING-TO-LISP takes new argument MAX-CHARS.
+] 
+[Fix "endianness" typo
+Luis Oliveira <loliveira@common-lisp.net>**20070708035010] 
+[Remove outdated comments re test string.short-write.1
+Luis Oliveira <loliveira@common-lisp.net>**20070709190222] 
+[Bug fixes
+Luis Oliveira <loliveira@common-lisp.net>**20070717031151
+ 
+ - Fix :LICENSE -> :LICENCE in cffi-grovel.asd
+ - grovel.lisp fixes:
+     * fix OpenMCL's INVOKE
+     * have INVOKE call NATIVE-NAMESTRING
+     * add IGNORABLE declaration to DEFINE-GROVEL-SYNTAX
+ - CMUCL's EXT:UNIX-NAMESTRING is buggy, don't use it.
+ - strings.lisp: pass missing max-octets argument to OCTET-COUNTER
+   in FOREIGN-STRING-ALLOC.
+] 
+[Update strings.lisp to match Babel's accessor changes.
+Luis Oliveira <loliveira@common-lisp.net>**20070717031627] 
+[FOREIGN-STRING-TO-LISP: return number of octets read
+Luis Oliveira <loliveira@common-lisp.net>**20070717033110
+ 
+ - Update test suite to reflect this change.
+] 
+[Use trivial-features.
+Luis Oliveira <loliveira@common-lisp.net>**20070719182016
+ 
+ Not sure if this is a great idea yet.  In any case, CFFI-FEATURES is
+ still there for backwards compatibility for the time being.
+] 
+[New feature: emulated long-long types
+Luis Oliveira <loliveira@common-lisp.net>**20070719182557
+ 
+ (initial suggestion and patch courtesy of Stelian Ionescu)
+ 
+ - Update test suite to reflect this.
+ - Tested on Allegro and Lispworks. Should work for ECL as well.
+] 
+[Remove outdated TODO items
+Luis Oliveira <loliveira@common-lisp.net>**20070720020208] 
+[Minor change to src/types.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20070720020227] 
+[cffi-grovel: x86-64 compat changes
+Luis Oliveira <loliveira@common-lisp.net>**20070726183645
+ 
+ - use :long instead of :int to try and determine word size.
+ - use -fPIC for 64-bit shared libraries.
+] 
+[grovel: use :[u]int64 without worries
+Luis Oliveira <loliveira@common-lisp.net>**20070726195250
+ 
+ No need to check for cffi-features:no-long-long now that we have 
+ emulated long long type.
+] 
+[Adjustments for using cffi-grovel on windows.
+Luis Oliveira <loliveira@common-lisp.net>**20070729012113] 
+[grovel: constantenum: signal warnings properly
+Luis Oliveira <loliveira@common-lisp.net>**20070729012200] 
+[grovel: fix invoke-cc's conditional library arguments
+Luis Oliveira <loliveira@common-lisp.net>**20070729044812] 
+[Cleaned up compiler invokation by the groveller.
+Stelian Ionescu <sionescu@common-lisp.net>**20070729193633] 
+[grovel: fix conflict and indentation
+Luis Oliveira <loliveira@common-lisp.net>**20070729195747] 
+[New macro: DEFINE-C-STRUCT-WRAPPER
+Luis Oliveira <loliveira@common-lisp.net>**20070730022329
+ 
+ With tests STRUCT-WRAPPER.[12]
+] 
+[grovel: fix symbol names in in-package forms
+Luis Oliveira <loliveira@common-lisp.net>**20070730040942] 
+[grovel: update comment regarding cstruct-and-class
+Luis Oliveira <loliveira@common-lisp.net>**20070730205330] 
+[Add new types :intptr and :uintptr
+Luis Oliveira <loliveira@common-lisp.net>**20070730231111] 
+[grovel: fix FORM-KIND
+Luis Oliveira <loliveira@common-lisp.net>**20070801143432] 
+[Fix use of PROGN form by the groveller.
+Stelian Ionescu <sionescu@common-lisp.net>**20070801144656] 
+[grovel: ugh, fix wording in form-kind comment
+Luis Oliveira <loliveira@common-lisp.net>**20070801145618] 
+[grovel: fix invoke on clisp/win32
+Luis Oliveira <loliveira@common-lisp.net>**20070803202545] 
+[grovel: fix handling of alternatives in constantenum
+Luis Oliveira <loliveira@common-lisp.net>**20070803202607] 
+[grovel: fix defwrapper handling of types in #'cffi-type
+Luis Oliveira <loliveira@common-lisp.net>**20070806014001] 
+[Fix WITH-FOREIGN-POINTER-AS-STRING return values
+Luis Oliveira <loliveira@common-lisp.net>**20070806014305
+ 
+ - Don't return second value of FOREIGN-STRING-TO-LISP.
+] 
+[Don't use aggresive compilation declarations in BABEL-ENCODINGS:I-C-M.
+Luis Oliveira <loliveira@common-lisp.net>**20070813194957] 
+[Add missing :after qualifier in DEFINE-C-STRUCT-WRAPPER.
+Luis Oliveira <loliveira@common-lisp.net>**20070813201639] 
+[Update tests to reflect changes in WITH-FOREIGN-POINTER-AS-STRING
+Luis Oliveira <loliveira@common-lisp.net>**20070813230427] 
+[Fix strings.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20070813230454
+ 
+ - Work around apparent SBCL bug.
+ - Handle :RE endianness in BGET and BSET.
+] 
+[grovel: fix Lispworks's %INVOKE
+Luis Oliveira <loliveira@common-lisp.net>**20070823032714] 
+[Fix WITH-FOREIGN-POINTER-AS-STRING usage in examples.
+Luis Oliveira <loliveira@common-lisp.net>**20071208222510] 
+[Fix WITH-FOREIGN-POINTER-AS-STRING usage in examples. (again)
+Luis Oliveira <loliveira@common-lisp.net>**20071208222804] 
+[Unicode string update
+Luis Oliveira <loliveira@common-lisp.net>**20071210102001
+ 
+ - Remove outdated comments.
+ - Use BABEL:SIMPLE-UNICODE-STRING type.
+ - Document *DEFAULT-FOREIGN-ENCODINGS*.
+ - Add :FREE-FROM-FOREIGN and :FREE-TO-FOREIGN boolean
+   parameters to the :STRING type.
+] 
+[Make sure that the groveller can handle nested PROGN forms.
+Stelian Ionescu <sionescu@common-lisp.net>**20071221204127] 
+[Simplify :[u]intptr definitons.
+Luis Oliveira <loliveira@common-lisp.net>**20080225231321
+ 
+ - This patch makes CMUCL happier.
+] 
+[uffi-compat: fix bitrot in CONVERT-FROM-FOREIGN-STRING
+Luis Oliveira <loliveira@common-lisp.net>**20080316132603
+ 
+ Reported by Christophe Rhodes. Passes all of uffi-tests again.
+] 
+[Mark DEFCFUN.VARARGS.DOCSTRING as an expected failure on CLISP
+Luis Oliveira <loliveira@common-lisp.net>**20080405205812] 
+[cffi-lispworks: add long-long support on 64-bit platforms
+Luis Oliveira <loliveira@common-lisp.net>**20080407105414
+ 
+ Initial patch and testing courtesy of Tian Chun.
+] 
+[Groveler: small fix for ECL.
+Stelian Ionescu <sionescu@common-lisp.net>**20080208224019] 
+[Add groveler directive for inline C code, as for the wrapper.
+Stelian Ionescu <sionescu@common-lisp.net>**20080405231846] 
+[Add dependency on ALEXANDRIA, remove redundant code from CFFI-UTILS package.
+Stelian Ionescu <sionescu@common-lisp.net>**20071230233920] 
+[Fix conflict in cffi-openmcl.lisp
+Luis Oliveira <loliveira@common-lisp.net>**20080531141647] 
+[Minor fixes to cffi-manual.texinfo
+Luis Oliveira <loliveira@common-lisp.net>**20080531163724
+ 
+ Restores buildability. Courtesy of Rupert Swarbrick.
+] 
+[added support for :cc-flags for grovel-file to specify additional flags to the compiler (like -I /foo/bar)
+attila.lendvai@gmail.com**20080517190231] 
+[minor change to foreign-string-to-lisp
+Luis Oliveira <loliveira@common-lisp.net>**20080601045624
+ 
+ Make max-chars default to (1- array-total-size-limit).
+] 
+[Update manual
+Luis Oliveira <loliveira@common-lisp.net>**20080601051732
+ 
+ - Fix @result{} in the HTML output.
+ - Revamp the "Implementation support" chapter.
+ - Fix misc documentation rot.
+ - Delete empty sections.
+ - Document the emulation of long-long types.
+ - Remove UTF-8 characters since texinfo has not entered
+   the 21st century yet.
+ - Finish the documentation for the new encoding support.
+] 

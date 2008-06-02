@@ -156,6 +156,9 @@
   (control :string)
   &rest)
 
+;;; CLISP's compiler discards macro docstrings.
+#+clisp (pushnew 'defcfun.varargs.docstrings rt::*expected-failures*)
+
 (deftest defcfun.varargs.docstrings
     (documentation 'sprintf 'function)
   "sprintf docstring")
@@ -195,7 +198,7 @@
     (with-foreign-pointer-as-string (s 100)
       (setf (mem-ref s :char) 0)
       (sprintf s "%.2Lf" :long-double pi))
-  "3.14")
+  "3.14" 4)
 
 (deftest defcfun.varargs.string
     (with-foreign-pointer-as-string (s 100)
@@ -207,7 +210,8 @@
 ;;;   (c-function rettype arg-types)
 ;;;   (gen-function-test rettype arg-types))
 
-#+(:and (:not :ecl) #.(cl:if (cl:>= cl:lambda-parameters-limit 127) '(:and) '(:or)))
+#+(and (not ecl)
+       #.(cl:if (cl:>= cl:lambda-parameters-limit 127) '(:and) '(:or)))
 (progn
   (defcfun "sum_127_no_ll" :long
     (a1 :long) (a2 :unsigned-long) (a3 :short) (a4 :unsigned-short) (a5 :float)

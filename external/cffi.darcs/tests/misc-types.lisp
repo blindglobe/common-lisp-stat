@@ -36,6 +36,7 @@
       string)
   "foo")
 
+#-(and)
 (deftest misc-types.string+ptr.ub8
     (destructuring-bind (string pointer)
         (strdup (make-array 3 :element-type '(unsigned-byte 8)
@@ -44,6 +45,7 @@
       string)
   "foo")
 
+#-(and)
 (deftest misc-types.string.ub8.1
     (let ((array (make-array 7 :element-type '(unsigned-byte 8)
                              :initial-contents '(84 117 114 97 110 103 97))))
@@ -51,6 +53,7 @@
         (foreign-string-to-lisp foreign-string)))
   "Turanga")
 
+#-(and)
 (deftest misc-types.string.ub8.2
     (let ((str (foreign-string-alloc
                 (make-array 7 :element-type '(unsigned-byte 8)
@@ -126,12 +129,9 @@
   "Strdup says: MORE CODE")
 
 (deftest misc-types.sized-ints
-    (mapcar #'foreign-type-size '(:int8 :uint8 :int16 :uint16 :int32 :uint32
-                                  #-cffi-features:no-long-long :int64
-                                  #-cffi-features:no-long-long :uint64))
-  (1 1 2 2 4 4
-   #-cffi-features:no-long-long 8
-   #-cffi-features:no-long-long 8))
+    (mapcar #'foreign-type-size
+            '(:int8 :uint8 :int16 :uint16 :int32 :uint32 :int64 :uint64))
+  (1 1 2 2 4 4 8 8))
 
 (define-foreign-type error-error ()
   ()

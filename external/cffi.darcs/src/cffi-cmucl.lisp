@@ -28,7 +28,7 @@
 ;;;# Administrivia
 
 (defpackage #:cffi-sys
-  (:use #:common-lisp #:alien #:c-call #:cffi-utils)
+  (:use #:common-lisp #:alien #:c-call #:cffi-utils #:alexandria)
   (:export
    #:canonicalize-symbol-name-case
    #:foreign-pointer
@@ -63,16 +63,9 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (mapc (lambda (feature) (pushnew feature *features*))
-        '(;; OS/CPU features.
-          #+darwin  cffi-features:darwin
-          #+unix    cffi-features:unix
-          #+x86     cffi-features:x86
-          #+(and ppc (not ppc64)) cffi-features:ppc32
-          ;; Misfeatures
-          cffi-features:flat-namespace
-          )))
+        '(cffi-features:flat-namespace)))
 
-;;; Symbol case.
+;;;# Symbol Case
 
 (defun canonicalize-symbol-name-case (name)
   (declare (string name))
@@ -375,7 +368,10 @@ WITH-POINTER-TO-VECTOR-DATA."
     (setf (car lib) (sys:int-sap 0))))
 
 (defun native-namestring (pathname)
-  (ext:unix-namestring pathname))
+  ;; UNIX-NAMESTRING seems to be buggy?
+  ;; (ext:unix-namestring #p"/tmp/foo bar baz/bar") => NIL
+  #-(and) (ext:unix-namestring pathname)
+  (namestring pathname))
 
 ;;;# Foreign Globals
 

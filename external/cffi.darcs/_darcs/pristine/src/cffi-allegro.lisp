@@ -28,7 +28,7 @@
 ;;;# Administrivia
 
 (defpackage #:cffi-sys
-  (:use #:common-lisp #:cffi-utils)
+  (:use #:common-lisp #:cffi-utils #:alexandria)
   (:export
    #:canonicalize-symbol-name-case
    #:foreign-pointer
@@ -60,23 +60,14 @@
 
 (in-package #:cffi-sys)
 
-;;;# Features
+;;;# Mis-features
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (mapc (lambda (feature) (pushnew feature *features*))
-        '(;; Backend mis-features.
-          cffi-features:no-long-long
-          cffi-features:flat-namespace
-          ;; OS/CPU features.
-          #+macosx     cffi-features:darwin
-          #+unix       cffi-features:unix
-          #+mswindows  cffi-features:windows
-          #+powerpc    cffi-features:ppc32
-          #+x86        cffi-features:x86
-          #+x86-64     cffi-features:x86-64
-          )))
+        '(cffi-features:no-long-long
+          cffi-features:flat-namespace)))
 
-;;; Symbol case.
+;;;# Symbol Case
 
 (defun canonicalize-symbol-name-case (name)
   (declare (string name))

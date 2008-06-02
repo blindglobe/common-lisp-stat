@@ -37,6 +37,7 @@
   :author "James Bielman  <jamesjb@jamesjb.com>"
   :version "0.9.2"
   :licence "MIT"
+  :depends-on (alexandria trivial-features babel)
   :components
   ((:module src
     :serial t

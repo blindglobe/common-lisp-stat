@@ -28,7 +28,7 @@
 ;;;# Administrivia
 
 (defpackage #:cffi-sys
-  (:use #:common-lisp #:sb-alien #:cffi-utils)
+  (:use #:common-lisp #:sb-alien #:cffi-utils #:alexandria)
   (:export
    #:canonicalize-symbol-name-case
    #:foreign-pointer
@@ -59,22 +59,13 @@
 
 (in-package #:cffi-sys)
 
-;;;# Features
+;;;# Mis-features
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (mapc (lambda (feature) (pushnew feature *features*))
-        '(;; OS/CPU features.
-          #+darwin  cffi-features:darwin
-          #+(and unix (not win32)) cffi-features:unix
-          #+win32   cffi-features:windows
-          #+x86     cffi-features:x86
-          #+x86-64  cffi-features:x86-64
-          #+(and ppc (not ppc64)) cffi-features:ppc32
-          ;; Misfeatures
-          cffi-features:flat-namespace
-          )))
+        '(cffi-features:flat-namespace)))
 
-;;; Symbol case.
+;;;# Symbol Case
 
 (declaim (inline canonicalize-symbol-name-case))
 (defun canonicalize-symbol-name-case (name)
@@ -350,5 +341,5 @@ WITH-POINTER-TO-VECTOR-DATA."
 (defun %foreign-symbol-pointer (name library)
   "Returns a pointer to a foreign symbol NAME."
   (declare (ignore library))
-  (let-when (address (sb-sys:find-foreign-symbol-address name))
+  (when-let (address (sb-sys:find-foreign-symbol-address name))
     (sb-sys:int-sap address)))
