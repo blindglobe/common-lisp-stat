@@ -40,17 +40,18 @@
 ;;; Sequences are part of ANSI CL, being a supertype of vector and
 ;;; list (ordered set of things).
 ;;; 
-;;; Need to use the interenal structure when possible -- silly to be
-;;; redundant!  However, this means we need to understand what
-;;; sequences were intending to do, which I'm not clear on yet.
+;;; The current mandate for CommonLisp Stat is to use the internal
+;;; structure when possible -- silly to be redundant!  However, this
+;;; means we need to understand what sequences as implemented in
+;;; XLispStat intended to do, which I'm not clear on yet.
 
 ;;; The original ordering, object-wise, was to have compound
-;;; functionality passed into sequences, into other data sources.
-;;; However, at this point, we will see about inverting this and
-;;; having basic data types pushed through compound, to simplify
-;;; packaging.  In this vein, we have created a compound package to
-;;; contain the compound data and sequence structures.  Probably need
-;;; to clean this up even more.
+;;; functionality be a superclass, specialized into sequences, into
+;;; other data sources.  However, at this point, we will see about
+;;; inverting this and having basic data types pushed through
+;;; compound, to simplify packaging.  In this vein, we have created a
+;;; compound package to contain the compound data and sequence
+;;; structures.  Probably need to clean this up even more.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,7 +69,7 @@ non-compound types are checked first."
          (t (compound-object-p x))))
 
 (defun find-compound-data (list)
-  "Returns first compound data item in LIST or NIL if there is none."
+  "Returns first compound data item in LIST, or NIL if there is none."
   (dolist (x list) (if (cmpndp x) (return x))))
 
 (defun any-compound-elements (seq)
@@ -87,25 +88,28 @@ non-compound types are checked first."
   "Returns sequence of data values for X."
   (declare (inline consp vectorp arrayp make-array array-total-size))
   (cond
-   ((or (consp x) (vectorp x)) x)
-   ((arrayp x) (make-array (array-total-size x) :displaced-to x))
-   (t (send x :data-seq))))
+    ((or (consp x) (vectorp x)) x)
+    ((arrayp x) (make-array (array-total-size x) :displaced-to x))
+    (t (send x :data-seq))))
 
 (defmacro sequence-type (x) `(if (consp ,x) 'list 'vector))
 
 (defun make-compound-data (shape sequence)
-"Construct a compound data item to match the shape of the first
-argument." 
+  "Construct a compound data item, matching the shape of the first
+argument.  Shape referrs to the primary approach that we might have
+that we could use for each element in the sequence.  This gets
+confusing, since compound data might be better done as a p-list rather
+than as a list of lists."
   (let ((n (length (compound-data-sequence shape))))
     (if (/= n (length sequence)) (error "compound data not the same shape"))
     (cond
-     ((consp shape) (if (consp sequence) sequence (coerce sequence 'list)))
-     ((vectorp shape)
-      (if (vectorp sequence) sequence (coerce sequence 'vector)))
-     ((arrayp shape)
-      (make-array (array-dimensions shape)
-		  :displaced-to (coerce sequence 'vector)))
-     (t (send shape :make-data sequence)))))
+      ((consp shape) (if (consp sequence) sequence (coerce sequence 'list)))
+      ((vectorp shape)
+       (if (vectorp sequence) sequence (coerce sequence 'vector)))
+      ((arrayp shape)
+       (make-array (array-dimensions shape)
+		   :displaced-to (coerce sequence 'vector)))
+      (t (send shape :make-data sequence)))))
 
 (defun make-circle (x)
   "Make a circular list of one element."
@@ -116,7 +120,8 @@ argument."
 
 (defun check-compound (x)
   "Signals an error if X is not compound."
-  (if (not (cmpndp x)) (error "not a compound data item - ~a" x)))
+  (if (not (cmpndp x))
+      (error "not a compound data item - ~a" x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -144,16 +149,18 @@ argument."
         (x (car args) (car args)))
        ((null args))
     (declare (inline car))
-    (setf (car args)
-          (if (cmpndp x) (compound-data-sequence x) (make-circle x)))))
+    (setf (car args) (if (cmpndp x)
+			 (compound-data-sequence x)
+			 (make-circle x)))))
             
 (defun map-elements (fcn &rest args)
-"Args: (fcn &rest args)
+  "Args: (fcn &rest args)
+
 Applies FCN elementwise. If no arguments are compound MAP-ELEMENTS
-acts like FUNCALL. Compound arguments must all be the same shape. Non 
-compound arguments, in the presence of compound ones, are treated as 
-if they were of the same shape as the compound items with constant data
-values."
+acts like FUNCALL. Compound arguments must all be the same shape. Non
+compound arguments, in the presence of compound ones, are treated as
+if they were of the same shape as the compound items with constant
+data values."
   (let ((first-compound (find-compound-data args)))
     (cond ((null first-compound) (apply fcn args))
 	  (t (fixup-map-elements-arglist args)
@@ -163,10 +170,12 @@ values."
 				   (apply #'map type fcn args)))))))
 		     
 (defun recursive-map-elements (base-fcn fcn &rest args)
-"Args: (base-fcn fcn &rest args)
+  "Args: (base-fcn fcn &rest args)
+
 The same idea as MAP-ELEMENTS, except arguments are in a list and the
-base and recursive cases can use different functions. Modified to check
-for second level of compounding and use base-fcn if there is none."
+base and recursive cases can use different functions. Modified to
+check for second level of compounding and use base-fcn if there is
+none."
   (let ((first-compound (find-compound-data args)))
     (cond ((null first-compound) (apply base-fcn args))
 	  (t (fixup-map-elements-arglist args)
@@ -184,18 +193,18 @@ for second level of compounding and use base-fcn if there is none."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun compound-data-p (x)
-"Args: (x)
+  "Args: (x)
 Returns T if X is a compound data item, NIL otherwise."
   (cmpndp x))
 
 (defun compound-data-seq (x)
-"Args (x)
+  "Args (x)
 Returns data sequence in X."
   (check-compound x)
   (compound-data-sequence x))
 
 (defun compound-data-length (x)
-"Args (x)
+  "Args (x)
 Returns length of data sequence in X."
   (check-compound x)
   (length (compound-data-sequence x)))
