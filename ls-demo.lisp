@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-06-03 15:35:13 tony>
+;;; Time-stamp: <2008-06-15 08:07:18 tony>
 ;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -208,6 +208,7 @@ my-chol-decomp-test
 (defvar my-proto-instance nil)
 (setf my-proto-instance (send *test-proto* :new))
 (send *test-proto* :own-slots)
+;;; The following fail and I do not know why?
 (send *test-proto* :has-slot 'proto-name)
 (send *test-proto* :has-slot 'PROTO-NAME)
 (send *test-proto* :has-slot 'make-data)
@@ -440,11 +441,13 @@ tplist
 (listp tlist)
 (getf tlist :THIS)
 
-;;; CL-SDL demos
 
+;;; CL-SDL demos, working in Debian unstable, 15.6.08.
 
 (clc:clc-require :sdl-demos)
-;;(sdl-test:start) ; locks up SBCL.?
+(sdl-test:start)
 ;;; where <n> is 2-11, 16, :solar-system, :vertex-arrays,
 (nehe:run-tutorial 2)
+(nehe:run-tutorial 3)
+
 

@@ -1,7 +1,10 @@
 ;;; Basic ASDF stuff, was: basic initialization for LispStat
-;;; Time-stamp: <2008-05-17 09:39:54 tony>
+;;; Time-stamp: <2008-06-02 08:56:01 tony>
 ;;; Created: <2007-05-30 17:09:47 blindglobe>
 
+
+(pushnew #p "/home/tony/Desktop/sandbox/CLS.git/ASDF/"
+	 asdf:*central-registy*)
 
 (asdf:oos 'asdf:compile-op :cffi)
 (asdf:oos 'asdf:compile-op :lift)

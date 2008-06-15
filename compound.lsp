@@ -64,8 +64,10 @@
   "Predicate to determine if argument is compound. Most common
 non-compound types are checked first."
   (declare (inline numberp symbolp stringp consp arrayp array-total-size))
-  (cond ((or (numberp x) (symbolp x) (stringp x)) nil)
-         ((or (consp x) (and (arrayp x) (< 0 (array-total-size x)))) t)
+  (cond ((or (numberp x) (symbolp x) (stringp x))
+	 nil)
+         ((or (consp x) (and (arrayp x) (< 0 (array-total-size x))))
+	  t)
          (t (compound-object-p x))))
 
 (defun find-compound-data (list)
@@ -103,7 +105,8 @@ than as a list of lists."
   (let ((n (length (compound-data-sequence shape))))
     (if (/= n (length sequence)) (error "compound data not the same shape"))
     (cond
-      ((consp shape) (if (consp sequence) sequence (coerce sequence 'list)))
+      ((consp shape)
+       (if (consp sequence) sequence (coerce sequence 'list)))
       ((vectorp shape)
        (if (vectorp sequence) sequence (coerce sequence 'vector)))
       ((arrayp shape)
