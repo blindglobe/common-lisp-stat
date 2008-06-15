@@ -15,8 +15,8 @@
 ;;;
 ;;; Incorporates modifications suggested by Sandy Weisberg.
 ;;;
-
-;;; This version uses matlisp rather than homebrewed linear algebra. 
+;;; Modified to use MATLISP as the matrix package, rather than
+;;; homebrewed linear algebra.
 
 (in-package :cl-user)
 
@@ -30,6 +30,8 @@
 	:lisp-stat-descriptive-statistics)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
+  (:shadowing-import-from :matlisp
+			  real)
   (:shadowing-import-from :lisp-stat-math
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -104,15 +106,12 @@ Example (data are in file absorbtion.lsp in the sample data directory):
   (def m (regression-model (list iron aluminum) absorbtion))
   (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
-	     ((typep x real-matrix) x)   ;; matrix, or ... 
-	     ((typep x 'vector) (list x)) ;; vector, or ...
-	     ((and (consp x)  ;; what?
-		   (numberp (car x))) (list x))
-	    (t x))) ;; defaulting...
+	     ((typep x 'real-matrix) x)   ;; matrix, or ... 
+	     (t (error "Regression:  X is not a real matrix")))) ;; defaulting...
         (m (send regression-model-proto :new)))
     (format t "~%")
     (send m :doc doc)
-    (send m :x (if (typep x real-matrix) x (apply #'bind-columns x)))
+    (send m :x x)
     (send m :y y)
     (send m :intercept intercept)
     (send m :weights weights)

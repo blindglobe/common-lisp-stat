@@ -28,16 +28,17 @@ i;;; -*- mode: lisp -*-
 ;;;
 
 (defun make-sweep-front (x y w n p mode has_w x_mean result)
-  "X is: 
-y is: 
-w is =: 
-n is : 
-p is: 
-mode is: real, complex
-has_w :
+  "Compute the sweep matrix, a generalized computation based on the regression components Y and X. 
+X is: numerical version of design/regt matrix
+y is: response
+w is: weights (might be simply 1
+n is: ?
+p is: ?
+mode is: real, complex, though complex is not yet supported.
+has_w just indicates if weights (w) are meaningful.
 x_mean: 
-result:
-."
+result: ? place to store?
+"
   (declare (fixnum n p mode has_w))
   (let ((x_data nil)
 	(result_data nil)
@@ -62,8 +63,6 @@ result:
     (setf result_data (compound-data-seq result))
   
     ;; find the mean of y
-    (setf val 0.0)
-    (setf sum_w 0.0)
     (dotimes (i n)
       (declare (fixnum i))
       (setf dyi (makedouble (aref y i)))
@@ -76,7 +75,7 @@ result:
     (if (<= sum_w 0.0) (error "non positive sum of weights"))
     (setf dy_mean (/ val sum_w))
   
-    ;; find the column means
+    ;; find the column means of X
     (dotimes (j p)
       (declare (fixnum j))
       (setf val 0.0)
@@ -201,23 +200,23 @@ result:
   "Args: (x y &optional weights)
  X is matrix, Y and WEIGHTS are sequences. Returns the sweep matrix of the
  (weighted) regression of Y on X"
-   (check-matrix x)
-   (check-sequence y)
-   (if w (check-sequence w))
-   (let ((n (num-rows x))
-      	(p (num-cols x)))
-      (if (/= n (length y)) (error "dimensions do not match"))
-    (if (and w (/= n (length w))) (error "dimensions do not match"))
-    (let ((mode (max (la-data-mode x) 
-                     (la-data-mode x) 
-                     (if w (la-data-mode w) 0)))
-	  (result (make-array (list (+ p 2) (+ p 2))))
-	  (x-mean (make-array p))
-	  (y (coerce y 'vector))
- 	  (w (if w (coerce w 'vector)))
-	  (has-w (if w 1 0)))
-      (make-sweep-front x y w n p mode has-w x-mean result)
-      result)))
+   (if (not (typep x 'real-matrix)) (error "Make Sweep Matrix: X not real-matrix"))
+   (if (not (typep y 'real-matrix)) (error "Make Sweep Matrix: Y not real-matrix"))
+   (if w (if (not (typep w 'real-matrix)) (error "Make Sweep Matrix: W not real-matrix")))
+   (let ((n (n x))
+	 (p (m x)))
+     (if (/= n (length y)) (error "dimensions do not match"))
+     (if (and w (/= n (length w))) (error "dimensions do not match"))
+     (let ((mode (max (la-data-mode x) 
+		      (la-data-mode x) 
+		      (if w (la-data-mode w) 0)))
+	   (result (make-array (list (+ p 2) (+ p 2))))
+	   (x-mean (make-array p))
+	   (y (coerce y 'vector))
+	   (w (if w (coerce w 'vector)))
+	   (has-w (if w 1 0)))
+       (make-sweep-front x y w n p mode has-w x-mean result)
+       result)))
 
  (defun sweep-in-place (a k tol)
   (check-matrix a)
