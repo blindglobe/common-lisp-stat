@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-06-15 08:07:18 tony>
+;;; Time-stamp: <2008-07-04 22:00:00 tony>
 ;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -208,6 +208,10 @@ my-chol-decomp-test
 (defvar my-proto-instance nil)
 (setf my-proto-instance (send *test-proto* :new))
 (send *test-proto* :own-slots)
+(lsos::ls-object-slots *test-proto*)
+(lsos::ls-object-methods *test-proto*)
+(lsos::ls-object-parents *test-proto*)
+(lsos::ls-object-preclist *test-proto*)
 ;;; The following fail and I do not know why?
 (send *test-proto* :has-slot 'proto-name)
 (send *test-proto* :has-slot 'PROTO-NAME)
@@ -344,110 +348,4 @@ iron
 (undef 'iron)
 (variables)
 
-
-;;; Example array calcs
-
-#+nil(progn
-       (functionp #'and)
-       (= (array-dimensions #2A((2 3 3 ) (2 4  4)))
-	  (array-dimensions #2A((2 3 3 ) (2 5  4))))
-       (reduce #'and (= (array-dimensions #2A((2 3) (2 4)))
-			(array-dimensions #2A((2 3 3 ) (2 5  4)))))
-       
-       (defvar my-t-ar nil)
-       (setf my-t-ar #3A(((2 3) (2 2) (2 1))
-			 ((2 3) (2 2) (2 1))))
-       (defvar my-t-ar2 nil)
-       (setf my-t-ar2 #2A((1 2 3 4)
-			  (5 6 7 8)))
-       
-       (array-dimensions my-t-ar)
-       (array-dimensions my-t-ar2)
-       
-       (aref my-t-ar2 1 2) ;; GOOD
-       (aref my-t-ar2 (list 1 2)) ;; BAD
-       (apply #'aref my-t-ar2 (list 1 2)) ;; GOOD
-       ;; For extracting multiple elements
-      (mapcar #'(lambda (x) (apply #'aref my-t-ar2 x))
-	      (list (list 0 0) (list 0 1)))
-      
-      
-      (aref my-t-ar 1 2 1)
-      (aref my-t-ar 1 2 1)
-      (aref my-t-ar 1 1 0)
-      
-      (array-dimensions #3A(((2 3) (2 2) (2 1))
-			    ((2 3) (2 2) (2 1))))
-      
-      (reduce #'and (= #(2 3) #(2 4)))
-      (= #(2 3) #(2 3))
-
-(let ((a #2A((2 3 3 ) (2 5  4)))
-      (b #2A((2 3 3 ) (2 5  4))))
-  (let ((a-rank (array-rank a))
-	(a-dim (array-dimensions a))
-	(a-b-elt-eq (loop for i in 0 to (aref a-dim 0)
-			  for j in 0 to (aref a-dim 1)
-			  collect (numerical= (apply #'aref a (list i j))
-					      (apply #'aref b (list i j))))))
-    (every  #'(lambda (x) x) a-b-elt-eq))))
-
-(every #'(lambda (x) x) (list T T T))
-(every #'(lambda (x) x) (list T T nil))
-      
-(and T T)
-(mapcar #'(lambda (&rest args) (and args))
-	(list (= #(2 3) #(2 4))))
-(= #(2 3) #(2 3))
-
-;;; examples of using CLEM
-
-(in-package :clem-user)
-
-(defvar m1 (make-instance 'double-float-matrix :rows 10 :cols 5))
-m1
-
-(defvar m2 (make-instance 'number-matrix :rows 10 :cols 5))
-m2
-
-
-;;; Not defined but documented?   Actually somewhere in clem/print.lisp
-(setf *matrix-print-row-limit* 2)
-(setf *matrix-print-col-limit* 2)
-m2
-(print m2)
-
-
-(mat-log m2)
-(mat-abs m2)
-(min m2)
-(max m2)
-
-(setf (mref m2 1 1) 5)
-m2
-(setf (mref m2 0 0) 5)
-m2
-
-
-;;; prop list demo
-
-
-(defvar tplist (list :this 'though :that 'there :thee 'tony))
-(setf (symbol-plist tplist) (list :this 'though :that 'there :thee 'tony))
-(get 'tplist :THIS)
-tplist
-(defvar tlist (list :this 'though :that 'there :thee 'tony))
-(setf tlist (list :this 'though :that 'there :thee 'tony))
-(listp tlist)
-(getf tlist :THIS)
-
-
-;;; CL-SDL demos, working in Debian unstable, 15.6.08.
-
-(clc:clc-require :sdl-demos)
-(sdl-test:start)
-;;; where <n> is 2-11, 16, :solar-system, :vertex-arrays,
-(nehe:run-tutorial 2)
-(nehe:run-tutorial 3)
-
-
+;;; More...
