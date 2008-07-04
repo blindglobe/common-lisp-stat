@@ -149,6 +149,8 @@ are no arguments. Vector reducing."
     (sum-1 (if (rest args) args (first args)))
     0))
 
+
+
 (defun prod-1 (x)
   (if (numberp x)
     x
@@ -198,7 +200,8 @@ Returns the number of its arguments. Vector reducing"
 
 (defun if-else (a x y)
 "Args: (first x y)
-Takes simple or compound data items FIRST, X and Y and returns result of
-elementswise selecting from X if FIRST is not NIL and from Y otherwise."
+Takes simple or compound data items FIRST, X and Y and returns result
+of elementswise selecting from X if FIRST is not NIL and from Y
+otherwise."
   (flet ((base-if-else (a x y) (if a x y)))
     (recursive-map-elements #'base-if-else #'if-else a x y)))

@@ -60,10 +60,11 @@
  (:nicknames :ls-objects :lsos)
  (:use :common-lisp)
  (:shadow :call-method :call-next-method :slot-value)
- (:export ls-object objectp *object* kind-of-p make-object *message-hook*
-	  *set-slot-hook* slot-value self send call-next-method call-method
-	  defmeth defproto defproto2
-	  instance-slots proto-name))
+ (:export ls-object objectp *object* kind-of-p make-object
+	  *message-hook*
+	  *set-slot-hook* slot-value self 
+	  send call-next-method call-method
+	  defmeth defproto instance-slots proto-name))
 
 (in-package :lisp-stat-object-system)
 
@@ -109,17 +110,19 @@ Returns T if X is an object, NIL otherwise.")
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; 
-;;; AJR:FIXME:Is this going to cause issues with concurrency/threading?
-;;; (need to appropriately handle interrupts).
+;;; AJR:FIXME:Is this going to cause issues with
+;;; concurrency/threading? 
+;;; (need to appropriately handle interrupts).   Could change this to 
+;;; a stack or list that could handle modifications and interrupts
+;;; in-line.
 (defvar *self* nil
-  "special variable to hold current value of SELF.
-Assign to current object that we are working with.")
+  "special variable holding current value of SELF.
+Assigned with current object being worked on.")
 
 (defun get-self ()
-  "FIXME?  better as macro?."
+  "Return object we are operating on, otherwise throw error."
   (if (not (objectp *self*))
-      (error "not in a method"))
+      (error "Error: no method focused on."))
   *self*)
 
 (defun has-duplicates (list)
@@ -149,8 +152,10 @@ This should be simpler, right?"
   (if (objectp x) x (error "bad object - ~s" x)))
 
 (defun kind-of-p (x y)
-"Args: (x y)
+  "Args: (x y)
+
 Returns T if X and Y are objects and X inherits from Y, NIL otherwise."
+
   (if (and (objectp x) (objectp y))
       (if (member y (ls-object-preclist x)) t nil)
       nil))
@@ -689,9 +694,7 @@ a list of objects. IVARS and CVARS must be lists."
 (setf (ls-object-preclist *object*) (list *object*))
 (add-slot *object* 'instance-slots nil)
 (add-slot *object* 'proto-name '*object*)
-(add-slot *object* 'documentation nil)  ; AJR - for SBCL compiler
-					; issues about macro with
-					; unknown slot  
+(add-slot *object* 'documentation nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
