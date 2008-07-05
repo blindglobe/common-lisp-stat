@@ -29,7 +29,10 @@
 ;;; TESTS
 
 (defun run-lisp-stat-tests ()
-  (run-tests :suite 'lisp-stat))
+  (run-tests :suite 'lisp-stat-ut))
+
+;; (run-lisp-stat-tests)
+
 
 (defun run-lisp-stat-test (&rest x)
   (run-test x))
@@ -368,6 +371,3 @@
 	    (binomial-rand 5 3 0.4)
 	    (list 2 2 0 1 2)))))
 
-
-
-   
