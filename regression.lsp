@@ -256,9 +256,8 @@ estimates."
   (when (and new-y
 	     (or (matrixp new-y)
 		 (typep  new-y 'sequence)))
-    (let ((mat-y (coerce-seq-to-1d-col-matrix new-y)))
-      (setf (slot-value 'y) new-y)
-      (send self :needs-computing t)))
+    (setf (slot-value 'y) new-y)
+    (send self :needs-computing t))
   (slot-value 'y))
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))
