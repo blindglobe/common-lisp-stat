@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-07-04 22:00:00 tony>
+;;; Time-stamp: <2008-07-05 19:06:01 tony>
 ;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -242,22 +242,22 @@ my-chol-decomp-test
 (last-test-status)
 ;;(failures)
 
-(describe (run-tests :suite 'lisp-stat-testsupport))
-(describe (run-tests :suite 'lisp-stat-testsupport2))
+(describe (run-tests :suite 'lisp-stat-ut-testsupport))
+(describe (run-tests :suite 'lisp-stat-ut-testsupport2))
 
-(testsuite-tests 'lisp-stat)
-(run-tests :suite 'lisp-stat)
-(describe (run-tests :suite 'lisp-stat))
+(testsuite-tests 'lisp-stat-ut)
+(run-tests :suite 'lisp-stat-ut)
+(describe (run-tests :suite 'lisp-stat-ut))
 
-(run-tests :suite 'lisp-stat-probdistn)
-(describe (run-tests :suite 'lisp-stat-probdistn))
-(run-tests :suite 'lisp-stat-spec-fns)
+(run-tests :suite 'lisp-stat-ut-probdistn)
+(describe (run-tests :suite 'lisp-stat-ut-probdistn))
+(run-tests :suite 'lisp-stat-ut-spec-fns)
 (describe (run-tests :suite 'lisp-stat-spec-fns))
 
-(find-testsuite 'lisp-stat-lin-alg)
-(testsuite-tests 'lisp-stat-lin-alg)
-(run-tests :suite 'lisp-stat-lin-alg)
-(describe (run-tests :suite 'lisp-stat-lin-alg))
+(find-testsuite 'lisp-stat-ut-lin-alg)
+(testsuite-tests 'lisp-stat-ut-lin-alg)
+(run-tests :suite 'lisp-stat-ut-lin-alg)
+(describe (run-tests :suite 'lisp-stat-ut-lin-alg))
 
 ;;;; Data Analysis test
 
@@ -327,14 +327,16 @@ iron
 ;;; FIXME: need to get multiple-linear regression working -- clearly
 ;;; simple linear is working above!
 (defvar m nil "holding variable.")
-(def m (regression-model (list iron aluminum) absorbtion :print nil)) 
+(def m (regression-model (list iron aluminum) absorbtion :print nil))
 (send m :compute)
 (send m :sweep-matrix)
 (format t "~%~A~%" (send m :sweep-matrix))
 (send m :display) ;; ERROR...
 (def m (regression-model (bind-columns iron aluminum) absorbtion))
 (send m :help)
-(send m :help 'display)
+(send m :help :display)
+(send m :help :basis)
+
 (send m :plot-residuals)
 
 
