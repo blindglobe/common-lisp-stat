@@ -2,16 +2,13 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-05-23 17:40:10 tony>
+;;; Time-stamp: <2008-07-22 12:15:34 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
 ;; (setf *my-base-directory*
 ;;       #p"/home/tony/sandbox/CLS.git/"
 ;;       #p"/Users/ungil/lisp/CommonLispStat/")
-
-
-
 
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
 (in-package :cl-user)
@@ -63,13 +60,13 @@
 
 ;;; back to our regularly scheduled work...
 ;;; We should not need these, I think, but?
-(asdf:oos 'asdf:compile-op :cffi)            ;; FFI
-(asdf:oos 'asdf:compile-op :lift)            ;; Unit Testing 
-(asdf:oos 'asdf:load-op :cffi)            ;; FFI
-(asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
+;; (asdf:oos 'asdf:compile-op :cffi)            ;; FFI
+;; (asdf:oos 'asdf:compile-op :lift)            ;; Unit Testing 
+;; (asdf:oos 'asdf:load-op :cffi)            ;; FFI
+;; (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
 
-;; MAJOR HACK, FIXME!
-(load "/home/tony/Desktop/sandbox/matlisp.git/start.lisp")
+;;; MAJOR HACK, FIXME!
+;;(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
@@ -108,16 +105,19 @@
 based on CLS by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
 Last touched 1991, then in 2005--2008."
   :serial t
-  :depends-on (:cffi :lift) ;;  :clem) not yet but soon!
+  :depends-on (:cffi :lift) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
-	       (:lispstat-lsp-source-file "lsobjects")
+	       (:module "proto-objects"
+			:pathname "src/objsys/"
+			:components ((:lispstat-lsp-source-file "lsobjects")))
+
 	       (:lispstat-lsp-source-file "cffiglue")
 	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
 
 	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("lsobjects"))
+					  :depends-on ("proto-objects"))
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 
@@ -126,7 +126,7 @@ Last touched 1991, then in 2005--2008."
 						       "lsmacros"))
 
 	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("lsobjects"
+					  :depends-on ("proto-objects"
 						       "compound"
 						       "lsmacros"
 						       "lsfloat"))
@@ -152,14 +152,14 @@ Last touched 1991, then in 2005--2008."
 						       "lstypes"
 						       "compound"))
 
-	       (:file "data" :depends-on ("lsobjects"
+	       (:file "data" :depends-on ("proto-objects"
 					  "compound"
 					  "matrices"
 					  "linalg"))
 
 	       ;; there is a circ reference which we need to solve.
 	       (:lispstat-lsp-source-file "lsbasics"
-					  :depends-on ("lsobjects"
+					  :depends-on ("proto-objects"
 						       "lstypes"
 						       "lsmacros"
 						       "lsfloat"
@@ -168,14 +168,14 @@ Last touched 1991, then in 2005--2008."
 						       "dists"))
 
 	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("lsobjects"
+					  :depends-on ("proto-objects"
 						       "lsbasics"
 						       "compound"
 						       "ladata" "matrices" "linalg"
 						       "lsmath"
 						       "data" ))
 
-	       (:file "optimize" :depends-on ("lsobjects"
+	       (:file "optimize" :depends-on ("proto-objects"
 					      "cffiglue"
 					      "lstypes"
 					      "compound"
@@ -188,7 +188,7 @@ Last touched 1991, then in 2005--2008."
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("lsobjects"
+					  :depends-on ("proto-objects"
 						       "lsbasics"
 						       "compound"
 						       "lsmath"
@@ -199,12 +199,12 @@ Last touched 1991, then in 2005--2008."
 ;					  :depends-on ("regression"))
 
 ;	       (:lispstat-lsp-source-file "bayes"
-;					  :depends-on ("lsobjects"
+;					  :depends-on ("proto-objects"
 ;						       "lsmath"
 ;						       "dists"))
 
 
-	       (:file "ls-user" :depends-on ("lsobjects"
+	       (:file "ls-user" :depends-on ("proto-objects"
 					     "lsbasics"
 					     "compound"
 					     "dists"
@@ -229,11 +229,6 @@ Last touched 1991, then in 2005--2008."
 
 #|
 ;; preparation for modulization...
-
-((:module
-  "lisp-stat-proto-objects"
-  :pathname "src/prototype/"
-  :comonents ((:lispstat-lsp-source-file "lsobjects"))))
 
 ((:module
   "lisp-stat-testing"
