@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-07-22 12:15:34 tony>
+;;; Time-stamp: <2008-07-22 13:14:04 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -46,7 +46,7 @@
 ;; (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
 
 ;;; MAJOR HACK, FIXME!
-;;(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
+(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
@@ -93,133 +93,11 @@
   at CMU, on leave somewhere?).   Last touched by him in 1991, then in
   2005--2008." 
   :serial t
-<<<<<<< HEAD:lispstat.asd
   :depends-on (:cffi  :lift :lisp-matrix) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
-=======
-  :depends-on (:cffi :lift) ;; need a matrix library
-  :components ((:static-file "version" :pathname #p"version.lisp-expr")
-	       (:module "proto-objects"
-			:pathname "src/objsys/"
-			:components ((:lispstat-lsp-source-file "lsobjects")))
-
-	       (:lispstat-lsp-source-file "cffiglue")
-	       (:lispstat-lsp-source-file "defsys")
-	       (:lispstat-lsp-source-file "lstypes")
-	       (:lispstat-lsp-source-file "lsfloat")
-
-	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("proto-objects"))
-	       (:lispstat-lsp-source-file "lsmacros" 
-					  :depends-on ("compound"))
-
-	       (:lispstat-lsp-source-file "dists"
-					  :depends-on ("cffiglue"
-						       "lsmacros"))
-
-	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("proto-objects"
-						       "compound"
-						       "lsmacros"
-						       "lsfloat"))
-
-
-	       (:lispstat-lsp-source-file "matrices"
-					  :depends-on ("cffiglue"
-						       "compound"))
-
-	       (:lispstat-lsp-source-file "ladata"
-					  :depends-on ("cffiglue"
-						       "defsys"
-						       "lstypes"
-						       "compound"
-						       "matrices"))
-
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("cffiglue"
-						       "lsmath"
-						       "matrices"
-						       "ladata"
-						       "lsfloat"
-						       "lstypes"
-						       "compound"))
-
-	       (:file "data" :depends-on ("proto-objects"
-					  "compound"
-					  "matrices"
-					  "linalg"))
-
-	       ;; there is a circ reference which we need to solve.
-	       (:lispstat-lsp-source-file "lsbasics"
-					  :depends-on ("proto-objects"
-						       "lstypes"
-						       "lsmacros"
-						       "lsfloat"
-						       "matrices"
-						       "linalg"
-						       "dists"))
-
-	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("proto-objects"
-						       "lsbasics"
-						       "compound"
-						       "ladata" "matrices" "linalg"
-						       "lsmath"
-						       "data" ))
-
-	       (:file "optimize" :depends-on ("proto-objects"
-					      "cffiglue"
-					      "lstypes"
-					      "compound"
-					      "lsmath"
-					      "lsfloat"
-					      "lsbasics"
-					      "matrices"
-					      "ladata"
-					      "linalg"))
-	       
-	       ;; Applications
-	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("proto-objects"
-						       "lsbasics"
-						       "compound"
-						       "lsmath"
-						       "matrices"
-						       "linalg"
-						       "statistics"))
-;	       (:lispstat-lsp-source-file "nonlin"
-;					  :depends-on ("regression"))
-
-;	       (:lispstat-lsp-source-file "bayes"
-;					  :depends-on ("proto-objects"
-;						       "lsmath"
-;						       "dists"))
-
-
-	       (:file "ls-user" :depends-on ("proto-objects"
-					     "lsbasics"
-					     "compound"
-					     "dists"
-					     "lstypes"
-					     "lsfloat"
-					     "data"
-					     "lsmath"
-					     "matrices"
-					     "linalg"
-					     "statistics"
-					     "regression"))
-
-	       (:file "unittests" :depends-on ("ls-user"))
-	       (:file "unittests-lstypes" :depends-on ("ls-user"
-						       "lstypes"))
-	       ;; (:file "unittests-data-clos" :depends-on ("ls-user"))
-	       ;; (:file "unittests-regression" :depends-on ("ls-user"))
-
->>>>>>> refactored proto object system into src dir:lispstat.asd
 	       (:static-file "LICENSE")
 	       (:static-file "README")
 
-<<<<<<< HEAD:lispstat.asd
 	       (:module "proto-objects"
 			:pathname "src/objsys/"
 			:components
@@ -342,7 +220,7 @@
 			      ;;  "unittests-proto.lisp"
 			      ;;  "unittests-regression.lisp"
 			      ))))
-=======
+
 ((:module
   "lisp-stat-testing"
   :pathname "src/unittests/"
@@ -350,5 +228,3 @@
 	       (:file "unittests-lstypes" :depends-on ("ls-user"
 						       "lstypes")))))
 
-|#
->>>>>>> refactored proto object system into src dir:lispstat.asd
