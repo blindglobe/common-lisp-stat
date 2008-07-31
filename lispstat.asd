@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-07-22 12:15:34 tony>
+;;; Time-stamp: <2008-07-22 13:14:04 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 
@@ -66,7 +66,7 @@
 ;; (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
 
 ;;; MAJOR HACK, FIXME!
-;;(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
+(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
@@ -203,25 +203,34 @@ Last touched 1991, then in 2005--2008."
 ;						       "lsmath"
 ;						       "dists"))
 
+	       (:module
+		"lisp-stat-core"
+		:depends-on  ("proto-objects"
+			      "lsbasics"
+			      "compound"
+			      "dists"
+			      "lstypes"
+			      "lsfloat"
+			      "data"
+			      "lsmath"
+			      "matrices"
+			      "linalg"
+			      "statistics"
+			      "regression")
+		:file "ls-user")
 
-	       (:file "ls-user" :depends-on ("proto-objects"
-					     "lsbasics"
-					     "compound"
-					     "dists"
-					     "lstypes"
-					     "lsfloat"
-					     "data"
-					     "lsmath"
-					     "matrices"
-					     "linalg"
-					     "statistics"
-					     "regression"))
+	       (:module
+		 "lisp-stat-testing"
+		 :depends-on ( :lift "proto-objects" "ls-user" )
+		 :pathname "src/unittests/"
+		 :components ((:file "unittests")
+			      (:file "unittests-lstypes" :depends-on ("lstypes"))
+;;   -rw-r--r-- 1 tony tony  5839 2008-07-22 12:22 unittests-arrays.lisp
+;;   -rw-r--r-- 1 tony tony  4756 2008-07-22 12:22 unittests-data-clos.lisp
+;;   -rw-r--r-- 1 tony tony  1577 2008-07-22 12:22 unittests-proto.lisp
+;;   -rw-r--r-- 1 tony tony  1814 2008-07-22 12:22 unittests-regression.lisp
+			      ))
 
-	       (:file "unittests" :depends-on ("ls-user"))
-	       (:file "unittests-lstypes" :depends-on ("ls-user"
-						       "lstypes"))
-	       ;; (:file "unittests-data-clos" :depends-on ("ls-user"))
-	       ;; (:file "unittests-regression" :depends-on ("ls-user"))
 
 	       (:static-file "LICENSE")
 	       (:static-file "README")
@@ -230,11 +239,5 @@ Last touched 1991, then in 2005--2008."
 #|
 ;; preparation for modulization...
 
-((:module
-  "lisp-stat-testing"
-  :pathname "src/unittests/"
-  :components ((:file "unittests" :depends-on ("ls-user"))
-	       (:file "unittests-lstypes" :depends-on ("ls-user"
-						       "lstypes")))))
 
 |#
