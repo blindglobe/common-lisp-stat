@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-07-22 13:14:04 tony>
+;;; Time-stamp: <2008-09-17 20:30:05 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -46,7 +46,7 @@
 ;; (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
 
 ;;; MAJOR HACK, FIXME!
-(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
+;;(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
