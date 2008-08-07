@@ -9,3 +9,5 @@ fasl
 *.flc
 *.x86f
 test-results/
+ASDF/*
+external/*
