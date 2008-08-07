@@ -23,14 +23,19 @@ tested at this point):
        cd lib
        make
 
-run a common lisp (SBCL, CMUCL, CLISP) starting in the current
-directory.   Recent versions of CFFI and LIFT can be found in the
-external/ subdirectory, and should be autoload-able, assuming that you
-are using a Lisp implementation supporting ASDF.
+run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in the
+current directory.  Recent versions of CFFI and LIFT can be found in
+the external/ subdirectory, and should be autoload-able, assuming that
+you are using a Lisp implementation supporting ASDF.  (AJR-FIXME: need
+to upload my GIT mirrors to repo.or.cz or similar, and have them
+potentially available as submodules if needed)
 
-(on Debian: can use CLC or SBCL approaches, i.e.  ~/.clc/systems  or
-~/.sbcl/systems should contain softlinks to the lispstat, cffi, and
-lift ASDF files (i.e. lispstat.asd, cffi.asd, and lift.asd)).
+(on Debian or similar systems: can use CLC (Common Lisp Controller) or
+SBCL approaches, i.e.  ~/.clc/systems or ~/.sbcl/systems should
+contain softlinks to the lispstat, cffi, and lift ASDF files
+(i.e. lispstat.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
+probably a similar incantation for other CL's, need to record that
+here!).
 
 Step through ls-demo.lisp for a range of examples of activities.
     
@@ -59,9 +64,10 @@ CMUCL and SBCL seem to work just fine at this stage.
 
 CLISP is finicky regarding the problems that we have with CFFI
 conversation.  In particular that we can not really do typing that we
-need to take care of.
+need to take care of.   I think this is my problem, not someone
+elses. 
 
-Need to test ECL.
+Need to test ECL.  Clozure-CL seems to somewhat work.
 
 ===========
 
@@ -89,22 +95,26 @@ needed by
     git checkout master
     git pull . myTopicBranch
 
+(or
+    git rebase myTopicBranch
+)
+
 of course, perhaps you want to contribute to the mob branch.   For
 that, after cloning the repository as above, you would:
 
     git checkout -b mob remotes/origin/mob
 
-<work, work, work... through a cycle of
+(work, work, work... through a cycle of
 
          <edit>
 	 git add <files just edited>
 	 git commit -m "what I just did"
 
- ad-nauseum.  When ready to commit, then just >
+ ad-nauseum.  When ready to commit, then just:
 
      git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
 
->
+)
 
 and it'll be put on the mob branch, as a proposal for merging.
 
@@ -115,7 +125,8 @@ branch before uploading.   Will work on a formal example soon.
 something like:
 
   git checkout mob
-  git pull . myTopicBranch
+  git pull . myTopicBranch   
   git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
 
 )
+
