@@ -2,12 +2,8 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-17 20:11:11 tony>
+;;; Time-stamp: <2008-09-17 20:11:50 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
-
-;; (setf *my-base-directory*
-;;       #p"/home/tony/sandbox/CLS.git/"
-;;       #p"/Users/ungil/lisp/CommonLispStat/")
 
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
 (in-package :cl-user)
@@ -98,11 +94,13 @@ Last touched 1991, then in 2005--2008."
   :serial t
   :depends-on (:cffi :lift) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
+	       (:static-file "LICENSE")
+	       (:static-file "README")
+
 	       (:module "proto-objects"
 			:pathname "src/objsys/"
 			:components ((:lispstat-lsp-source-file "lsobjects")))
 
-	       (:lispstat-lsp-source-file "cffiglue")
 	       (:lispstat-lsp-source-file "defsys")
 	       (:lispstat-lsp-source-file "lstypes")
 	       (:lispstat-lsp-source-file "lsfloat")
@@ -112,41 +110,41 @@ Last touched 1991, then in 2005--2008."
 	       (:lispstat-lsp-source-file "lsmacros" 
 					  :depends-on ("compound"))
 
-	       (:lispstat-lsp-source-file "dists"
-					  :depends-on ("cffiglue"
-						       "lsmacros"))
-
 	       (:lispstat-lsp-source-file "lsmath"
 					  :depends-on ("proto-objects"
 						       "compound"
 						       "lsmacros"
 						       "lsfloat"))
 
-
-	       (:lispstat-lsp-source-file "matrices"
-					  :depends-on ("cffiglue"
-						       "compound"))
-
-	       (:lispstat-lsp-source-file "ladata"
-					  :depends-on ("cffiglue"
-						       "defsys"
-						       "lstypes"
-						       "compound"
-						       "matrices"))
-
-	       (:lispstat-lsp-source-file "linalg"
-					  :depends-on ("cffiglue"
-						       "lsmath"
-						       "matrices"
-						       "ladata"
-						       "lsfloat"
-						       "lstypes"
-						       "compound"))
+	       (:module "numerics-internal"
+			:pathname "src/numerics"
+			:components
+			((:lispstat-lsp-source-file "cffiglue")
+			 (:lispstat-lsp-source-file "dists"
+						    :depends-on ("cffiglue"
+								 "lsmacros"))
+			 (:lispstat-lsp-source-file "matrices"
+						    :depends-on ("cffiglue"
+								 "compound"))
+			 (:lispstat-lsp-source-file "ladata"
+						    :depends-on ("cffiglue"
+								 "defsys"
+								 "lstypes"
+								 "compound"
+								 "matrices"))
+			 (:lispstat-lsp-source-file "linalg"
+						    :depends-on ("cffiglue"
+								 "lsmath"
+								 "matrices"
+								 "ladata"
+								 "lsfloat"
+								 "lstypes"
+								 "compound"))))
 
 	       (:file "data" :depends-on ("proto-objects"
 					  "compound"
-					  "matrices"
-					  "linalg"))
+					  "numerics-internal" ;; "matrices" "linalg"
+					  ))
 
 	       ;; there is a circ reference which we need to solve.
 	       (:lispstat-lsp-source-file "lsbasics"
@@ -154,9 +152,9 @@ Last touched 1991, then in 2005--2008."
 						       "lstypes"
 						       "lsmacros"
 						       "lsfloat"
-						       "matrices"
-						       "linalg"
-						       "dists"))
+						       "numerics-internal"
+						       ;; "matrices" "linalg" "dists"
+						       ))
 
 	       (:lispstat-lsp-source-file "statistics"
 					  :depends-on ("proto-objects"
@@ -222,7 +220,6 @@ Last touched 1991, then in 2005--2008."
 			      ;;  "unittests-proto.lisp"
 			      ;;  "unittests-regression.lisp"
 			      ))
-	       (:static-file "LICENSE")
-	       (:static-file "README")
+
 	       ))
 
