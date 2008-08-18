@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-17 20:30:05 tony>
+;;; Time-stamp: <2008-09-17 20:34:22 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -177,7 +177,6 @@
 			     "numerics-internal")
 		:components ((:file "optimize")))
 	       
-	       
 	       ;; Applications
 	       (:module
 		"stat-models"
@@ -227,4 +226,3 @@
   :components ((:file "unittests" :depends-on ("ls-user"))
 	       (:file "unittests-lstypes" :depends-on ("ls-user"
 						       "lstypes")))))
-
