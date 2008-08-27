@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-08-15 16:05:27 tony>
+;;; Time-stamp: <2008-08-27 21:47:18 tony>
 ;;; Creation:   <2007-01-01 09:21:50 user> WRONG
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -35,7 +35,19 @@
 
 (in-package :ls-user)
 
-;;;; Matrix algebra.
+;;; linear algebra (matrices and vectors)
+
+(in-package :cl-user) ; the following will barf, but...
+(+ #(2 3 4) #(4 5 6))
+(+ #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
+(* #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
+(in-package :ls-user) ; the next will succeed
+(+ #(2 3 4) #(4 5 6))
+(+ #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
+(* #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
+
+
+
 
 (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((1.7888543819998317 0.0 0.0)
@@ -352,4 +364,14 @@ iron
 (undef 'iron)
 (variables)
 
-;;; More...
+;;; Plotting!
+
+(asdf:oos 'asdf:compile-op 'cl-cairo2 :force t)
+(asdf:oos 'asdf:load-op 'cl-cairo2)
+
+
+
+(asdf:oos 'asdf:compile-op 'rclg :force t)
+(asdf:oos 'asdf:load-op 'rclg)
+
+
