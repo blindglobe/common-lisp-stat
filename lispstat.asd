@@ -2,7 +2,12 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-17 20:15:50 tony>
+
+
+
+
+
+;;; Time-stamp: <2008-08-27 21:16:50 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
@@ -137,9 +142,14 @@ Last touched 1991, then in 2005--2008."
 								 "matrices"
 								 "ladata"))))
 
-	       (:file "data" :depends-on ("proto-objects"
-					  "lispstat-core"
-					  "numerics-internal"))  ;; "matrices" "linalg"
+	       (:module "stat-data"
+			:pathname "src/data/"
+			:depends-on ("proto-objects"
+				     "lispstat-core"
+				     "numerics-internal")
+			:components
+			(;; (:file "data-clos")
+			 (:file "data")))
 
 	       ;; there is a circ reference which we need to solve.
 	       (:lispstat-lsp-source-file "lsbasics"
@@ -150,9 +160,9 @@ Last touched 1991, then in 2005--2008."
 	       (:lispstat-lsp-source-file "statistics"
 					  :depends-on ("proto-objects"
 						       "lispstat-core"
-						       "numerics-internal" 
-						       "lsbasics"
-						       "data" ))
+						       "numerics-internal"
+						       "stat-data"
+						       "lsbasics"))
 
 	       (:file "optimize" :depends-on ("proto-objects"
 					      "lispstat-core"
@@ -180,7 +190,7 @@ Last touched 1991, then in 2005--2008."
 			      "lispstat-core"
 			      "numerics-internal" 
 			      "lsbasics"
-			      "data"
+			      "stat-data"
 			      "statistics"
 			      "regression")
 		:components ((:file "ls-user")))
