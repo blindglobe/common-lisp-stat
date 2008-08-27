@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-08-27 18:51:23 tony>
+;;; Time-stamp: <2008-08-27 21:16:50 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -202,10 +202,10 @@ v	       (:module "lispstat-core"
 		:depends-on  ("proto-objects"
 			      "lispstat-core"
 			      "numerics-internal" 
-			      "cls-basics"
+			      "lsbasics"
 			      "stat-data"
-			      "describe"
-			      "stat-models")
+			      "statistics"
+			      "regression")
 		:components ((:file "ls-user")))
 
 	       (:module
