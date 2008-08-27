@@ -2,12 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-
-
-
-
-
-;;; Time-stamp: <2008-08-27 21:16:50 tony>
+;;; Time-stamp: <2008-09-17 20:20:17 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
@@ -125,63 +120,73 @@ Last touched 1991, then in 2005--2008."
 								 "lsmacros"
 								 "lsfloat"))))
 
-	       (:module "numerics-internal"
-			:pathname "src/numerics/"
-			:depends-on ("proto-objects" "lispstat-core")
-			:components
-			((:lispstat-lsp-source-file "cffiglue")
-			 (:lispstat-lsp-source-file "dists"
-						    :depends-on ("cffiglue"))
-			 (:lispstat-lsp-source-file "matrices"
-						    :depends-on ("cffiglue"))
-			 (:lispstat-lsp-source-file "ladata"
-						    :depends-on ("cffiglue"
-								 "matrices"))
-			 (:lispstat-lsp-source-file "linalg"
-						    :depends-on ("cffiglue"
-								 "matrices"
-								 "ladata"))))
+	       (:module
+		"numerics-internal"
+		:pathname "src/numerics/"
+		:depends-on ("proto-objects" "lispstat-core")
+		:components
+		((:lispstat-lsp-source-file "cffiglue")
+		 (:lispstat-lsp-source-file "dists"
+					    :depends-on ("cffiglue"))
+		 (:lispstat-lsp-source-file "matrices"
+					    :depends-on ("cffiglue"))
+		 (:lispstat-lsp-source-file "ladata"
+					    :depends-on ("cffiglue"
+							 "matrices"))
+		 (:lispstat-lsp-source-file "linalg"
+					    :depends-on ("cffiglue"
+							 "matrices"
+							 "ladata"))))
 
-	       (:module "stat-data"
-			:pathname "src/data/"
-			:depends-on ("proto-objects"
-				     "lispstat-core"
-				     "numerics-internal")
-			:components
-			(;; (:file "data-clos")
-			 (:file "data")))
+	       (:module
+		"stat-data"
+		:pathname "src/data/"
+		:depends-on ("proto-objects"
+			     "lispstat-core"
+			     "numerics-internal")
+		:components
+		(;; (:file "data-clos")
+		 (:file "data")))
 
 	       ;; there is a circ reference which we need to solve.
-	       (:lispstat-lsp-source-file "lsbasics"
-					  :depends-on ("proto-objects"
-						       "lispstat-core"
-						       "numerics-internal" ))
-
-	       (:lispstat-lsp-source-file "statistics"
-					  :depends-on ("proto-objects"
-						       "lispstat-core"
-						       "numerics-internal"
-						       "stat-data"
-						       "lsbasics"))
-
-	       (:file "optimize" :depends-on ("proto-objects"
-					      "lispstat-core"
-					      "numerics-internal"))
+	       (:lispstat-lsp-source-file
+		"lsbasics"
+		:depends-on ("proto-objects"
+			     "lispstat-core"
+			     "numerics-internal" ))
+	       
+	       (:lispstat-lsp-source-file
+		"statistics"
+		:depends-on ("proto-objects"
+			     "lispstat-core"
+			     "numerics-internal"
+			     "stat-data"
+			     "lsbasics"))
+	       
+	       (:file
+		"optimize"
+		:depends-on ("proto-objects"
+			     "lispstat-core"
+			     "numerics-internal"))
 	       
 	       ;; Applications
-	       (:lispstat-lsp-source-file "regression"
-					  :depends-on ("proto-objects"
-						       "lispstat-core"
-						       "numerics-internal" 
-						       "lsbasics"
-						       "statistics"))
-;	       (:lispstat-lsp-source-file "nonlin"
-;					  :depends-on ("regression"))
-
-;	       (:lispstat-lsp-source-file "bayes"
-;					  :depends-on ("proto-objects"
-;						       "lsmath"
-;						       "dists"))
+	       (:module
+		"stat-models"
+		:pathname "src/stat-model/"
+		:depends-on ("proto-objects"
+			     "lispstat-core"
+			     "numerics-internal"
+			     "lsbasics"
+			     "statistics")
+		:components
+		((:lispstat-lsp-source-file "regression")
+		 ;; (:lispstat-lsp-source-file "nonlin"
+		 ;;	  :depends-on ("regression"))
+		 ;; (:lispstat-lsp-source-file "bayes"
+		 ;;	  :depends-on ("proto-objects"
+		 ;;		       "lsmath"
+		 ;;		       "dists"))
+		 ))
 
 	       (:module
 		"lisp-stat-one"
@@ -192,7 +197,7 @@ Last touched 1991, then in 2005--2008."
 			      "lsbasics"
 			      "stat-data"
 			      "statistics"
-			      "regression")
+			      "stat-models")
 		:components ((:file "ls-user")))
 
 	       (:module
