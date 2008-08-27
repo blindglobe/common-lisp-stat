@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-17 20:34:22 tony>
+;;; Time-stamp: <2008-08-27 18:51:23 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -102,8 +102,8 @@
 			:pathname "src/objsys/"
 			:components
 			((:lispstat-lsp-source-file "lsobjects")))
-
-	       (:module "lispstat-core"
+v
+v	       (:module "lispstat-core"
 			:pathname "src/basics/"
 			:serial t
 			:depends-on ("proto-objects")
@@ -219,7 +219,6 @@
 			      ;;  "unittests-proto.lisp"
 			      ;;  "unittests-regression.lisp"
 			      ))))
-
 ((:module
   "lisp-stat-testing"
   :pathname "src/unittests/"
