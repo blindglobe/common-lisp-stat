@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-08-27 21:31:21 tony>
+;;; Time-stamp: <2008-08-27 21:34:22 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
@@ -172,7 +172,7 @@ Last touched 1991, then in 2005--2008."
 	       ;; Applications
 	       (:module
 		"stat-models"
-		:pathname "src/stat-model/"
+		:pathname "src/stat-models/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
