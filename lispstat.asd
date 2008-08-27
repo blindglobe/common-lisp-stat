@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-17 20:11:50 tony>
+;;; Time-stamp: <2008-09-17 20:15:50 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 ;; What package should we be in?  Contaminating cl-user is probably EVIL.
@@ -10,8 +10,8 @@
 
 
 (defvar *lispstat-home-dir*
-  (directory-namestring (truename (asdf:system-definition-pathname
-				   :lispstat)))
+  (directory-namestring
+   (truename (asdf:system-definition-pathname :lispstat)))
   "Value considered \"home\" for our data")
 
 #|
@@ -52,7 +52,7 @@
 (in-package :cl-user)
 
 (defpackage #:lispstat-system
-    (:use :asdf :common-lisp))
+    (:use :common-lisp :asdf))
 
 (in-package #:lispstat-system)
 
@@ -92,97 +92,78 @@
 based on CLS alpha1 by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
 Last touched 1991, then in 2005--2008."
   :serial t
-  :depends-on (:cffi :lift) ;; need a matrix library
+  :depends-on (:cffi  :lift) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
 
 	       (:module "proto-objects"
 			:pathname "src/objsys/"
-			:components ((:lispstat-lsp-source-file "lsobjects")))
+			:components
+			((:lispstat-lsp-source-file "lsobjects")))
 
-	       (:lispstat-lsp-source-file "defsys")
-	       (:lispstat-lsp-source-file "lstypes")
-	       (:lispstat-lsp-source-file "lsfloat")
-
-	       (:lispstat-lsp-source-file "compound" 
-					  :depends-on ("proto-objects"))
-	       (:lispstat-lsp-source-file "lsmacros" 
-					  :depends-on ("compound"))
-
-	       (:lispstat-lsp-source-file "lsmath"
-					  :depends-on ("proto-objects"
-						       "compound"
-						       "lsmacros"
-						       "lsfloat"))
+	       (:module "lispstat-core"
+			:pathname "src/basics/"
+			:serial t
+			:depends-on ("proto-objects")
+			:components
+			((:lispstat-lsp-source-file "defsys")
+			 (:lispstat-lsp-source-file "lstypes")
+			 (:lispstat-lsp-source-file "lsfloat")
+			 
+			 (:lispstat-lsp-source-file "compound")
+			 (:lispstat-lsp-source-file "lsmacros" 
+						    :depends-on ("compound"))
+			 
+			 (:lispstat-lsp-source-file "lsmath"
+						    :depends-on ("compound"
+								 "lsmacros"
+								 "lsfloat"))))
 
 	       (:module "numerics-internal"
-			:pathname "src/numerics"
+			:pathname "src/numerics/"
+			:depends-on ("proto-objects" "lispstat-core")
 			:components
 			((:lispstat-lsp-source-file "cffiglue")
 			 (:lispstat-lsp-source-file "dists"
-						    :depends-on ("cffiglue"
-								 "lsmacros"))
+						    :depends-on ("cffiglue"))
 			 (:lispstat-lsp-source-file "matrices"
-						    :depends-on ("cffiglue"
-								 "compound"))
+						    :depends-on ("cffiglue"))
 			 (:lispstat-lsp-source-file "ladata"
 						    :depends-on ("cffiglue"
-								 "defsys"
-								 "lstypes"
-								 "compound"
 								 "matrices"))
 			 (:lispstat-lsp-source-file "linalg"
 						    :depends-on ("cffiglue"
-								 "lsmath"
 								 "matrices"
-								 "ladata"
-								 "lsfloat"
-								 "lstypes"
-								 "compound"))))
+								 "ladata"))))
 
 	       (:file "data" :depends-on ("proto-objects"
-					  "compound"
-					  "numerics-internal" ;; "matrices" "linalg"
-					  ))
+					  "lispstat-core"
+					  "numerics-internal"))  ;; "matrices" "linalg"
 
 	       ;; there is a circ reference which we need to solve.
 	       (:lispstat-lsp-source-file "lsbasics"
 					  :depends-on ("proto-objects"
-						       "lstypes"
-						       "lsmacros"
-						       "lsfloat"
-						       "numerics-internal"
-						       ;; "matrices" "linalg" "dists"
-						       ))
+						       "lispstat-core"
+						       "numerics-internal" ))
 
 	       (:lispstat-lsp-source-file "statistics"
 					  :depends-on ("proto-objects"
+						       "lispstat-core"
+						       "numerics-internal" 
 						       "lsbasics"
-						       "compound"
-						       "ladata" "matrices" "linalg"
-						       "lsmath"
 						       "data" ))
 
 	       (:file "optimize" :depends-on ("proto-objects"
-					      "cffiglue"
-					      "lstypes"
-					      "compound"
-					      "lsmath"
-					      "lsfloat"
-					      "lsbasics"
-					      "matrices"
-					      "ladata"
-					      "linalg"))
+					      "lispstat-core"
+					      "numerics-internal"))
 	       
 	       ;; Applications
 	       (:lispstat-lsp-source-file "regression"
 					  :depends-on ("proto-objects"
+						       "lispstat-core"
+						       "numerics-internal" 
 						       "lsbasics"
-						       "compound"
-						       "lsmath"
-						       "matrices"
-						       "linalg"
 						       "statistics"))
 ;	       (:lispstat-lsp-source-file "nonlin"
 ;					  :depends-on ("regression"))
@@ -193,25 +174,20 @@ Last touched 1991, then in 2005--2008."
 ;						       "dists"))
 
 	       (:module
-		"lisp-stat-core"
+		"lisp-stat-one"
 		:pathname "src/"
 		:depends-on  ("proto-objects"
+			      "lispstat-core"
+			      "numerics-internal" 
 			      "lsbasics"
-			      "compound"
-			      "dists"
-			      "lstypes"
-			      "lsfloat"
 			      "data"
-			      "lsmath"
-			      "matrices"
-			      "linalg"
 			      "statistics"
 			      "regression")
 		:components ((:file "ls-user")))
 
 	       (:module
 		 "lisp-stat-unittest"
-		 :depends-on ( "lisp-stat-core") ;; shouldn't need :lift!
+		 :depends-on ( "lisp-stat-one" ) ;; shouldn't need :lift!
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
 			      (:file "unittests-lstypes")
@@ -219,7 +195,4 @@ Last touched 1991, then in 2005--2008."
 			      ;;  "unittests-data-clos.lisp"
 			      ;;  "unittests-proto.lisp"
 			      ;;  "unittests-regression.lisp"
-			      ))
-
-	       ))
-
+			      ))))
