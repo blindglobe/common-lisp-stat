@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-08-27 21:16:50 tony>
+;;; Time-stamp: <2008-08-27 21:31:21 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -102,8 +102,8 @@
 			:pathname "src/objsys/"
 			:components
 			((:lispstat-lsp-source-file "lsobjects")))
-v
-v	       (:module "lispstat-core"
+
+	       (:module "lispstat-core"
 			:pathname "src/basics/"
 			:serial t
 			:depends-on ("proto-objects")
@@ -149,43 +149,36 @@ v	       (:module "lispstat-core"
 		(;; (:file "data-clos")
 		 (:file "data")))
 
-	       (:module
-		"cls-basics"
-		:pathname "src/basics/"
+	       ;; there is a circ reference which we need to solve.
+	       (:lispstat-lsp-source-file
+		"lsbasics"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
-			     "numerics-internal" )
-		:components
-		((:lispstat-lsp-source-file "lsbasics")))
+			     "numerics-internal" ))
 	       
-	       (:module
-		"describe"
-		:pathname "src/describe/"
+	       (:lispstat-lsp-source-file
+		"statistics"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "stat-data"
-			     "cls-basics")
-		:components
-		((:lispstat-lsp-source-file "statistics")))
+			     "lsbasics"))
 	       
-	       (:module
-		"optimization"
-		:pathname "src/numerics/"
+	       (:file
+		"optimize"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
-			     "numerics-internal")
-		:components ((:file "optimize")))
+			     "numerics-internal"))
 	       
 	       ;; Applications
 	       (:module
 		"stat-models"
-		:pathname "src/stat-models/"
+		:pathname "src/stat-model/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
-			     "cls-basics"
-			     "describe")
+			     "lsbasics"
+			     "statistics")
 		:components
 		((:lispstat-lsp-source-file "regression")
 		 ;; (:lispstat-lsp-source-file "nonlin"
@@ -205,7 +198,7 @@ v	       (:module "lispstat-core"
 			      "lsbasics"
 			      "stat-data"
 			      "statistics"
-			      "regression")
+			      "stat-models")
 		:components ((:file "ls-user")))
 
 	       (:module
