@@ -18,29 +18,39 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
-;;; conside    that data has 3 genotypic chracteristrics.  The first
-;;; would be form -- scalar, vector, array.   second would be
-;;; datarep type.  in particular integer, real, string, symbol.  The last
-;;; would be statistical type.  augmenting datarep type with use in a
-;;; statistical context, i.e. that would include nominal, ordinal,
-;;; integer, continous, interval (orderable subtypes).  Clearly, the
-;;; statistical type can be inherited, likewise the numerical type as
-;;; well.  The form can be pushed up or simplified as necessary, but
-;;; this can be challenging.
+;;; conside that data has 3 genotypic chracteristrics.  The first
+;;; would be form -- scalar, vector, array.  second would be datarep
+;;; ("computer science simplistic data" type.  in particular integer,
+;;; real, string, symbol.  The last would be statistical type
+;;; ("usually handled by computer sicience approaches via metadata").
+;;; augmenting datarep type with use in a statistical context,
+;;; i.e. that would include nominal, ordinal, integer, continous,
+;;; interval (orderable subtypes).  Clearly, the statistical type can
+;;; be inherited, likewise the numerical type as well.  The form can
+;;; be pushed up or simplified as necessary, but this can be
+;;; challenging.
+
+;;; The first approach we will take for CLS is to handle this as
+;;; lisp-only structures.  At the time of realization
+;;; (?instantiation?) of an "abstract" model, the data should be
+;;; pushed into an appropriate form (either "en masse", or
+;;; "on-demand") into a linear algebra framework.
+
+;;; There is some excellent material on this by John Chambers in one
+;;; of his earlier books.  Reference is being ignored to encourage
+;;; people to read them all.  With all due respect to John, they've
+;;; lasted quite well, but need to be updated.
 
 (in-package :cl-user)
 
 (defpackage :lisp-stat-data
-  (:documentation "Data I/O, management, other data technologies.")
+  (:documentation "Data management, integration, I/O, and other data technologies.")
   (:nicknames :ls-data)
   (:use :common-lisp
-	;;:cxml
-	:lisp-stat-config
 	:lisp-stat-object-system
+	:lisp-stat-config
 	:lisp-stat-types
-	:lisp-stat-compound-data
-	:lisp-stat-matrix
-	:lisp-stat-linalg)
+	:lisp-stat-compound-data)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
   (:export open-file-dialog read-data-file read-data-columns load-data
@@ -50,7 +60,7 @@
 (in-package :lisp-stat-data)
 
 ;;; The purpose of this package is to manage data which will be
-;;; processed by LispStat.  In particular, it willbe importnat to
+;;; processed by LispStat.  In particular, it will be important to
 ;;; register variables, datasets, relational structures, and other
 ;;; objects which could be the target for statistical modeling and
 ;;; inference.
@@ -61,7 +71,6 @@
 (defvar *lisp-stat-data-count* 0
   "number of items currently recorded.")
 
-
 ;;; Data (storage) Types, dt-{.*}
 ;;;
 ;;; Data types are the representation of data from a computer-science
@@ -70,6 +79,7 @@
 ;;; array-like, but types differ, difference is row-wise, while array
 ;;; is a compound of elements of the same type.
 ;;; 
+;;; This is completely subject to change.
 
 ;;Examples:
 ;;  (defun equidimensional (a)
@@ -149,10 +159,11 @@
 
 ;; design-wise should these be replaced with a "with-data" form? 
 
+;;; These need to be elsewhere...!
 ;; DSV processing
-
 ;; XML processing
 
+;;; DM operations should be somewhere else as well.
 ;;; Data Management
 
 ;; the goal is to have 2 operations which can be used to create new
@@ -164,6 +175,24 @@
 ;; (defgeneric data-relate (ds description) 
 ;;   "Take 2 or more datasets, and grow them into a bigger one through
 ;; relating them (i.e. merge is one example).")
+
+;;; What should we be able to do? 
+
+;;; Actions on a single dataset
+;;* subset-dataset original-set
+;; :list-of-columns :list-of-rows :list-of-rows-and-columns
+;; :list-of-indices
+;;* resample-dataset original-set ;
+;; :by-rows :by-columns :row-weights :column-weights
+;; :new-number-of-columns :new-number-of-rows 
+;; 
+
+;;; Actions based on 2 or more datasets
+;;* concat-dataset set1 set2   ; no matching
+;; :by-row :by-column :kronecker-product
+;;* merge-dataset set1 set2
+;; :match-on-column :match-on-row
+
 
 ;;; Data tools from "statistics.lsp" 
 
