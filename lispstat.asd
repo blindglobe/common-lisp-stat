@@ -2,12 +2,10 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-08-27 21:34:22 tony>
+;;; Time-stamp: <2008-09-02 17:46:16 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
-;; What package should we be in?  Contaminating cl-user is probably EVIL.
 (in-package :cl-user)
-
 
 (defvar *lispstat-home-dir*
   (directory-namestring
@@ -27,6 +25,7 @@
 	   (ls-defdir (target-dir-var  root-str)
 	     `(defvar ,target-dir-var (ls-dir ,root-str))))
 
+  ;; reminder of testing
   ;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
   ;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
   ;;(macroexpand-1 '(ls-dir "ASDF"))
@@ -37,10 +36,10 @@
   (ls-defdir *lispstat-examples-dir* "examples/"))
 
 (pushnew *lispstat-asdf-dir* asdf:*central-registry*)
-;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal)
+;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
 
 ;;; back to our regularly scheduled work...
-;;; We should not need these, I think, but?
+;;; We should NOT need these, but have in the past due to errors...
 ;; (asdf:oos 'asdf:compile-op :cffi)            ;; FFI
 ;; (asdf:oos 'asdf:compile-op :lift)            ;; Unit Testing 
 ;; (asdf:oos 'asdf:load-op :cffi)            ;; FFI
@@ -88,9 +87,11 @@
                (read vers))
   :author "A.J. Rossini <blindglobe@gmail.com>"
   :license "BSD"
-  :description "CommonLispStat (CLS): A System for Statistical Computing with Common Lisp;
-based on CLS alpha1 by Luke Tierney <luke@stat.uiowa.edu> (originally written when Luke was at CMU, apparently).
-Last touched 1991, then in 2005--2008."
+  :description "CommonLispStat (CLS): A System for Statistical
+  Computing with Common Lisp; based on CLS alpha1 by Luke Tierney
+  <luke@stat.uiowa.edu> (apparently originally written when Luke was
+  at CMU, on leave somewhere?).   Last touched by him in 1991, then in
+  2005--2008." 
   :serial t
   :depends-on (:cffi  :lift) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
