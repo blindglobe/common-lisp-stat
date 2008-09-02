@@ -1,10 +1,10 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2006-2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-08-27 21:47:18 tony>
-;;; Creation:   <2007-01-01 09:21:50 user> WRONG
+;;; Time-stamp: <2008-09-02 17:45:20 tony>
+;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
@@ -15,8 +15,7 @@
 ;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
-;;(asdf:oos 'asdf:load-op 'lift) ;; we need this, but I don't know why?
-;; hacked by simply doing this in the lispstat.asd   UGLY hack.
+;; (asdf:oos 'asdf:load-op 'lift)
 ;; (asdf:oos 'asdf:load-op 'cffi)
 ;; (asdf:oos 'asdf:compile-op 'lispstat :force t)
 ;; (asdf:oos 'asdf:compile-op 'lispstat)
@@ -369,9 +368,204 @@ iron
 (asdf:oos 'asdf:compile-op 'cl-cairo2 :force t)
 (asdf:oos 'asdf:load-op 'cl-cairo2)
 
+;; This can be used to generate PDF, PS, PNG, and X11/Microsoft
+;; displays (the latter being a proof of concept, of limited use for
+;; "real work".
 
+;;; Using R!
 
 (asdf:oos 'asdf:compile-op 'rclg :force t)
 (asdf:oos 'asdf:load-op 'rclg)
 
 
+(in-package :rclg-user)
+
+;; rclg-init::*r-started*
+
+;;;#3 Start R within Lisp
+
+(start-rclg)
+;; rclg-init::*r-started*
+(rclg-init::check-stack)
+(r "Cstack_info")
+(defparameter *x* (r seq 1 10))
+(defparameter *y* (rnbi rnorm 10))
+*y*
+(r plot *x* *y*)
+*y*
+
+;; This is for illustrative purposes only.  It is not a "good" use of rnbi.
+;; Really, you'll want rnbi to hold anonymous intermeditae results, like:
+
+(r plot *x* (rnbi rnorm 10))
+
+(r "Sys.getenv" "LD_LIBRARY_PATH")
+(r "Sys.getenv" "LD_PRELOAD")
+
+(r "ls")
+(r ls)
+(r "search")
+
+(r "geterrmessage")
+
+(r "library" "stats") 
+(r library "MASS")
+(r "library" "Biobase")
+
+(setf my.lib "Biobase")
+my.lib
+(r library my.lib)
+
+(r "ls")
+
+(r "print.default" 3)
+(r "rnorm" 10)
+
+;; Working in the R space
+
+(r assign "x" 5)
+(r assign "x2" (list 1 2 3 5))
+
+(r assign "x2" #(1 2 3 5 3 4 5))
+(r assign "z" "y") ;; unlike the above, this assigns character data
+(r "ls")
+
+(setf my.r.x2 (r get "x2"))  ;; moving data from R to CL
+(r assign "x2" my.r.x2)  ;; moving data from CL to R
+
+;; The following is not the smartest thing to do!
+;;(r q)
+
+
+
+;;; How might we do statistics with Common Lisp? 
+;;; How might we work with a data.frame?
+;;; What could the structures be?  
+;;; How much hinting, and of what type, should drive the data
+;;; analysis?  
+
+(defpackage :my-data-analysis-example
+  (:documentation "Example work-package for a data analysis")
+  (:use :common-lisp :lisp-stat)
+  (:export results figures report))
+
+(in-package :my-data-analysis-example)
+
+(defvar my-dataset1 (read-file "data/test1.lisp"))
+;; or
+(defvar my-dataset2 (read-file "data/test1.csv" :type 'csv))
+
+;;; manipulate
+
+(setf my-dataset2 (set-description my-datasets2
+				   :dependent-variables (list of symbols)))
+(setf my-dataset2 (set-description my-datasets2
+				   :independent-variables (list of symbols)))
+
+;; the following could be true in many cases.
+(assert 
+ (list-intersection (get-description my-datasets2 :independent-variables)
+		    (get-description my-datasets2 :dependent-variables)))
+;;
+;; but we could phrase better,i.e.
+;;
+(get-description
+ my-datasets2
+ :predicate-list-on-variable-metadata (list (and 'independent-variables
+						 'dependent-variables)))
+
+
+;; statistical relations re: input/output, as done above, is one
+;; issue, another one is getting the right approach for statistical
+;; typing, i.e. 
+(get-description
+ my-datasets2
+ :predicate-list-on-variable-metadata (list 'ordinal-variables))
+
+
+;; so we could use a set of logical ops to selection from variable
+;; metadata, i.e.
+;;    and, or, not
+;; do we really need the simplifying extensions?
+
+
+;;; output to REPL
+
+(report my-dataset1 :style 'five-num)
+(report my-dataset1 :style 'univariate)
+(report my-dataset1 :style 'bivariate)
+(report my-dataset1 :style 'metadata)
+
+;;; to file?
+
+(report my-dataset1
+	:style 'five-num
+	:format 'pdf
+	:stream (filename-as-stream "my-dataset1-5num.pdf"))
+(report my-dataset1 :style 'univariate)
+(report my-dataset1 :style 'bivariate)
+(report my-dataset1 :style 'metadata)
+
+;;; so report could handle datasets... and models?
+
+(report my-model :style 'formula)
+(report my-model :style 'simulate
+	(list :parameters (:eta 5 :mu 4 :sigma (list 2 1 0.5))
+	      :number-of-reps 10))
+;; should return a list of parameters along with range information,
+;; useful for auto-building the above.   Note that there are 3 types
+;; of parameters that can be considered -- we can have values which
+;; define ddata, we can have values which define fixed values and some
+;; could be things tht we estimate.  
+
+
+(defgeneric report (object &optional style format stream)
+  (:documentation "method for reporting on data"))
+
+(defmethod report ((object dataset)
+		   (style report-dataset-style-type)
+		   (format output-format-type)
+		   ((stream *repl*) output-stream-type))
+  "dataset reporting")
+
+
+(defmethod report ((object model)
+		   (style report-model-style-type)
+		   (format output-format-type)
+		   ((stream *repl*) output-stream-type))
+  "model reporting")
+
+(defmethod report ((object analysis-instance)
+		   (style report-analysis-style-type)
+		   (format output-format-type)
+		   ((stream *repl*) output-stream-type))
+  "model + dataset reporting")
+
+
+;; parameters are just things which get filled with values, repeatedly
+;; with data, or by considering to need estimation.
+(parameters my-model)
+(parameters my-model :type 'data)
+(parameters my-model :type 'fixed)
+(parameters my-model :type 'estimate)
+(parameters my-model :type '(estimate fixed))
+(parameters my-model :list-types) ;; useful for list-based extraction
+;; of particular types
+
+(setf my-model-data-instance
+      (compute model data :specification (list :spec 'linear-model
+					       :depvar y
+					       :indepvar (list x1 x2))))
+(report my-model-data-instance)
+
+
+;;; So how might we use this?  Probably need to consider the
+;;; serialization of any lisp objects generated, perhaps via some form
+;;; of memoization...?
+(in-package :cl-user)
+
+(my-data-analysis-example:report :type 'full)
+(my-data-analysis-example:report :type 'summary)
+(my-data-analysis-example:figures :type 'pdf :file "results-figs.pdf")
+
+(my-data-analysis-example:report)
