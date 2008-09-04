@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-02 17:46:16 tony>
+;;; Time-stamp: <2008-09-03 20:01:34 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -149,7 +149,6 @@
 		(;; (:file "data-clos")
 		 (:file "data")))
 
-	       ;; there is a circ reference which we need to solve.
 	       (:lispstat-lsp-source-file
 		"lsbasics"
 		:depends-on ("proto-objects"
@@ -164,11 +163,14 @@
 			     "stat-data"
 			     "lsbasics"))
 	       
-	       (:file
-		"optimize"
+	       (:module
+		"optimization"
+		:pathname "src/numerics/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
-			     "numerics-internal"))
+			     "numerics-internal")
+		:components ((:file "optimize")))
+	       
 	       
 	       ;; Applications
 	       (:module
