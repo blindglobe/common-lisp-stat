@@ -1,20 +1,18 @@
 ;;; -*- mode: lisp -*-
 ;;;
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
 ;;; Common Lisp.  
 
-;;;;
+;;;; Originally from:
 ;;;; regression.lsp XLISP-STAT regression model proto and methods
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 ;;;;
-;;;;
 ;;;; Incorporates modifications suggested by Sandy Weisberg.
-;;;;
 
 (in-package :cl-user)
 
