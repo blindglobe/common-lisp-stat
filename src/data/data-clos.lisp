@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    data package for lispstat
-;;; Time-stamp: <2008-03-12 17:18:42 user>
+;;; Time-stamp: <2008-09-02 18:40:53 tony>
 ;;; Creation:   <2008-03-12 17:18:42 user>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -76,26 +76,38 @@
 ;; block (considering 1-1 mappings using row ID as a relation).  
 ;; Is this a worthwhile generalization?
 
+(defclass statistical-dataset-metadata (rdf-type)
+  (())
+
+
+  )
+
 (defclass statistical-dataset ()
   ((store :initform nil
 	  :initarg :storage
 	  :accessor dataset
-	  :documentation "Data storage slot.  Should be an array or a
-relation,")
+	  :documentation "Data storage: typed as table, array,
+                          relation, or pointer/reference to such.")
    (documentation-string :initform nil
 			 :initarg :doc
 			 :accessor doc-string
-			 :documentation "Information about statistical-dataset.")
+			 :documentation "uncomputable information
+                                         about statistical-dataset
+                                         instance.") 
+
+   ;; the rest of this is metadata.  In particular, we should find a
+   ;; more flexible, compact way to store this.
    (case-labels :initform nil
 		:initarg :case-labels 
 		:accessor case-labels
 		:documentation "labels used for describing cases (doc
-metadata), possibly used for merging.")
+                                metadata), possibly used for merging.")
    (var-labels :initform nil
 	       :initarg :var-labels
 	       :accessor var-labels
 	       :documentation "Variable names."))
-  (:documentation "Standard Cases by Variables Statistical-Dataset."))
+  (:documentation "Standard Cases by Variables Statistical-Dataset,
+                   i.e. an S data.frame."))
 
 ;;
 ;; statistical-dataset is the basic cases by variables framework.
