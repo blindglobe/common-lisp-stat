@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
@@ -21,7 +21,7 @@
        :lisp-stat-linalg-data
        :lisp-stat-linalg
        :lisp-stat-basics)
-   (:shadowing-import-from :lisp-stat-math
+   (:shadowing-import-from :lisp-stat-math ;; life is a vector!
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random
       truncate floor ceiling round minusp zerop plusp evenp oddp 
@@ -46,10 +46,11 @@ Returns the standard deviation of the elements x. Vector reducing."
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
 
-;; FIXME the following assume that we are using the vector based functions
-(defun quantile (x p)
-"Args: (x p)
-Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."
+(defgeneric quantile (x p)
+  (:documentation "Args: (x p)
+Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."))
+
+(defmethod quantile ((x sequence) (p sequence))
   (let* ((x (sort-data x))
          (n (length x))
          (np (* p (- n 1)))
@@ -57,15 +58,29 @@ Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."
          (high (ceiling np)))
     (/ (+ (select x low) (select x high)) 2)))
 
-(defun median (x) 
-"Args: (x)
-Returns the median of the elements of X."
-  (quantile x 0.5))
+(defmethod quantile ((x sequence) (p real))
+  (let* ((x (sort-data x))
+         (n (length x))
+         (np (* p (- n 1)))
+         (low (floor np))
+         (high (ceiling np)))
+    (/ (+ (select x low) (select x high)) 2)))
 
-(defun interquartile-range (x) 
-"Args: (number-data)
-Returns the interquartile range of the elements of X."
-  (reduce #'- (quantile x '(0.75 0.25))))
+
+;;; things to build on top of quantiles...!
+
+;; Args: (x)
+;; Returns the median of the elements of X.
+(defmacro median (x) 
+  `(quantile ,x 0.5))
+;; (macroexpand '(median (list 1 2 3)))
+;; (median (list 1 2 3))
+
+
+;; Args: (number-data) 
+;; Returns the interquartile range of the elements of X.
+(defmacro interquartile-range (x) 
+  '(reduce #'- (quantile ,x '(0.75 0.25))))
 
 (defun fivnum (x) 
 "Args: (number-data)
