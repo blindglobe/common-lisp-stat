@@ -282,7 +282,7 @@ Make a copy of an minfo instance."
 	(internals (copy-seq (slot-value 'internals))))
     (dotimes (i (length internals))
 	     (let ((x (aref internals i)))
-	       (if (sequencep x)
+	       (if (typep x 'sequence)
 		   (setf (aref internals i) (copy-seq x)))))
     (send obj :add-slot 'internals internals)
     obj))
