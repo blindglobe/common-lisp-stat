@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-03 20:01:34 tony>
+;;; Time-stamp: <2008-09-05 08:13:26 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -149,19 +149,25 @@
 		(;; (:file "data-clos")
 		 (:file "data")))
 
-	       (:lispstat-lsp-source-file
-		"lsbasics"
+	       (:module
+		"cls-basics"
+		:pathname "src/basics/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
-			     "numerics-internal" ))
+			     "numerics-internal" )
+		:components
+		((:lispstat-lsp-source-file "lsbasics")))
 	       
-	       (:lispstat-lsp-source-file
-		"statistics"
+	       (:module
+		"describe"
+		:pathname "src/describe/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "stat-data"
-			     "lsbasics"))
+			     "cls-basics")
+		:components
+		((:lispstat-lsp-source-file "statistics")))
 	       
 	       (:module
 		"optimization"
@@ -179,8 +185,8 @@
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
-			     "lsbasics"
-			     "statistics")
+			     "cls-basics"
+			     "describe")
 		:components
 		((:lispstat-lsp-source-file "regression")
 		 ;; (:lispstat-lsp-source-file "nonlin"
@@ -197,9 +203,9 @@
 		:depends-on  ("proto-objects"
 			      "lispstat-core"
 			      "numerics-internal" 
-			      "lsbasics"
+			      "cls-basics"
 			      "stat-data"
-			      "statistics"
+			      "describe"
 			      "stat-models")
 		:components ((:file "ls-user")))
 
