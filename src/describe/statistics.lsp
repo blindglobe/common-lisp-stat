@@ -80,7 +80,7 @@ Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."))
 ;; Args: (number-data) 
 ;; Returns the interquartile range of the elements of X.
 (defmacro interquartile-range (x) 
-  '(reduce #'- (quantile ,x '(0.75 0.25))))
+  `(reduce #'- (quantile ,x '(0.75 0.25))))
 
 (defun fivnum (x) 
 "Args: (number-data)
