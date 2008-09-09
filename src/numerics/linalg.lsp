@@ -917,9 +917,7 @@ is true."
 	(has-w (if (/= 0 has_w) t nil))
 	(RE 1))
     (declare (long-float val dxi dyi dv dw sum_w dxik dxjk dyj
-		    dx_meani dx_meanj dy_mean))
-;;    (declare-double val dxi dyi dv dw sum_w dxik dxjk dyj
-;;		    dx_meani dx_meanj dy_mean)
+		    dx_meani dx_meanj dy_mean)) ;; originally "declare-double" macro
   
     (if (> mode RE) (error "not supported for complex data yet"))
 

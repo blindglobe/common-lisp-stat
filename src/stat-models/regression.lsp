@@ -43,16 +43,19 @@
 
 ;;; Regresion Model Prototype
 
-
 ;; The general strategy behind the fitting of models using prototypes
 ;; is that we need to think about want the actual fits are, and then
 ;; the fits can be used to recompute as components are changes.  One
 ;; catch here is that we'd like some notion of trace-ability, in
 ;; particular, there is not necessarily a fixed way to take care of the
-;; audit trail.  save-nd-die might be a means of recording the final
+;; audit trail.  save-and-die might be a means of recording the final
 ;; approach, but we are challenged by the problem of using advice and
 ;; other such features to capture stages and steps that are considered
 ;; along the goals of estimating a model.
+
+;; Note that the above is a stream-of-conscience response to the
+;; challenge of reproducibility in the setting of prototype "on-line"
+;; computation. 
 
 (defvar regression-model-proto nil
   "Prototype for all regression model instances.")
@@ -161,12 +164,13 @@ Recomputes the estimates. For internal use by other messages"
               (sweep-operator m (iseq 1 n) tol)
               (sweep-operator m (iseq 0 n) (cons 0.0 tol)))))
     (format t
-	   "~%REMOVEME: regr-mdl-prto :compute =~A~%~A~%~A~%~A~%~A~%"
+	    "~%REMOVEME: regr-mdl-prto :compute~%Sweep= ~A~%x= ~A~%y= ~A~%m= ~A~%tss= ~A~%"
 	   sweep-result x y m tss)
     (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
           (aref (first sweep-result) p p))
+    ;; SOMETHING WRONG HERE! FIX-ME
     (setf (slot-value 'basis)
           (let ((b (remove 0 (second sweep-result))))
             (if b (- (reduce #'- (reverse b)) 1)
@@ -299,7 +303,7 @@ Returns the residual sum of squares for the model."
 "Message args: ()
 
 Returns the indices of the variables used in fitting the model, in a
-sequence."
+sequence.  Recompute before this, if needed."
   (if (send self :needs-computing)
       (send self :compute))
   (if (typep (slot-value 'basis) 'sequence)
@@ -460,12 +464,12 @@ basis."
   (let ((n (array-dimension (send self :x) 1))
         (indices (flatten-list
 		  (if (send self :intercept) 
-                     (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
+                     (cons 0 (+ 1 (send self :basis)))
                      (list (+ 1 (send self :basis))))))
         (m (send self :sweep-matrix)))
-    (format t "~%REMOVEME2: Coef-ests: ~A ~% ~A ~% ~A ~% ~A"
+    (format t "~%REMOVEME2: Coef-ests: ~% Sweep Matrix: ~A ~% array dim 1: ~A ~% Swept indices:  ~A ~% basis: ~A"
 	    m n indices (send self :basis))
-    (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))
+    (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list))) ;; ERROR
 
 (defmeth regression-model-proto :xtxinv () 
 "Message args: ()
@@ -512,7 +516,7 @@ Computes Cook's distances."
 
 
 (defun plot-points (x y &rest args)
-  "FIXME!!"
+  "need to fix."
   (declare (ignore x y args))
   (error "Graphics not implemented yet."))
 
