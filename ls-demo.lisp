@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-09-02 17:45:20 tony>
+;;; Time-stamp: <2008-09-05 18:29:49 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -297,7 +297,7 @@ my-chol-decomp-test
   
   (DEF DLABS (QUOTE ("GLUFAST" "GLUTEST" "INSTEST" "CCLASS"))) 
   (format t "loaded data.~%")
-  )
+  )  ;; eval at this point.
 
 ;; Simple univariate variable-specific descriptions.
 (fivnum absorbtion)
@@ -344,7 +344,13 @@ iron
 (send m :compute)
 (send m :sweep-matrix)
 (format t "~%~A~%" (send m :sweep-matrix))
-(send m :display) ;; ERROR...
+
+ ;; ERROR... FIX-ME!!
+(send m :basis) ;; this should be positive?
+;; (setf (slot-value 'basis) (abs (send m :basis)))
+(send m :coef-estimates)
+
+(send m :display)
 (def m (regression-model (bind-columns iron aluminum) absorbtion))
 (send m :help)
 (send m :help :display)
