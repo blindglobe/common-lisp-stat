@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-09-05 18:29:49 tony>
+;;; Time-stamp: <2008-09-09 08:15:07 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -323,7 +323,9 @@ iron
 (defvar fit1a nil)
 (setf fit1a (regression-model absorbtion iron :print nil))
 (send fit1a :doc)
-(setf (send fit1a :doc) "this") ;; FIXME: this is a more naturualo
+;;  (setf (send fit1a :doc) "this") ;; FIXME: this error...
+(send fit1a :doc "this") ;; FIXME: this is a more natural
+(send fit1a :doc)
 (send fit1a :x)
 (send fit1a :y)
 (send fit1a :compute)
@@ -333,8 +335,8 @@ iron
 (send fit1a :display)
 
 #+nil(progn
+       ;; syntax example
        (array-dimension #2A ((1)) 0)
-       ;; more tests
        )
 
 ;;; FIXME: need to get multiple-linear regression working -- clearly
@@ -347,7 +349,6 @@ iron
 
  ;; ERROR... FIX-ME!!
 (send m :basis) ;; this should be positive?
-;; (setf (slot-value 'basis) (abs (send m :basis)))
 (send m :coef-estimates)
 
 (send m :display)
@@ -355,7 +356,7 @@ iron
 (send m :help)
 (send m :help :display)
 (send m :help :basis)
-
+;; No graphics!  But handle the error gracefully...
 (send m :plot-residuals)
 
 
