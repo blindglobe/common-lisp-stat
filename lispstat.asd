@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-09-05 08:13:26 tony>
+;;; Time-stamp: <2008-09-13 22:45:50 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -93,7 +93,7 @@
   at CMU, on leave somewhere?).   Last touched by him in 1991, then in
   2005--2008." 
   :serial t
-  :depends-on (:cffi  :lift) ;; need a matrix library
+  :depends-on (:cffi  :lift :lisp-matrix) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
