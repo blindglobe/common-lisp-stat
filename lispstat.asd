@@ -93,7 +93,7 @@
   at CMU, on leave somewhere?).   Last touched by him in 1991, then in
   2005--2008." 
   :serial t
-  :depends-on (:cffi  :lift :lisp-matrix) ;; need a matrix library
+  :depends-on (:cffi  :lift) ;;  :lisp-matrix need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
@@ -149,26 +149,39 @@
 		(;; (:file "data-clos")
 		 (:file "data")))
 
-	       ;; there is a circ reference which we need to solve.
-	       (:lispstat-lsp-source-file
-		"lsbasics"
+	       (:module
+		"lispstat-basics"
+		:pathname "src/basics/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
-			     "numerics-internal" ))
-	       
-	       (:lispstat-lsp-source-file
-		"statistics"
+			     "numerics-internal"
+			     "stat-data")
+		:components
+		((:lispstat-lsp-source-file "lsbasics")))
+
+
+	       (:module
+		"descriptives"
+		:pathname "src/describe/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "stat-data"
-			     "lsbasics"))
-	       
-	       (:file
-		"optimize"
+			     "lispstat-basics")
+		:components
+		((:lispstat-lsp-source-file "statistics")))
+
+	       (:module
+		"optimization"
+		:pathname "src/numerics/"
 		:depends-on ("proto-objects"
 			     "lispstat-core"
-			     "numerics-internal"))
+			     "numerics-internal"
+			     "stat-data"
+			     "lispstat-basics")
+		:components
+		((:file "optimize")))
+		 
 	       
 	       ;; Applications
 	       (:module
@@ -177,8 +190,9 @@
 		:depends-on ("proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
-			     "lsbasics"
-			     "statistics")
+			     "lispstat-basics"
+			     "descriptives"
+			     "optimization")
 		:components
 		((:lispstat-lsp-source-file "regression")
 		 ;; (:lispstat-lsp-source-file "nonlin"
@@ -190,20 +204,21 @@
 		 ))
 
 	       (:module
-		"lisp-stat-one"
+		"lisp-stat-user"
 		:pathname "src/"
 		:depends-on  ("proto-objects"
 			      "lispstat-core"
 			      "numerics-internal" 
-			      "lsbasics"
 			      "stat-data"
-			      "statistics"
+			      "lispstat-basics"
+			      "descriptives"
+			      "optimization"
 			      "stat-models")
 		:components ((:file "ls-user")))
 
 	       (:module
 		 "lisp-stat-unittest"
-		 :depends-on ( "lisp-stat-one" ) ;; shouldn't need :lift!
+		 :depends-on ( "lisp-stat-user" ) ;; shouldn't need :lift!
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
 			      (:file "unittests-lstypes")
@@ -212,9 +227,3 @@
 			      ;;  "unittests-proto.lisp"
 			      ;;  "unittests-regression.lisp"
 			      ))))
-((:module
-  "lisp-stat-testing"
-  :pathname "src/unittests/"
-  :components ((:file "unittests" :depends-on ("ls-user"))
-	       (:file "unittests-lstypes" :depends-on ("ls-user"
-						       "lstypes")))))
