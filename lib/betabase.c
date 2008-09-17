@@ -27,8 +27,7 @@ double ppbeta(double p, double a, double b, int *ifault)
   Static routines
 */
 
-static double logbeta(p, q)
-     double p, q;
+static double logbeta(double p, double q)
 {
   return(gamma(p) + gamma(q) - gamma(p + q));
 }
@@ -36,8 +35,7 @@ static double logbeta(p, q)
 #define Min(x,y) (((x) < (y)) ? (x) : (y))
 #define Max(x,y) (((x) > (y)) ? (x) : (y))
 
-static double betai(x, pin, qin)
-     double x, pin, qin;
+static double betai(double x, double pin, double qin)
 {
   /* Translated from FORTRAN
      july 1977 edition.  w. fullerton, c3, los alamos scientific lab.
@@ -154,9 +152,7 @@ static double betai(x, pin, qin)
   cause an underflow; a value of -308 or thereabouts will often be
 */
 
-static double xinbta(p, q, beta, alpha, ifault)
-     double *p, *q, *beta, *alpha;
-     int *ifault;
+static double xinbta(double *p, double *q, double *beta, double *alpha, int *ifault)
 {
   /* Initialized data */
   static double sae = -30.0; /* this should be sufficient */

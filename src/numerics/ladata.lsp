@@ -36,7 +36,13 @@
 
 (in-package :lisp-stat-linalg-data)
 
+#+openmcl
+(defctype size-t :unsigned-long)
+#+sbcl
+(defctype size-t :unsigned-int)
 
+;; Should we do the same with int's and long's?   There is some
+;; evidence that it might be useful?
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -95,7 +101,7 @@
 (defun ptr-eq (p q) (cffi:pointer-eq p q))
 
 (cffi:defcfun ("la_base_allocate" ccl-la-base-allocate)
-    :pointer (n :int) (m :int))
+    :pointer (n size-t) (m size-t))
 (defun la-base-allocate (n m) 
   (ccl-la-base-allocate n m))
 
@@ -105,7 +111,7 @@
   (ccl-la-base-free-alloc p))
 
 (cffi:defcfun ("la_mode_size" ccl-la-mode-size)
-    :int (x :int))
+    size-t (x size-t))
 
 (defun la-mode-size (mode)
   (ccl-la-mode-size mode))
@@ -114,13 +120,13 @@
 ;;;             Callbacks for Internal Storage
 ;;;
 
-(cffi:defcallback lisp-la-allocate :void ((n :long) (m :long))
+(cffi:defcallback lisp-la-allocate :void ((n size-t) (m size-t))
 		  (ccl-store-ptr (la-allocate n m)))
 (cffi:defcfun ("register_la_allocate" register-la-allocate)
     :void (p :pointer))
 (register-la-allocate (cffi:callback lisp-la-allocate))
 (cffi:defcfun ("la_allocate" la) 
-    :pointer (x :int) (y :int))
+    :pointer (x size-t) (y size-t))
 
 (cffi:defcallback lisp-la-free-alloc
     :void ((p :pointer))
@@ -138,22 +144,22 @@
 
 
 (cffi:defcfun ("la_get_integer" ccl-la-get-integer)
-    :int (p :pointer) (i :int))
+    :long (p :pointer) (i size-t))   ;; was int, not long, for first
 (defun la-get-integer (p i)
   (ccl-la-get-integer p i))
 
 (cffi:defcfun ("la_get_double" ccl-la-get-double)
-    :double (p :pointer) (i :int))
+    :double (p :pointer) (i size-t))
 (defun la-get-double (p i)
   (ccl-la-get-double p i))
 
 (cffi:defcfun ("la_get_complex_real" ccl-la-get-complex-real)
-    :double (p :pointer) (i :int))
+    :double (p :pointer) (i size-t))
 (defun la-get-complex-real (p i)
   (ccl-la-get-complex-real p i))
 
 (cffi:defcfun ("la_get_complex_imag" ccl-la-get-complex-imag)
-    :double (p :pointer) (i :int))
+    :double (p :pointer) (i size-t))
 (defun la-get-complex-imag (p i)
   (ccl-la-get-complex-imag p i))
 
@@ -161,7 +167,7 @@
   (complex (la-get-complex-real p i) (la-get-complex-imag p i)))
 
 (cffi:defcfun ("la_get_pointer" ccl-la-get-pointer)
-    :pointer (p :pointer) (i :int))
+    :pointer (p :pointer) (i size-t))
 (defun la-get-pointer (p i)
   (ccl-la-get-pointer p i))
 
@@ -169,22 +175,22 @@
 ;;; CFFI glue for     Storage Mutation Functions
 
 (cffi:defcfun ("la_put_integer" ccl-la-put-integer)
-    :void (p :pointer) (i :int) (x :int))
+    :void (p :pointer) (i size-t) (x :long))  ;; last was :int ?
 (defun la-put-integer (p i x)
   (ccl-la-put-integer p i x))
 
 (cffi:defcfun ("la_put_double" ccl-la-put-double)
-    :void (p :pointer) (i :int) (x :double))
+    :void (p :pointer) (i size-t) (x :double))
 (defun la-put-double (p i x) 
   (ccl-la-put-double p i (float x 1d0)))
 
 (cffi:defcfun ("la_put_complex" ccl-la-put-complex) 
-    :void (p :pointer) (i :int) (x :double) (y :double))
+    :void (p :pointer) (i size-t) (x :double) (y :double))
 (defun la-put-complex (p i x y) 
   (ccl-la-put-complex p i (float x 1d0) (float y 1d0)))
 
 (cffi:defcfun ("la_put_pointer" ccl-la-put-pointer)
-    :void (p :pointer) (i :int) (q :pointer))
+    :void (p :pointer) (i size-t) (q :pointer))
 (defun la-put-pointer (p i q) 
   (ccl-la-put-pointer p i q)) 
 

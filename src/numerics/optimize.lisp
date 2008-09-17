@@ -7,6 +7,7 @@
 
 (defpackage :lisp-stat-optimize
  (:use :common-lisp
+       :cffi
        :lisp-stat-ffi-int
        :lisp-stat-object-system
        :lisp-stat-types
@@ -41,6 +42,11 @@
 
 (in-package :lisp-stat-optimize)
 
+#+openmcl
+(defctype size-t :unsigned-long)
+#+sbcl
+(defctype size-t :unsigned-int)
+
 (defvar *maximize-callback-function* nil
   "Used in generic optimization to determine function name -- symbol or string?")
 
@@ -68,17 +74,17 @@
 (register-maximize-callback (cffi:callback ccl-maximize-callback))
 
 (cffi:defcfun ("ccl_numgrad_front" ccl-numgrad-front)
-    :int (x :int) (y :pointer) (z :pointer) (u :double) (v :pointer))
+    :void (x size-t) (y :pointer) (z :pointer) (u :double) (v :pointer))
 (defun numgrad-front (x y z u v)
   (ccl-numgrad-front x y z (float u 1d0) v))
 
 (cffi:defcfun ("ccl_numhess_front" ccl-numhess-front)
-    :int (x :int) (y :pointer) (z :pointer) (u :pointer) (v :pointer) (w :double) (a :pointer))
+    :void (x size-t) (y :pointer) (z :pointer) (u :pointer) (v :pointer) (w :double) (a :pointer))
 (defun numhess-front (x y z u v w a) 
   (ccl-numhess-front x y z u v (float w 1d0) a))
 
 (cffi:defcfun ("ccl_minfo_maximize" ccl-minfo-maximize)
-    :int (x :pointer) (y :pointer) (z :pointer) (u :pointer) (v :pointer) (w :int))
+    :void (x :pointer) (y :pointer) (z :pointer) (u :pointer) (v :pointer) (w :int))
 (defun base-minfo-maximize (x y z u v w) 
   (ccl-minfo-maximize x y z u v w))
 
