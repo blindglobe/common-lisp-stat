@@ -93,7 +93,7 @@
   at CMU, on leave somewhere?).   Last touched by him in 1991, then in
   2005--2008." 
   :serial t
-  :depends-on (:cffi  :lift) ;;  :lisp-matrix need a matrix library
+  :depends-on (:cffi  :lift :lisp-matrix) ;; need a matrix library
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
