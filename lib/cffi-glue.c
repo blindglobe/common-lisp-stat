@@ -1,8 +1,14 @@
+/*
 #ifdef __APPLE__
 #include <stdlib.h>
 #else
 #include <malloc.h>
 #endif
+*/
+#include <stdlib.h>
+#include <malloc.h>
+
+
 
 #include <string.h>
 
@@ -20,9 +26,10 @@ extern double betacdf(), betaquant(), betadens(), betarand();
 extern double tcdf(), tquant(), tdens(), trand();
 extern double fcdf(), fquant(), fdens(), frand();
 extern double poissoncdf(), poissonpmf();
-extern int poissonquant(), poissonrand();
+extern long poissonquant(), poissonrand();
 extern double binomialcdf(), binomialpmf();
-extern int binomialquant(), binomialrand();
+extern long binomialquant(), binomialrand();
+extern double rcondest_front();
 
 void xlfail(char *);
 
@@ -32,7 +39,6 @@ extern int lu_solve_front();
 extern int lu_inverse_front();
 extern int sv_decomp_front();
 extern int qr_decomp_front();
-extern int rcondest_front();
 extern int make_rotation_front();
 extern int eigen_front();
 extern int range_to_rseq();
@@ -53,10 +59,10 @@ extern int minfo_maximize();
 /**                    Callback Support Functions                     **/
 /***********************************************************************/
 
-static int ccl_integer_value;
+static long ccl_integer_value;
 static double ccl_double_value;
 static PTR ccl_ptr_value;
-void ccl_store_integer(int x)  { ccl_integer_value = x; }
+void ccl_store_integer(long x)  { ccl_integer_value = x; }
 void ccl_store_double(double x)  { ccl_double_value = x; }
 void ccl_store_ptr(PTR x) { ccl_ptr_value = x; }
 
@@ -71,10 +77,9 @@ static void (*free_ptr)();
 register_new_ptr(f) void (*f)(); { new_ptr = f; } 
 register_free_ptr(f) void (*f)(); { free_ptr = f; } 
 
-char *calloc(n, m)
-	int n, m;
+char* calloc(size_t n, size_t m)
 {
-  int i, N = n * m;
+  size_t i, N = n * m;
   char *p;
   
   (*new_ptr)(N);
@@ -86,8 +91,7 @@ char *calloc(n, m)
 malloc() { xlfail("malloc not available yet"); }
 realloc() { xlfail("realloc not available yet"); }
 
-void free(p)
-	char *p;
+void free(char *p)
 {
   (*free_ptr)(p);
 }
@@ -100,25 +104,25 @@ void free(p)
 /***************************************************************************/
 
 PTR
-la_base_allocate(unsigned n, unsigned m)
+la_base_allocate(size_t n, size_t m)
 {
   char *p = calloc(n, m);
   if (p == nil) xlfail("allocation failed");
   return((PTR) p);
 }
 
-int
+long
 la_base_free_alloc(PTR p)
 {
   if (p) free((char *) p);
   return(0);
 }
 
-int
+size_t
 la_mode_size(int mode)
 {
   switch (mode) {
-  case IN: return(sizeof(int));
+  case IN: return(sizeof(long));
   case RE: return(sizeof(double));
   case CX: return(sizeof(Complex));
   }
@@ -137,7 +141,7 @@ void register_la_allocate(f) int (*f)(); { ccl_la_allocate = f; }
 void register_la_free_alloc(f) int (*f)(); { ccl_la_free_alloc = f; }
 
 PTR
-la_allocate(int n, int m)
+la_allocate(size_t n, size_t m)
 {
   (*ccl_la_allocate)(n, m);
   return(ccl_ptr_value);
@@ -155,34 +159,34 @@ la_free_alloc(PTR p)
 /**                                                                       **/
 /***************************************************************************/
 
-int
-la_get_integer(PTR p, int i)
+long
+la_get_integer(PTR p, size_t i)
 {
-  return(*(((int *) p) + i));
+  return(*(((long *) p) + i));
 }
 
 double
-la_get_double(PTR p, int i)
+la_get_double(PTR p, size_t i)
 {
   return(*(((double *) p) + i));
 }
 
 double
-la_get_complex_real(PTR p, int i)
+la_get_complex_real(PTR p, size_t i)
 {
   Complex *c = ((Complex *) p) + i;
   return(c->real);
 }
 
 double
-la_get_complex_imag(PTR p, int i)
+la_get_complex_imag(PTR p, size_t i)
 {
   Complex *c = ((Complex *) p) + i;
   return(c->imag);
 }
 
 PTR
-la_get_pointer(PTR p, int i)
+la_get_pointer(PTR p, size_t i)
 {
   return(*(((PTR *) p) + i));
 }
@@ -194,20 +198,20 @@ la_get_pointer(PTR p, int i)
 /***************************************************************************/
 
 int
-la_put_integer(PTR p, int i, int x)
+la_put_integer(PTR p, size_t i, long x)
 {
-  *(((int *) p) + i) = x;
+  *(((long *) p) + i) = x;
   return(0);
 }
 
-int la_put_double(PTR p, int i, double x)
+int la_put_double(PTR p, size_t i, double x)
 {
-  *(((double *) p) + i) = x;
+  *(((double *) p) + i) = x; 
   return(0);
 }
 
 int
-la_put_complex(PTR p, int i, double x, double y)
+la_put_complex(PTR p, size_t i, double x, double y)
 {
   Complex *c = ((Complex *) p) + i;
   c->real = x;
@@ -216,7 +220,7 @@ la_put_complex(PTR p, int i, double x, double y)
 }
 
 int
-la_put_pointer(PTR p, int i, PTR x)
+la_put_pointer(PTR p, size_t i, PTR x)
 {
   *(((PTR *) p) + i) = x;
   return(0);
@@ -249,7 +253,7 @@ resetbuf()
 static void
 prbuf(char *s)
 {
-  int i, n;
+  size_t i, n;
   
   n = strlen(s);
   for (i = 0; i <n; i++, bufpos++) set_buf_char(bufpos, s[i]);
@@ -286,93 +290,93 @@ bufputstr(char *s)
 /***************************************************************************/
 
 int
-ccl_chol_decomp_front(PTR mat, int n, PTR dpars)
+ccl_chol_decomp_front(PTR mat, size_t n, PTR dpars)
 {
   return(chol_decomp_front(mat, n, dpars));
 }
 
 int
-ccl_lu_decomp_front(PTR mat, int n, PTR iv, int mode, PTR dp)
+ccl_lu_decomp_front(PTR mat, size_t n, PTR iv, int mode, PTR dp)
 {
   return(lu_decomp_front(mat, n, iv, mode, dp));
 }
 
 int
-ccl_lu_solve_front(PTR a, int n, PTR indx, PTR b, int mode)
+ccl_lu_solve_front(PTR a, size_t n, PTR indx, PTR b, int mode)
 {
   return(lu_solve_front(a, n, indx, b, mode));
 }
 
 int
-ccl_lu_inverse_front(PTR pmat, int n, PTR piv, PTR pv, int mode, PTR pinv)
+ccl_lu_inverse_front(PTR pmat, size_t n, PTR piv, PTR pv, int mode, PTR pinv)
 {
   return(lu_inverse_front(pmat, n, piv, pv, mode, pinv));
 }
 
 int 
-ccl_sv_decomp_front(PTR mat, int m, int n, PTR w, PTR v)
+ccl_sv_decomp_front(PTR mat, size_t m, size_t n, PTR w, PTR v)
 {
   return(sv_decomp_front(mat, m, n, w, v));
 }
 
 
 int
-ccl_qr_decomp_front(PTR mat, int m, int n, PTR v, PTR jpvt, int pivot)
+ccl_qr_decomp_front(PTR mat, size_t m, size_t n, PTR v, PTR jpvt, int pivot)
 {
   return(qr_decomp_front(mat, m, n, v, jpvt, pivot));
 }
 
 double
-ccl_rcondest_front(PTR mat, int n)
+ccl_rcondest_front(PTR mat, size_t n)
 {
   return(rcondest_front(mat, n));
 }
 
 int
-ccl_make_rotation_front(int n, PTR rot, PTR x, PTR y, int use_alpha, double alpha)
+ccl_make_rotation_front(size_t n, PTR rot, PTR x, PTR y, int use_alpha, double alpha)
 {
   return(make_rotation_front(n, rot, x, y, use_alpha, alpha));
 }
 
 int
-ccl_eigen_front(PTR a, int n, PTR w, PTR z, PTR fv1)
+ccl_eigen_front(PTR a, size_t n, PTR w, PTR z, PTR fv1)
 {
   return(eigen_front(a, n, w, z, fv1));
 }
 
 int
-ccl_range_to_rseq(int n, PTR px, int ns, PTR pxs)
+ccl_range_to_rseq(size_t n, PTR px, size_t ns, PTR pxs)
 {
   return(range_to_rseq(n, px, ns, pxs));
 }
 
 int
-ccl_spline_front(int n, PTR x, PTR y, int ns, PTR xs, PTR ys, PTR work)
+ccl_spline_front(size_t n, PTR x, PTR y, size_t ns, PTR xs, PTR ys, PTR work)
 {
   return(spline_front(n, x, y, ns, xs, ys, work));
 }
 
 int 
-ccl_kernel_dens_front(PTR x, int n, double width, PTR xs, PTR ys, int ns, int code)
+ccl_kernel_dens_front(PTR x, size_t n, double width, PTR xs, PTR ys, size_t ns, int code)
 {
   return(kernel_dens_front(x, n, width, xs, ys, ns, code));
 }
 
 int 
-ccl_kernel_smooth_front(PTR x, PTR y, int n, double width, PTR xs, PTR ys, int ns, int code)
+ccl_kernel_smooth_front(PTR x, PTR y, size_t n, double width, PTR xs, PTR ys, size_t ns, int code)
 {
   return(kernel_smooth_front(x, y, n, width, xs, ys, ns, code));
 }
 
 int
-ccl_base_lowess_front(PTR x, PTR y, int n, double f,
-		      int nsteps, double delta, PTR ys, PTR rw, PTR res)
+ccl_base_lowess_front(PTR x, PTR y, size_t n, double f,
+		      size_t nsteps, double delta, PTR ys, PTR rw, PTR res)
 {
   return(base_lowess_front(x, y, n, f, nsteps, delta, ys, rw, res));
 }
 
 int
-ccl_fft_front(int n, PTR x, PTR work, int isign)
+ccl_fft_front(size_t n, PTR x, PTR work, int isign)
 {
   return(fft_front(n, x, work, isign));
 }
@@ -387,27 +391,27 @@ register_maximize_callback(f)
 }
 
 void
-maximize_callback(int n, PTR px, PTR pfval, PTR pgrad, PTR phess, PTR pderivs)
+maximize_callback(size_t n, PTR px, PTR pfval, PTR pgrad, PTR phess, PTR pderivs)
 {
   (*ccl_maximize_callback)(n, px, pfval, pgrad, phess, pderivs);
 }
 
-int 
-ccl_numgrad_front(int n, PTR px, PTR pgrad, double h, PTR pscale)
+void 
+ccl_numgrad_front(size_t n, PTR px, PTR pgrad, double h, PTR pscale)
 {
-  return(numgrad_front(n, px, pgrad, h, pscale));
+  numgrad_front(n, px, pgrad, h, pscale);
 }
 
-int 
-ccl_numhess_front(int n, PTR px, PTR pf, PTR pgrad, PTR phess, double h, PTR pscale)
+void 
+ccl_numhess_front(size_t n, PTR px, PTR pf, PTR pgrad, PTR phess, double h, PTR pscale)
 {
-  return(numhess_front(n, px, pf, pgrad, phess, h, pscale));
+  numhess_front(n, px, pf, pgrad, phess, h, pscale);
 }
 
-int 
+void 
 ccl_minfo_maximize(PTR px, PTR pfvals, PTR pscale, PTR pip, PTR pdp, int verbose)
 {
-  return(minfo_maximize(px, pfvals, pscale, pip, pdp, verbose));
+  minfo_maximize(px, pfvals, pscale, pip, pdp, verbose);
 }
 
 /***********************************************************************/
@@ -463,11 +467,11 @@ double ccl_fdens(double x, double y, double z)  { return(fdens(x, y, z)); }
 double ccl_frand(double x, double y)  { return(frand(x, y)); }
 
 double ccl_poissoncdf(double x, double y)  { return(poissoncdf(x, y)); }
-int ccl_poissonquant(double x, double y)  { return(poissonquant(x, y)); }
-double ccl_poissonpmf(int x, double y)  { return(poissonpmf(x, y)); }
-int ccl_poissonrand(double x)  { return(poissonrand(x)); }
+long ccl_poissonquant(double x, double y)  { return(poissonquant(x, y)); }
+double ccl_poissonpmf(long x, double y)  { return(poissonpmf(x, y)); }
+long ccl_poissonrand(double x)  { return(poissonrand(x)); }
 
-double ccl_binomialcdf(double x, int y, double z) { return(binomialcdf(x, y, z)); }
-int ccl_binomialquant(double x, int y, double z) { return(binomialquant(x, y, z)); }
-double ccl_binomialpmf(int x, int y, double z)  { return(binomialpmf(x, y, z)); }
-int ccl_binomialrand(int x, double y)  { return(binomialrand(x, y)); }
+double ccl_binomialcdf(double x, long y, double z) { return(binomialcdf(x, y, z)); }
+long ccl_binomialquant(double x, long y, double z) { return(binomialquant(x, y, z)); }
+double ccl_binomialpmf(long x, long y, double z)  { return(binomialpmf(x, y, z)); }
+long ccl_binomialrand(long x, double y)  { return(binomialrand(x, y)); }

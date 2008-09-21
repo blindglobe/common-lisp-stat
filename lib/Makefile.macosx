@@ -1,4 +1,6 @@
 ## -*- mode: Makefile -*-
+ARCHS = -arch i386 -arch x86_64
+SPEC_WARNINGS = -Wconversion -Wformat -Wshorten-64-to-32
 
 LISPSTAT-SO = liblispstat.dylib
 
@@ -14,7 +16,7 @@ CBAYESOBJS = cbayes.o functions.o derivatives.o minimize.o
 CGLUE = cffi-glue.o
 
 ## CFLAGS = -g -DINTPTR -fPIC -Wall
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall $(ARCHS) $(SPEC_WARNINGS)
 
 cffi : $(LISPSTAT-SO)
 
@@ -29,7 +31,7 @@ clib.a: ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE)
 	ranlib clib.a
 
 $(LISPSTAT-SO) :${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE)
-	gcc -dynamiclib -single_module -undefined dynamic_lookup -o $(LISPSTAT-SO)  ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS}  $(CGLUE)
+	gcc $(ARCHS) -dynamiclib -single_module -undefined dynamic_lookup -o $(LISPSTAT-SO)  ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS}  $(CGLUE)
 
 clean:
 	rm -f ${CDISTOBJS} ${CLINALGOBJS} ${CBAYESOBJS} $(CGLUE) *~

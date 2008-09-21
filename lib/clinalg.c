@@ -1,4 +1,4 @@
-/* clinalg - C interface to basic linear algebra routines.             */
+/* - C interface to basic linear algebra routines.             */
 /* Copyright (c) 1990, by Luke Tierney                                 */
 
 #include "linalg.h"
@@ -25,14 +25,14 @@ extern int kernel_smooth();
 
 
 
-int
-min (int x, int y)
+long
+min (long x, long y)
 {
   return((x < y) ? x : y); 
 }
 
-int
-max (int x, int y)
+long
+max (long x, long y)
 {
   return((x > y) ? x : y);
 }
@@ -61,26 +61,26 @@ double macheps()
 /************************************************************************/
 
 void
-chol_decomp_front(PTR mat, int n, PTR dpars)
+chol_decomp_front(PTR mat, size_t n, PTR dpars)
 {
   double *dp = (double *) dpars;
   choldecomp((double **) mat, n, *dp, dp + 1);
 }
 
 int
-lu_decomp_front(PTR mat, int n, PTR iv, int mode, PTR dp)
+lu_decomp_front(PTR mat, size_t n, PTR iv, int mode, PTR dp)
 {
   return(crludcmp((char **) mat, n, (int *) iv, mode, (double *) dp));
 }
 
 int
-lu_solve_front(PTR a, int n, PTR indx, PTR b, int mode)
+lu_solve_front(PTR a, size_t n, PTR indx, PTR b, int mode)
 {
   return(crlubksb((char **) a, n, (int *) indx, (char *) b, mode));
 }
 
 int
-lu_inverse_front(PTR pmat, int n, PTR piv, PTR pv, int mode, PTR pinv)
+lu_inverse_front(PTR pmat, size_t n, PTR piv, PTR pv, int mode, PTR pinv)
 {
   Matrix mat = (Matrix) pmat, inv = (Matrix) pinv;
   IVector iv = (IVector) piv;
@@ -118,31 +118,31 @@ lu_inverse_front(PTR pmat, int n, PTR piv, PTR pv, int mode, PTR pinv)
 }
 
 int
-sv_decomp_front(PTR mat, int m, int n, PTR w, PTR v)
+sv_decomp_front(PTR mat, size_t m, size_t n, PTR w, PTR v)
 {
   return(svdcmp((char **) mat, m, n, (char *) w, (char **) v));
 }
 
 void
-qr_decomp_front(PTR mat, int m, int n, PTR v, PTR jpvt, int pivot)
+qr_decomp_front(PTR mat, size_t m, size_t n, PTR v, PTR jpvt, int pivot)
 {
   qrdecomp((char **) mat, m, n, (char **) v, (char *) jpvt, pivot);
 }
 
 double
-rcondest_front(PTR mat, int n)
+rcondest_front(PTR mat, size_t n)
 {
   return(rcondest((char **) mat, n));
 }
 
 void
-make_rotation_front(int n, PTR rot, PTR x, PTR y, int use_alpha, double alpha)
+make_rotation_front(size_t n, PTR rot, PTR x, PTR y, int use_alpha, double alpha)
 {
   make_rotation(n, (char **) rot, (char *) x, (char *) y, use_alpha, alpha);
 }
 
 int
-eigen_front(PTR a, int n, PTR w, PTR z, PTR fv1)
+eigen_front(PTR a, size_t n, PTR w, PTR z, PTR fv1)
 {
   int ierr;
 
@@ -151,23 +151,23 @@ eigen_front(PTR a, int n, PTR w, PTR z, PTR fv1)
 }
 
 void
-fft_front(int n, PTR x, PTR work, int isign)
+fft_front(size_t n, PTR x, PTR work, int isign)
 {
   cfft(n, (char *) x, (char *) work, isign);
 }
 
 int
-base_lowess_front(PTR x, PTR y, int n, double f,
-		  int nsteps, double delta, PTR  ys, PTR rw, PTR res)
+base_lowess_front(PTR x, PTR y, size_t n, double f,
+		  size_t nsteps, double delta, PTR  ys, PTR rw, PTR res)
 {
   return(lowess((char *) x, (char *) y, n, f, nsteps, delta,
 		(char *) ys, (char *) rw, (char *) res));
 }
 
 void
-range_to_rseq(int n, PTR px, int ns, PTR pxs)
+range_to_rseq(size_t n, PTR px, long ns, PTR pxs)
 {
-  int i;
+  size_t i;
   double xmin, xmax, *x, *xs;
 
   x = (double *) px;
@@ -181,7 +181,7 @@ range_to_rseq(int n, PTR px, int ns, PTR pxs)
 }
 
 int
-spline_front(int n, PTR x, PTR y, int ns,
+spline_front(size_t n, PTR x, PTR y, size_t ns,
 	     PTR xs, PTR ys, PTR work)
 {
   return(fit_spline(n, (char *) x, (char *) y, 
@@ -189,7 +189,7 @@ spline_front(int n, PTR x, PTR y, int ns,
 }
 
 int
-kernel_dens_front(PTR x, int n, double width, PTR xs, PTR ys, int ns, int code)
+kernel_dens_front(PTR x, size_t n, double width, PTR xs, PTR ys, size_t ns, int code)
 {
   int ktype;
 
@@ -203,8 +203,8 @@ kernel_dens_front(PTR x, int n, double width, PTR xs, PTR ys, int ns, int code)
 }
 
 int
-kernel_smooth_front(PTR x, PTR y, int n, double width,
-		    PTR xs, PTR ys, int ns, int code)
+kernel_smooth_front(PTR x, PTR y, size_t n, double width,
+		    PTR xs, PTR ys, size_t ns, int code)
 {
   int ktype;
 

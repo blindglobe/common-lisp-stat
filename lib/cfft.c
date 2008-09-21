@@ -6,26 +6,27 @@
   Internal Routines
 */
 
-static int cffti1_(n, wa, ifac)
-     int *n;
-     double *wa;
-     int *ifac;
+static int cffti1_(int *n, double *wa, double *ifac)
 {
   /* Initialized data */
   static int ntryh[4] = { 3,4,2,5 };
 
   /* System generated locals */
-  int i_1, i_2, i_3;
+  long i_1, i_2, i_3;
 
   /* Local variables */
   double argh;
-  int idot, ntry, i, j;
+  long ntry;
+  int i, j;
+  long idot;
   double argld;
-  int i1, k1, l1, l2, ib;
+  int i1, ib;
+  long k1, l1, l2;
   double fi;
-  int ld, ii, nf, ip, nl, nq, nr;
+  int ii, nf;
+  long ip, ld, nl, nq, nr;
   double arg;
-  int ido, ipm;
+  long ido, ipm;
   double tpi;
 
   /* Parameter adjustments */
@@ -98,21 +99,20 @@ static int cffti1_(n, wa, ifac)
   return 0;
 }
 
-static int pass_(nac, ido, ip, l1, idl1, cc, c1, c2, ch, ch2, wa, isign)
-     int *nac;
-     int *ido, *ip, *l1, *idl1;
-     double *cc, *c1, *c2, *ch, *ch2, *wa;
-     int *isign;
+static int pass_(int *nac, long *ido, long *ip, long *l1, long *idl1,
+                 double *cc, double *c1, double *c2, double *ch,
+                 double *ch2, double *wa, int *isign)
 {
   /* System generated locals */
-  int ch_dim1, ch_dim2, ch_offset, cc_dim1, cc_dim2, cc_offset, c1_dim1,
-      c1_dim2, c1_offset, c2_dim1, c2_offset, ch2_dim1, ch2_offset, 
-      i_1, i_2, i_3;
+  long cc_dim1, cc_dim2, cc_offset, ch_dim1, ch_dim2, ch_offset,
+       ch2_offset, c1_dim1, c1_dim2, c1_offset, ch2_dim1, c2_offset,
+       c2_dim1, i_1, i_2, i_3;
 
   /* Local variables */
-  int idij, idlj, idot, ipph, i, j, k, l, jc, lc, ik, idj, idl, inc, idp;
+  int i, j, k, l,  ik;
+  long idij, idlj, idot, ipph,   lc, jc,    idj, idl, inc, idp;
   double wai, war;
-  int ipp2;
+  long ipp2;
 
   /* Parameter adjustments */
   cc_dim1 = *ido;
@@ -680,11 +680,13 @@ cfft1_(int *n, double *c, double *ch, double *wa,
        double /* int??*/  *ifac, int *isign)
 {
   /* System generated locals */
-  int i_1;
+  long i_1;
 
   /* Local variables */
-  int idot;
-  int i, k1, l1, l2, n2, na, nf, ip, iw, ix2, ix3, ix4, nac, ido, idl1;
+  long idot;
+  int i, k1, n2, na, nac;
+  long l1, l2, ido, idl1, iw, ix2, ix3, ix4;
+  long nf, ip;
 
   /* Parameter adjustments */
   --c;
@@ -806,10 +808,7 @@ cfft1_(int *n, double *c, double *ch, double *wa,
  *                         where i=sqrt(-1)
  */
 
-int cfft(n, c, wsave, isign)
-     int n;
-     double *c, *wsave;
-     int isign;
+int cfft(int n, double *c, double *wsave, int isign)
 {
   int iw1, iw2;
   

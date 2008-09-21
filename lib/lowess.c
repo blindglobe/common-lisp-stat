@@ -3,31 +3,40 @@
 */
 
 #include "xmath.h"
+/*
+#ifdef __APPLE__
+#include <stdlib.h>
+#endif
+*/
+#include <stdlib.h>
 
 #define FALSE 0
 #define TRUE 1
 
-extern int max(int, int);
-extern int min(int, int);
+extern long max(long, long);
+extern long min(long, long);
 
-static double pow2(x) double x; { return(x * x); }
-static double pow3(x) double x; { return(x * x * x); }
-/* static */ double fmax(x,y) double x, y; { return (x > y ? x : y); }
+static double pow2(double x) { return(x * x); }
+static double pow3(double x) { return(x * x * x); }
+/* static */ double fmax(double x, double y) { return (x > y ? x : y); }
 
 int 
-static compar(double *a, double *b)
+static compar(const void *aa, const void *bb)
 {
+  const double* a = (double*)aa;
+  const double* b = (double*)bb;
+
   if (*a < *b) return(-1);
   else if (*a > *b) return(1);
   else return(0);
 }
 
 static void
-lowest(double *x, double *y, int n, double xs, double *ys, int nleft, int nright,
+lowest(double *x, double *y, size_t n, double xs, double *ys, long nleft, long nright,
        double *w, int userw, double *rw, int *ok)
 {
   double range, h, h1, h9, a, b, c, r;
-  int j, nrt;
+  long j, nrt;
 
   range = x[n - 1] - x[0];
   h = fmax(xs - x[nleft], x[nright] - xs);
@@ -76,7 +85,7 @@ lowest(double *x, double *y, int n, double xs, double *ys, int nleft, int nright
 }
 
 static void
-sort(double *x, int n)
+sort(double *x, size_t n)
 {
   extern void qsort();
 
@@ -86,15 +95,16 @@ sort(double *x, int n)
 
 
 int
-lowess(double *x, double *y, int n,
-       double f, int nsteps,
+lowess(double *x, double *y, size_t n,
+       double f, size_t nsteps,
        double delta, double *ys, double *rw, double *res)
 {
-  int iter, ns, ok, nleft, nright, i, j, last, m1, m2;
+  int iter, ok;
+  long i, j, last, m1, m2, nleft, nright, ns;
   double d1, d2, denom, alpha, cut, cmad, c9, c1, r;
   
   if (n < 2) { ys[0] = y[0]; return(1); }
-  ns = max(min((int) (f * n), n), 2);  /* at least two, at most n points */
+  ns = max(min((long) (f * n), n), 2);  /* at least two, at most n points */
   for(iter = 1; iter <= nsteps + 1; iter++){      /* robustness iterations */
     nleft = 0; nright = ns - 1;
     last = -1;        /* index of prev estimated point */

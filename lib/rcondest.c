@@ -14,9 +14,9 @@ double Max(double a, double b)
 
 
 void
-backsolve(double **a, double *b, int n, int mode)
+backsolve(double **a, double *b, size_t n, int mode)
 {
-  int i, j;
+  long i, j; /* Must be signed, since counting down in loops... */
   RMatrix ra = (RMatrix) a;
   RVector rb = (RVector) b;
   CMatrix ca = (CMatrix) a;
@@ -41,12 +41,12 @@ backsolve(double **a, double *b, int n, int mode)
 
 /** Exported function **/
 
-double rcondest(double **a, int n)
+double rcondest(double **a, size_t n)
 {
   RVector p, pm, x;
   double est, xp, xm, temp, tempm, xnorm;
-  int i, j;
-  
+  long i, j;
+
   for (i = 0; i < n; i++)
     if (a[i][i] == 0.0) return(0.0);
     
@@ -56,6 +56,7 @@ double rcondest(double **a, int n)
   
   /* Set est to reciprocal of L1 matrix norm of A */
   est = fabs(a[0][0]);
+
   for (j = 1; j < n; j++) {
     for (i = 0, temp = fabs(a[j][j]); i < j; i++)
       temp += fabs(a[i][j]);
@@ -87,6 +88,7 @@ double rcondest(double **a, int n)
   
   for (j = 0, xnorm = 0.0; j < n; j++) xnorm += fabs(x[j]);
   est = est * xnorm;
+
   backsolve(a, x, n, RE);
   for (j = 0, xnorm = 0.0; j < n; j++) xnorm += fabs(x[j]);
   if (xnorm > 0) est = est / xnorm;
@@ -94,7 +96,7 @@ double rcondest(double **a, int n)
   free_vector(p);
   free_vector(pm);
   free_vector(x);
-  
+ 
   return(est);
 }
 

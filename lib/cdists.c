@@ -3,9 +3,9 @@
 extern void normbase(double *,double *);
 extern void gammabase(double *,double *, double *);
 extern void studentbase(double *,double *, double *);
-extern void betabase(double *, double *,double *,int *, int *,double *);
-extern int max(int, int);
-extern int min(int, int);
+extern void betabase(double *, double *,double *,long *, long *,double *);
+extern long max(long, long);
+extern long min(long, long);
 
 extern void xlfail(char *);
 
@@ -18,8 +18,13 @@ extern double tdens();
 #ifndef PI
 #define PI 3.14159265358979323846
 #endif /* PI*/
+#ifdef __LP64__
+#define TRUE 1L
+#define FALSE 0L
+#else
 #define TRUE 1
 #define FALSE 0
+#endif
 
 /*
  * Under ULTRIX 3.1 (the cc1.31 compilers in particular) the _G0 math
@@ -30,13 +35,12 @@ extern double tdens();
 
 #ifdef mips
 #ifdef UX31
-double tan(x)
-     double x;
+double tan(double x)
 {
   return(sin(x) / cos(x));
 }
-double floor(x)
-     double x;
+
+double floor(double x)
 {
   long ix = x;
   double dx = ix;
@@ -68,7 +72,7 @@ checkdf(double df)
 }
 
 static void 
-checkprob(double p, int zerostrict, int onestrict)
+checkprob(double p, long zerostrict, long onestrict)
 {
   if (zerostrict) {
     if (p <= 0.0) xlfail("non-positive probability argument");
@@ -99,7 +103,7 @@ checkpoisson(double L)
 }
 
 static void
-checkbinomial(int n, double p)
+checkbinomial(long n, double p)
 {
   if (p < 0.0 || p > 1.0) xlfail("binomial p out of range");
   if (n < 1) xlfail("non-positive binomial n");
@@ -132,8 +136,7 @@ double unirand()
 /*****************************************************************************/
 
 /* standard normal cdf */
-double normalcdf(x)
-     double x;
+double normalcdf(double x)
 {
   double p;
   normbase(&x, &p);
@@ -141,8 +144,7 @@ double normalcdf(x)
 }
 
 /* standard normal quantile function */
-double normalquant(p)
-     double p;
+double normalquant(double p)
 {
   int flag;
   double x;
@@ -154,8 +156,7 @@ double normalquant(p)
 }
 
 /* standard normal density */
-double normaldens(x)
-     double x;
+double normaldens(double x)
 {
   return(exp(- 0.5 * x * x) / sqrt(2.0 * PI));
 }
@@ -180,8 +181,7 @@ double normalrand()
 }
 
 /* bivariate normal cdf */
-double bnormcdf(x, y, r)
-  double x, y, r;
+double bnormcdf(double x, double y, double r)
 {
   checkrho(r);
   return(bivnor(-x, -y, r));
@@ -280,7 +280,7 @@ gammarand(double a)
 {
   double x, u0, u1, u2, v, w, c, c1, c2, c3, c4, c5;
   static double e = -1.0;
-  int done;
+  long done;
   
   checkexp(a);
   if (e < 0.0) e = exp(1.0);
@@ -385,7 +385,7 @@ double
 betacdf(double x, double a, double b)
 {
   double p;
-  int ia, ib;
+  long ia, ib;
   
   checkexp(a); checkexp(b);
   ia = a; ib = b;
@@ -579,7 +579,7 @@ double frand(double ndf, double ddf)
 /*****************************************************************************/
 
 static double
-poisson_cdf(int k, double L)
+poisson_cdf(long k, double L)
 {
   double dp, dx;
 
@@ -601,20 +601,20 @@ double
 poissoncdf(double k, double L)
 {
   checkpoisson(L);  
-  return(poisson_cdf((int) floor(k), L));
+  return(poisson_cdf((long) floor(k), L));
 }
 
-int
+long
 poissonquant(double x, double L)
 {
-  int k, k1, k2, del, ia;
+  long k, k1, k2, del, ia;
   double m, s, p1, p2, pk;
   
   checkpoisson(L);
   checkprob(x, FALSE, TRUE);
   m = L;
   s = sqrt(L);
-  del = max(1, (int) (0.2 * s));
+  del = max(1, (long) (0.2 * s));
   
   if (x == 0.0) {
     k = 0.0;
@@ -651,7 +651,7 @@ poissonquant(double x, double L)
 }
 
 double
-poissonpmf(int k, double L)
+poissonpmf(long k, double L)
 {
   double dx, dp;
 
@@ -670,11 +670,11 @@ poissonpmf(int k, double L)
 }
 
 /* poisson random generator from Numerical Recipes */
-int poissonrand(double xm)
+long poissonrand(double xm)
 {
   static double sqrt2xm, logxm, expxm, g, oldxm = -1.0;
   double t, y;
-  int k;
+  long k;
 
   checkpoisson(xm);
   if (xm < 12.0) {
@@ -710,10 +710,10 @@ int poissonrand(double xm)
 /*****************************************************************************/
 
 static double
-binomial_cdf(int k, int n, double p)
+binomial_cdf(long k, long n, double p)
 {
   double da, db, dp;
-  int ia, ib;
+  long ia, ib;
 
   if (k < 0) {
     dp = 0.0;
@@ -741,17 +741,16 @@ binomial_cdf(int k, int n, double p)
 }
 
 double
-binomialcdf(double k, int n, double p)
+binomialcdf(double k, long n, double p)
 {
   checkbinomial(n, p);
-  return(binomial_cdf((int) floor(k), n, p));
-
+  return(binomial_cdf((long) floor(k), n, p));
 }
 
-int
-binomialquant(double x, int n, double p)
+long
+binomialquant(double x, long n, double p)
 {
-  int k, k1, k2, del, ia;
+  long k, k1, k2, del, ia;
   double m, s, p1, p2, pk;
 
   checkbinomial(n, p);
@@ -759,7 +758,7 @@ binomialquant(double x, int n, double p)
 
   m = n * p;
   s = sqrt(n * p * (1 - p));
-  del = max(1, (int) (0.2 * s));
+  del = max(1, (long) (0.2 * s));
   
   if (x == 0.0) k = 0.0;
   else if (x == 1.0) k = n;
@@ -787,9 +786,7 @@ binomialquant(double x, int n, double p)
   return(k2);
 }
 
-double binomialpmf(k, n, p)
-     int k, n;
-     double p;
+double binomialpmf(long k, long n, double p)
 {
   double dx, dp;
 
@@ -804,12 +801,10 @@ double binomialpmf(k, n, p)
 }
 
 /* binomial random generator from Numerical Recipes */
-int binomialrand(n, pp)
-	int n;
-	double pp;
+long binomialrand(long n, double pp)
 {
-  int j, k;
-  static int nold = -1;
+  long j, k;
+  static long nold = -1;
   double am, em, g, p, sq, t, y;
   static double pold = -1.0, pc, plog, pclog, en, oldg;
   

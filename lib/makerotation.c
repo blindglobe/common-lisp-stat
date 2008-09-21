@@ -6,9 +6,7 @@
  
 #include "linalg.h"
 
-static double inner_product(n, x, y)
-	int n;
-	RVector x, y;
+static double inner_product(size_t n, RVector x, RVector y)
 {
   double result = 0.0;
   
@@ -19,10 +17,10 @@ static double inner_product(n, x, y)
 #define NORM(n, x) (sqrt(inner_product(n, x, x)))
 
 void 
-make_rotation(int n, double **rot, double *x, double *y, int use_alpha, double alpha)
+make_rotation(size_t n, double **rot, double *x, double *y, int use_alpha, double alpha)
 {
   double nx, ny, xy, c, s;
-  int i, j;
+  size_t i, j;
   
   for (i = 0; i < n; i++) {
     for (j = 0; j < n; j++) rot[i][j] = 0.0;

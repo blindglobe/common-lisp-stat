@@ -16,7 +16,7 @@ extern char buf[200];
 #define PRINTSTR(s) printf(s)
 
 typedef struct {
-  int n, k;
+  size_t n, k;
   void (*ffun)(), (*gfun)();
   double f, typf, new_f;
   double crit, new_crit;
@@ -114,9 +114,9 @@ static double Min(a, b)
 
 /* solve Ly = b for y */
 static void
-lsolve(int n, double *b, double **L, double *y)
+lsolve(size_t n, double *b, double **L, double *y)
 {
-  int i, j;
+  size_t i, j;
 
   for (i = 0; i < n; i++) {
     y[i] = b[i];
@@ -127,9 +127,9 @@ lsolve(int n, double *b, double **L, double *y)
 
 /* solve (L^T)x = y for x */
 static void
-ltsolve(int n, double *y, double **L, double *x)
+ltsolve(size_t n, double *y, double **L, double *x)
 {
-  int i, j;
+  size_t i, j;
 
   for (i = n - 1; i >= 0; i--) {
     x[i] = y[i];
@@ -140,11 +140,11 @@ ltsolve(int n, double *y, double **L, double *x)
 
 /* solve (L L^T) s = -g for s */
 static void
-cholsolve(int n,
+cholsolve(size_t n,
 	  double *g, double **L,
 	  double *s)
 {
-  int i;
+  size_t i;
 
   /* solve Ly = g */
   lsolve(n, g, L, s);
@@ -156,9 +156,9 @@ cholsolve(int n,
 }
 
 static void 
-modelhess(int n, double *sx, double **H, double **L, double *diagadd)
+modelhess(size_t n, double *sx, double **H, double **L, double *diagadd)
 {
-  int i, j;
+  size_t i, j;
   double sqrteps, maxdiag, mindiag, maxoff, maxoffl, maxposdiag, mu,
     maxadd, maxev, minev, offrow, sdd;
 
@@ -252,7 +252,7 @@ modelhess(int n, double *sx, double **H, double **L, double *diagadd)
 static double
 gradsize(Iteration *iter, int new)
 {
-  int n, i;
+  size_t n, i;
   double size, term, crit, typf;
   double *x, *delf, *sx;
 
@@ -273,7 +273,7 @@ gradsize(Iteration *iter, int new)
 static double
 incrsize(Iteration *iter)
 {
-  int n, i;
+  size_t n, i;
   double size, term;
   double *x, *new_x, *sx;
 
@@ -369,7 +369,7 @@ eval_next_funval(Iteration *iter)
 static void
 eval_gradient(Iteration *iter)
 {
-  int i, j, n, k;
+  size_t i, j, n, k;
 
   n = iter->n;
   k = iter->k;
@@ -392,7 +392,7 @@ eval_gradient(Iteration *iter)
 static void 
 eval_next_gradient(Iteration *iter)
 {
-  int i, j, n, k;
+  size_t i, j, n, k;
 
   n = iter->n;
   k = iter->k;
@@ -409,7 +409,7 @@ eval_next_gradient(Iteration *iter)
 
 static void eval_hessian(Iteration *iter)
 {
-  int i, j, n, k;
+  size_t i, j, n, k;
 
   n = iter->n;
   k = iter->k;
@@ -427,7 +427,7 @@ static void eval_hessian(Iteration *iter)
 static void 
 linesearch(Iteration *iter)
 {
-  int i, n;
+  size_t i, n;
   double newtlen, maxstep, initslope, rellength, lambda, minlambda, 
     lambdatemp, lambdaprev, a, b, disc, critprev, f1, f2, a11, a12, a21, a22, 
     del;
@@ -537,7 +537,7 @@ print_header(Iteration *iter)
 static void
 print_status(Iteration *iter)
 {
-  int i, j;
+  size_t i, j;
 
   if (iter->verbose > 0) {
     sprintf(buf, "Criterion value = %g\n", 
@@ -584,7 +584,7 @@ print_status(Iteration *iter)
 static void
 findqnstep(Iteration *iter)
 {
-  int i, j, N, l;
+  size_t i, j, N, l;
 
   if (iter->k == 0) {
     modelhess(iter->n, iter->sx, iter->hessf, iter->L, &iter->diagadd);
@@ -606,7 +606,7 @@ findqnstep(Iteration *iter)
 
 static void iterupdate(Iteration *iter)
 {
-  int i, j, n, k;
+  size_t i, j, n, k;
   
   n = iter->n;
   k = iter->k;
@@ -660,10 +660,10 @@ mindriver(Iteration *iter)
 
 static Iteration myiter;
 
-int 
-minworkspacesize(int n, int k)
+size_t 
+minworkspacesize(size_t n, size_t k)
 {
-  int size;
+  size_t size;
   
   /* x, new_x, sx, delf, new_delf, qnstep and F */
   size = 7 * sizeof(double) * (n + k);
@@ -687,13 +687,13 @@ minresultstring(int code)
 }
   
 void
-minsetup(int n, int k,
+minsetup(size_t n, size_t k,
 	 void (*ffun)(), void (*gfun)(),
 	 double *x, double typf, double *typx, char *work)
      /*     int  (*ffun)(), (*gfun)();*/
 {
   Iteration *iter = &myiter;
-  int i, j;
+  size_t i, j;
   double nx0, ntypx;
 
   n = (n > 0) ? n : 0;
@@ -781,7 +781,7 @@ minsupplyvalues(double f, double *delf, double **hessf,
 		double *g, double **delg)
 {
   Iteration *iter = &myiter;
-  int i, j, n, k;
+  size_t i, j, n, k;
   
   n = iter->n;
   k = iter->k;
@@ -819,7 +819,7 @@ minresults(double *x, double *pf, double *pcrit, double *delf, double **hessf,
 	   double *g, double **delg, int *pcount, int *ptermcode, double *diagadd)
 {
   Iteration *iter = &myiter;
-  int i, j, n, k;
+  size_t i, j, n, k;
   
   n = iter->n;
   k = iter->k;

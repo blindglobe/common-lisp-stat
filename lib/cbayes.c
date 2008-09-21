@@ -10,8 +10,8 @@ typedef int PTR;
 typedef char *PTR;
 #endif
 
-extern void maximize_callback(int, PTR, PTR, PTR, PTR, PTR);
-extern void evalfront(char **, int *, double *, double *, double *,
+extern void maximize_callback(size_t, PTR, PTR, PTR, PTR, PTR);
+extern void evalfront(char **, size_t *, double *, double *, double *,
 		      double *, double *, double *);
 
 extern void maxfront();
@@ -67,7 +67,7 @@ meminit()
 }
 
 static int
-makespace(void **pptr, int size) /* why are we using **char? */
+makespace(void **pptr, size_t size) /* why are we using **char? */
 {
   if (size <= 0) {
     return(1); /* we've done, by default, what we asked for. */
@@ -91,9 +91,9 @@ makespace(void **pptr, int size) /* why are we using **char? */
 /************************************************************************/
 
 static void
-callLminfun(int n,
+callLminfun(size_t n,
 	    double *x, double *fval, double *grad, double *hess,
-	    int *derivs)
+	    long *derivs)
 {
   maximize_callback(n, (PTR) x, 
 		    (PTR) fval, (PTR) grad, (PTR) hess, (PTR) derivs);
@@ -103,7 +103,7 @@ void
 call_S(char *fun, long narg, char **args, char **mode, long *length,char **names,
        long nvals, char **values)
 {
-  int n = length[0], derivs;
+  long n = length[0], derivs;
   static double *fval = nil, *grad = nil, *hess = nil;
 
   makespace((void **)&fval, 1 * sizeof(double)); /* probably should test the
@@ -135,10 +135,7 @@ Recover(s, w)
 /************************************************************************/
 
 void
-numgrad_front(n, px, pgrad, h, pscale)
-     int n;
-     PTR px, pgrad, pscale;
-     double h;
+numgrad_front(size_t n, PTR px, PTR pgrad, double h, PTR pscale)
 {
   LVAL f = nil;
   double fval;
@@ -148,10 +145,7 @@ numgrad_front(n, px, pgrad, h, pscale)
 }
 
 void
-numhess_front(n, px, pf, pgrad, phess, h, pscale)
-     int n;
-     PTR px, pf, pgrad, phess, pscale;
-     double h;
+numhess_front(size_t n, PTR px, PTR pf, PTR pgrad, PTR phess, double h, PTR pscale)
 {
   LVAL f = nil;
 
@@ -181,8 +175,7 @@ numhess_front(n, px, pf, pgrad, phess, h, pscale)
 #define TSCAL_POS 10
 #define MULT_POS 11
 
-static MaxIPars getMaxIPars(ipars)
-     int *ipars;
+static MaxIPars getMaxIPars(int *ipars)
 {
   MaxIPars ip;
 
@@ -219,9 +212,7 @@ static MaxDPars getMaxDPars(dpars)
 }
 
 void
-minfo_maximize(px, pfvals, pscale, pip, pdp, verbose)
-     PTR px, pfvals, pscale, pip, pdp;
-     int verbose;
+minfo_maximize(PTR px, PTR pfvals, PTR pscale, PTR pip, PTR pdp, int verbose)
 {
   LVAL f = nil;
   MaxIPars ip;

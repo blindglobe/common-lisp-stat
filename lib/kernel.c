@@ -8,6 +8,14 @@
 #define nil 0L
 #endif  /*nil */
 
+/*
+#ifdef __APPLE__
+#include <stdlib.h>
+#endif
+*/
+
+#include <stdlib.h>
+
 static double
 kernel(double x, double y, double w, int type)
 {
@@ -50,11 +58,11 @@ kernel(double x, double y, double w, int type)
 }
 
 int
-kernel_smooth(double *x, double *y, int n,
+kernel_smooth(double *x, double *y, size_t n,
 	      double width, double *wts, double *wds,
-	      double *xs, double *ys, int ns, int ktype)
+	      double *xs, double *ys, size_t ns, int ktype)
 {
-  int i, j;
+  size_t i, j;
   double wsum, ysum, lwidth, lwt, xmin, xmax;
 
   if (n < 1) return(1);

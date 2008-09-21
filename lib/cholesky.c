@@ -35,10 +35,10 @@ Max(double a, double b)
 }
 
 void
-choldecomp(double **a, int n, double maxoffl, double *maxadd)
+choldecomp(double **a, size_t n, double maxoffl, double *maxadd)
 {
   double minl, minljj, minl2;
-  int i, j, k;
+  size_t i, j, k;
   
   minl = pow(macheps(), 0.25) * maxoffl;
   minl2 = 0.0;

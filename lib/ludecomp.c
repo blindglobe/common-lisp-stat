@@ -8,9 +8,10 @@
 #include "linalg.h"
 
 int
-crludcmp(Matrix mat, int n, IVector indx, int mode, double *d)
+crludcmp(Matrix mat, size_t n, IVector indx, int mode, double *d)
 {
-  int i, imax, j, k, singular = FALSE;
+  int i, imax, j, k;
+  int singular = FALSE;
   double big, temp;
   Complex cdum, csum;
   double rdum, rsum;
@@ -44,9 +45,11 @@ crludcmp(Matrix mat, int n, IVector indx, int mode, double *d)
       if (mode == RE) rsum = rmat[i][j];
       else csum = cmat[i][j];
       
-      for (k = 0; k < i; k++) 
+      for (k = 0; k < i; k++)
+      { 
         if (mode == RE) rsum -= rmat[i][k] * rmat[k][j];
         else csum = csub(csum, cmul(cmat[i][k], cmat[k][j]));
+      }
         
       if (mode == RE) rmat[i][j] = rsum;
       else cmat[i][j] = csum;
@@ -57,8 +60,10 @@ crludcmp(Matrix mat, int n, IVector indx, int mode, double *d)
       else csum = cmat[i][j];
       
       for (k = 0; k < j; k++) 
+      { 
         if (mode == RE) rsum -= rmat[i][k] * rmat[k][j];
         else csum = csub(csum, cmul(cmat[i][k], cmat[k][j]));
+      }
         
       if (mode == RE) rmat[i][j] = rsum;
       else cmat[i][j] = csum;
@@ -96,10 +101,14 @@ crludcmp(Matrix mat, int n, IVector indx, int mode, double *d)
       }
       else {
         cdum = cdiv(cart2complex(1.0, 0.0), cmat[j][j]);
-        for (i = j + 1; i < n; i++) cmat[i][j] = cmul(cmat[i][j], cdum);
+        for (i = j + 1; i < n; i++)
+        {
+          cmat[i][j] = cmul(cmat[i][j], cdum);
+        }
       }
     }
   }
+
   free_vector(vv);
   return(singular);
 }

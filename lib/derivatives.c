@@ -4,6 +4,14 @@
 /* You may give out copies of this software; for conditions see the    */
 /* file COPYING included with this distribution.                       */
 
+/*
+#ifdef __APPLE__
+#include <stdlib.h>
+#endif
+*/
+
+#include <stdlib.h>
+
 # include "xmath.h"
 extern double macheps();
 
@@ -12,12 +20,12 @@ extern double macheps();
 # define TRUE 1
 
 void
-numergrad(int n, double *x, double *grad, double *fsum,
+numergrad(size_t n, double *x, double *grad, double *fsum,
 	  int ffun(double *, double *, double *, double **),
 	  double h, double *typx)
      /*     int (*ffun)();*/
 {
-  int i;
+  size_t i;
   double old_xi, f1, f2, hi;
 
   for (i = 0; i < n; i++) {
@@ -34,11 +42,11 @@ numergrad(int n, double *x, double *grad, double *fsum,
 }
 
 void
-numerhess(int n, double *x, double **hess, double f, double *fsum,
+numerhess(size_t n, double *x, double **hess, double f, double *fsum,
 	  int *ffun(double *, double *, double *, double *),
 	  double h, double *typx)
 {
-  int i, j;
+  size_t i, j;
   double old_xi, old_xj, f1, f2, hi, hj;
 
   for (i = 0; i < n; i++) {

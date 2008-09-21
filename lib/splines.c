@@ -1,13 +1,21 @@
 #include "xmath.h"
 
+/*
+#ifdef __APPLE__
+#include <stdlib.h>
+#endif
+*/
+
+#include <stdlib.h>
+
 /* natural cubic spline interpolation based on Numerical Recipes in C */
 
 /* calculate second derivatives; assumes strictly increasing x values */
 static void
-find_spline_derivs(double *x, double *y, int n,
+find_spline_derivs(double *x, double *y, size_t n,
 		   double *y2, double *u)
 {
-  int i, k;
+  long i, k;
   double p, sig;
 
   y2[0] = u[0] = 0.0;  /* lower boundary condition for natural spline */
@@ -38,9 +46,9 @@ find_spline_derivs(double *x, double *y, int n,
 /* interpolate or extrapolate value at x using results of find_spline_derivs */
 static void 
 spline_interp(double *xa, double *ya, double *y2a,
-	      int n, double x, double *y)
+	      size_t n, double x, double *y)
 {
-  int klo, khi, k;
+  long klo, khi, k;
   double h, b, a;
 
   if (x <= xa[0]) {
@@ -83,10 +91,10 @@ spline_interp(double *xa, double *ya, double *y2a,
 }
 
 int
-fit_spline(int n, double *x, double *y,
-	   int ns, double *xs, double *ys, double *work)
+fit_spline(size_t n, double *x, double *y,
+	   size_t ns, double *xs, double *ys, double *work)
 {
-  int i;
+  size_t i;
   double *y2, *u;
 
   y2 = work; u = work + n;

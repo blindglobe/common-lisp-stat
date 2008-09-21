@@ -20,7 +20,7 @@ extern void minsupplyvalues(double , double *, double **,
 extern void minimize();
 extern void minresults(double *, double *, double *, double *, double **,
 		       double *, double **, int *, int *, double *);
-extern void minsetup(int n, int k,
+extern void minsetup(size_t n, size_t k,
 		     int *ffun(), int *gfun(),
 		     double *x, double typf, double *typx, char *work);
                          /*     int  (*ffun)(), (*gfun)();*/
@@ -37,22 +37,22 @@ extern void call_S(char *fun, long narg, char **args, char **mode, long *length,
 
 /* next 2 from derivatives.c */
 /*
-extern void numergrad(int n, double *x, double *grad, double *fsum,
+extern void numergrad(size_t n, double *x, double *grad, double *fsum,
 		      int *ffun(), double h, double *typx);
-extern void numerhess(int n, double *x, double **hess, double f,
+extern void numerhess(size_t n, double *x, double **hess, double f,
 		      double *fsum, void ffun(),
 		      double h, double *typx);
 */
-extern void numergrad(int , double *, double *, double *,
+extern void numergrad(size_t , double *, double *, double *,
 		      int ffun(double *, double *, double *, double **),
 		      double , double *);
-extern void numerhess(int , double *, double **, double ,
+extern void numerhess(size_t , double *, double **, double ,
 		      double *,
 		      int ffun(double *, double *, double *, double **),
 		      double , double *);
 
 /* next from minimize */
-extern int minworkspacesize(int, int);
+extern size_t minworkspacesize(size_t, size_t);
 
 /************************************************************************/
 /**                                                                    **/
@@ -76,7 +76,7 @@ extern int minworkspacesize(int, int);
 
 typedef struct{
   char *f, **sf, **g;
-  int n, k;
+  size_t n, k;
   int change_sign, fderivs;
   int *gderivs;
   double typf, h, dflt;
@@ -99,9 +99,7 @@ static Fundata func, gfuncs, cfuncs;
 /* from S. It attempts to avoid the danger of dangling callocs.         */
 
 void static
-makespace(pptr, size)
-     char **pptr;
-     int size;
+makespace(char **pptr, size_t size)
 {
   if (size <= 0) return;
   if (*pptr == nil) *pptr = calloc(size, 1);
@@ -122,7 +120,7 @@ makespace(pptr, size)
 
 /* install log posterior function */
 static void 
-install_func(char *f, char **sf, int n, int change_sign, /*?? */
+install_func(char *f, char **sf, size_t n, int change_sign, /*?? */
 		    double typf, double h, double *typx, double dflt)
 {
   int i;
@@ -150,9 +148,9 @@ install_func(char *f, char **sf, int n, int change_sign, /*?? */
 
 /* install tilt functions */
 static void
-install_gfuncs(char **g, int n, int k, int change_sign, double h, double *typx)
+install_gfuncs(char **g, size_t n, size_t k, int change_sign, double h, double *typx)
 {
-  int i;
+  size_t i;
   static int inited = FALSE;
   static double *gfsumdata = nil;
 
@@ -180,9 +178,9 @@ install_gfuncs(char **g, int n, int k, int change_sign, double h, double *typx)
 
 /* install constraint functions */
 static void
-install_cfuncs(char **g, int n, int k, double *ctarget, double h, double *typx)
+install_cfuncs(char **g, size_t n, size_t k, double *ctarget, double h, double *typx)
 {
-  int i;
+  size_t i;
   static int inited = FALSE;
 
   if (! inited) {
@@ -206,7 +204,7 @@ install_cfuncs(char **g, int n, int k, double *ctarget, double h, double *typx)
 }
 
 static int
-in_support(char **ff, int n, double *x)
+in_support(char **ff, size_t n, double *x)
 {
   char *args[1], *values[1];
   int *result;
@@ -287,7 +285,7 @@ evalfunc(double *x, double *pval, double *grad, double **hess)
 
 
 /* callback for tilt function evaluation */
-static int which_gfunc;
+static size_t which_gfunc;
 
 static int
 evalgfunc(double *x, double *pval, double *grad, double **hess)
@@ -399,10 +397,10 @@ evalcfunc(double *x, double *pval, double *grad, double **hess)
 
 /* S front end for logposterior evaluation */
 void
-evalfront(char **ff, int *n, double *x, double *val, double *grad,
+evalfront(char **ff, size_t *n, double *x, double *val, double *grad,
 	  double *phess, double *h, double *typx) 
 {
-  int i;
+  size_t i;
   static double **hess = nil;
 
   install_func(ff[0], nil, *n, FALSE, 1.0, *h, typx, 0.0);
@@ -416,10 +414,10 @@ evalfront(char **ff, int *n, double *x, double *val, double *grad,
 
 /* S front end for tilt function evaluation */
 void
-gevalfront(char **gg, int *n, int *m, double *x, double *h,
+gevalfront(char **gg, size_t *n, size_t *m, double *x, double *h,
 	   double *typx, double *val, double *grad)
 {
-  int i;
+  size_t i;
 
   install_gfuncs(gg, *n, *m, FALSE, *h, typx);
   for (i = 0; i < *m; i++, val++) {
@@ -483,9 +481,9 @@ check_derivs(double *x, double drvtol)
 
 /* joint density of normal-cauchy mixture */
 static double
-dncmix(double *x, int n, double p)
+dncmix(double *x, size_t n, double p)
 {
-  int i;
+  size_t i;
   double dens;
 
   for (i = 0, dens = 1.0; i < n; i++) {
@@ -501,7 +499,7 @@ dncmix(double *x, int n, double p)
  */
 void
 samplefront(char **ff, char **sf, char **rf,
-	    double *p, int *n,
+	    double *p, size_t *n,
 	    double *x, double *ch, int *N, double *y, double *w)
 {
   double val;
@@ -564,7 +562,7 @@ static void
 add_tilt(double *x, double *pval, double *grad, double **hess,
 	 double tilt, int exptilt)
 {
-  int i, j, k, n = func.n, m = gfuncs.k;
+  size_t i, j, k, n = func.n, m = gfuncs.k;
   double *gval, *ggrad, **ghess, etilt;
 
   if (m == 0) return;
@@ -607,11 +605,11 @@ add_tilt(double *x, double *pval, double *grad, double **hess,
 }
 
 static void
-set_tilt_info(int n, int m,
+set_tilt_info(size_t n, size_t m,
 	      double tilt, int exptilt, double *tscale)
 {
   static double *hessdata = nil, *graddata = nil;
-  int i;
+  size_t i;
   static int inited = FALSE;
 
   if (! inited) {
@@ -637,7 +635,7 @@ set_tilt_info(int n, int m,
 static void 
 minfunc(double *x, double *pval, double *grad, double **hess) 
 {
-  int k = gfuncs.k;
+  size_t k = gfuncs.k;
 
   if (evalfunc(x, pval, grad, hess) && (k > 0))
     add_tilt(x, pval, grad, hess, tiltinfo.tilt, tiltinfo.exptilt);
@@ -666,7 +664,7 @@ maxfront(char **ff, char **gf, char **cf,
   static char *work = nil;
   static double **H = nil, **cJ = nil;
   double *pf, *grad, *c;
-  int i, n, m, k;
+  size_t i, n, m, k;
   void (*cfun)();
 
   if (ipars->verbose > 0) PRINTSTR("maximizing...\n");
@@ -797,10 +795,8 @@ loglapfront(fvals, cvals, ipars, dpars, val)
 /**                                                                    **/
 /************************************************************************/
 
-moms1front(gf, n, m, x, hessdata, mean, stdev, sigmadata, h, typx)
-     char *gf;
-     int *n, *m;
-     double *x, *hessdata, *mean, *stdev, *sigmadata, *h, *typx;
+moms1front(char *gf, int *n, int *m, double *x, double *hessdata, double *mean,
+           double *stdev, double *sigmadata, double *h, double *typx)
 {
   int i, j, k;
   double *hess, *sigma, *delg;
@@ -855,13 +851,9 @@ typedef struct {
   double mgfdel;
 } MomDPars;
 
-moms2front(ff, gf, gnum, x, typx, fvals, gvals, ipars, dpars, 
-	   mean, stdev, sigmadata)
-     char **ff, **gf;
-     int *gnum;
-     double *x, *typx, *fvals, *gvals, *mean, *stdev, *sigmadata;
-     MomIPars *ipars;
-     MomDPars *dpars;
+moms2front(char **ff, char **gf, int *gnum, double *x, double *typx,
+           double *fvals, double *gvals, MomIPars *ipars, MomDPars *dpars, 
+	   double *mean, double *stdev, double *sigmadata)
 {
   char *msg;
   double h, loglap0, loglap1, loglap2;
@@ -1007,10 +999,8 @@ moms2front(ff, gf, gnum, x, typx, fvals, gvals, ipars, dpars,
   }
 }
 
-static copypars(x, f, g, ip, dp, x1, f1, g1, ip1, dp1)
-     double *x, *f, *g, *x1, *f1, *g1;
-     MomIPars *ip, *ip1;
-     MomDPars *dp, *dp1;
+static copypars(double *x, double *f, double *g, MomIPars *ip, MomIPars *dp,
+                double *x1, double *f1, double *g1, MomIPars *ip1, MomDPars *dp1)
 {
   int i, n, m, nf, ng;
 
@@ -1032,12 +1022,9 @@ static copypars(x, f, g, ip, dp, x1, f1, g1, ip1, dp1)
 /**                                                                    **/
 /************************************************************************/
 
-lapmar1front(ff, gf, x, typx, fvals, ipars, dpars, xmar, ymar, nmar)
-     char **ff, **gf;
-     double *x, *typx, *fvals, *xmar, *ymar;
-     MaxIPars *ipars;
-     MaxDPars *dpars;
-     int *nmar;
+lapmar1front(char **ff, char **gf, double *x, double *typx, double *fvals,
+             MaxIPars *ipars, MaxDPars *dpars, double *xmar, double *ymar,
+             int *nmar)
 {
   char *msg;
   int i, n, m, mindex;
@@ -1096,10 +1083,8 @@ lapmar1front(ff, gf, x, typx, fvals, ipars, dpars, xmar, ymar, nmar)
   }
 }
 
-static cpmarpars(x, f, g, ip, dp, x1, f1, g1, ip1, dp1)
-     double *x, *f, *g, *x1, *f1, *g1;
-     MaxIPars *ip, *ip1;
-     MaxDPars *dp, *dp1;
+static cpmarpars(double *x, double *f, double *g, MaxIPars *ip, MaxDPars *dp,
+                 double *x1, double *f1, double *g1, MaxIPars *ip1, MaxDPars *dp1)
 {
   int i, n, k, nf, ng;
 

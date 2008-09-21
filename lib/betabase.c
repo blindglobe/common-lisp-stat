@@ -10,7 +10,7 @@ extern double macheps(), gamma();
 static double logbeta(), betai(), xinbta();
 
 void
-betabase(double *x, double *a, double *b, int *gia, int *gib, double *cdf)
+betabase(double *x, double *a, double *b, long *gia, long *gib, double *cdf)
 {
   *cdf = betai(*x, *a, *b);
 }
@@ -52,7 +52,7 @@ static double betai(double x, double pin, double qin)
   */
   double c, finsum, p, ps, q, term, xb, xi, y, dbetai, p1;
   static double eps = 0.0, alneps = 0.0, sml = 0.0, alnsml = 0.0;
-  int i, n, ib;
+  long i, n, ib;
 
   /* I'm not sure these tolerances are optimal */
   if (eps == 0.0) {
@@ -171,7 +171,7 @@ static double xinbta(double *p, double *q, double *beta, double *alpha, int *ifa
   static int indx;
   static double prev, a, g, h, r, s, t, w, y, yprev, pp, qq;
   static double sq, tx, adj, acu;
-  static int iex;
+  static long iex;
   static double fpu, xin;
 
   /* Define accuracy and initialise. */

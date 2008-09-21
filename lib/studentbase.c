@@ -4,7 +4,7 @@
 #define HALF_PI 1.5707963268
 #define EPSILON .000001
 
-extern void betabase(double *, double *, double *,int *, int *,double *);
+extern void betabase(double *, double *, double *,long *, long *,double *);
 extern void normbase(double *,double *);
 
 extern double ppnd(), ppbeta();
@@ -26,7 +26,7 @@ studentbase(double *x, double *df, double *cdf)
     if (n < 2.0 && n != 1.0) {
       /* beta integral aproximation for small df */
       double  da = 0.5, db = 0.5 * n, dx, dp;
-      int ia = 0, ib = floor(db);
+      long ia = 0, ib = floor(db);
   
       dx = db / (db + da * t);
       betabase(&dx, &db, &da, &ib, &ia, &dp);

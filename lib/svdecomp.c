@@ -7,8 +7,9 @@
  
 #include "linalg.h"
 
-static double PYTHAG(a, b)
-	double a, b;
+#include <stdio.h>
+
+static double PYTHAG(double a, double b)
 {
   double at = fabs(a), bt = fabs(b), ct, result;
 
@@ -21,10 +22,10 @@ static double PYTHAG(a, b)
 #define SWAPD(a, b) (temp = (a), (a) = (b), (b) = temp)
 
 static void 
-sort_sv(int m, int n, int k,
+sort_sv(size_t m, size_t n, size_t k,
 	double **a, double *w, double **v)
 {
-  int i, j;
+  size_t i, j;
   double temp;
   
   for (i = k; (i < n - 1) && (w[i] < w[i+1]); i++) {
@@ -39,15 +40,17 @@ static double maxarg1, maxarg2;
 #define SIGN(a, b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
 int
-svdcmp(double **a, int m, int n, double *w, double **v)
+svdcmp(double **a, size_t m, size_t n, double *w, double **v)
 {
-  int flag, i, its, j, jj, k, l, nm;
+  int flag, its;
+  long i, k, l;  /* These must be signed */
+  size_t j, jj, nm;
   double c, f, h, s, x, y, z;
   double anorm = 0.0, g = 0.0, scale = 0.0;
   RVector rv1;
-  
+
   if (m < n) return(FALSE);  /* flag an error if m < n */
-  
+
   rv1 = rvector(n);
 
   /* Householder reduction to bidiagonal form */
@@ -112,6 +115,7 @@ svdcmp(double **a, int m, int n, double *w, double **v)
       if (g) {
         for (j = l; j < n; j++)
           v[j][i] = (a[i][j] / a[i][l]) / g;
+
         for (j = l; j < n; j++) {
           for (s = 0.0, k = l; k < n; k++) s += a[i][k] * v[k][j];
           for (k = l; k < n; k++) v[k][j] += s * v[k][i];
@@ -252,6 +256,7 @@ svdcmp(double **a, int m, int n, double *w, double **v)
       w[k] = x;
     }
   }
+
   free_vector(rv1);
   return(TRUE);
 }
