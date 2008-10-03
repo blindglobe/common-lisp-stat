@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-08-27 21:34:22 tony>
+;;; Time-stamp: <2008-10-03 02:25:15 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -97,16 +97,23 @@
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
+	       
+	       (:module "packaging"
+			:pathname #p"src/"
+			:components
+			((:source-file "packages")))
 
 	       (:module "proto-objects"
 			:pathname "src/objsys/"
+			:serial t
+			:depends-on ("packaging")
 			:components
 			((:lispstat-lsp-source-file "lsobjects")))
 
 	       (:module "lispstat-core"
 			:pathname "src/basics/"
 			:serial t
-			:depends-on ("proto-objects")
+			:depends-on ("packaging" "proto-objects")
 			:components
 			((:lispstat-lsp-source-file "defsys")
 			 (:lispstat-lsp-source-file "lstypes")
@@ -124,7 +131,7 @@
 	       (:module
 		"numerics-internal"
 		:pathname "src/numerics/"
-		:depends-on ("proto-objects" "lispstat-core")
+		:depends-on ("packaging" "proto-objects" "lispstat-core")
 		:components
 		((:lispstat-lsp-source-file "cffiglue")
 		 (:lispstat-lsp-source-file "dists"
@@ -142,7 +149,8 @@
 	       (:module
 		"stat-data"
 		:pathname "src/data/"
-		:depends-on ("proto-objects"
+		:depends-on ("packaging"
+			     "proto-objects"
 			     "lispstat-core"
 			     "numerics-internal")
 		:components
@@ -152,7 +160,8 @@
 	       (:module
 		"lispstat-basics"
 		:pathname "src/basics/"
-		:depends-on ("proto-objects"
+		:depends-on ("packaging"
+			     "proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "stat-data")
@@ -163,7 +172,8 @@
 	       (:module
 		"descriptives"
 		:pathname "src/describe/"
-		:depends-on ("proto-objects"
+		:depends-on ("packaging"
+			     "proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "stat-data"
@@ -174,7 +184,8 @@
 	       (:module
 		"optimization"
 		:pathname "src/numerics/"
-		:depends-on ("proto-objects"
+		:depends-on ("packaging"
+			     "proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "stat-data"
@@ -187,7 +198,8 @@
 	       (:module
 		"stat-models"
 		:pathname "src/stat-models/"
-		:depends-on ("proto-objects"
+		:depends-on ("packaging"
+			     "proto-objects"
 			     "lispstat-core"
 			     "numerics-internal"
 			     "lispstat-basics"
@@ -206,7 +218,7 @@
 	       (:module
 		"lisp-stat-user"
 		:pathname "src/"
-		:depends-on  ("proto-objects"
+		:depends-on  ("packaging" "proto-objects"
 			      "lispstat-core"
 			      "numerics-internal" 
 			      "stat-data"
@@ -218,7 +230,7 @@
 
 	       (:module
 		 "lisp-stat-unittest"
-		 :depends-on ( "lisp-stat-user" ) ;; shouldn't need :lift!
+		 :depends-on ( "lisp-stat-user" ) ;; lift at overall depends level
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
 			      (:file "unittests-lstypes")
