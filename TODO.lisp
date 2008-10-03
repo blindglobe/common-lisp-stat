@@ -14,13 +14,13 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;;; Current challenge to solve -- this will describe the setup and the
-;;; work to solve.... 
+;;; This file contains the current challenges to solve, including a
+;;; description of the setup and the work to solve....
  
-
 ;; Set up
 
 (in-package :cl-user)
+;;(asdf:oos 'asdf:load-op 'lift)
 (asdf:oos 'asdf:load-op 'lispstat)
 (in-package :ls-user)
 

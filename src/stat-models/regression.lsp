@@ -72,6 +72,7 @@
   *object*
   "Normal Linear Regression Model")
 
+
 (defun regression-model (x y &key 
 			 (intercept T) 
 			 (print T) 
