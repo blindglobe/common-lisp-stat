@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-09-08 08:28:47 tony>
+;;; Time-stamp: <2008-10-03 02:25:41 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -16,19 +16,6 @@
 ;;; version.
 
 (in-package :cl-user)
-
-
-
-
-;;; REGRESSION using CLOS structure 
-
-(defpackage :lisp-stat-regression-linear-clos
-  (:use :common-lisp
-	:clem )
-
-  (:export regression-model regression-model-obj x y intercept sweep-matrix
-	   basis weights included total-sum-of-squares residual-sum-of-squares
-	   predictor-names response-name case-labels))
 
 ;;; LispStat Basics
 
@@ -64,11 +51,26 @@
 
 ;;; 
 
-
-
 (defpackage :lisp-stat-macros
   (:use :common-lisp
 	:lisp-stat-compound-data)
   (:export make-rv-function make-rv-function-1))
 
-;;; 
+;;; NEW CLOS STRUCTURE
+
+(defpackage :lisp-stat-data-clos
+  (:use :common-lisp
+	:lisp-matrix)
+  (:export get-variable-matrix get-variable-vector
+	   ;; generic container class for data -- if small enough
+	   ;; could be value, otherwise might be reference.
+	   data-pointer))
+
+(defpackage :lisp-stat-regression-linear-clos
+  (:use :common-lisp
+	:lisp-matrix
+	:lisp-stat-data-clos)
+  (:export regression-model regression-model-obj x y intercept sweep-matrix
+	   basis weights included total-sum-of-squares residual-sum-of-squares
+	   predictor-names response-name case-labels))
+
