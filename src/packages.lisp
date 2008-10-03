@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-03 02:34:15 tony>
+;;; Time-stamp: <2008-10-03 02:38:51 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -70,13 +70,11 @@
   (:use :common-lisp
 	:lisp-matrix
 	:lisp-stat-data-clos)
-  (:export regression-model regression-model-obj x y intercept sweep-matrix
-	   basis weights included total-sum-of-squares residual-sum-of-squares
-	   predictor-names response-name case-labels))
+  (:export regression-model))
 
 
 
-;;;
+;;; USER PACKAGES
 
 (defpackage :lisp-stat
     (:documentation "Experimentation package for LispStat.  Serious work
