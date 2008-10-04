@@ -1,19 +1,8 @@
 ;;; -*- mode: lisp -*-
 
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
-
-(in-package :cl-user)
-
-
-(defpackage :lisp-stat-types
-  (:documentation "Provides some typeing for LispStat, but is clearly
-                   a bit incomplete.")
-  (:use :common-lisp)
-  (:export fixnump
-	   check-nonneg-fixnum check-one-nonneg-fixnum
-	   check-one-fixnum check-one-real check-one-number))
 
 (in-package :lisp-stat-types)
 

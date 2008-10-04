@@ -1,5 +1,6 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
@@ -8,38 +9,14 @@
 ;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;; unrestricted use.
 
+(in-package :lisp-stat-probability)
+
 ;;; This stuff needs to be improved.  We really could use something
 ;;; like the R libraries, but of course in a better packaged manner.
 
 ;;; Currently, there is a function for everything.  Probably better to
 ;;; simplify by thinking about a more generic approach, distribution
 ;;; being specified by keyword.
-
-;;;
-;;; Package Setup
-;;;
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-probability
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-ffi-int
-	:lisp-stat-macros)
-  (:export log-gamma set-seed
-	   uniform-rand
-	   normal-cdf normal-quant normal-dens normal-rand
-	   bivnorm-cdf
-	   cauchy-cdf cauchy-quant cauchy-dens cauchy-rand
-	   gamma-cdf gamma-quant gamma-dens gamma-rand
-	   chisq-cdf chisq-quant chisq-dens chisq-rand
-	   beta-cdf beta-quant beta-dens beta-rand
-	   t-cdf t-quant t-dens t-rand
-	   f-cdf f-quant f-dens f-rand
-	   poisson-cdf poisson-quant poisson-pmf poisson-rand 
-	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
-
-(in-package :lisp-stat-probability)
 
 
 (defun set-seed (x)

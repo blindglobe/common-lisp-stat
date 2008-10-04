@@ -51,21 +51,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-;;; Package Setup
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-object-system
- (:nicknames :ls-objects :lsos)
- (:use :common-lisp)
- (:shadow :call-method :call-next-method :slot-value)
- (:export ls-object objectp *object* kind-of-p make-object
-	  *message-hook*
-	  *set-slot-hook* slot-value self 
-	  send call-next-method call-method
-	  defmeth defproto instance-slots proto-name))
-
 (in-package :lisp-stat-object-system)
 
 (defun use-lsos ()

@@ -1,10 +1,9 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 ;;;
 ;;; what this should do:
-;;; #1 - use CFFI (and possibly Verazanno) to import C/C++.
 ;;; #2 - what to do for Fortran?  Possibly: C <-> bridge, or CLapack? 
 ;;;      problem: would be better to have access to Fortran.  For
 ;;;      example, think of Doug Bates comment on reverse-calls (as
@@ -12,48 +11,14 @@
 ;;;      -- however, has anyone run Lapack or similar through F2CL?
 ;;;      Answer: yes, Matlisp does this.
 ;;;
-;;; #3 - Use a lisp-based matrix system drop-in?  (matlisp, femlisp, clem, ...?)
-;;;
+;;; #3 - Use a lisp-based matrix system drop-in?  (lisp-matrix, or ...
+;;;      matlisp, femlisp, clem, ...?)
 
 
 ;;;; linalg -- Lisp-Stat interface to basic linear algebra routines.
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
-
-;;;
-;;; Package Setup
-;;;
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-linalg
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-ffi-int
-	:lisp-stat-math
-	:lisp-stat-types
-	:lisp-stat-float
-	:lisp-stat-compound-data
-	:lisp-stat-linalg-data
-	:lisp-stat-matrix)
-  (:shadowing-import-from :lisp-stat-math
-	  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-	  asin acos atan sinh cosh tanh asinh acosh atanh float random
-	  truncate floor ceiling round minusp zerop plusp evenp oddp 
-	  < <= = /= >= > complex conjugate realpart imagpart phase
-	  min max logand logior logxor lognot ffloor fceiling
-	  ftruncate fround signum cis)
-  (:export chol-decomp lu-decomp lu-solve determinant inverse
-	   sv-decomp qr-decomp rcondest make-rotation spline
-	   kernel-dens kernel-smooth 
-	   fft make-sweep-matrix sweep-operator ax+y eigen
-
-	   check-real ;; for optimize
-
-	   covariance-matrix matrix print-matrix solve
-	   backsolve eigenvalues eigenvectors accumulate cumsum combine
-	   lowess))
 
 (in-package #:lisp-stat-linalg)
 

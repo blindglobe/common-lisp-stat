@@ -9,31 +9,6 @@
 ;;; unrestricted use.
 ;;;
 
-;;;
-;;; Package Setup
-;;;
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-compound-data
-  (:use :common-lisp
-	:lisp-stat-object-system
-	:lisp-stat-types)
-  (:shadowing-import-from :lisp-stat-object-system
-			  slot-value
-			  call-next-method call-method)
-  (:export compound-data-p *compound-data-proto*
-	   compound-object-p
-	   compound-data-seq compound-data-length
-	   element-list element-seq
-	   sort-data order rank
-	   recursive-map-elements map-elements repeat
-	   check-sequence
-	   get-next-element make-next-element set-next-element
-	   sequencep iseq ordered-nneg-seq
-	   select split-list which
-	   difference rseq
-	   flatten-list ))
 
 (in-package :lisp-stat-compound-data)
 

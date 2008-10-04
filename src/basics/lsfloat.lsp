@@ -7,7 +7,9 @@
 ;;; 
 ;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;; unrestricted use.
-;;;
+
+(in-package #:lisp-stat-float)
+
 ;;; Common Lisp allows for four different floating point types that need
 ;;; not be distinct. For statistical work, the type I prefer to use is
 ;;; the one that is closest to a C double. This type is named stat-float.
@@ -100,25 +102,6 @@
 ;;  Three types are provided: single-float, double-float, and
 ;; long-float. An object can simultaneously be of types single-float and
 ;; short-float.
-
-;;; Package Setup
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-float
-  (:use :common-lisp)
-  (:export +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
-	   machine-epsilon base-float makedouble
-
-	   make-base-trans-fun-2 make-base-trans-fun 
-
-	   BASE-LOG BASE-EXP BASE-EXPT BASE-SQRT BASE-SIN BASE-COS
-	   BASE-TAN BASE-ASIN BASE-ACOS BASE-ATAN BASE-SINH
-	   BASE-COSH BASE-TANH BASE-ASINH BASE-ACOSH BASE-ATANH
-	   BASE-ABS BASE-PHASE BASE-FFLOOR BASE-FCEILING BASE-FTRUNCATE
-	   BASE-FROUND BASE-SIGNUM BASE-CIS))
-
-(in-package #:lisp-stat-float)
 
 ;; This should technically be conditionalized to the Lisp
 ;; implementation, i.e. 

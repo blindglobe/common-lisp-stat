@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
@@ -7,32 +7,6 @@
 ;;;; 
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
-
-;;;
-;;; Package Setup
-;;;
-
-;;(in-package #:lisp-stat-basics)
-;;(in-package :cl-user)
-
-(defpackage :lisp-stat-linalg-data
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-ffi-int
-	:lisp-stat-types
-	:lisp-stat-compound-data
-	:lisp-stat-matrix)
-  (:export ;; more to add
-      +mode-in+ +mode-re+ +mode-cx+ mode-of
-      
-      la-data-mode la-allocate la-free
-
-      la-get-double la-put-double
-      la-put-integer
-      
-      la-matrix la-free-matrix la-matrix-to-data la-data-to-matrix
-      la-vector la-free-vector la-vector-to-data la-data-to-vector ))
-
 
 (in-package :lisp-stat-linalg-data)
 

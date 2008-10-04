@@ -5,23 +5,15 @@
 ;;; 
 ;;; Copyright (c) 1991, by Luke Tierney. 
 ;;; Copyright (c) 2007, by Carlos Ungil.
-;;; Copyright (c) 2007, by AJ Rossini <blindglobe@gmail.com>.
+;;; Copyright (c) 2007-2008, by AJ Rossini <blindglobe@gmail.com>.
 ;;; Permission is granted for unrestricted use.
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-ffi-int
-  (:use :common-lisp
-	:cffi)
-  (:export ccl-store-integer ccl-store-double ccl-store-ptr
-	   get-buf ))
+(in-package :lisp-stat-ffi-int)
    
 ;; are there any error message components that need to be exported?
 ;; More importantly, should we factor them out into a logging package?
 
 ;; This package initially loads the liblispstat library for access.
-
-(in-package :lisp-stat-ffi-int)
 
 (cffi:load-foreign-library
  (concatenate 'string

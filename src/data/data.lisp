@@ -1,15 +1,12 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
-;;; See COPYRIGHT file for any additional restrictions (BSD license).
-;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
+;;; Time-stamp: <2008-10-04 15:05:09 tony> 
+;;; Creation:   <2005-08-xx 21:34:07 rossini> 
 ;;; File:       data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
+;;; Copyright:  (c)2005--2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    data package for lispstat
-;;; Time-stamp: <2006-05-19 12:33:41 rossini> 
-;;; Creation:   <2006-05-17 21:34:07 rossini> 
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -17,6 +14,8 @@
 
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
+
+(in-package :lisp-stat-data)
 
 ;;; conside that data has 3 genotypic chracteristrics.  The first
 ;;; would be form -- scalar, vector, array.  second would be datarep
@@ -41,23 +40,6 @@
 ;;; people to read them all.  With all due respect to John, they've
 ;;; lasted quite well, but need to be updated.
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-data
-  (:documentation "Data management, integration, I/O, and other data technologies.")
-  (:nicknames :ls-data)
-  (:use :common-lisp
-	:lisp-stat-object-system
-	:lisp-stat-config
-	:lisp-stat-types
-	:lisp-stat-compound-data)
-  (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
-  (:export open-file-dialog read-data-file read-data-columns load-data
-	   load-example *variables* *ask-on-redefine*
-	   def variables savevar undef))
-
-(in-package :lisp-stat-data)
 
 ;;; The purpose of this package is to manage data which will be
 ;;; processed by LispStat.  In particular, it will be important to

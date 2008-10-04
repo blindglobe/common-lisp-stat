@@ -10,29 +10,9 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-
-;;; Need to extend to use CLEM 
-
-;;;
-;;; Package Setup
-;;;
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-matrix
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-compound-data)
-  (:export matrixp ;;  matrix -- conflicts!
-	   num-rows num-cols matmult identity-matrix diagonal
-	   row-list column-list inner-product outer-product
-	   cross-product transpose bind-columns bind-rows
-	   array-data-vector vector-to-array
-
-	   check-matrix check-square-matrix
-
-	   copy-array copy-vector
-	   ))
+;;; Issues:
+;;; #1 - Need to extend to use lisp-matrix?
+;;; #2 - do as a second alternative? 
 
 (in-package :lisp-stat-matrix)
 

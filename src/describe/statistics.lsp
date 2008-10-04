@@ -10,28 +10,6 @@
 ;;;; You may give out copies of this software; for conditions see the file
 ;;;; COPYING included with this distribution.
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-descriptive-statistics
- (:use :common-lisp
-       :lisp-stat-data
-       :lisp-stat-math
-       :lisp-stat-compound-data
-       :lisp-stat-matrix
-       :lisp-stat-linalg-data
-       :lisp-stat-linalg
-       :lisp-stat-basics)
-   (:shadowing-import-from :lisp-stat-math ;; life is a vector!
-      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-      asin acos atan sinh cosh tanh asinh acosh atanh float random
-      truncate floor ceiling round minusp zerop plusp evenp oddp 
-      < <= = /= >= > ;; complex 
-      conjugate realpart imagpart phase
-      min max logand logior logxor lognot ffloor fceiling
-      ftruncate fround signum cis)
-   (:export standard-deviation quantile median interquartile-range
-	    fivnum sample))
-
 (in-package :lisp-stat-descriptive-statistics)
 
 ;;;
