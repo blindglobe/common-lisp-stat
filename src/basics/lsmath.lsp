@@ -1,40 +1,14 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+
+;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
-;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+;;; Since 1991, ANSI Common Lisp was finally finished and those
+;;; changes are reflected in this update.
 
-;;;; lsmath -- Install vectorized arithmetic functions
-;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
-;;;; unrestricted use.
-
-;;; Package Setup
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-math
-   (:use :common-lisp
-	 :lisp-stat-object-system
-	 :lisp-stat-macros
-	 :lisp-stat-compound-data
-	 :lisp-stat-float)
-   (:shadowing-import-from :lisp-stat-object-system
-			   slot-value call-method call-next-method)
-   (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
- 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
- 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
- 	   < <= = /= >= > ;; complex
-	   conjugate realpart imagpart phase
- 	   min max logand logior logxor lognot ffloor fceiling
- 	   ftruncate fround signum cis)
-   (:export ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
- 	   tan asin acos atan sinh cosh tanh asinh acosh atanh float random
- 	   truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
- 	   /= >= > ;; complex
-	   conjugate realpart imagpart phase min max
- 	   logand logior logxor lognot ffloor fceiling ftruncate fround 
- 	   signum cis)
-   (:documentation "Vectorization of numerical functions"))
+;;; lsmath -- Install vectorized arithmetic functions
+;;; 
+;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
+;;; unrestricted use.
 
 (in-package :lisp-stat-math)
 

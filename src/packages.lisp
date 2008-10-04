@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-04 15:06:10 tony>
+;;; Time-stamp: <2008-10-04 15:34:06 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -204,6 +204,31 @@
       la-vector la-free-vector la-vector-to-data la-data-to-vector ))
 
 
+(defpackage :lisp-stat-math
+   (:use :common-lisp
+	 :lisp-stat-object-system
+	 :lisp-stat-macros
+	 :lisp-stat-compound-data
+	 :lisp-stat-float)
+   (:shadowing-import-from :lisp-stat-object-system
+			   slot-value call-method call-next-method)
+   (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+ 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
+ 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
+ 	   < <= = /= >= > ;; complex
+	   conjugate realpart imagpart phase
+ 	   min max logand logior logxor lognot ffloor fceiling
+ 	   ftruncate fround signum cis)
+   (:export ^ ** expt + - * / mod rem pmin pmax abs 1+ 1- log exp sqrt sin cos 
+ 	   tan asin acos atan sinh cosh tanh asinh acosh atanh float random
+ 	   truncate floor ceiling round minusp zerop plusp evenp oddp < <= =
+ 	   /= >= > ;; complex
+	   conjugate realpart imagpart phase min max
+ 	   logand logior logxor lognot ffloor fceiling ftruncate fround 
+ 	   signum cis)
+   (:documentation "Vectorization of numerical functions"))
+
+
 (defpackage :lisp-stat-linalg
   (:use :common-lisp
 	:cffi
@@ -231,6 +256,13 @@
 	   covariance-matrix matrix print-matrix solve
 	   backsolve eigenvalues eigenvectors accumulate cumsum combine
 	   lowess))
+
+
+(defpackage :lisp-stat-config
+  (:use :common-lisp)
+  (:export *default-path*
+	   *lsos-files* *basic-files* *ls-files*
+	   *lispstat-data-dir* *lispstat-examples-dir*))
 
 
 (defpackage :lisp-stat-data

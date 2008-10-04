@@ -1,25 +1,14 @@
 ;;; -*- mode: lisp -*-
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-config
-  (:use :common-lisp)
-  (:export *default-path*
-	   *lsos-files* *basic-files* *ls-files*
-
-	   *lispstat-data-dir* *lispstat-examples-dir*
-	   ))
-
 (in-package :lisp-stat-config)
 
-;; KCL
+;;; KCL
+
 ;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
 ;; (setf *break-enable* nil)
 
 
-;;;;
-;;;; EXCL (Allegro)
-;;;;
+;;; EXCL (Allegro)
 
 ;; (setf *read-default-float-format* 'double-float)
 
