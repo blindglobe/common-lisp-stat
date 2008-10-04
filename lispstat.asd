@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-10-03 02:37:10 tony>
+;;; Time-stamp: <2008-10-03 05:16:33 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -101,7 +101,7 @@
 	       (:module "packaging"
 			:pathname #p"src/"
 			:components
-			((:source-file "packages")))
+			((:file "packages")))
 
 	       (:module "proto-objects"
 			:pathname "src/objsys/"
@@ -146,6 +146,7 @@
 							 "matrices"
 							 "ladata"))))
 
+	       ;; prototype and CLOS approaches.
 	       (:module
 		"stat-data"
 		:pathname "src/data/"
@@ -154,7 +155,7 @@
 			     "lispstat-core"
 			     "numerics-internal")
 		:components
-		(;; (:file "data-clos")
+		((:file "data-clos")
 		 (:file "data")))
 
 	       (:module
@@ -215,22 +216,16 @@
 		 ;;		       "dists"))
 		 ))
 
-;; 	       (:module
-;; 		"lisp-stat-user"
-;; 		:pathname "src/"
-;; 		:depends-on  ("packaging" "proto-objects"
-;; 			      "lispstat-core"
-;; 			      "numerics-internal" 
-;; 			      "stat-data"
-;; 			      "lispstat-basics"
-;; 			      "descriptives"
-;; 			      "optimization"
-;; 			      "stat-models")
-;; 		:components ((:file "ls-user")))
-
 	       (:module
 		 "lisp-stat-unittest"
-		 :depends-on ( "lisp-stat-user" ) ;; lift at overall depends level
+		:depends-on  ("packaging" "proto-objects"
+			      "lispstat-core"
+			      "numerics-internal" 
+			      "stat-data"
+			      "lispstat-basics"
+			      "descriptives"
+			      "optimization"
+			      "stat-models")
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
 			      (:file "unittests-lstypes")
