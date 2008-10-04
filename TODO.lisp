@@ -1,13 +1,10 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2006-2008, by A.J. Rossini <blindglobe@gmail.com>
-;;; See COPYRIGHT file for any additional restrictions (BSD license).
-;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-09-09 08:03:39 tony>
+;;; Time-stamp: <2008-10-04 14:46:52 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
+;;; Copyright:  (c) 2007-2008, AJ Rossini <blindglobe@gmail.com>.  BSD.
 ;;; Purpose:    demonstrations of how one might use CLS.
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -17,10 +14,9 @@
 ;;; This file contains the current challenges to solve, including a
 ;;; description of the setup and the work to solve....
  
-;; Set up
+;;; SET UP
 
 (in-package :cl-user)
-;;(asdf:oos 'asdf:load-op 'lift)
 (asdf:oos 'asdf:load-op 'lispstat)
 (in-package :ls-user)
 
@@ -46,16 +42,17 @@
   (format t "loaded data.~%")
   )  ;; eval at this point.
 
-
-;;; FIXME: need to get multiple-linear regression working -- clearly
-;;; simple linear is working above!
 (defvar m nil "holding variable.")
 (def m (regression-model (list iron aluminum) absorbtion :print nil))
 (send m :compute)
 (send m :sweep-matrix)
 (format t "~%~A~%" (send m :sweep-matrix))
 
- ;; ERROR... FIX-ME!!
+;;; FIXME
+
+;; need to get multiple-linear regression working (simple linear regr
+;; works). 
+
 (send m :basis) ;; this should be positive?
 (send m :coef-estimates)
 
@@ -66,16 +63,3 @@
 (send m :help :basis)
 
 (send m :plot-residuals)
-
-
-(typep aluminum 'sequence)
-(typep iron 'sequence)
-(matrixp iron)
-
-*variables*
-
-(variables)
-(undef 'iron)
-(variables)
-
-
