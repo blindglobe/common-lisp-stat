@@ -11,3 +11,5 @@ fasl
 test-results/
 ASDF/*
 external/*
+run-emacs.sh
+BrentWork
