@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the data-clos package
-;;; Time-stamp: <2008-05-09 14:18:19 tony>
+;;; Time-stamp: <2008-10-31 17:40:01 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -14,16 +14,6 @@
 
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
-
-(in-package :cl-user)
-
-;; if needed, but need to set the ASDf path first...!
-;; (asdf:oos 'asdf:load-op :lift)
-
-(defpackage :lisp-stat-data-clos-example
-  (:use :common-lisp
-	:lift  :lisp-stat-unittests
-	:lisp-stat-data-clos))
 
 (in-package :lisp-stat-data-clos-example)
 

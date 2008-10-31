@@ -8,39 +8,6 @@
 ;;; tests.  However, where they will end up is still to be
 ;;; determined. 
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-unittests-arrays
-  (:use :common-lisp :lift
-	;; use feature tests to check for matrix packages, i.e. 
-	#+matlisp :matlisp 
-	#+clem :clem
-	;; and likewise, handle the tests appropriately as well.
-	:lisp-stat             ;; basic tools
-	:lisp-stat-unittests)  ;; support
-  (:shadowing-import-from :lisp-stat
-	;; objects
-	slot-value call-method call-next-method 
-
-	;; lsmath
-	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan 
-	asin acos atan sinh cosh tanh asinh acosh atanh float random
-	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= >
-	min max logand logior logxor lognot ffloor fceiling
-	ftruncate fround signum cis
-	
-	;; complex
-	conjugate realpart imagpart phase
-	
-	;; matlisp
-	fft transpose) 
-  (:shadowing-import-from :matlisp
-	real ;; common-lisp
-	)
-  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
-  
-
 (in-package :lisp-stat-unittests-arrays)
 
 ;;; TEST for Arrays and Linear Algebra.

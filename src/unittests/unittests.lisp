@@ -8,22 +8,6 @@
 ;;; tests.  However, where they will end up is still to be
 ;;; determined. 
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-unittests
-  (:use :common-lisp :lift :lisp-stat)
-  (:shadowing-import-from :lisp-stat
-	slot-value call-method call-next-method ;; objects
-	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
-	asin acos atan sinh cosh tanh asinh acosh atanh float random
-	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= > ;; complex
-	conjugate realpart imagpart phase
-	min max logand logior logxor lognot ffloor fceiling
-	ftruncate fround signum cis)
-  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
-	   almost= almost=lists numerical=)) ; compare
-
 (in-package :lisp-stat-unittests)
 
 ;;; TESTS
@@ -37,12 +21,12 @@
 (defun run-lisp-stat-test (&rest x)
   (run-test x))
 
-
 (deftestsuite lisp-stat-ut () ())
-(deftestsuite lisp-stat-ut-lin-alg (lisp-stat-ut) ())
-(deftestsuite lisp-stat-ut-spec-fns (lisp-stat-ut) ())
-(deftestsuite lisp-stat-ut-probdistn (lisp-stat-ut) ())
 
+;; others should be defined in another place...:
+;;(deftestsuite lisp-stat-ut-lin-alg (lisp-stat-ut) ())
+;;(deftestsuite lisp-stat-ut-spec-fns (lisp-stat-ut) ())
+;;(deftestsuite lisp-stat-ut-probdistn (lisp-stat-ut) ())
 
 (defun almost= (a b &key (tol 0.000001)) 
   "Numerically compares 2 values to a tolerance."
@@ -54,8 +38,6 @@
       t
       (and (almost= (car a) (car b) :tol tol)
 	   (almost=lists (cdr a) (cdr b) :tol tol))))
-
-
 
 ;; Need to consider a CLOSy approach for almost= to cover the range of
 ;; possible data structures that we would like to be equal to a

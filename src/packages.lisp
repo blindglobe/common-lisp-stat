@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-04 15:34:06 tony>
+;;; Time-stamp: <2008-10-31 17:40:19 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -473,4 +473,89 @@ done for a user- or analysis-package.")
 
       <= float imagpart))
 
+
+(defpackage :lisp-stat-data-examples
+  (:documentation "Example data used for unittests and illustrations,")
+  (:use :common-lisp
+	:lisp-stat)
+  (:export iron aluminum diabetes ))
+
+;;; 
+
+(defpackage :lisp-stat-unittests
+  (:use :common-lisp :lift :lisp-stat)
+  (:shadowing-import-from :lisp-stat
+	slot-value call-method call-next-method ;; objects
+	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
+	asin acos atan sinh cosh tanh asinh acosh atanh float random
+	truncate floor ceiling round minusp zerop plusp evenp oddp 
+	< <= = /= >= > ;; complex
+	conjugate realpart imagpart phase
+	min max logand logior logxor lognot ffloor fceiling
+	ftruncate fround signum cis)
+  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
+	   almost= almost=lists numerical=)) ; compare
+
+(defpackage :lisp-stat-unittests-arrays
+  (:use :common-lisp :lift
+	;; use feature tests to check for matrix packages, i.e. 
+	#+matlisp :matlisp 
+	#+clem :clem
+	:lisp-matrix
+	;; and likewise, handle the tests appropriately as well.
+	:lisp-stat             ;; basic tools
+	:lisp-stat-unittests)  ;; support
+  (:shadowing-import-from :lisp-stat
+	;; objects
+	slot-value call-method call-next-method 
+
+	;; lsmath
+	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan 
+	asin acos atan sinh cosh tanh asinh acosh atanh float random
+	truncate floor ceiling round minusp zerop plusp evenp oddp 
+	< <= = /= >= >
+	min max logand logior logxor lognot ffloor fceiling
+	ftruncate fround signum cis
+	
+	;; complex
+	conjugate realpart imagpart phase
+	
+	;; matlisp
+	fft transpose) 
+  (:shadowing-import-from :matlisp
+	real ;; common-lisp
+	)
+  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
+
+
+(defpackage :lisp-stat-types-unittests
+  (:use :common-lisp
+	:lift  :lisp-stat-unittests
+	:lisp-stat-types))
+
+(defpackage :lisp-stat-data-clos-example
+  (:use :common-lisp
+	:lift  :lisp-stat-unittests
+	:lisp-stat-data-clos))
+
+(defpackage :lisp-stat-unittests-proto
+  (:use :common-lisp :lift :lisp-stat :lisp-stat-unittests)
+  (:shadowing-import-from :lisp-stat
+	slot-value call-method call-next-method ;; objects
+	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
+	asin acos atan sinh cosh tanh asinh acosh atanh float random
+	truncate floor ceiling round minusp zerop plusp evenp oddp 
+	< <= = /= >= > ;; complex
+	conjugate realpart imagpart phase
+	min max logand logior logxor lognot ffloor fceiling
+	ftruncate fround signum cis)
+  (:export lisp-stat-ut-proto)) ;; unit tests -- rename?
+
+
+(defpackage :lisp-stat-regression-unittests
+  (:use :common-lisp
+	:lift
+	:lisp-stat
+	:lisp-stat-data-examples
+	:lisp-stat-unittests))
 

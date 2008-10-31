@@ -8,26 +8,10 @@
 ;;; tests.  However, where they will end up is still to be
 ;;; determined. 
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-unittests-proto
-  (:use :common-lisp :lift :lisp-stat :lisp-stat-unittests)
-  (:shadowing-import-from :lisp-stat
-	slot-value call-method call-next-method ;; objects
-	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
-	asin acos atan sinh cosh tanh asinh acosh atanh float random
-	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= > ;; complex
-	conjugate realpart imagpart phase
-	min max logand logior logxor lognot ffloor fceiling
-	ftruncate fround signum cis)
-  (:export lisp-stat-ut-proto)) ;; unit tests -- rename?
 
 (in-package :lisp-stat-unittests-proto)
 
 ;;; Object System tests
-
-(deftestsuite lisp-stat-proto (lisp-stat) ())
 
 ;; need to ensure stability of add, display, send, instantiate and
 ;; similar actions.
