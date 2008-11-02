@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-31 17:40:19 tony>
+;;; Time-stamp: <2008-11-02 11:02:26 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -478,6 +478,18 @@ done for a user- or analysis-package.")
   (:documentation "Example data used for unittests and illustrations,")
   (:use :common-lisp
 	:lisp-stat)
+  (:shadowing-import-from :lisp-stat
+      slot-value call-method call-next-method
+
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > > ;; complex
+      conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis
+
+      <= float imagpart)
   (:export iron aluminum diabetes ))
 
 ;;; 
@@ -497,35 +509,22 @@ done for a user- or analysis-package.")
 	   almost= almost=lists numerical=)) ; compare
 
 (defpackage :lisp-stat-unittests-arrays
-  (:use :common-lisp :lift
-	;; use feature tests to check for matrix packages, i.e. 
-	#+matlisp :matlisp 
-	#+clem :clem
-	:lisp-matrix
-	;; and likewise, handle the tests appropriately as well.
-	:lisp-stat             ;; basic tools
+  (:use :common-lisp :lift :lisp-matrix	:lisp-stat
 	:lisp-stat-unittests)  ;; support
   (:shadowing-import-from :lisp-stat
 	;; objects
 	slot-value call-method call-next-method 
-
 	;; lsmath
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan 
 	asin acos atan sinh cosh tanh asinh acosh atanh float random
 	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= >
-	min max logand logior logxor lognot ffloor fceiling
+	< <= = /= >= >	min max logand logior logxor lognot ffloor fceiling
 	ftruncate fround signum cis
-	
 	;; complex
-	conjugate realpart imagpart phase
-	
-	;; matlisp
-	fft transpose) 
-  (:shadowing-import-from :matlisp
-	real ;; common-lisp
-	)
+	conjugate realpart imagpart phase)
+  (:shadowing-import-from :lisp-matrix transpose )
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard))
+  
 
 
 (defpackage :lisp-stat-types-unittests
@@ -557,5 +556,17 @@ done for a user- or analysis-package.")
 	:lift
 	:lisp-stat
 	:lisp-stat-data-examples
-	:lisp-stat-unittests))
+	:lisp-stat-unittests)
+  (:shadowing-import-from :lisp-stat
+	slot-value call-method call-next-method ;; objects
+	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
+	asin acos atan sinh cosh tanh asinh acosh atanh float random
+	truncate floor ceiling round minusp zerop plusp evenp oddp 
+	< <= = /= >= > ;; complex
+	conjugate realpart imagpart phase
+	min max logand logior logxor lognot ffloor fceiling
+	ftruncate fround signum cis)
+
+
+)
 
