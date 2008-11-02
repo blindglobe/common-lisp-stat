@@ -25,8 +25,8 @@
 
 ;; others should be defined in another place...:
 ;;(deftestsuite lisp-stat-ut-lin-alg (lisp-stat-ut) ())
-;;(deftestsuite lisp-stat-ut-spec-fns (lisp-stat-ut) ())
-;;(deftestsuite lisp-stat-ut-probdistn (lisp-stat-ut) ())
+(deftestsuite lisp-stat-ut-spec-fns (lisp-stat-ut) ())
+(deftestsuite lisp-stat-ut-probdistn (lisp-stat-ut) ())
 
 (defun almost= (a b &key (tol 0.000001)) 
   "Numerically compares 2 values to a tolerance."
