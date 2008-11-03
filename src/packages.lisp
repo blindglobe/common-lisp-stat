@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-02 11:02:26 tony>
+;;; Time-stamp: <2008-11-02 11:11:51 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -451,29 +451,6 @@ should be packaged up elsewhere for reproducibility.")
    bayes-model bayes-model-proto bayes-internals))
 
 
-
-(defpackage :lisp-stat-user
-  (:documentation "Experimentation package for LispStat.
-Serious work should be placed in a similar package elsewhere for
-reproducibility.  But this should hint as to what needs to be
-done for a user- or analysis-package.")
-  (:nicknames :ls-user)
-  (:use :common-lisp
-	:lisp-stat)
-  (:shadowing-import-from :lisp-stat
-      slot-value call-method call-next-method
-
-      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-      asin acos atan sinh cosh tanh asinh acosh atanh float random
-      truncate floor ceiling round minusp zerop plusp evenp oddp 
-      < <= = /= >= > > ;; complex
-      conjugate realpart imagpart phase
-      min max logand logior logxor lognot ffloor fceiling
-      ftruncate fround signum cis
-
-      <= float imagpart))
-
-
 (defpackage :lisp-stat-data-examples
   (:documentation "Example data used for unittests and illustrations,")
   (:use :common-lisp
@@ -491,6 +468,31 @@ done for a user- or analysis-package.")
 
       <= float imagpart)
   (:export iron aluminum diabetes ))
+
+
+(defpackage :lisp-stat-user
+  (:documentation "Experimentation package for LispStat.
+Serious work should be placed in a similar package elsewhere for
+reproducibility.  But this should hint as to what needs to be
+done for a user- or analysis-package.")
+  (:nicknames :ls-user)
+  (:use :common-lisp
+	:lisp-stat
+	:lisp-stat-data-examples) ;; this last is to have 'things to play with'
+  (:shadowing-import-from :lisp-stat
+      slot-value call-method call-next-method
+
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > > ;; complex
+      conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis
+
+      <= float imagpart))
+
+
 
 ;;; 
 
