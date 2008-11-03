@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-02 17:54:25 tony>
+;;; Time-stamp: <2008-11-03 08:25:01 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,6 +19,7 @@
 (in-package :cl-user)
 ;;(asdf:oos 'asdf:compile-op 'lift :force t)
 ;;(asdf:oos 'asdf:load-op 'lift)
+;;(asdf:oos 'asdf:compile-op 'lispstat)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
 
 (in-package :lisp-stat-unittests)
