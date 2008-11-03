@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-31 17:34:29 tony>
+;;; Time-stamp: <2008-11-02 17:54:25 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,13 +17,14 @@
 ;;; SET UP
 
 (in-package :cl-user)
+;;(asdf:oos 'asdf:compile-op 'lift :force t)
 ;;(asdf:oos 'asdf:load-op 'lift)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
 
 (in-package :lisp-stat-unittests)
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
-
+;; tests = 50, failures = 6 , errors = 0
 (in-package :ls-user)
 
 ;;; Example: currently not relevant, yet
@@ -34,6 +35,7 @@
   :suite 'lispstat-regression))
 |#
 
+
 (defvar m nil "holding variable.")
 (def m (regression-model (list iron aluminum) absorbtion :print nil))
 (send m :compute)
@@ -43,15 +45,9 @@
 ;;; FIXME
 
 ;; need to get multiple-linear regression working (simple linear regr
-;; works). 
+;; works)... to do this, we need to redo the whole numeric structure,
+;; I'm keeping these in as example of brokenness...
 
 (send m :basis) ;; this should be positive?
 (send m :coef-estimates)
 
-(send m :display)
-(def m (regression-model (bind-columns iron aluminum) absorbtion))
-(send m :help)
-(send m :help :display)
-(send m :help :basis)
-
-(send m :plot-residuals)

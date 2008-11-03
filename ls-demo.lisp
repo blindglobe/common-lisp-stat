@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-09-09 08:15:07 tony>
+;;; Time-stamp: <2008-11-02 11:12:24 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -576,3 +576,13 @@ my.lib
 (my-data-analysis-example:figures :type 'pdf :file "results-figs.pdf")
 
 (my-data-analysis-example:report)
+
+;;; more stuff
+
+(send m :display)
+(def m (regression-model (bind-columns iron aluminum) absorbtion))
+(send m :help)
+(send m :help :display)
+(send m :help :basis)
+
+(send m :plot-residuals)
