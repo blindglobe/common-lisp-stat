@@ -8,7 +8,7 @@
 ;;; tests.  However, where they will end up is still to be
 ;;; determined. 
 
-(in-package :lisp-stat-unittests-arrays)
+(in-package :lisp-stat-unittests)
 
 ;;; TEST for Arrays and Linear Algebra.
 

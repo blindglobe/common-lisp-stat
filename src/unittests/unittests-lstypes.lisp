@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.
 ;;; License:    BSD, see LICENSE.BSD file for details.
 ;;; Purpose:    unit-tests for lispstat typing.
-;;; Time-stamp: <2008-10-31 17:39:42 tony>
+;;; Time-stamp: <2008-11-03 08:37:37 tony>
 ;;; Creation:   <2008-05-09 14:16:56 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -15,7 +15,7 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
-(in-package :lisp-stat-types-unittests)
+(in-package :lisp-stat-unittests)
 
 (deftestsuite lisp-stat-ut-types (lisp-stat-ut) ())
 
