@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.
 ;;; License:    BSD, see LICENSE.BSD file for details.
 ;;; Purpose:    unit-tests for regression; also make good examples
-;;; Time-stamp: <2008-10-31 17:33:20 tony>
+;;; Time-stamp: <2008-11-03 08:30:02 tony>
 ;;; Creation:   <2008-05-13 17:16:07 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -19,23 +19,23 @@
 ;; if needed, but need to set the ASDf path first...!
 ;; (asdf:oos 'asdf:load-op :lift)
 
-(in-package :lisp-stat-regression-unittests)
+(in-package :lisp-stat-unittests)
 
-(deftestsuite lisp-stat-regression (lisp-stat) ())
+(deftestsuite lisp-stat-ut-regression (lisp-stat-ut) ())
 
 ;;; TESTS
 
-(addtest (lisp-stat-regression)
+(addtest (lisp-stat-ut-regression)
   lin-regr1-fit-basis
   (let ((m1 (regression-model  iron aluminum :print nil)))
     (ensure (> 0 (send m1 :basis)))))
 
-(addtest (lisp-stat-regression)
+(addtest (lisp-stat-ut-regression)
   lin-regr2-fit-basis
   (let ((m1 (regression-model (list iron aluminum) absorbtion :print nil)))
     (ensure (> 0 (send m1 :basis)))))
 
-(addtest (lisp-stat-regression)
+(addtest (lisp-stat-ut-regression)
   check-nonneg-fixnum
   (ensure-error
     (check-nonneg-fixnum -3)))

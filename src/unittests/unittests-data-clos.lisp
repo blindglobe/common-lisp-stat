@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the data-clos package
-;;; Time-stamp: <2008-10-31 17:40:01 tony>
+;;; Time-stamp: <2008-11-03 08:32:24 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -15,14 +15,14 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
-(in-package :lisp-stat-data-clos-example)
+(in-package :lisp-stat-unittests)
 
 ;;;
 ;;; Use of this package:  To see what gets exported for use in others,
 ;;; and how much corruption can be done to objects within a package.
 ;;;
 
-(deftestsuite lisp-stat-dataclos () ()) ;;(lisp-stat) ())
+(deftestsuite lisp-stat-ut-dataclos (lisp-stat-ut) ())
 
 (addtest (lisp-stat-dataclos) genseq
 	 (ensure
