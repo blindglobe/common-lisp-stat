@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-10-03 05:16:33 tony>
+;;; Time-stamp: <2008-11-03 08:33:23 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -228,9 +228,11 @@
 			      "stat-models")
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
-			      (:file "unittests-lstypes")
-			      ;;  "unittests-arrays.lisp"
-			      ;;  "unittests-data-clos.lisp"
-			      ;;  "unittests-proto.lisp"
-			      ;;  "unittests-regression.lisp"
-			      ))))
+			      (:file "unittests-lstypes" :depends-on ("unittests"))
+			      (:file "unittests-specfn" :depends-on ("unittests"))
+			      (:file "unittests-prob" :depends-on ("unittests"))
+			      (:file "unittests-proto" :depends-on ("unittests"))
+			      (:file "unittests-regression" :depends-on ("unittests"))
+			      ;; not ready yet:
+			      ;; (:file "unittests-data-clos" :depends-on ("unittests"))
+			      (:file "unittests-arrays" :depends-on ("unittests"))))))
