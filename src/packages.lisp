@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-03 08:26:37 tony>
+;;; Time-stamp: <2008-11-04 07:53:06 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -325,8 +325,10 @@
 
 
 (defpackage :lisp-stat
-    (:documentation "Experimentation package for LispStat.  Serious work
-should be packaged up elsewhere for reproducibility.")
+    (:documentation "Experimentation package for LispStat.  Serious
+    work should be packaged up elsewhere for reproducibility.  By this
+    I mean, creating a data/analytics/analysis package with the
+    minimal set of objects required.")   
   (:use :common-lisp
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
@@ -467,7 +469,8 @@ should be packaged up elsewhere for reproducibility.")
       ftruncate fround signum cis
 
       <= float imagpart)
-  (:export iron aluminum diabetes ))
+  (:export iron aluminum absorbtion
+	   diabetes dlabs))
 
 
 (defpackage :lisp-stat-user
