@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-11-04 07:58:13 tony>
+;;; Time-stamp: <2008-11-04 08:05:02 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -31,9 +31,9 @@
   ;;(macroexpand-1 '(ls-dir "ASDF"))
 
   (ls-defdir *lispstat-asdf-dir* "ASDF/")
-  (ls-defdir *lispstat-data-dir* "data/")
+  (ls-defdir *lispstat-data-dir* "Data/")
   (ls-defdir *lispstat-external-dir* "external/")
-  (ls-defdir *lispstat-examples-dir* "examples/"))
+)
 
 (pushnew *lispstat-asdf-dir* asdf:*central-registry*)
 ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
@@ -226,8 +226,7 @@
 			     "descriptives"
 			     "optimization")
 		:components
-		((:lispstat-lsp-source-file "examples")
-		 ))
+		((:file "examples")))
 
 	       (:module
 		 "lisp-stat-unittest"
