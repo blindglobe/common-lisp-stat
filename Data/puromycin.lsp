@@ -1,4 +1,13 @@
-(require "nonlin")
+
+;;; From LispStat 1 : need to document source appropriately.
+
+(in-package :lisp-stat-data-examples)
+
+;;; FIXME: Shutup compiler warnings, need to clean up and
+;;; appropriately initialize.
+
+
+;;(require "nonlin")
 
 (def x1 (list 0.02 0.02 0.06 0.06 .11 .11 .22 .22 .56 .56 1.1 1.1))
 

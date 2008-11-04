@@ -1,5 +1,11 @@
 
+;;; From LispStat 1 : need to document source appropriately.
+
 (in-package :lisp-stat-data-examples)
+
+;;; Are these needed?
+(defvar diabetes nil)
+(defvar dlabs nil)
 
 ;;; Dataset 1
 

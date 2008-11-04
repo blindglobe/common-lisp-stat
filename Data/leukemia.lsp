@@ -1,4 +1,15 @@
-(require "bayes")
+
+
+;;; From LispStat 1 : need to document source appropriately.
+
+(in-package :lisp-stat-data-examples)
+
+;;; FIXME: Shutup compiler warnings, need to clean up and
+;;; appropriately initialize.
+
+
+;;(require "bayes")
+
 
 (def wbc-pos (list 2300 750 4300 2600 6000 10500 10000 17000 5400 7000
                    9400 32000 35000 100000 100000 52000 100000))

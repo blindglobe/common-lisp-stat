@@ -1,3 +1,11 @@
+
+;;; From LispStat 1 : need to document source appropriately.
+
+(in-package :lisp-stat-data-examples)
+
+;;; FIXME: Shutup compiler warnings, need to clean up and
+;;; appropriately initialize.
+
 (load-data "tutorial")
 (load-data "oxygen")
 (load-data "puromycin")

@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-11-04 08:05:02 tony>
+;;; Time-stamp: <2008-11-04 19:43:59 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -226,7 +226,21 @@
 			     "descriptives"
 			     "optimization")
 		:components
-		((:file "examples")))
+		((:file "examples")
+		 (:lispstat-lsp-source-file "absorbtion")
+		 (:lispstat-lsp-source-file "diabetes.lsp")
+		 (:lispstat-lsp-source-file "leukemia.lsp")
+		 (:lispstat-lsp-source-file "randu.lsp")
+		 (:lispstat-lsp-source-file "aircraft.lsp")
+		 (:lispstat-lsp-source-file "metabolism.lsp")
+		 (:lispstat-lsp-source-file "book.lsp")
+		 (:lispstat-lsp-source-file "heating.lsp")
+		 (:lispstat-lsp-source-file "oxygen.lsp")
+		 (:lispstat-lsp-source-file "stackloss.lsp") 
+		 (:lispstat-lsp-source-file "car-prices.lsp")
+		 (:lispstat-lsp-source-file "iris.lsp")
+		 (:lispstat-lsp-source-file "puromycin.lsp")
+		 (:lispstat-lsp-source-file "tutorial.lsp")))
 
 	       (:module
 		 "lisp-stat-unittest"

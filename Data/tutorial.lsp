@@ -1,3 +1,13 @@
+
+
+;;; From LispStat 1 : need to document source appropriately.
+
+(in-package :lisp-stat-data-examples)
+
+;;; FIXME: Shutup compiler warnings, need to clean up and
+;;; appropriately initialize.
+
+
 ; Section 3.1
 (def purchases (list 0 2 5 0 3 1 8 0 3 1 1 9 2 4 0 2 9 3 0 1 9 8))
 

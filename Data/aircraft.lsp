@@ -1,3 +1,15 @@
+;;; -*- mode: lisp -*-
+
+;;; From LispStat 1 : need to document source appropriately.
+
+(in-package :lisp-stat-data-examples)
+
+;;; FIXME: Shutup compiler warnings, need to clean up and
+;;; appropriately initialize.
+(defvar failure-times nil)
+
+
+
 (require "maximize")
 
 (def failure-times

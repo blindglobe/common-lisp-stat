@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-03 09:22:45 tony>
+;;; Time-stamp: <2008-11-04 08:28:28 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -51,4 +51,10 @@
 
 (send m :basis) ;; this should be positive?
 (send m :coef-estimates)
+
+;;; FIXME 
+
+;; Need to clean up data examples, licenses, attributions, etc.
+
+;;; FIXME
 
