@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-04 07:53:06 tony>
+;;; Time-stamp: <2008-11-04 08:12:53 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -454,7 +454,7 @@
 
 
 (defpackage :lisp-stat-data-examples
-  (:documentation "Example data used for unittests and illustrations,")
+  (:documentation "Example data for unittests, examples, illustrations,")
   (:use :common-lisp
 	:lisp-stat)
   (:shadowing-import-from :lisp-stat

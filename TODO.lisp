@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-03 08:25:01 tony>
+;;; Time-stamp: <2008-11-03 09:22:45 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -25,15 +25,15 @@
 (in-package :lisp-stat-unittests)
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
-;; tests = 50, failures = 6 , errors = 0
+;; tests = 71, failures = 12 , errors = 9
 (in-package :ls-user)
 
 ;;; Example: currently not relevant, yet
 #|
 (describe 
  (lift::run-test
-  :test-case  'lispstat-unittests::strided-matrix-column-access
-  :suite 'lispstat-regression))
+  :test-case  'lisp-stat-unittests::strided-matrix-column-access
+  :suite 'lisp-stat-ut))
 |#
 
 
