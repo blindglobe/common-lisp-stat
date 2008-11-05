@@ -10,7 +10,7 @@
 
 
 
-(require "maximize")
+;;(require "maximize")
 
 (def failure-times
      '((413 14 58 37 100 65 9 169 447 184 36 201 118 34 31 
