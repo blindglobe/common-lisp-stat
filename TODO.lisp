@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-04 08:28:28 tony>
+;;; Time-stamp: <2008-11-07 17:53:48 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -32,8 +32,8 @@
 #|
 (describe 
  (lift::run-test
-  :test-case  'lisp-stat-unittests::strided-matrix-column-access
-  :suite 'lisp-stat-ut))
+  :test-case  'lisp-stat-unittests::create-proto
+  :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 |#
 
 
