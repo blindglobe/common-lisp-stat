@@ -69,7 +69,9 @@
 ;; To do.
 
 (defmethod numerical= ((a array) (b array) &key (tol 0.00001))
-  (print (format nil "checking equality for array a ~w and array b=~w" a b))
+;;   (print (format nil
+;; 		 "checking equality for array a ~w and array b=~w"
+;; 		 a b))
   ;;; FIXME Warning!  Need to generalize past  2-d array!!
   (if (/= (array-dimensions a) (array-dimensions b))
       nil
@@ -135,3 +137,19 @@
    ))
 
 ;; (describe (run-tests :suite 'lisp-stat-ut-testsupport2))
+
+#|
+(describe 
+ (run-test
+  :test-case 'numerical=a2
+  :suite 'lisp-stat-ut-testsupport2 ))
+|#
+
+
+#|
+(describe 
+ (run-test
+  :test-case 'numerical=a1
+  :suite 'lisp-stat-ut-testsupport2 ))
+|#
+
