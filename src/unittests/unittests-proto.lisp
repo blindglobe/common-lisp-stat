@@ -15,12 +15,32 @@
 ;; need to ensure stability of add, display, send, instantiate and
 ;; similar actions.
 
+;;; FIXME: reorient this set of tests as a singleton.
 (deftestsuite lisp-stat-ut-proto (lisp-stat-ut)
   ()
-  (:tests
-   (create-proto (ensure  (typep (defproto test-me) 'instance)))
-   (instance1 (ensure (send test-me :isnew)))
-   (instance2 (ensure (send test-me :has-slot 'new)))
-   (instance5 (ensure (send test-me :own-slots 'new)))))
+;;   (:tests
+;;    (create-proto (ensure  (typep (defproto test-me)
+;; 				 'lisp-stat-object-system::ls-object)))
+;;    (instance1 (ensure (send test-me :isnew)))
+;;    (instance2 (ensure (send test-me :has-slot 'new)))
+;;    (instance5 (ensure (send test-me :own-slots 'new))))
+  )
+
+
+(addtest (lisp-stat-ut-proto)
+  create-proto-type
+  (let ((test-me nil))
+    (ensure (typep (defproto test-me)
+		   'lisp-stat-object-system::ls-object) )))
+
+(addtest (lisp-stat-ut-proto)
+  create-proto-type
+  (let ((test-me nil))
+    (ensure (lisp-stat-object-system:objectp (defproto test-me)))))
+
+;; (describe (run-test :test-case 'create-proto))
+
+
+
 
 ;; (run-tests :suite 'lisp-stat-ut-proto)
