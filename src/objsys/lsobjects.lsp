@@ -12,7 +12,7 @@
 ;;;; Simple CL implementation of the object system for Lisp-Stat (LSOS)
 ;;;; as described in Tierney (1990). 
 ;;;; 
-;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
+;;;; Copyright (c) 1991--, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 ;;;;
 ;;;;
@@ -80,6 +80,9 @@
 
 (defun print-object-structure (object stream depth)
   (declare (ignore depth))
+  (send object :print stream))
+;;; The following is probably more useful than the above...
+(defmethod print-object ((object ls-object) stream)
   (send object :print stream))
 
 (setf (documentation 'objectp 'function)
