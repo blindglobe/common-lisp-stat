@@ -1,65 +1,38 @@
 ;;; -*- mode: lisp -*-
 ;;;
-;;; Copyright (c) 2005--2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2008--, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
 ;;; Common Lisp.  
 
-;;;
-;;; regression.lsp XLISP-STAT regression model proto and methods
-;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
-;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
-;;; You may give out copies of this software; for conditions see the file
-;;; COPYING included with this distribution.
-;;;
-;;;
-;;; Incorporates modifications suggested by Sandy Weisberg.
-;;;
-;;; Modified to use MATLISP as the matrix package, rather than
-;;; homebrewed linear algebra.
+;;;; Originally from:
+;;;; regression.lsp XLISP-STAT regression model proto and methods
+;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
+;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
+;;;; You may give out copies of this software; for conditions see the file
+;;;; COPYING included with this distribution.
+;;;;
+;;;; Incorporates modifications suggested by Sandy Weisberg.
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-regression-linear
-  (:use :common-lisp
-	:lisp-stat-object-system
-	:matlisp
-	:lisp-stat-basics
-	:lisp-stat-compound-data
-	:lisp-stat-math
-	:lisp-stat-descriptive-statistics)
-  (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
-  (:shadowing-import-from :matlisp
-			  real)
-  (:shadowing-import-from :lisp-stat-math
-      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-      asin acos atan sinh cosh tanh asinh acosh atanh float random
-      truncate floor ceiling round minusp zerop plusp evenp oddp 
-      < <= = /= >= > ;; complex
-      conjugate realpart imagpart phase
-      min max logand logior logxor lognot ffloor fceiling
-      ftruncate fround signum cis)
-  (:export regression-model regression-model-proto x y intercept
-	   sweep-matrix
-	   basis weights included total-sum-of-squares
-	   residual-sum-of-squares
-	   predictor-names response-name case-labels))
+;;; This version uses lisp-matrix for underlying numerics.
 
 (in-package :lisp-stat-regression-linear)
 
 ;;; Regresion Model Prototype
-
 
 ;; The general strategy behind the fitting of models using prototypes
 ;; is that we need to think about want the actual fits are, and then
 ;; the fits can be used to recompute as components are changes.  One
 ;; catch here is that we'd like some notion of trace-ability, in
 ;; particular, there is not necessarily a fixed way to take care of the
-;; audit trail.  save-nd-die might be a means of recording the final
+;; audit trail.  save-and-die might be a means of recording the final
 ;; approach, but we are challenged by the problem of using advice and
 ;; other such features to capture stages and steps that are considered
 ;; along the goals of estimating a model.
+
+;; Note that the above is a stream-of-conscience response to the
+;; challenge of reproducibility in the setting of prototype "on-line"
+;; computation. 
 
 (defvar regression-model-proto nil
   "Prototype for all regression model instances.")
@@ -75,6 +48,7 @@
   ()
   *object*
   "Normal Linear Regression Model")
+
 
 (defun regression-model (x y &key 
 			 (intercept T) 
@@ -106,8 +80,16 @@ Example (data are in file absorbtion.lsp in the sample data directory):
   (def m (regression-model (list iron aluminum) absorbtion))
   (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
-	     ((typep x 'real-matrix) x)   ;; matrix, or ... 
-	     (t (error "Regression:  X is not a real matrix")))) ;; defaulting...
+	     ((typep x 'matrix-like) x)
+	     ((or (typep x 'vector) 
+		  (and (consp x)
+		       (numberp (car x))) (make-vector (length x) :initial-contents x)))
+	     (t x))) ;; actually, might should barf.
+	(y (cond
+	     ((typep y 'vector-like) y)
+	     ((and (consp x)
+		   (numberp (car x))) (make-vector (length y) :initial-contents y))
+	     (t y))) ;; actually, might should barf.
         (m (send regression-model-proto :new)))
     (format t "~%")
     (send m :doc doc)
@@ -155,22 +137,22 @@ Recomputes the estimates. For internal use by other messages"
          (weights (send self :weights))
          (w (if weights (* included weights) included))
          (m (make-sweep-matrix x y w)) ;;; ERROR HERE
-         (n (array-dimension x 1))
-         (p (- (array-dimension m 0) 1))
-         (tss (aref m p p))
+         (n (matrix-dimension x 1))
+         (p (- (matrix-dimension m 0) 1))
+         (tss (mref m p p))
          (tol (* 0.001 (reduce #'* (mapcar #'standard-deviation (column-list x)))))
-	 ;; (tol (* 0.001 (apply #'* (mapcar #'standard-deviation (column-list x)))))
          (sweep-result
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
               (sweep-operator m (iseq 0 n) (cons 0.0 tol)))))
     (format t
-	   "~%REMOVEME: regr-mdl-prto :compute =~A~%~A~%~A~%~A~%~A~%"
+	    "~%REMOVEME: regr-mdl-prto :compute~%Sweep= ~A~%x= ~A~%y= ~A~%m= ~A~%tss= ~A~%"
 	   sweep-result x y m tss)
     (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
-          (aref (first sweep-result) p p))
+          (mref (first sweep-result) p p))
+    ;; SOMETHING WRONG HERE! FIX-ME
     (setf (slot-value 'basis)
           (let ((b (remove 0 (second sweep-result))))
             (if b (- (reduce #'- (reverse b)) 1)
@@ -229,12 +211,12 @@ NEW-DOC.  In this setting, when APPEND is T, append NEW-DOC to DOC
 rather than doing replacement."
   (send self :nop)
   (when (and new-doc (stringp new-doc))
-        (setf (slot-value 'doc)
-	      (if append
-		  (concatenate 'string
-			       (slot-value 'doc)
-			       new-doc)
-		  new-doc)))
+    (setf (slot-value 'doc)
+	  (if append
+	      (concatenate 'string
+			   (slot-value 'doc)
+			   new-doc)
+	      new-doc)))
   (slot-value 'doc))
 
 
@@ -244,9 +226,9 @@ rather than doing replacement."
 With no argument returns the x matrix as supplied to m. With an
 argument, NEW-X sets the x matrix to NEW-X and recomputes the
 estimates."
-  (when (and new-x (matrixp new-x))
-        (setf (slot-value 'x) new-x)
-        (send self :needs-computing t))
+  (when (and new-x (typep new-x 'matrix-like))
+    (setf (slot-value 'x) new-x)
+    (send self :needs-computing t))
   (slot-value 'x))
 
 (defmeth regression-model-proto :y (&optional new-y)
@@ -256,11 +238,10 @@ With no argument returns the y sequence as supplied to m. With an
 argument, NEW-Y sets the y sequence to NEW-Y and recomputes the
 estimates."
   (when (and new-y
-	     (or (matrixp new-y)
+	     (or (typep new-y vector-like)
 		 (typep  new-y 'sequence)))
-    (let ((mat-y (coerce-seq-to-1d-col-matrix new-y)))
-      (setf (slot-value 'y) new-y)
-      (send self :needs-computing t)))
+    (setf (slot-value 'y) new-y)
+    (send self :needs-computing t))
   (slot-value 'y))
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))
@@ -271,8 +252,8 @@ nil if not. With an argument NEW-INTERCEPT the model is changed to
 include or exclude an intercept, according to the value of
 NEW-INTERCEPT."
   (when set 
-        (setf (slot-value 'intercept) val)
-        (send self :needs-computing t))
+    (setf (slot-value 'intercept) val)
+    (send self :needs-computing t))
   (slot-value 'intercept))
 
 (defmeth regression-model-proto :weights (&optional (new-w nil set))
@@ -281,9 +262,11 @@ NEW-INTERCEPT."
 With no argument returns the weight sequence as supplied to m; NIL
 means an unweighted model. NEW-W sets the weights sequence to NEW-W
 and recomputes the estimates."
-  (when set 
-        (setf (slot-value 'weights) new-w) 
-        (send self :needs-computing t))
+  (when (and set
+	     (or (typep new-y vector-like)
+		 (typep  new-y 'sequence)))
+    (setf (slot-value 'weights) new-w) 
+    (send self :needs-computing t))
   (slot-value 'weights))
 
 (defmeth regression-model-proto :total-sum-of-squares ()
@@ -304,9 +287,10 @@ Returns the residual sum of squares for the model."
 "Message args: ()
 
 Returns the indices of the variables used in fitting the model, in a
-sequence."
+sequence.  Recompute before this, if needed."
   (if (send self :needs-computing)
       (send self :compute))
+  ;; This should be silly -- basis MUST be a vector in the new regime.
   (if (typep (slot-value 'basis) 'sequence)
       (slot-value 'basis)
       (list (slot-value 'basis))))
@@ -328,7 +312,7 @@ estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence
 of length of y of nil and t to select cases.  Estimates are
 recomputed."
   (when (and new-included 
-             (= (length new-included) (send self :num-cases)))
+             (= (nelts new-included) (send self :num-cases)))
         (setf (slot-value 'included) (copy-seq new-included)) 
         (send self :needs-computing t))
   (if (slot-value 'included)
@@ -340,7 +324,7 @@ recomputed."
 
 With no argument returns the predictor names. NAMES sets the names."
   (if set (setf (slot-value 'predictor-names) (mapcar #'string names)))
-  (let ((p (array-dimension (send self :x) 1))
+  (let ((p (matrix-dimension (send self :x) 1))
         (p-names (slot-value 'predictor-names)))
     (if (not (and p-names (= (length p-names) p)))
         (setf (slot-value 'predictor-names)
@@ -374,7 +358,7 @@ With no argument returns the case-labels. LABELS sets the labels."
 (defmeth regression-model-proto :num-cases ()
 "Message args: ()
 Returns the number of cases in the model."
-  (length (send self :y)))
+  (nelts (send self :y)))
 
 (defmeth regression-model-proto :num-included ()
 "Message args: ()
@@ -386,8 +370,8 @@ Returns the number of cases used in the computations."
 Returns the number of coefficients in the fit model (including the
 intercept if the model includes one)."
   (if (send self :intercept)
-      (+ 1 (length (send self :basis)))
-      (length (send self :basis))))
+      (+ 1 (nelts (send self :basis)))
+      (nelts (send self :basis))))
 
 (defmeth regression-model-proto :df ()
 "Message args: ()
@@ -402,7 +386,7 @@ appropriate. Columns of X matrix correspond to entries in basis."
                    (iseq 0 (- (send self :num-cases) 1)) 
                    (send self :basis))))
     (if (send self :intercept)
-        (bind-columns (repeat 1 (send self :num-cases)) m)
+        (bind2 (repeat 1 (send self :num-cases)) m)
         m)))
 
 (defmeth regression-model-proto :leverages ()
@@ -465,12 +449,12 @@ basis."
   (let ((n (array-dimension (send self :x) 1))
         (indices (flatten-list
 		  (if (send self :intercept) 
-                     (list 0 (+ 1 (send self :basis)))  ;; was cons -- why?
+                     (cons 0 (+ 1 (send self :basis)))
                      (list (+ 1 (send self :basis))))))
         (m (send self :sweep-matrix)))
-    (format t "~%REMOVEME2: Coef-ests: ~A ~% ~A ~% ~A ~% ~A"
+    (format t "~%REMOVEME2: Coef-ests: ~% Sweep Matrix: ~A ~% array dim 1: ~A ~% Swept indices:  ~A ~% basis: ~A"
 	    m n indices (send self :basis))
-    (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list)))
+    (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list))) ;; ERROR
 
 (defmeth regression-model-proto :xtxinv () 
 "Message args: ()
@@ -517,7 +501,7 @@ Computes Cook's distances."
 
 
 (defun plot-points (x y &rest args)
-  "FIXME!!"
+  "need to fix."
   (declare (ignore x y args))
   (error "Graphics not implemented yet."))
 
