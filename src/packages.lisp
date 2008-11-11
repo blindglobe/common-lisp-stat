@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-07 17:56:48 tony>
+;;; Time-stamp: <2008-11-10 14:52:43 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -320,7 +320,6 @@
 	   basis weights included total-sum-of-squares residual-sum-of-squares
 	   predictor-names response-name case-labels))
 
-
 (defpackage :lisp-stat
     (:documentation "Experimentation package for LispStat.  Serious
     work should be packaged up elsewhere for reproducibility.  By this
@@ -450,6 +449,8 @@
    bayes-model bayes-model-proto bayes-internals))
 
 
+;;;; PACKAGES FOR USEABILITY
+
 (defpackage :lisp-stat-data-examples
   (:documentation "Example data for unittests, examples, illustrations,")
   (:use :common-lisp
@@ -492,10 +493,8 @@ done for a user- or analysis-package.")
 
       <= float imagpart))
 
-
-
 (defpackage :lisp-stat-unittests
-  (:use :common-lisp :lift :lisp-stat)
+  (:use :common-lisp :lift :lisp-stat :lisp-stat-data-examples)
   (:shadowing-import-from :lisp-stat
 	slot-value call-method call-next-method ;; objects
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
@@ -507,9 +506,10 @@ done for a user- or analysis-package.")
 	ftruncate fround signum cis)
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
 	   almost= almost=lists numerical=)) ; compare
-  
 
 (defpackage :lisp-stat-data-clos-example
   (:use :common-lisp
 	:lift  :lisp-stat-unittests
-	:lisp-stat-data-clos))
+	:lisp-stat-data-examples
+	:lisp-stat-data-clos)
+  (:export absorbtion aluminum iron))
