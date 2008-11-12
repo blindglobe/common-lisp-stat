@@ -452,7 +452,7 @@ and it's poorly documented."
         (k 0))
     (declare (fixnum rank n))
 
-    (if (or (sequencep a)
+    (if (or (typep a 'sequence)
 	    (not (arrayp a)))
 	(error "not an array - ~a" a))
     (if (not (listp indexlist))

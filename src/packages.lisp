@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-10 14:52:43 tony>
+;;; Time-stamp: <2008-11-12 10:02:03 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -77,7 +77,8 @@
 	   recursive-map-elements map-elements repeat
 	   check-sequence
 	   get-next-element make-next-element set-next-element
-	   sequencep iseq ordered-nneg-seq
+	   ;; sequencep
+	   iseq ordered-nneg-seq
 	   select split-list which
 	   difference rseq
 	   flatten-list ))
@@ -371,7 +372,8 @@
    repeat
    check-sequence
    get-next-element make-next-element set-next-element
-   sequencep iseq
+   ;; sequencep
+   iseq
    ordered-nneg-seq
    select which
    difference rseq

@@ -435,7 +435,7 @@ control the behavior of simplex algorithm."
 (defmeth simplex-proto :simplex (&optional new size)
   (if new
       (let ((simplex 
-             (if (and (consp new) (sequencep (car new)))
+             (if (and (consp new) (typep (car new) 'sequence))
                  (if (/= (length new) (+ 1 (length (car new))))
                      (error "bad simplex data")
                      (copy-list new))
