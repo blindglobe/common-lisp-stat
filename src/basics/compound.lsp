@@ -7,8 +7,6 @@
 ;;; 
 ;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;; unrestricted use.
-;;;
-
 
 (in-package :lisp-stat-compound-data)
 
@@ -17,8 +15,8 @@
 ;;; 
 ;;; The current mandate for CommonLisp Stat is to use the internal
 ;;; structure when possible -- silly to be redundant!  However, this
-;;; means we need to understand what sequences as implemented in
-;;; XLispStat intended to do, which I'm not clear on yet.
+;;; means we need to understand what sequences as implemented in XLisp
+;;; (and XLisp Lisp-Stat) intended to do, which I'm not clear on yet.
 
 ;;; The original ordering, object-wise, was to have compound
 ;;; functionality be a superclass, specialized into sequences, into
@@ -27,7 +25,6 @@
 ;;; compound, to simplify packaging.  In this vein, we have created a
 ;;; compound package to contain the compound data and sequence
 ;;; structures.  Probably need to clean this up even more.
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -163,7 +160,6 @@ none."
                (make-compound-data first-compound
 				   (apply #'map type f args)))))))
       
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;;             Public Predicate and Accessor Functions
@@ -374,9 +370,10 @@ Returns a list of the indices where elements of sequence X are not NIL."
 ;;;                         Sequence Functions
 
 
-;; to prevent breakage.
-(defmacro sequencep (x) 
-  (typep x 'sequence))
+;;; to prevent breakage. we comment this out and use the right
+;;; paradigm (typep).
+;;(defmacro sequencep (x) 
+;;  (typep x 'sequence))
 
 (defun iseq (a &optional b)
 "Args: (n &optional m)
@@ -390,18 +387,17 @@ Examples: (iseq 4) returns (0 1 2 3)
       (let ((n (+ 1 (abs (- b a))))
 	    (x nil))
 	(dotimes (i n x)
-		 (setq x (cons (if (< a b) (- b i) (+ b i)) x))))
+	  (setq x (cons (if (< a b) (- b i) (+ b i)) x))))
       (cond 
-       ((= 0 a) nil)
-       ((< a 0) (iseq (+ a 1) 0))
-       ((< 0 a) (iseq 0 (- a 1))))))
+	((= 0 a) nil)
+	((< a 0) (iseq (+ a 1) 0))
+	((< 0 a) (iseq 0 (- a 1))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;;               Subset Selection and Mutation Functions
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (defun old-rowmajor-index (index indices dim olddim)
   "translate row major index in resulting subarray to row major index
@@ -515,9 +511,8 @@ and it's poorly documented."
   
     result))
 
-
-;;;; is x an ordered sequence of nonnegative positive integers?
 (defun ordered-nneg-seq(x)
+  "is x an ordered sequence of nonnegative positive integers?"
   ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
   (if (typep x 'sequence)
       (let ((n (length x))
@@ -527,15 +522,17 @@ and it's poorly documented."
           (let ((elem (check-nonneg-fixnum (get-next-element cx i))))
             (if (> m elem) (return nil) (setf m elem)))))))
 
-;;;; select or set the subsequence corresponding to the specified indices
 (defun sequence-select(x indices &optional (values nil set-values))
-  ;; FIXME -- sbcl warning about unreachable code, might be a logic error here. 
+  "select or set the subsequence corresponding to the specified indices"
   (let ((rlen 0)
         (dlen 0)
         (vlen 0)
         (data nil)
         (result nil))
     (declare (fixnum rlen dlen vlen))
+
+    ;; FIXME -- sbcl warning about unreachable code, might be a logic
+    ;; error here.
 
     ;; Check the input data
     (check-sequence x)
@@ -600,7 +597,6 @@ and it's poorly documented."
           (setf elem (first nextx)))
          (t (setf elem (aref data index))))
 	(set-next-element cr i elem)))
-  
     result))
 
 ;;;
