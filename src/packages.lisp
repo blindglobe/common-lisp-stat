@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-12 10:02:03 tony>
+;;; Time-stamp: <2008-11-16 20:38:56 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -256,11 +256,6 @@
 	   lowess))
 
 
-(defpackage :lisp-stat-config
-  (:use :common-lisp)
-  (:export *default-path*
-	   *lsos-files* *basic-files* *ls-files*
-	   *lispstat-data-dir* *lispstat-examples-dir*))
 
 
 (defpackage :lisp-stat-data

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-04 15:05:09 tony> 
+;;; Time-stamp: <2008-11-16 20:24:10 tony> 
 ;;; Creation:   <2005-08-xx 21:34:07 rossini> 
 ;;; File:       data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -239,14 +239,14 @@ Reads the data in FILE as COLS columns and returns a list of lists representing 
 Read in data file from the data examples library."
   (if (load (path-string-to-path *lispstat-data-dir* file))
       t
-      (load (path-string-to-path *lispstat-examples-dir* file))))
+      (load (path-string-to-path *lispstat-data-dir* file))))
 
 (defun load-example (file)
   "Args: (file) as string
 Read in lisp example file from the examples library."
-  (if (load (path-string-to-path *lispstat-examples-dir* file))
+  (if (load (path-string-to-path *lispstat-example-dir* file))
       t
-      (load (path-string-to-path *lispstat-data-dir* file))))
+      (load (path-string-to-path *lispstat-example-dir* file))))
 
 ;;;;
 ;;;; Listing and Saving Variables and Functions

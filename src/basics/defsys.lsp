@@ -128,7 +128,7 @@
 ;;(macroexpand-1 '(ls-dir "ASDF"))
   
 (ls-defdir *lispstat-asdf-dir* "ASDF/")
-(ls-defdir *lispstat-data-dir* "data/")
+(ls-defdir *lispstat-data-dir* "Data/")
 (ls-defdir *lispstat-external-dir* "external/")
 (ls-defdir *lispstat-examples-dir* "examples/")
 

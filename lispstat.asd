@@ -2,12 +2,21 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-11-04 19:49:30 tony>
+;;; Time-stamp: <2008-11-19 01:22:59 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
 
-(defvar *lispstat-home-dir*
+(defpackage :lisp-stat-config
+  (:use :common-lisp)
+  (:export *default-path*
+	   *lsos-files* *basic-files* *ls-files*
+	   *lispstat-home-dir*
+	   *lispstat-data-dir* *lispstat-examples-dir*))
+
+(in-package :lisp-stat-config)
+
+(defparameter *lispstat-home-dir*
   (directory-namestring
    (truename (asdf:system-definition-pathname :lispstat)))
   "Value considered \"home\" for our data")
@@ -115,7 +124,7 @@
 			:serial t
 			:depends-on ("packaging" "proto-objects")
 			:components
-			((:lispstat-lsp-source-file "defsys")
+			(; (:lispstat-lsp-source-file "defsys")
 			 (:lispstat-lsp-source-file "lstypes")
 			 (:lispstat-lsp-source-file "lsfloat")
 			 

@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-09-03 08:37:34 tony> 
+;;; Time-stamp: <2008-11-16 20:23:53 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -139,14 +139,14 @@ Reads the data in FILE as COLS columns and returns a list of lists representing 
 Read in data file from the data examples library."
   (if (load (path-string-to-path *lispstat-data-dir* file))
       t
-      (load (path-string-to-path *lispstat-examples-dir* file))))
+      (load (path-string-to-path *lispstat-data-dir* file))))
 
 (defun load-example (file)
   "Args: (file) as string
 Read in lisp example file from the examples library."
   (if (load (path-string-to-path *lispstat-examples-dir* file))
       t
-      (load (path-string-to-path *lispstat-data-dir* file))))
+      (load (path-string-to-path *lispstat-examples-dir* file))))
 
 ;;;
 ;;; Saving Variables and Functions
