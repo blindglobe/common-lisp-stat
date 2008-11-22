@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-11-02 11:12:24 tony>
+;;; Time-stamp: <2008-11-16 19:41:32 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -56,7 +56,7 @@
 
 
 
-(defvar my-chol-decomp-test (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5))))
+(defparameter my-chol-decomp-test (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5))))
 my-chol-decomp-test
 (nth 0 my-chol-decomp-test)
 (nth 1 my-chol-decomp-test)
@@ -218,7 +218,7 @@ my-chol-decomp-test
 *test-proto*
 (defmeth *test-proto* :make-data (&rest args) nil)
 
-(defvar my-proto-instance nil)
+(defparameter my-proto-instance nil)
 (setf my-proto-instance (send *test-proto* :new))
 (send *test-proto* :own-slots)
 (lsos::ls-object-slots *test-proto*)
@@ -239,7 +239,7 @@ my-chol-decomp-test
 *test-proto2*
 (defmeth *test-proto* :make-data (&rest args) nil)
 
-(defvar my-proto-instance nil)
+(defparameter my-proto-instance nil)
 (setf my-proto-instance (send *test-proto* :new))
 (send *test-proto* :own-slots)
 (send *test-proto* :has-slot 'proto-name)
@@ -314,13 +314,13 @@ my-chol-decomp-test
 (bind-columns #2a((1 2)(3 4)) #(5 6))
 
 
-(defvar fit1 nil)
+(defparameter fit1 nil)
 (setf fit1 (regression-model absorbtion iron))
 (send fit1 :display)
 (send fit1 :residuals)
 
 iron
-(defvar fit1a nil)
+(defparameter fit1a nil)
 (setf fit1a (regression-model absorbtion iron :print nil))
 (send fit1a :doc)
 ;;  (setf (send fit1a :doc) "this") ;; FIXME: this error...
@@ -401,9 +401,10 @@ iron
 (r plot *x* *y*)
 *y*
 
+(defparameter *r-version* (r "version"))
+
 ;; This is for illustrative purposes only.  It is not a "good" use of rnbi.
 ;; Really, you'll want rnbi to hold anonymous intermeditae results, like:
-
 (r plot *x* (rnbi rnorm 10))
 
 (r "Sys.getenv" "LD_LIBRARY_PATH")
@@ -436,6 +437,7 @@ my.lib
 (r assign "x2" #(1 2 3 5 3 4 5))
 (r assign "z" "y") ;; unlike the above, this assigns character data
 (r "ls")
+(r ls)
 
 (setf my.r.x2 (r get "x2"))  ;; moving data from R to CL
 (r assign "x2" my.r.x2)  ;; moving data from CL to R
@@ -586,3 +588,10 @@ my.lib
 (send m :help :basis)
 
 (send m :plot-residuals)
+
+;;; General Lisp, there is also a need to add, remove symbols from the
+;;; workspace/namespace.  This is a fundamental skill, similar to
+;;; stopping, which is critical.
+
+;; boundp, fboundp
+;; makunbound, fmakunbound
