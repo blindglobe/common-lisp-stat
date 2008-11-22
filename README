@@ -130,3 +130,9 @@ something like:
 
 )
 
+Alternatively, one can work on the github repositories as well.  They
+are a bit differently organized, and require one to get a github
+account and work from there.  In that case, you'd need to D/L the
+libraries. 
+
+That gets a bit tricky, but see ./bin/GetRepos.sh for an example. 
