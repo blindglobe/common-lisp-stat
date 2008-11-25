@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 ;;;
-;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2008--, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
 ;;; Common Lisp.  
@@ -13,6 +13,8 @@
 ;;;; COPYING included with this distribution.
 ;;;;
 ;;;; Incorporates modifications suggested by Sandy Weisberg.
+
+;;; This version uses lisp-matrix for underlying numerics.
 
 (in-package :lisp-stat-regression-linear)
 
@@ -34,6 +36,7 @@
 
 (defvar regression-model-proto nil
   "Prototype for all regression model instances.")
+
 (defproto regression-model-proto
     '(x y intercept sweep-matrix basis weights 
       included
@@ -78,15 +81,20 @@ Example (data are in file absorbtion.lsp in the sample data directory):
   (def m (regression-model (list iron aluminum) absorbtion))
   (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
-	    ((matrixp x) x)
-	    ((typep x 'vector) (list x))
-	    ((and (consp x)
-		  (numberp (car x))) (list x))
-	    (t x)))
+	     ((typep x 'matrix-like) x)
+	     ((or (typep x 'vector) 
+		  (and (consp x)
+		       (numberp (car x))) (make-vector (length x) :initial-contents x)))
+	     (t x))) ;; actually, might should barf.
+	(y (cond
+	     ((typep y 'vector-like) y)
+	     ((and (consp x)
+		   (numberp (car x))) (make-vector (length y) :initial-contents y))
+	     (t y))) ;; actually, might should barf.
         (m (send regression-model-proto :new)))
     (format t "~%")
     (send m :doc doc)
-    (send m :x (if (matrixp x) x (apply #'bind-columns x)))
+    (send m :x x)
     (send m :y y)
     (send m :intercept intercept)
     (send m :weights weights)
@@ -130,11 +138,10 @@ Recomputes the estimates. For internal use by other messages"
          (weights (send self :weights))
          (w (if weights (* included weights) included))
          (m (make-sweep-matrix x y w)) ;;; ERROR HERE
-         (n (array-dimension x 1))
-         (p (- (array-dimension m 0) 1))
-         (tss (aref m p p))
+         (n (matrix-dimension x 1))
+         (p (- (matrix-dimension m 0) 1))
+         (tss (mref m p p))
          (tol (* 0.001 (reduce #'* (mapcar #'standard-deviation (column-list x)))))
-	 ;; (tol (* 0.001 (apply #'* (mapcar #'standard-deviation (column-list x)))))
          (sweep-result
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
@@ -145,7 +152,7 @@ Recomputes the estimates. For internal use by other messages"
     (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
-          (aref (first sweep-result) p p))
+          (mref (first sweep-result) p p))
     ;; SOMETHING WRONG HERE! FIX-ME
     (setf (slot-value 'basis)
           (let ((b (remove 0 (second sweep-result))))
@@ -205,36 +212,35 @@ NEW-DOC.  In this setting, when APPEND is T, append NEW-DOC to DOC
 rather than doing replacement."
   (send self :nop)
   (when (and new-doc (stringp new-doc))
-        (setf (slot-value 'doc)
-	      (if append
-		  (concatenate 'string
-			       (slot-value 'doc)
-			       new-doc)
-		  new-doc)))
+    (setf (slot-value 'doc)
+	  (if append
+	      (concatenate 'string
+			   (slot-value 'doc)
+			   new-doc)
+	      new-doc)))
   (slot-value 'doc))
 
 
 (defmeth regression-model-proto :x (&optional new-x)
 "Message args: (&optional new-x)
 
-With no argument returns the x matrix as supplied to m. With an
-argument, NEW-X sets the x matrix to NEW-X and recomputes the
+With no argument returns the x matrix-like as supplied to m. With an
+argument, NEW-X sets the x matrix-like to NEW-X and recomputes the
 estimates."
-  (when (and new-x (matrixp new-x))
-        (setf (slot-value 'x) new-x)
-        (send self :needs-computing t))
+  (when (and new-x (typep new-x 'matrix-like))
+    (setf (slot-value 'x) new-x)
+    (send self :needs-computing t))
   (slot-value 'x))
 
 (defmeth regression-model-proto :y (&optional new-y)
 "Message args: (&optional new-y)
 
-With no argument returns the y sequence as supplied to m. With an
-argument, NEW-Y sets the y sequence to NEW-Y and recomputes the
+With no argument returns the y vector-like as supplied to m. With an
+argument, NEW-Y sets the y vector-like to NEW-Y and recomputes the
 estimates."
   (when (and new-y
-	     (or (matrixp new-y)
-		 (typep  new-y 'sequence)))
-    (setf (slot-value 'y) new-y)
+	     (typep new-y vector-like))
+    (setf (slot-value 'y) new-y) ;; fixme -- pls set slot value to a vector-like!
     (send self :needs-computing t))
   (slot-value 'y))
 
@@ -246,45 +252,49 @@ nil if not. With an argument NEW-INTERCEPT the model is changed to
 include or exclude an intercept, according to the value of
 NEW-INTERCEPT."
   (when set 
-        (setf (slot-value 'intercept) val)
-        (send self :needs-computing t))
+    (setf (slot-value 'intercept) val)
+    (send self :needs-computing t))
   (slot-value 'intercept))
 
 (defmeth regression-model-proto :weights (&optional (new-w nil set))
 "Message args: (&optional new-w)
 
-With no argument returns the weight sequence as supplied to m; NIL
-means an unweighted model. NEW-W sets the weights sequence to NEW-W
+With no argument returns the weight vector-like as supplied to m; NIL
+means an unweighted model. NEW-W sets the weights vector-like to NEW-W
 and recomputes the estimates."
-  (when set 
-        (setf (slot-value 'weights) new-w) 
-        (send self :needs-computing t))
+  (when (and set
+	     (typep new-w vector-like))
+    (setf (slot-value 'weights) new-w) 
+    (send self :needs-computing t))
   (slot-value 'weights))
 
 (defmeth regression-model-proto :total-sum-of-squares ()
 "Message args: ()
 
-Returns the total sum of squares around the mean."
-  (if (send self :needs-computing) (send self :compute))
+Returns the total sum of squares around the mean.
+This is recomputed if an update is needed."
+  (if (send self :needs-computing)
+      (send self :compute))
   (slot-value 'total-sum-of-squares))
 
 (defmeth regression-model-proto :residual-sum-of-squares () 
 "Message args: ()
 
-Returns the residual sum of squares for the model."
-  (if (send self :needs-computing) (send self :compute))
+Returns the residual sum of squares for the model.
+This is recomputed if an update is needed."
+  (if (send self :needs-computing)
+      (send self :compute))
   (slot-value 'residual-sum-of-squares))
 
 (defmeth regression-model-proto :basis ()
 "Message args: ()
 
 Returns the indices of the variables used in fitting the model, in a
-sequence.  Recompute before this, if needed."
+sequence.
+This is recomputed if an update is needed."
   (if (send self :needs-computing)
       (send self :compute))
-  (if (typep (slot-value 'basis) 'sequence)
-      (slot-value 'basis)
-      (list (slot-value 'basis))))
+  (slot-value 'basis))
   
 
 (defmeth regression-model-proto :sweep-matrix ()
@@ -303,7 +313,7 @@ estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence
 of length of y of nil and t to select cases.  Estimates are
 recomputed."
   (when (and new-included 
-             (= (length new-included) (send self :num-cases)))
+             (= (nelts new-included) (send self :num-cases)))
         (setf (slot-value 'included) (copy-seq new-included)) 
         (send self :needs-computing t))
   (if (slot-value 'included)
@@ -315,7 +325,7 @@ recomputed."
 
 With no argument returns the predictor names. NAMES sets the names."
   (if set (setf (slot-value 'predictor-names) (mapcar #'string names)))
-  (let ((p (array-dimension (send self :x) 1))
+  (let ((p (matrix-dimension (send self :x) 1))
         (p-names (slot-value 'predictor-names)))
     (if (not (and p-names (= (length p-names) p)))
         (setf (slot-value 'predictor-names)
@@ -349,7 +359,7 @@ With no argument returns the case-labels. LABELS sets the labels."
 (defmeth regression-model-proto :num-cases ()
 "Message args: ()
 Returns the number of cases in the model."
-  (length (send self :y)))
+  (nelts (send self :y)))
 
 (defmeth regression-model-proto :num-included ()
 "Message args: ()
@@ -361,8 +371,8 @@ Returns the number of cases used in the computations."
 Returns the number of coefficients in the fit model (including the
 intercept if the model includes one)."
   (if (send self :intercept)
-      (+ 1 (length (send self :basis)))
-      (length (send self :basis))))
+      (+ 1 (nelts (send self :basis)))
+      (nelts (send self :basis))))
 
 (defmeth regression-model-proto :df ()
 "Message args: ()
@@ -377,7 +387,7 @@ appropriate. Columns of X matrix correspond to entries in basis."
                    (iseq 0 (- (send self :num-cases) 1)) 
                    (send self :basis))))
     (if (send self :intercept)
-        (bind-columns (repeat 1 (send self :num-cases)) m)
+        (bind2 (repeat 1 (send self :num-cases)) m)
         m)))
 
 (defmeth regression-model-proto :leverages ()

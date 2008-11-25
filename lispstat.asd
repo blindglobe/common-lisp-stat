@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; ASDF packaging for CommonLisp Stat
 ;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-11-19 01:22:59 tony>
+;;; Time-stamp: <2008-11-25 19:08:23 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 
 (in-package :cl-user)
@@ -216,7 +216,7 @@
 			     "descriptives"
 			     "optimization")
 		:components
-		((:lispstat-lsp-source-file "regression")
+		((:file "regression")
 		 ;; (:lispstat-lsp-source-file "nonlin"
 		 ;;	  :depends-on ("regression"))
 		 ;; (:lispstat-lsp-source-file "bayes"
