@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-25 08:15:06 tony>
+;;; Time-stamp: <2008-11-25 18:56:39 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -26,10 +26,9 @@
 (run-tests :suite 'lisp-stat-ut)
 ;; tests = 68, failures = 12, errors = 5
 
-
 (in-package :ls-user)
 
-;;; Example: currently not relevant, yet
+;;; FIXME: Example: currently not relevant, yet
 #|
   (describe 
     (lift::run-test
@@ -37,6 +36,17 @@
       :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 |#
 
+:;; FIXME: data frames and structural inheritance
+;;
+;; Serious flaw -- need to consider that we are not really well
+;; working with the data structures, in that Luke created compound as
+;; a base class, which turns out to be slightly backward if we are to
+;; maintain the numerical structures as well as computational
+;; efficiency.
+
+
+
+;;; FIXME: Regression modeling
 
 (defparameter m nil
   "holding variable.")
@@ -45,8 +55,6 @@
 (send m :sweep-matrix)
 (format t "~%~A~%" (send m :sweep-matrix))
 
-;;; FIXME
-
 ;; need to get multiple-linear regression working (simple linear regr
 ;; works)... to do this, we need to redo the whole numeric structure,
 ;; I'm keeping these in as example of brokenness...
@@ -54,10 +62,7 @@
 (send m :basis) ;; this should be positive?
 (send m :coef-estimates)
 
-;;; FIXME 
-
-;; Need to clean up data examples, licenses, attributions, etc.
-
+;;; FIXME: Need to clean up data examples, licenses, attributions, etc.
 
 ;; The following breaks because we should use a package to hold
 ;; configuration details, and this would be the only package outside
@@ -67,11 +72,10 @@
 diabetes
 
 
-;;; FIXME
-
-;; Data.Frames probably deserve to be lists -- either lists of cases,
-;; or lists of variables.   We probably do not want to mix them, but
-;; want to be able to convert between them.
+;;; FIXME: Data.Frames probably deserve to be related to lists --
+;;; either lists of cases, or lists of variables.  We probably do not
+;;; want to mix them, but want to be able to convert between such
+;;; structures.
 
 (defparameter *my-case-data*
   '((:cases
@@ -117,3 +121,6 @@ diabetes
 (asdf:oos 'asdf:load-op 'parse-number)
 (asdf:oos 'asdf:load-op 'csv)
 (fare-csv:read-csv-file "Data/example-numeric.csv")
+
+;; but I think the cl-csv package is broken, need to use the dsv-style
+;; package.
