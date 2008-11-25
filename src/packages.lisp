@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-16 20:38:56 tony>
+;;; Time-stamp: <2008-11-25 08:31:31 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -277,9 +277,14 @@
        :lisp-stat-data
        :lisp-stat-math
        :lisp-stat-compound-data
+       :lisp-matrix
+#|
+       ;; redone within lisp-matrix -- will need to have a package for
+       ;; any leftovers...
        :lisp-stat-matrix
        :lisp-stat-linalg-data
        :lisp-stat-linalg
+|#
        :lisp-stat-basics)
    (:shadowing-import-from :lisp-stat-math ;; life is a vector!
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
@@ -299,8 +304,7 @@
 	:lisp-stat-basics
 	:lisp-stat-compound-data
 	:lisp-stat-math
-	:lisp-stat-matrix
-	:lisp-stat-linalg
+	:lisp-matrix
 	:lisp-stat-descriptive-statistics)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
@@ -330,8 +334,7 @@
 	:lisp-stat-basics
 	:lisp-stat-data
         :lisp-stat-math
-	:lisp-stat-matrix
-	:lisp-stat-linalg
+	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-descriptive-statistics
 	:lisp-stat-regression-linear)
   (:shadowing-import-from :lisp-stat-object-system
@@ -340,10 +343,14 @@
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
 	asin acos atan sinh cosh tanh asinh acosh atanh float random
 	truncate floor ceiling round minusp zerop plusp evenp oddp 
-	< <= = /= >= > ;;complex 
+	< <= = /= >= >
+	;;complex 
 	conjugate realpart imagpart phase
-	min max logand logior logxor lognot ffloor fceiling
-	ftruncate fround signum cis)
+	
+	min max
+	logand logior logxor lognot
+	ffloor fceiling	ftruncate fround
+	signum cis)
   (:export
    ;; lsobjects :
    defproto defproto2
@@ -382,6 +389,8 @@
    logand logior logxor lognot ffloor fceiling ftruncate fround
    signum cis
 
+#|
+   ;; The following need to be re-found in lisp-matrix...
    ;; matrices.lisp
    matrixp num-rows num-cols matmult identity-matrix diagonal row-list
    column-list inner-product outer-product cross-product transpose
@@ -400,6 +409,8 @@
    ;; in linalg.lisp, possibly not supported by matlisp
    spline kernel-dens kernel-smooth
 
+|#
+
    ;; optimize.lsp
    newtonmax nelmeadmax
 
@@ -411,11 +422,12 @@
    load-example *variables* *ask-on-redefine*
    def variables savevar undef
 
-   ;; statistics.lsp
+   ;; statistics.lsp  (descriptions, should probably be moved
+   ;; later...?
    standard-deviation quantile median interquartile-range
    fivnum sample
 
-   ;; dists
+   ;; probability (dists.lisp)
    log-gamma set-seed
    uniform-rand normal-cdf normal-quant normal-dens
    normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
@@ -425,13 +437,16 @@
    f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
    binomial-cdf binomial-quant binomial-pmf binomial-rand
 
-;;; Here is where we have a problem -- lispstat core should be core
-;;; data management and config problems, with packages providing
-;;; specialized extensions to LispStat, i.e. regression, nonlin
-;;; regression, bayesian regression via laplace approximation, etc. 
-
-;;; The following could be considered "recommended packages", similar
-;;; to the idea of the recommended packages in R.
+   ;; Here is where we have a problem -- lispstat core should be core
+   ;; data management and config problems, with packages providing
+   ;; specialized extensions to LispStat, i.e. regression, nonlin
+   ;; regression, bayesian regression via laplace approximation, etc. 
+   
+   ;; The following could be considered "recommended packages",
+   ;; similar to the idea of the recommended packages in R.  Probably
+   ;; we want them to do the exporting within that package, therefore
+   ;; NOT being able to lock the "data-ish" package, but only the
+   ;; subpackages prior to export.
 
    ;; regression.lsp
    regression-model regression-model-proto x y intercept sweep-matrix
@@ -475,6 +490,7 @@ reproducibility.  But this should hint as to what needs to be
 done for a user- or analysis-package.")
   (:nicknames :ls-user)
   (:use :common-lisp
+	:lisp-matrix
 	:lisp-stat
 	:lisp-stat-data-examples) ;; this last is to have 'things to play with'
   (:shadowing-import-from :lisp-stat
