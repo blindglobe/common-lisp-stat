@@ -51,16 +51,17 @@
   "Normal Linear Regression Model")
 
 
-(defun regression-model (x y &key 
-			 (intercept T) 
-			 (print T) 
-			 (weights nil)
-			 (included (repeat t (length y)))
-			 predictor-names
-			 response-name
-			 case-labels
-			 (doc "Undocumented Regression Model Instance")
-			 (debug T))
+(defun regression-model-old
+    (x y &key 
+     (intercept T) 
+     (print T) 
+     (weights nil)
+     (included (repeat t (length y)))
+     predictor-names
+     response-name
+     case-labels
+     (doc "Undocumented Regression Model Instance")
+     (debug T))
   "Args: (x y &key (intercept T) (print T) (weights nil)
           included predictor-names response-name case-labels)
 X           - list of independent variables or X matrix
@@ -111,6 +112,59 @@ Example (data are in file absorbtion.lsp in the sample data directory):
     (if print (send m :display))
     m))
 
+
+
+(defun regression-model ;; assumes x/y from lisp-matrix -- start of a set of generics.
+    (x y &key 
+     (intercept T) 
+     (print T) 
+     (weights nil)
+     (included (repeat t (length y)))
+     predictor-names
+     response-name
+     case-labels
+     (doc "Undocumented Regression Model Instance")
+     (debug T))
+  "Args: (x y &key (intercept T) (print T) (weights nil)
+          included predictor-names response-name case-labels)
+X           - list of independent variables or X matrix
+Y           - dependent variable.
+INTERCEPT   - T to include (default), NIL for no intercept
+PRINT       - if not NIL print summary information
+WEIGHTS     - if supplied should be the same length as Y; error
+              variances are  
+              assumed to be inversely proportional to WEIGHTS
+PREDICTOR-NAMES, RESPONSE-NAME, CASE-LABELS
+            - sequences of strings or symbols.
+INCLUDED    - if supplied should be the same length as Y, with
+ 	      elements nil to skip a in computing estimates (but not
+              in residual analysis).
+Returns a regression model object. To examine the model further assign the
+result to a variable and send it messages.
+Example (data are in file absorbtion.lsp in the sample data directory): 
+  (def m (regression-model (list iron aluminum) absorbtion))
+  (send m :help) (send m :plot-residuals)"
+  (let ((m (send regression-model-proto :new)))
+    (format t "~%")
+    (send m :doc doc)
+    (send m :x x)
+    (send m :y y)
+    (send m :intercept intercept)
+    (send m :weights weights)
+    (send m :included included)
+    (send m :predictor-names predictor-names)
+    (send m :response-name response-name)
+    (send m :case-labels case-labels)
+    (if debug
+	(progn
+	  (format t "~%")
+	  (format t "~S~%" (send m :doc))
+	  (format t "X: ~S~%" (send m :x))
+	  (format t "Y: ~S~%" (send m :y))))
+    (if print (send m :display))
+    m))
+
+
 (defmeth regression-model-proto :isnew ()
   (send self :needs-computing t))
 
@@ -141,7 +195,8 @@ Recomputes the estimates. For internal use by other messages"
          (n (matrix-dimension x 1))
          (p (- (matrix-dimension m 0) 1))
          (tss (mref m p p))
-         (tol (* 0.001 (reduce #'* (mapcar #'standard-deviation (column-list x)))))
+         (tol (* 0.001
+		 (reduce #'* (mapcar #'standard-deviation (column-list x)))))
          (sweep-result
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
@@ -239,7 +294,7 @@ With no argument returns the y vector-like as supplied to m. With an
 argument, NEW-Y sets the y vector-like to NEW-Y and recomputes the
 estimates."
   (when (and new-y
-	     (typep new-y vector-like))
+	     (typep new-y 'vector-like))
     (setf (slot-value 'y) new-y) ;; fixme -- pls set slot value to a vector-like!
     (send self :needs-computing t))
   (slot-value 'y))
@@ -263,7 +318,7 @@ With no argument returns the weight vector-like as supplied to m; NIL
 means an unweighted model. NEW-W sets the weights vector-like to NEW-W
 and recomputes the estimates."
   (when (and set
-	     (typep new-w vector-like))
+	     (typep new-w 'vector-like))
     (setf (slot-value 'weights) new-w) 
     (send self :needs-computing t))
   (slot-value 'weights))
@@ -396,14 +451,14 @@ Returns the diagonal elements of the hat matrix."
   (let* ((weights (send self :weights))
          (x (send self :x-matrix))
          (raw-levs 
-          (matmult (* (matmult x (send self :xtxinv)) x)
-                   (repeat 1 (send self :num-coefs)))))
+          (m* (* (m* x (send self :xtxinv)) x)
+	      (repeat 1 (send self :num-coefs)))))
     (if weights (* weights raw-levs) raw-levs)))
 
 (defmeth regression-model-proto :fit-values ()
 "Message args: ()
 Returns the fitted values for the model."
-  (matmult (send self :x-matrix) (send self :coef-estimates)))
+  (m* (send self :x-matrix) (send self :coef-estimates)))
 
 (defmeth regression-model-proto :raw-residuals () 
 "Message args: ()
@@ -470,7 +525,7 @@ Returns ((X^T) X)^(-1) or ((X^T) W X)^(-1)."
 Returns estimated standard errors of coefficients. Entries beyond the
 intercept correspond to entries in basis."
   (let ((s (send self :sigma-hat)))
-    (if s (* (send self :sigma-hat) (sqrt (diagonal (send self :xtxinv)))))))
+    (if s (* (send self :sigma-hat) (sqrt (diagonalf (send self :xtxinv)))))))
 
 (defmeth regression-model-proto :studentized-residuals ()
 "Message args:  ()

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-11-25 08:31:31 tony>
+;;; Time-stamp: <2008-12-03 07:49:59 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -132,12 +132,13 @@
 	   ;; could be value, otherwise might be reference.
 	   data-pointer))
 
+#|
 (defpackage :lisp-stat-regression-linear-clos
   (:use :common-lisp
 	:lisp-matrix
 	:lisp-stat-data-clos)
   (:export regression-model))
-
+|#
 
 
 ;;; USER PACKAGES
@@ -278,13 +279,6 @@
        :lisp-stat-math
        :lisp-stat-compound-data
        :lisp-matrix
-#|
-       ;; redone within lisp-matrix -- will need to have a package for
-       ;; any leftovers...
-       :lisp-stat-matrix
-       :lisp-stat-linalg-data
-       :lisp-stat-linalg
-|#
        :lisp-stat-basics)
    (:shadowing-import-from :lisp-stat-math ;; life is a vector!
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan

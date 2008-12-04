@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2008, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2005--2009, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
@@ -16,9 +16,73 @@
 ;;; Basic Summary Statistics
 ;;;
 
-(defun standard-deviation (x)
+(defgeneric mean (x)
+  (:documentation "compute the mean of lists, vectors, various objects")
+  (:method ((x list))
+    (/ (reduce #'+ x)
+       (length x)))
+  (:method ((x vector-like))
+    (let ((n (nelts x))
+	  (type (if (column-vector-p x) :column :row)))
+      (/ (gemm x (ones
+		  (ecase type (:row 1) (:column n))
+		  (ecase type (:row n) (:column 1))))
+	 n))))
+
+(defun mean-fn (x)
 "Args: (x)
-Returns the standard deviation of the elements x. Vector reducing."
+Returns the mean of the elements x. Vector reducing.
+
+FIXME: Why is this so complex?  When figure out, put into generic."
+  (let ((mean 0.0)
+        (count 0.0))
+    (labels ((add-to-mean (x)
+              (let ((count+1 (+ count 1.0)))
+                (setf mean (+ (* (/ count count+1) mean) (* (/ count+1) x)))
+                (setf count count+1)))
+             (find-mean (x)
+               (if (numberp x)
+                 (add-to-mean x)
+                 (let ((seq (compound-data-seq x)))
+                   (if (consp seq)
+                     (dolist (x seq)
+                       (if (numberp x) (add-to-mean x) (find-mean x)))
+                     (let ((n (length seq)))
+                       (dotimes (i n)
+		         (declare (fixnum i))
+                         (let ((x (aref seq i)))
+                           (if (numberp x)
+			       (add-to-mean x)
+			       (find-mean x))))))))))
+      (find-mean x)
+      mean)))
+
+
+;; We do the variance, since the SD is simply the root.
+(defgeneric variance (x)
+  (:documentation "compute the variance of the entity X, i.e. if a
+  scalar, vector, or matrix.")
+  (:method ((x list))
+    (let ((n (length x))
+	  (r (- x (mean x))))
+      (sqrt (* (mean (* r r)) (/ n (- n 1))))))
+  (:method ((x vector-like))))
+
+(defgeneric standard-deviation (x)
+  (:documentation "Compute standard deivation of entity X.")
+  (:method ((x vector-like)) (sqrt (variance x)))
+  (:method ((x list))
+    ;; if elements are not  numeric, error, otherwise
+    (sqrt (variance x)))
+  (:method ((x matrix-like))
+    (error "FIXME: define SD for matrix-like objects")))
+
+(defun standard-deviation-fn (x)
+"Args: (x)
+Returns the standard deviation of the elements x. Vector reducing.
+
+FIXME AJR: This should be redone as square-root of the variance, and
+defer to that structure for computation."
   (let ((n (count-elements x))
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
@@ -98,30 +162,4 @@ without replacement."
 			     (setf (aref x j) temp))))))))
 
 
-
-(defun mean (x)
-"Args: (x)
-Returns the mean of the elements x. Vector reducing."
-  (let ((mean 0.0)
-        (count 0.0))
-    (labels ((add-to-mean (x)
-              (let ((count+1 (+ count 1.0)))
-                (setf mean (+ (* (/ count count+1) mean) (* (/ count+1) x)))
-                (setf count count+1)))
-             (find-mean (x)
-               (if (numberp x)
-                 (add-to-mean x)
-                 (let ((seq (compound-data-seq x)))
-                   (if (consp seq)
-                     (dolist (x seq)
-                       (if (numberp x) (add-to-mean x) (find-mean x)))
-                     (let ((n (length seq)))
-                       (dotimes (i n)
-		         (declare (fixnum i))
-                         (let ((x (aref seq i)))
-                           (if (numberp x)
-			       (add-to-mean x)
-			       (find-mean x))))))))))
-      (find-mean x)
-      mean)))
 
