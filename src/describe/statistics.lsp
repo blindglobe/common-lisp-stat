@@ -87,26 +87,17 @@ defer to that structure for computation."
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
-
 (defgeneric quantile (x p)
-  (:documentation "Args: (x p)
-Returns the P-th quantile(s) of sequence X. P can be a number or a sequence."))
-
-(defmethod quantile ((x sequence) (p sequence))
-  (let* ((x (sort-data x))
-         (n (length x))
-         (np (* p (- n 1)))
-         (low (floor np))
-         (high (ceiling np)))
-    (/ (+ (select x low) (select x high)) 2)))
-
-(defmethod quantile ((x sequence) (p real))
-  (let* ((x (sort-data x))
-         (n (length x))
-         (np (* p (- n 1)))
-         (low (floor np))
-         (high (ceiling np)))
-    (/ (+ (select x low) (select x high)) 2)))
+  (:documentation "Returns the P-th quantile(s) of sequence X.")
+  (:method ((x sequence) (p sequence))
+    (let* ((x (sort-data x))
+	   (n (length x))
+	   (np (* p (- n 1)))
+	   (low (floor np))
+	   (high (ceiling np)))
+      (/ (+ (select x low) (select x high)) 2)))
+  (:method ((x sequence) (p real))
+    (error "FIXME: implement.")))
 
 
 ;;; things to build on top of quantiles...!
@@ -136,9 +127,11 @@ Returns the sample covariance matrix of the data columns in ARGS. ARGS may
 consist of lists, vectors or matrices."
   (let ((columns (apply #'append 
                         (mapcar #'(lambda (x) 
-				    (if (matrixp x) (column-list x) (list x)))
+				    (if (typep x 'matrix-like)
+					(list-of-columns x)
+					(list x)))
                                 args))))
-    (/ (cross-product (apply #'bind-columns 
+    (/ (cross-product (reduce #'bind-columns 
                              (- columns (mapcar #'mean columns))))
        (- (length (car columns)) 1))))
 
