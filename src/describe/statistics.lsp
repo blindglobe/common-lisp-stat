@@ -22,12 +22,20 @@
     (/ (reduce #'+ x)
        (length x)))
   (:method ((x vector-like))
+      ;; (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
+    (/ (loop for i from 0 to (- (nelts x) 1)
+	  summing (vref x i))
+       (nelts x)))
+#| ;; a more traditional versino of the above... 
+  (:method ((x vector-like))
     (let ((n (nelts x))
-	  (type (if (column-vector-p x) :column :row)))
+	  (type (if (col-vector-p x) :column :row)))
       (/ (gemm x (ones
 		  (ecase type (:row 1) (:column n))
 		  (ecase type (:row n) (:column 1))))
-	 n))))
+	 n)))
+|#
+  )
 
 (defun mean-fn (x)
 "Args: (x)
@@ -131,13 +139,25 @@ consist of lists, vectors or matrices."
 					(list-of-columns x)
 					(list x)))
                                 args))))
-    (/ (cross-product (reduce #'bind-columns 
-                             (- columns (mapcar #'mean columns))))
+    (/ (cross-product (reduce #'bind2 
+			      (- columns (mapcar #'mean columns))))
        (- (length (car columns)) 1))))
 
 ;;;; Sampling / Resampling
 
-(defun sample (x ssize &optional replace)
+(defgeneric sample (x n &optional replace weights)
+  (:documentation "Draw a sample of size n from sequence x, with/out
+  replacement, with weights per element of x as described as a
+  probability mass distribution vector.")
+  (:method ((x list) (n fixnum)
+	    &optional (replace list) (weights list))
+    )
+  (:method ((x vector-like) (n fixnum)
+	    &optional (replace vector-like) (weights vector-like))
+    )
+  )
+
+(defun sample-fn (x ssize &optional replace)
 "Args: (x n &optional (replace nil))
 Returns a list of a random sample of size N from sequence X drawn with or
 without replacement."
