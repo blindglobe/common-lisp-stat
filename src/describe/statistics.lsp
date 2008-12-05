@@ -117,7 +117,7 @@ defer to that structure for computation."
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
-(defgeneric quantile (x p)
+(defgeneric quantile (x p &opt (return-type :list))
   (:documentation "Returns the P-th quantile(s) of sequence X.")
   (:method ((x sequence) (p real))
     (let ((np (* p (- n 1))))
@@ -134,27 +134,21 @@ defer to that structure for computation."
   (:method ((x vector-like) (p vector-like))
     (error "FIXME: generalize.")))
 
-
 ;;; things to build on top of quantiles...!
+;; need to incorporate a return-type if possible.
 
-;; Args: (x)
-;; Returns the median of the elements of X.
-(defmacro median (x) 
-  `(quantile ,x 0.5))
-;; (macroexpand '(median (list 1 2 3)))
-;; (median (list 1 2 3))
+(defun median (x &opt (return-type :list)) 
+  "Return median of X, using whatever the quantile generic function supports."
+  (quantile x 0.5))
 
-
-;; Args: (number-data) 
-;; Returns the interquartile range of the elements of X.
-(defmacro interquartile-range (x) 
-  `(reduce #'- (quantile ,x '(0.75 0.25))))
+(defun interquartile-range (x) 
+  "Returns the interquartile range of the elements of X."
+  (reduce #'- (quantile x (list 0.75 0.25))))
 
 (defun fivnum (x) 
-"Args: (number-data)
-Returns the five number summary (min, 1st quartile, medinan, 3rd quartile,
+  "Returns the five number summary (min, 1st quartile, medinan, 3rd quartile,
 max) of the elements X."
-  (quantile x '(0 .25 .5 .75 1)))
+  (quantile x (list 0 .25 .5 .75 1)))
 
 ;;;; Sampling / Resampling
 
