@@ -183,7 +183,7 @@ Returns a list of the rows of M as vectors"
         
 (defun column-list (x)
 "Args: (m)
-Returns a list of the columns of M as vectors"
+Returns a list of vectors, each vector represents a column of M."
   (check-matrix x)
   (let ((m (num-rows x))
         (n (num-cols x))
