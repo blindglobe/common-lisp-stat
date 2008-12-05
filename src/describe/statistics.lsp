@@ -69,12 +69,34 @@ FIXME: Why is this so complex?  When figure out, put into generic."
 ;; We do the variance, since the SD is simply the root.
 (defgeneric variance (x)
   (:documentation "compute the variance of the entity X, i.e. if a
-  scalar, vector, or matrix.")
+  scalar, vector, or (covariance) matrix.")
   (:method ((x list))
     (let ((n (length x))
 	  (r (- x (mean x))))
       (sqrt (* (mean (* r r)) (/ n (- n 1))))))
-  (:method ((x vector-like))))
+  (:method ((x vector-like))
+    ;; FIXME!!!
+    (let ((negresid  (axpy (mean x) negone x)))  ; -mu + x = x - mu
+      (/ (loop for i from 0 to (- (nelts x) 1)
+	    summing (* (vref negresid i)
+		       (vref negresid i)))
+	 (- (nelts negresid) 1))))
+  (:method ((x matrix-like))
+    (error "FIXME: define variance for matrices as covariance (?).")))
+
+(defun covariance-matrix (&rest args)
+"Args: (&rest args)
+Returns the sample covariance matrix of the data columns in ARGS. ARGS may
+consist of lists, vectors or matrices."
+  (let ((columns (apply #'append 
+                        (mapcar #'(lambda (x) 
+				    (if (typep x 'matrix-like)
+					(list-of-columns x)
+					(list x)))
+                                args))))
+    (/ (cross-product (reduce #'bind2 
+			      (- columns (mapcar #'mean columns))))
+       (- (length (car columns)) 1))))
 
 (defgeneric standard-deviation (x)
   (:documentation "Compute standard deivation of entity X.")
@@ -97,15 +119,20 @@ defer to that structure for computation."
 
 (defgeneric quantile (x p)
   (:documentation "Returns the P-th quantile(s) of sequence X.")
-  (:method ((x sequence) (p sequence))
-    (let* ((x (sort-data x))
-	   (n (length x))
-	   (np (* p (- n 1)))
-	   (low (floor np))
-	   (high (ceiling np)))
-      (/ (+ (select x low) (select x high)) 2)))
   (:method ((x sequence) (p real))
-    (error "FIXME: implement.")))
+    (let ((np (* p (- n 1))))
+      (mean (aref x (floor np))
+	    (aref x (ceiling np))))) ;; aref work in general for lists too, or use nth?
+  (:method ((x vector-like) (p real))  ;; average of sorted elements.  Could store compile
+    (let ((np (* p (- (nelts x) 1))))
+      (mean (list (vref (sort x) (floor np))
+		  (vref (sort x) (ceiling np))))))
+  (:method ((x sequence) (p sequence))
+    (error "FIXME: generalize.   Basically, do mapcar or similar across a vector."))
+  (:method ((x vector-like) (p sequence))
+    (error "FIXME: generalize."))
+  (:method ((x vector-like) (p vector-like))
+    (error "FIXME: generalize.")))
 
 
 ;;; things to build on top of quantiles...!
@@ -128,20 +155,6 @@ defer to that structure for computation."
 Returns the five number summary (min, 1st quartile, medinan, 3rd quartile,
 max) of the elements X."
   (quantile x '(0 .25 .5 .75 1)))
-
-(defun covariance-matrix (&rest args)
-"Args: (&rest args)
-Returns the sample covariance matrix of the data columns in ARGS. ARGS may
-consist of lists, vectors or matrices."
-  (let ((columns (apply #'append 
-                        (mapcar #'(lambda (x) 
-				    (if (typep x 'matrix-like)
-					(list-of-columns x)
-					(list x)))
-                                args))))
-    (/ (cross-product (reduce #'bind2 
-			      (- columns (mapcar #'mean columns))))
-       (- (length (car columns)) 1))))
 
 ;;;; Sampling / Resampling
 
