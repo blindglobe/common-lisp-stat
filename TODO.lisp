@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-12-03 07:42:18 tony>
+;;; Time-stamp: <2008-12-04 17:29:12 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -195,3 +195,11 @@
   ;; but I think the cl-csv package is broken, need to use the dsv-style
   ;; package.
   )
+
+
+(progn
+  (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
+  (/ (loop for i from 0 to (- (nelts *x*) 1)
+	summing (vref *x* i))
+     (nelts *x*)))
+  
