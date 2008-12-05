@@ -196,7 +196,7 @@ Recomputes the estimates. For internal use by other messages"
          (p (- (matrix-dimension m 0) 1))
          (tss (mref m p p))
          (tol (* 0.001
-		 (reduce #'* (mapcar #'standard-deviation (column-list x)))))
+		 (reduce #'* (mapcar #'standard-deviation (list-of-columns x)))))
          (sweep-result
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
