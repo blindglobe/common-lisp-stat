@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-12-04 17:29:12 tony>
+;;; Time-stamp: <2008-12-07 10:42:43 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -52,6 +52,7 @@
   (defparameter m nil
     "holding variable.")
   ;; need to make vectors and matrices from the lists...
+
   (def m (regression-model (list iron aluminum) absorbtion :print nil))
   
   (defparameter *indep-vars-1-matrix*
@@ -202,4 +203,16 @@
   (/ (loop for i from 0 to (- (nelts *x*) 1)
 	summing (vref *x* i))
      (nelts *x*)))
-  
+
+
+(progn 
+  ;;; A study in array vs list access
+  (defparameter *x* (list 1 2 3))
+  (defparameter *y* #(1 2 3))
+  (nth 1 *x*)
+  (aref *y* 1)
+  (setf (nth 1 *x*) 6)
+  *x*
+  (setf (aref *y* 1) 6)
+  *y*
+  )
