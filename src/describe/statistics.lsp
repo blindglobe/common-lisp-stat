@@ -76,7 +76,8 @@ FIXME: Why is this so complex?  When figure out, put into generic."
       (sqrt (* (mean (* r r)) (/ n (- n 1))))))
   (:method ((x vector-like))
     ;; FIXME!!!
-    (let ((negresid  (axpy (mean x) negone x)))  ; -mu + x = x - mu
+    (let* ((negone nil) ;; FIXME!
+	   (negresid  (axpy (mean x) negone x))) ; -mu + x = x - mu
       (/ (loop for i from 0 to (- (nelts x) 1)
 	    summing (* (vref negresid i)
 		       (vref negresid i)))
@@ -117,27 +118,27 @@ defer to that structure for computation."
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
-(defgeneric quantile (x p &opt (return-type :list))
+(defgeneric quantile (x p &optional return-type)
   (:documentation "Returns the P-th quantile(s) of sequence X.")
-  (:method ((x sequence) (p real))
-    (let ((np (* p (- n 1))))
-      (mean (aref x (floor np))
-	    (aref x (ceiling np))))) ;; aref work in general for lists too, or use nth?
-  (:method ((x vector-like) (p real))  ;; average of sorted elements.  Could store compile
+  (:method ((x sequence) (p real) &optional (return-type  symbol))
+    (let ((np (* p (- (length x) 1))))
+      (mean (list (aref x (floor np))
+		  (aref x (ceiling np)))))) ;; aref work in general for lists too, or use nth?
+  (:method ((x vector-like) (p real) &optional (return-type symbol))  ;; average of sorted elements.  Could store compile
     (let ((np (* p (- (nelts x) 1))))
       (mean (list (vref (sort x) (floor np))
 		  (vref (sort x) (ceiling np))))))
-  (:method ((x sequence) (p sequence))
+  (:method ((x sequence) (p sequence) &optional return-type)
     (error "FIXME: generalize.   Basically, do mapcar or similar across a vector."))
-  (:method ((x vector-like) (p sequence))
+  (:method ((x vector-like) (p sequence) &optional return-type)
     (error "FIXME: generalize."))
-  (:method ((x vector-like) (p vector-like))
+  (:method ((x vector-like) (p vector-like) &optional return-type)
     (error "FIXME: generalize.")))
 
 ;;; things to build on top of quantiles...!
 ;; need to incorporate a return-type if possible.
 
-(defun median (x &opt (return-type :list)) 
+(defun median (x) 
   "Return median of X, using whatever the quantile generic function supports."
   (quantile x 0.5))
 
@@ -156,13 +157,12 @@ max) of the elements X."
   (:documentation "Draw a sample of size n from sequence x, with/out
   replacement, with weights per element of x as described as a
   probability mass distribution vector.")
-  (:method ((x list) (n fixnum)
-	    &optional (replace list) (weights list))
-    )
+  (:method ((x sequence) (n fixnum)
+	    &optional (replace sequence) (weights sequence))
+    (sample-fn x n replace))
   (:method ((x vector-like) (n fixnum)
 	    &optional (replace vector-like) (weights vector-like))
-    )
-  )
+    (sample-fn x n replace)))
 
 (defun sample-fn (x ssize &optional replace)
 "Args: (x n &optional (replace nil))
