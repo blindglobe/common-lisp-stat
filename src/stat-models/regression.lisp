@@ -51,7 +51,7 @@
   "Normal Linear Regression Model")
 
 
-(defun regression-model-old
+(defun regression-model
     (x y &key 
      (intercept T) 
      (print T) 
@@ -113,18 +113,18 @@ Example (data are in file absorbtion.lsp in the sample data directory):
     m))
 
 
+;; regression-model is the old API, but regression as a generic will
+;; be the new API.  We need to distinguish between APIs which enable
+;; the user to do clear activities, and APIs which enable developers
+;; to do clear extensions and development, and underlying
+;; infrastructure to keep everything straight and enabled.
 
-(defun regression-model ;; assumes x/y from lisp-matrix -- start of a set of generics.
-    (x y &key 
-     (intercept T) 
-     (print T) 
-     (weights nil)
-     (included (repeat t (length y)))
-     predictor-names
-     response-name
-     case-labels
-     (doc "Undocumented Regression Model Instance")
-     (debug T))
+#|
+(defclass model ()
+  ((type structure)))
+
+(defgeneric regression ;; assumes x/y from lisp-matrix -- start of a set of generics.
+    (model dataset)
   "Args: (x y &key (intercept T) (print T) (weights nil)
           included predictor-names response-name case-labels)
 X           - list of independent variables or X matrix
@@ -163,6 +163,7 @@ Example (data are in file absorbtion.lsp in the sample data directory):
 	  (format t "Y: ~S~%" (send m :y))))
     (if print (send m :display))
     m))
+|#
 
 
 (defmeth regression-model-proto :isnew ()
