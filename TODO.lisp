@@ -1,11 +1,11 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-12-07 10:42:43 tony>
+;;; Time-stamp: <2008-12-08 09:39:01 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007-2008, AJ Rossini <blindglobe@gmail.com>.  BSD.
-;;; Purpose:    demonstrations of how one might use CLS.
+;;; Purpose:    Stuff that needs to be made working sits inside the progns...
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -46,13 +46,15 @@
 
 
 
-;;; FIXME: Regression modeling
-(progn 
+
+#+nil
+(progn ;; FIXME: Regression modeling
 
   (defparameter m nil
     "holding variable.")
   ;; need to make vectors and matrices from the lists...
 
+  (def m (regression-model  iron absorbtion :print nil))
   (def m (regression-model (list iron aluminum) absorbtion :print nil))
   
   (defparameter *indep-vars-1-matrix*
@@ -124,24 +126,19 @@
   ;; I'm keeping these in as example of brokenness...
   
   (send m :basis) ;; this should be positive?
-  (send m :coef-estimates)
+  (send m :coef-estimates)  )
 
-
-  )
-
-
+#+nil
 (progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
-
   ;; The following breaks because we should use a package to hold
   ;; configuration details, and this would be the only package outside
   ;; of packages.lisp, as it holds the overall defsystem structure.
   (load-data "iris.lsp")  ;; (the above partially fixed).
   (variables)
-  diabetes
-  )
+  diabetes )
 
-(progn
-  ;; FIXME: Data.Frames probably deserve to be related to lists --
+#+nil
+(progn ;; FIXME: Data.Frames probably deserve to be related to lists --
   ;; either lists of cases, or lists of variables.  We probably do not
   ;; want to mix them, but want to be able to convert between such
   ;; structures.
@@ -163,11 +160,9 @@
   (elt (elt (elt *my-case-data* 0) 1) 0)
   (elt (elt (elt *my-case-data* 0) 1) 1)
   (elt (elt (elt *my-case-data* 0) 1) 2)
-  (elt (elt *my-case-data* 0) 3)
+  (elt (elt *my-case-data* 0) 3))
 
-  )
-
-
+#+nil
 (progn ;; FIXME: read data from CSV file.  To do.
 
   ;; challenge is to ensure that we get mixed arrays when we want them,
@@ -195,24 +190,4 @@
 
   ;; but I think the cl-csv package is broken, need to use the dsv-style
   ;; package.
-  )
-
-
-(progn
-  (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
-  (/ (loop for i from 0 to (- (nelts *x*) 1)
-	summing (vref *x* i))
-     (nelts *x*)))
-
-
-(progn 
-  ;;; A study in array vs list access
-  (defparameter *x* (list 1 2 3))
-  (defparameter *y* #(1 2 3))
-  (nth 1 *x*)
-  (aref *y* 1)
-  (setf (nth 1 *x*) 6)
-  *x*
-  (setf (aref *y* 1) 6)
-  *y*
   )

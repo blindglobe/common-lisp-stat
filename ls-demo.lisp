@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-11-16 19:41:32 tony>
+;;; Time-stamp: <2008-12-08 08:10:41 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -589,9 +589,39 @@ my.lib
 
 (send m :plot-residuals)
 
-;;; General Lisp, there is also a need to add, remove symbols from the
-;;; workspace/namespace.  This is a fundamental skill, similar to
-;;; stopping, which is critical.
+(progn 
+  ;; General Lisp, there is also a need to add, remove symbols from the
+  ;; workspace/namespace.  This is a fundamental skill, similar to
+  ;; stopping, which is critical.
+  
+  ;; boundp, fboundp
+  ;; makunbound, fmakunbound
+  )
 
-;; boundp, fboundp
-;; makunbound, fmakunbound
+
+(progn 
+  ;;; A study in array vs list access
+  (defparameter *x* (list 1 2 3))
+  (defparameter *y* #(1 2 3))
+  (defparameter *z* (list 1 (list 2 3) (list 4 5 (list 6 7)) ))
+  (length *x*)
+  (length *y*)
+  (length *z*) ; => need a means to make this 7.
+  (length  (reduce #'cons *z*)) ; => not quite -- missing iterative 
+
+  (nelts *x*)
+  (nth 1 *x*)
+  (aref *y* 1)
+  (setf (nth 1 *x*) 6)
+  *x*
+  (setf (aref *y* 1) 6)
+  *y*
+  )
+
+
+
+(progn
+  (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
+  (/ (loop for i from 0 to (- (nelts *x*) 1)
+	summing (vref *x* i))
+     (nelts *x*)))
