@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Object system warns under SBCL
+desc: |-
+  The object system doesn't seem to intern symbols properly, for some definition of proper.
+  Need to modify so that SBCL doesn't complain
+type: :task
+component: ObjectSystem
+release: 
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-08 17:57:57.878575 Z
+references: []
+
+id: 52047dfe125ec009c8da19b9b06fc43100fae872
+log_events: 
+- - 2008-12-08 17:58:15.402961 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - Not critical, but definitely not clean.

@@ -1,0 +1,16 @@
+--- !ditz.rubyforge.org,2008-03-06/project 
+name: CLS.git
+version: "0.5"
+components: 
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: CLS.git
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: ObjectSystem
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: StatModels
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: Data
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: Graphics
+releases: []
+
