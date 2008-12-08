@@ -1,9 +1,15 @@
 ;;  -*- mode: lisp -*-
-;;; Copyright (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
-;;; ASDF packaging for CommonLisp Stat
-;;; License: BSD, see the top level directory file LICENSE for details.
-;;; Time-stamp: <2008-11-25 19:08:23 tony>
+;;; Time-stamp: <2008-12-07 16:07:24 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
+;;; File:       lispstat.asd
+;;; Author:     AJ Rossini <blindglobe@gmail.com>
+;;; Copyright:  (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
+;;; License:    BSD, see the top level directory file LICENSE for details.
+;;; Purpose:    ASDF packaging for CommonLisp Stat
+
+;;; What is this talk of 'release'? Klingons do not make software
+;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
+;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
 
@@ -100,9 +106,9 @@
   Computing with Common Lisp; based on CLS alpha1 by Luke Tierney
   <luke@stat.uiowa.edu> (apparently originally written when Luke was
   at CMU, on leave somewhere?).   Last touched by him in 1991, then in
-  2005--2008." 
+  2005--2009." 
   :serial t
-  :depends-on (:cffi  :lift :lisp-matrix) ;; need a matrix library
+  :depends-on (:cffi :lisp-matrix :lift)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
