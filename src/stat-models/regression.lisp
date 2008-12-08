@@ -83,9 +83,10 @@ Example (data are in file absorbtion.lsp in the sample data directory):
   (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
 	     ((typep x 'matrix-like) x)
-	     ((or (typep x 'vector) 
+	     ((or (typep x 'sequence) 
 		  (and (consp x)
-		       (numberp (car x))) (make-vector (length x) :initial-contents x)))
+		       (numberp (car x)))
+		  (make-vector (length x) :initial-contents x)))
 	     (t x))) ;; actually, might should barf.
 	(y (cond
 	     ((typep y 'vector-like) y)
