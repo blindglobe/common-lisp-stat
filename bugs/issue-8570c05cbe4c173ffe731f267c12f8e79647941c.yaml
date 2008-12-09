@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Data "frame" to matrix converter needed
+desc: |-
+  Need to go from data to appropriate model matrix.   Thomas claimed code in the old
+  lispstat gee package should work.
+type: :task
+component: Data
+release: 
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-09 06:32:55.823905 Z
+references: []
+
+id: 8570c05cbe4c173ffe731f267c12f8e79647941c
+log_events: 
+- - 2008-12-09 06:33:16.116705 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - import the gee code and take a look, leave it for posterity.
