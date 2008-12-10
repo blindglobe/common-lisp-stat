@@ -12,5 +12,13 @@ components:
   name: Data
 - !ditz.rubyforge.org,2008-03-06/component 
   name: Graphics
-releases: []
-
+releases: 
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: "1.0"
+  status: :unreleased
+  release_time: 
+  log_events: 
+  - - 2008-12-10 07:27:44.864923 Z
+    - Tony <blindglobe@gmail.com>
+    - created
+    - release with ability to read in CSV files, descriptive numeric statistics, and linear regression
