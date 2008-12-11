@@ -603,47 +603,6 @@ corresponding element of TOLERANCES."
 	    (setf swept-columns (cons col swept-columns))))))
 
 
-;;;
-;;; AX+Y
-;;;
-
-;;; matlisp:axpy
-;;;
-(defun ax+y (a x y &optional lower)
-"Args (a x y &optional lower)
-Returns (+ (matmult A X) Y). If LOWER is not nil, A is taken to be lower
-triangular.
-This could probably be made more efficient."
-  (check-square-matrix a)
-  (check-sequence x)
-  (check-sequence y)
-  (check-real a)
-  (check-real x)
-  (check-real y)
-  (let* ((n (num-rows a))
-	 (result (make-list n))
-	 (a (compound-data-seq a)))
-    (declare (fixnum n))
-    (if (or (/= n (length x)) (/= n (length y)))
-	(error "dimensions do not match"))
-    (do* ((tx (make-next-element x) (make-next-element x))
-	  (ty (make-next-element y))
-	  (tr (make-next-element result))
-	  (i 0 (+ i 1))
-	  (start 0 (+ start n))
-	  (end (if lower (+ i 1) n) (if lower (+ i 1) n)))
-	 ((<= n i) result)
-       (declare (fixnum i start end))
-       (let ((val (get-next-element ty i)))
-	 (dotimes (j end)
-           (declare (fixnum j))
-	   (setf val (+ val (* (get-next-element tx j)
-			       (aref a (+ start j))))))
-	 (set-next-element tr i val)))))
-
-
-
-
 
 ;;;;
 ;;;; Linear Algebra Functions
