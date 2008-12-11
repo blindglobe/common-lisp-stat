@@ -83,16 +83,22 @@ Example (data are in file absorbtion.lsp in the sample data directory):
   (send m :help) (send m :plot-residuals)"
   (let ((x (cond 
 	     ((typep x 'matrix-like) x)
+#| assume only numerical vectors -- but we need to ensure coercion to float.
 	     ((or (typep x 'sequence) 
 		  (and (consp x)
 		       (numberp (car x)))
 		  (make-vector (length x) :initial-contents x)))
-	     (t x))) ;; actually, might should barf.
+|#
+	     (t (error "not matrix-like.");x
+		))) ;; actually, might should barf.
 	(y (cond
 	     ((typep y 'vector-like) y)
+#|
 	     ((and (consp x)
 		   (numberp (car x))) (make-vector (length y) :initial-contents y))
-	     (t y))) ;; actually, might should barf.
+|#
+	     (t (error "not vector-like."); y
+		))) ;; actually, might should barf.
         (m (send regression-model-proto :new)))
     (format t "~%")
     (send m :doc doc)
@@ -217,12 +223,13 @@ Recomputes the estimates. For internal use by other messages"
          (intercept (send self :intercept))
          (weights (send self :weights))
          (w (if weights (* included weights) included))
-         (m (make-sweep-matrix x y w)) ;;; ERROR HERE
+         (m (make-sweep-matrix x y w)) ;;; ERROR HERE of course!
          (n (matrix-dimension x 1))
          (p (- (matrix-dimension m 0) 1))
          (tss (mref m p p))
          (tol (* 0.001
-		 (reduce #'* (mapcar #'standard-deviation (list-of-columns x)))))
+		 (reduce #'* (mapcar #'standard-deviation
+				     (list-of-columns x)))))
          (sweep-result
           (if intercept
               (sweep-operator m (iseq 1 n) tol)
