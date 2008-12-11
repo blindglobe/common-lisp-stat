@@ -120,6 +120,30 @@ Example (data are in file absorbtion.lsp in the sample data directory):
 ;; to do clear extensions and development, and underlying
 ;; infrastructure to keep everything straight and enabled.
 
+;; There are conflicting theories for how to structure the
+;; specification of mathematical models, along with the statistical
+;; inference, along with the data which is instantiating the model.
+;; 
+;; i.e.:  mathematical model for the relationships between components,
+;; between a component and a summarizing parameter, and between
+;; parameters.
+;; 
+;; statistical inference describes the general approach for
+;; aggregating into a decision and has impliciations for the scale up
+;; from the model on a single instance to the generalization.
+;;
+;; The data represents the particular substantive context that is
+;; driving the model/inference combination, and about which we hope to
+;; generate knowledge.
+;; 
+;; numerical analysis selects appropriate algorithms/implementations
+;; for combining the above 3.  
+;; 
+;; the end result is input on the decision being made (which could be
+;; specific (decision analysis/testing), risk-analysis (interval
+;; estimation) , most likely/appropriate selection (point estimation)
+;; 
+
 #|
 (defclass model ()
   ((type structure)))
