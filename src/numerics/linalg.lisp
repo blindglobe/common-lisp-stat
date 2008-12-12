@@ -4,7 +4,7 @@
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 ;;;
 
-(in-package #:lisp-matrix-stat-linalg)
+(in-package #:lisp-stat-linalg)
 
 ;;;;
 ;;;; Spline Interpolation
