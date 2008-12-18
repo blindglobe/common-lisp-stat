@@ -1,0 +1,24 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: use lisp-matrix instead of internal matrix code, major refactor
+desc: refactor out the old clapack code, etc.
+type: :task
+component: CLS.git
+release: "1.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :in_progress
+disposition: 
+creation_time: 2008-12-18 07:39:00.037450 Z
+references: []
+
+id: 8028b743f3767f47c9b204939187455c58fc9058
+log_events: 
+- - 2008-12-18 07:39:01.504978 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - ""
+- - 2008-12-18 07:39:41.339408 Z
+  - Tony <blindglobe@gmail.com>
+  - changed status from unstarted to in_progress
+  - |-
+    work is already in progress.  Goal is to remove the matrix code that is internal and homegrown, and
+    remove current factored work.
