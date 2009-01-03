@@ -12,12 +12,15 @@
 
 (defpackage :lisp-stat-regression-nonlin
  (:use :common-lisp
+       :lisp-matrix
        :lisp-stat-object-system
        :lisp-stat-math
        :lisp-stat-basics
        :lisp-stat-compound-data
+#|       
        :lisp-stat-matrix
        :lisp-stat-linalg
+|#
        :lisp-stat-regression-linear)
  (:shadowing-import-from :lisp-stat-object-system
 			 slot-value call-method call-next-method)

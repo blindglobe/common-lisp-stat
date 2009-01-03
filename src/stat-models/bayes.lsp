@@ -12,11 +12,14 @@
 
 (defpackage :lisp-stat-bayes
   (:use :common-lisp
+	:lisp-matrix
 	:lisp-stat-object-system
 	:lisp-stat-math
 	:lisp-stat-basics
+#|
 	:lisp-stat-matrix
 	:lisp-stat-linalg
+|#
 	)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
