@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2008-12-12 08:08:27 tony>
+;;; Time-stamp: <2008-12-19 08:47:22 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -151,6 +151,7 @@
 		((:lispstat-lsp-source-file "cffiglue")
 		 (:lispstat-lsp-source-file "dists"
 					    :depends-on ("cffiglue"))
+#|
 		 (:lispstat-lsp-source-file "matrices"
 					    :depends-on ("cffiglue"))
 		 (:lispstat-lsp-source-file "ladata"
@@ -159,7 +160,9 @@
 		 (:file "linalg"
 			:depends-on ("cffiglue"
 				     "matrices"
-				     "ladata"))))
+				     "ladata"))
+|#
+		 ))
 
 	       ;; prototype and CLOS approaches.
 	       (:module
@@ -277,4 +280,6 @@
 			      (:file "unittests-regression" :depends-on ("unittests"))
 			      ;; not ready yet:
 			      ;; (:file "unittests-data-clos" :depends-on ("unittests"))
-			      (:file "unittests-arrays" :depends-on ("unittests"))))))
+			      ;; changing linear algebra system
+			      ;; (:file "unittests-arrays" :depends-on ("unittests"))
+			      ))))

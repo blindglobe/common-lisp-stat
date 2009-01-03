@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-12-08 09:39:01 tony>
+;;; Time-stamp: <2009-01-03 19:36:11 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -20,11 +20,13 @@
 ;;(asdf:oos 'asdf:compile-op 'lispstat)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
 
+
 (in-package :lisp-stat-unittests)
 
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
-;; tests = 68, failures = 12, errors = 7
+
+;; tests = 54, failures = 7, errors = 3
 
 (in-package :ls-user)
 
@@ -45,8 +47,6 @@
 ;; efficiency.
 
 
-
-
 #+nil
 (progn ;; FIXME: Regression modeling
 
@@ -54,8 +54,13 @@
     "holding variable.")
   ;; need to make vectors and matrices from the lists...
 
-  (def m (regression-model  iron absorbtion :print nil))
-  (def m (regression-model (list iron aluminum) absorbtion :print nil))
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion) :print nil)) ;;Good
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion)))
+
+  (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
+			   (list->vector-like  absorbtion) :print nil))
   
   (defparameter *indep-vars-1-matrix*
     (make-matrix 1 (length iron)
@@ -95,8 +100,8 @@
 		 :element-type 'integer
 		 :initial-contents (list absorbtion)))
   
-  (typep *dep-var* 'matrix-like) ; => T
-  (typep *dep-var* 'vector-like) ; => T
+  (typep *dep-var* 'matrix-like)	; => T
+  (typep *dep-var* 'vector-like)	; => T
   
   (typep *indep-vars-1-matrix* 'matrix-like) ; => T
   (typep *indep-vars-1-matrix* 'vector-like) ; => T
