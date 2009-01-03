@@ -56,7 +56,7 @@
      (intercept T) 
      (print T) 
      (weights nil)
-     (included (repeat t (length y)))
+     (included (repeat t (vector-dimension y)))
      predictor-names
      response-name
      case-labels
@@ -220,12 +220,12 @@ Recomputes the estimates. For internal use by other messages"
   (let* ((included (if-else (send self :included) 1 0))
          (x (send self :x))
          (y (send self :y))
-         (intercept (send self :intercept))
-         (weights (send self :weights))
+         (intercept (send self :intercept)) ;; T/nil
+         (weights (send self :weights)) ;; vector-like
          (w (if weights (* included weights) included))
          (m (make-sweep-matrix x y w)) ;;; ERROR HERE of course!
          (n (matrix-dimension x 1))
-         (p (- (matrix-dimension m 0) 1))
+         (p (- (matrix-dimension m 0) 1)) ;; remove intercept from # params -- right?
          (tss (mref m p p))
          (tol (* 0.001
 		 (reduce #'* (mapcar #'standard-deviation
@@ -296,8 +296,8 @@ are marked as aliased."
 
 Returns the DOC-STRING as supplied to m.  
 Additionally, with an argument NEW-DOC, sets the DOC-STRING to
-NEW-DOC.  In this setting, when APPEND is T, append NEW-DOC to DOC
-rather than doing replacement."
+NEW-DOC.  In this setting, when APPEND is T, don't replace and just
+append NEW-DOC to DOC."
   (send self :nop)
   (when (and new-doc (stringp new-doc))
     (setf (slot-value 'doc)
@@ -401,7 +401,7 @@ estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence
 of length of y of nil and t to select cases.  Estimates are
 recomputed."
   (when (and new-included 
-             (= (nelts new-included) (send self :num-cases)))
+             (= (length new-included) (send self :num-cases)))
         (setf (slot-value 'included) (copy-seq new-included)) 
         (send self :needs-computing t))
   (if (slot-value 'included)
@@ -535,7 +535,7 @@ the regression."
 Returns the OLS (ordinary least squares) estimates of the regression
 coefficients. Entries beyond the intercept correspond to entries in
 basis."
-  (let ((n (array-dimension (send self :x) 1))
+  (let ((n (matrix-dimension (send self :x) 1))
         (indices (flatten-list
 		  (if (send self :intercept) 
                      (cons 0 (+ 1 (send self :basis)))
