@@ -6,6 +6,12 @@
 
 (in-package #:lisp-stat-linalg)
 
+
+#+openmcl
+(defctype size-t :unsigned-long)
+#+sbcl
+(defctype size-t :unsigned-int)
+
 ;;;;
 ;;;; Spline Interpolation
 ;;;;
