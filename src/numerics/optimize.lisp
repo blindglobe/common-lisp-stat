@@ -3,36 +3,6 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
-(in-package :cl-user)
-
-(defpackage :lisp-stat-optimize
- (:use :common-lisp
-       :cffi
-       :lisp-stat-ffi-int
-       :lisp-stat-object-system
-       :lisp-stat-types
-       :lisp-stat-compound-data
-       :lisp-stat-math
-       :lisp-stat-float
-       :lisp-stat-basics
-       :lisp-stat-matrix
-       :lisp-stat-linalg-data
-       :lisp-stat-linalg)
- (:shadowing-import-from :lisp-stat-object-system
-			 slot-value call-method call-next-method)
- (:shadowing-import-from :lisp-stat-math
-	   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
- 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
- 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
- 	   < <= = /= >= > complex conjugate realpart imagpart phase
- 	   min max logand logior logxor lognot ffloor fceiling
- 	   ftruncate fround signum cis)
- (:export
-     ;; derivatives
-     numgrad numhess
-
-     ;; optimization
-     newtonmax nelmeadmax))
 	  
 ;; matrix is in statistics, but should that be a predecessor?	
 

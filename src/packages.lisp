@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-12-03 07:49:59 tony>
+;;; Time-stamp: <2008-12-19 08:35:50 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,34 +19,23 @@
 
 ;;; LispStat Basics
 
-(in-package :cl-user)
-
 (defpackage :lisp-stat-object-system
- (:nicknames :ls-objects :lsos)
- (:use :common-lisp)
- (:shadow :call-method :call-next-method :slot-value)
- (:export ls-object objectp *object* kind-of-p make-object
-	  *message-hook*
-	  *set-slot-hook* slot-value self 
-	  send call-next-method call-method
-	  defmeth defproto instance-slots proto-name))
-
-
-
-
+  (:nicknames :ls-objects :lsos)
+  (:use :common-lisp)
+  (:shadow :call-method :call-next-method :slot-value)
+  (:export ls-object objectp *object* kind-of-p make-object
+	   *message-hook*
+	   *set-slot-hook* slot-value self 
+	   send call-next-method call-method
+	   defmeth defproto instance-slots proto-name))
 
 (defpackage :lisp-stat-types
   (:documentation "Provides some typeing for LispStat, but is clearly
-                   a bit incomplete.")
+  a bit incomplete.")
   (:use :common-lisp)
   (:export fixnump
 	   check-nonneg-fixnum check-one-nonneg-fixnum
 	   check-one-fixnum check-one-real check-one-number))
-
-
-;;; Package Setup
-
-(in-package :cl-user)
 
 (defpackage :lisp-stat-float
   (:use :common-lisp)
@@ -60,7 +49,6 @@
 	   BASE-COSH BASE-TANH BASE-ASINH BASE-ACOSH BASE-ATANH
 	   BASE-ABS BASE-PHASE BASE-FFLOOR BASE-FCEILING BASE-FTRUNCATE
 	   BASE-FROUND BASE-SIGNUM BASE-CIS))
-
 
 (defpackage :lisp-stat-compound-data
   (:use :common-lisp
@@ -81,7 +69,7 @@
 	   iseq ordered-nneg-seq
 	   select split-list which
 	   difference rseq
-	   flatten-list ))
+	   flatten-list))
 
 (defpackage :lisp-stat-macros
   (:use :common-lisp
@@ -100,8 +88,6 @@
   (:export permute-array sum prod count-elements mean
 	   if-else sample))
 
-
-
 (defpackage :lisp-stat-float
   (:use :common-lisp)
   (:export +stat-float-typing+ +stat-cfloat-typing+ +stat-float-template+
@@ -114,8 +100,6 @@
 	   BASE-COSH BASE-TANH BASE-ASINH BASE-ACOSH BASE-ATANH
 	   BASE-ABS BASE-PHASE BASE-FFLOOR BASE-FCEILING BASE-FTRUNCATE
 	   BASE-FROUND BASE-SIGNUM BASE-CIS))
-
-;;; 
 
 (defpackage :lisp-stat-macros
   (:use :common-lisp
@@ -168,7 +152,7 @@
 	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
 
-
+#| removed, replace by lisp-matrix
 (defpackage :lisp-stat-matrix
   (:use :common-lisp
 	:cffi
@@ -176,14 +160,17 @@
   (:export matrixp ;;  matrix -- conflicts!
 	   num-rows num-cols matmult identity-matrix diagonal
 	   row-list column-list inner-product outer-product
-	   cross-product transpose bind-columns bind-rows
+	   cross-product
+	   ;; transpose bind-columns bind-rows 
 	   array-data-vector vector-to-array
 
 	   check-matrix check-square-matrix
 
 	   copy-array copy-vector
 	   ))
+|#
 
+#| replaced by lisp-matrix
 (defpackage :lisp-stat-linalg-data
   (:use :common-lisp
 	:cffi
@@ -201,7 +188,7 @@
       
       la-matrix la-free-matrix la-matrix-to-data la-data-to-matrix
       la-vector la-free-vector la-vector-to-data la-data-to-vector ))
-
+|#
 
 (defpackage :lisp-stat-math
    (:use :common-lisp
@@ -228,16 +215,15 @@
    (:documentation "Vectorization of numerical functions"))
 
 
+#| ;; some of this goes back in, but not all of it?
 (defpackage :lisp-stat-linalg
   (:use :common-lisp
 	:cffi
-	:lisp-stat-ffi-int
+	:lisp-matrix
 	:lisp-stat-math
 	:lisp-stat-types
 	:lisp-stat-float
-	:lisp-stat-compound-data
-	:lisp-stat-linalg-data
-	:lisp-stat-matrix)
+	:lisp-stat-compound-data)
   (:shadowing-import-from :lisp-stat-math
 	  expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
 	  asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -255,6 +241,8 @@
 	   covariance-matrix matrix print-matrix solve
 	   backsolve eigenvalues eigenvectors accumulate cumsum combine
 	   lowess))
+
+|#
 
 
 
@@ -294,11 +282,11 @@
 
 (defpackage :lisp-stat-regression-linear
   (:use :common-lisp
+	:lisp-matrix
 	:lisp-stat-object-system
 	:lisp-stat-basics
 	:lisp-stat-compound-data
 	:lisp-stat-math
-	:lisp-matrix
 	:lisp-stat-descriptive-statistics)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
@@ -383,8 +371,8 @@
    logand logior logxor lognot ffloor fceiling ftruncate fround
    signum cis
 
-#|
-   ;; The following need to be re-found in lisp-matrix...
+#| ;; The following need to be re-found in lisp-matrix...
+
    ;; matrices.lisp
    matrixp num-rows num-cols matmult identity-matrix diagonal row-list
    column-list inner-product outer-product cross-product transpose
@@ -520,3 +508,37 @@ done for a user- or analysis-package.")
 	:lisp-stat-data-examples
 	:lisp-stat-data-clos)
   (:export absorbtion aluminum iron))
+
+
+(defpackage :lisp-stat-optimize
+ (:use :common-lisp
+       :cffi
+       :lisp-matrix
+       :lisp-stat-ffi-int
+       :lisp-stat-object-system
+       :lisp-stat-types
+       :lisp-stat-compound-data
+       :lisp-stat-math
+       :lisp-stat-float
+       :lisp-stat-basics
+#|
+       :lisp-stat-matrix
+       :lisp-stat-linalg-data
+       :lisp-stat-linalg
+|#
+       )
+ (:shadowing-import-from :lisp-stat-object-system
+			 slot-value call-method call-next-method)
+ (:shadowing-import-from :lisp-stat-math
+	   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+ 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
+ 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
+ 	   < <= = /= >= > complex conjugate realpart imagpart phase
+ 	   min max logand logior logxor lognot ffloor fceiling
+ 	   ftruncate fround signum cis)
+ (:export
+     ;; derivatives
+     numgrad numhess
+
+     ;; optimization
+     newtonmax nelmeadmax))
