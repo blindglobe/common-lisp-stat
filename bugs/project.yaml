@@ -23,11 +23,11 @@ releases:
     - created
     - release with ability to read in CSV files, descriptive numeric statistics, and linear regression
 - !ditz.rubyforge.org,2008-03-06/release 
-  name: Test-2
+  name: "2.0"
   status: :unreleased
   release_time: 
   log_events: 
-  - - 2009-01-03 19:14:36.996415 Z
+  - - 2009-01-05 12:59:00.526366 Z
     - Tony <blindglobe@gmail.com>
     - created
-    - test
+    - future planning purposes
