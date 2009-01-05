@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Incorporate GSLL as a package to provide numerics along with lisp-matrix
+desc: natural intersection with lisp-matrix, use for various tools and a bit more flexibility.
+type: :task
+component: CLS.git
+release: "1.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-01-05 13:02:58.362218 Z
+references: []
+
+id: 7e265b1a8062ed5b689b9fa1d9683fd1bd498f0e
+log_events: 
+- - 2009-01-05 13:03:05.905282 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - am orking n this for a bit.

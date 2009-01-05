@@ -5,7 +5,7 @@ desc: |-
   both in terms of working, and moving from a sweep operator to a more modern approach (CG or SVD).
 type: :bugfix
 component: StatModels
-release: 
+release: "1.0"
 reporter: Tony <blindglobe@gmail.com>
 status: :unstarted
 disposition: 
@@ -20,3 +20,7 @@ log_events:
   - |-
     I think we still want to keep the sweep, but by default use something else.  Need to check R.
     ./stop
+- - 2009-01-05 13:04:37.899986 Z
+  - Tony <blindglobe@gmail.com>
+  - assigned to release 1.0 from unassigned
+  - can't release without descriptions and basic regression!
