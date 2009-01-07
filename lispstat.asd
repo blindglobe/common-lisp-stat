@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2008-12-19 08:47:22 tony>
+;;; Time-stamp: <2009-01-07 17:42:26 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -164,6 +164,14 @@
 |#
 		 ))
 
+	       ;; reading in DSV files for data access
+	       (:module 
+		"csv-data"
+		:pathname "src/data/"
+		:components
+		((:file "test-cybertiggyr")
+		 (:file "dsv-cybertiggyr" :depends-on ( "test-cybertiggyr"))))
+
 	       ;; prototype and CLOS approaches.
 	       (:module
 		"stat-data"
@@ -188,6 +196,7 @@
 		((:lispstat-lsp-source-file "lsbasics")))
 
 
+	       
 	       (:module
 		"descriptives"
 		:pathname "src/describe/"
