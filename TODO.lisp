@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-08 08:25:03 tony>
+;;; Time-stamp: <2009-01-08 21:26:20 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -55,7 +55,14 @@
   ;; need to make vectors and matrices from the lists...
 
   (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion) :print nil)) ;;Good
+			   (list->vector-like absorbtion) :print nil))
+			   ;;Good
+  (send m :print)
+  (send m :own-slots)
+  (send m :own-methods)
+  ;; (lsos::ls-objects-methods m)
+  (send m :show)
+  
   (def m (regression-model (list->vector-like iron)
 			   (list->vector-like absorbtion)))
 
