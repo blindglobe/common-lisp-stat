@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-08 21:26:20 tony>
+;;; Time-stamp: <2009-01-09 11:55:10 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -372,4 +372,100 @@
 
 
 
+  )
+
+
+
+
+
+#+nil
+(progn  ;;; QR factorization
+  ;; Need to incorporate the xGEQRF routines, to support linear
+  ;; regression work.   
+
+  ;; Some issues exist in the LAPACK vs. LINPACK variants, hence R
+  ;; uses LINPACK primarily, rather than LAPACK.  See comments in R
+  ;; source for issues.  
+  
+  ;; LAPACK suggests to use the xGELSY driver (GE general matrix, LS
+  ;; least squares, need to lookup Y intent (used to be an X alg, see
+  ;; release notes).
+
+  ;; Goal is to start from X, Y and then realize that if
+  ;; Y = X \beta, then,   i.e. 8x1 = 8xp px1  + 8x1
+  ;;      XtX \hat\beta = Xt Y
+  ;; so that we can solve the equation  W \beta = Z   where W and Z
+  ;; are known, to estimate \beta.
+  (defparameter *xv*
+    (make-vector
+     8
+     :initial-contents '((1d0 3d0 2d0 4d0 3d0 5d0 4d0 6d0))))
+
+  (defparameter *xv+1*
+    (make-matrix
+     8 2
+     :initial-contents '((1d0 1d0)
+			 (1d0 3d0)
+			 (1d0 2d0)
+			 (1d0 4d0)
+			 (1d0 3d0)
+			 (1d0 5d0)
+			 (1d0 4d0)
+			 (1d0 6d0))))
+
+  (defparameter *xm*
+    (make-matrix
+     2 8
+     :initial-contents '((1d0 3d0 2d0 4d0 3d0 5d0 4d0 6d0)
+			 (1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
+
+  (defparameter *y*
+    (make-vector
+     8
+     :initial-contents '((1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
+
+  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  (defparameter *xtx* (m* *xv* (transpose *xv*)))
+  (defparameter *xty* (m* *xv* (transpose  *y*)))
+  (defparameter *rcond* 1)
+  (defparameter *betahat*  (gelsy *xtx* *xty* *rcond*))
+  *betahat*
+
+#|
+(#<LA-SIMPLE-VECTOR-DOUBLE (1 x 1)
+ 1.293103448275862>
+ 1)
+
+## Test case in R:
+x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
+y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+lm (y ~ x  -1)
+## => 
+Call:
+lm(formula = y ~ x - 1)
+
+Coefficients:
+    x  
+1.293  
+|#
+
+
+  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  (defparameter *xtx* (m* *xv+1* (transpose *xv+1*)))
+  (defparameter *xty* (m* *xv+1* (transpose  *y*)))
+  (defparameter *rcond* 1)
+  (defparameter *betahat*  (gelsy *xtx* *xty* *rcond*))
+  *betahat*
+
+
+
+  ;; which suggests one might do (modulo ensuring correct orientations)
+  (defun lm (x y)
+    (let ((betahat (gelsy (m* x (transpose x))
+			  (m* x (transpose y)))))
+      
+      (values betahat (sebetahat betahat x y))))
+  ;; to get a results list containing betahat and SEs
+
+  (values-list '(1 3 4))
   )
