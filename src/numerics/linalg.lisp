@@ -374,7 +374,7 @@ is true."
       result)))
 
 ;;;
-;;; SWEEP Operator: FIXME: use matlisp
+;;; SWEEP Operator:
 ;;;
 
 (defun make-sweep-front (x y w n p mode has_w x_mean result)
@@ -484,7 +484,7 @@ is true."
       (incf val dv))
     (setf (aref result_data (+ (* (+ p 1) (+ p 2)) (+ p 1))) val)))
 
-;;; FIXME: use matlisp
+;;; FIXME: (?)
 (defun sweep-in-place-front (a rows cols mode k tol)
   "Sweep algorithm for linear regression."
   (declare (long-float tol))
@@ -538,7 +538,7 @@ is true."
       1)
      (t 0))))
 
-;; FIXME: use matlisp
+;; FIXME: (?)
 (defun make-sweep-matrix (x y &optional w)
   "Args: (x y &optional weights)
  X is matrix-like, Y and WEIGHTS are vector-like. Returns the sweep matrix of the
@@ -610,23 +610,18 @@ corresponding element of TOLERANCES."
 
 
 
-
+;; This is a WEIRD non-common-lisp-ism.  Should replace by REDUCE
+;; which does this in far more generality!!
 (defun accumulate (f s)
-"Args: (f s)
-Accumulates elements of sequence S using binary function F.
-(accumulate #'+ x) returns the cumulative sum of x."
-  (let* ((result (list (elt s 0)))
-         (tail result))
-    (flet ((acc (dummy x)
-                (rplacd tail (list (funcall f (first tail) x)))
-                (setf tail (cdr tail))))
-      (reduce #'acc s))
-    (if (vectorp s) (coerce result 'vector) result)))
+  "Args: (f s)
+ Accumulates elements of sequence S using binary function F.
+ (accumulate #'+ x) returns the cumulative sum of x."
+  (reduce #'f s))
 
 (defun cumsum (x)
   "Args: (x)
 Returns the cumulative sum of X."
-  (accumulate #'+ x))
+  (reduce #'+ x))
 
 (defun combine (&rest args) 
   "Args (&rest args) 
