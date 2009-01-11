@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-03 02:07:22 tony>
+;;; Time-stamp: <2009-01-09 12:06:16 tony>
 ;;; Creation:   <2008-10-03 02:07:10 tony>
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
@@ -277,3 +277,83 @@ Returns a plot object."
 	 x-values low x-values high)
     (send p :adjust-to-data)
     p))
+
+
+;;;;; More mischief from a different time
+
+
+;; regression-model is the old API, but regression as a generic will
+;; be the new API.  We need to distinguish between APIs which enable
+;; the user to do clear activities, and APIs which enable developers
+;; to do clear extensions and development, and underlying
+;; infrastructure to keep everything straight and enabled.
+
+;; There are conflicting theories for how to structure the
+;; specification of mathematical models, along with the statistical
+;; inference, along with the data which is instantiating the model.
+;; 
+;; i.e.:  mathematical model for the relationships between components,
+;; between a component and a summarizing parameter, and between
+;; parameters.
+;; 
+;; statistical inference describes the general approach for
+;; aggregating into a decision and has impliciations for the scale up
+;; from the model on a single instance to the generalization.
+;;
+;; The data represents the particular substantive context that is
+;; driving the model/inference combination, and about which we hope to
+;; generate knowledge.
+;; 
+;; numerical analysis selects appropriate algorithms/implementations
+;; for combining the above 3.  
+;; 
+;; the end result is input on the decision being made (which could be
+;; specific (decision analysis/testing), risk-analysis (interval
+;; estimation) , most likely/appropriate selection (point estimation)
+;; 
+
+#|
+(defclass model ()
+  ((type structure)))
+
+(defgeneric regression ;; assumes x/y from lisp-matrix -- start of a set of generics.
+    (model dataset)
+  "Args: (x y &key (intercept T) (print T) (weights nil)
+          included predictor-names response-name case-labels)
+X           - list of independent variables or X matrix
+Y           - dependent variable.
+INTERCEPT   - T to include (default), NIL for no intercept
+PRINT       - if not NIL print summary information
+WEIGHTS     - if supplied should be the same length as Y; error
+              variances are  
+              assumed to be inversely proportional to WEIGHTS
+PREDICTOR-NAMES, RESPONSE-NAME, CASE-LABELS
+            - sequences of strings or symbols.
+INCLUDED    - if supplied should be the same length as Y, with
+ 	      elements nil to skip a in computing estimates (but not
+              in residual analysis).
+Returns a regression model object. To examine the model further assign the
+result to a variable and send it messages.
+Example (data are in file absorbtion.lsp in the sample data directory): 
+  (def m (regression-model (list iron aluminum) absorbtion))
+  (send m :help) (send m :plot-residuals)"
+  (let ((m (send regression-model-proto :new)))
+    (format t "~%")
+    (send m :doc doc)
+    (send m :x x)
+    (send m :y y)
+    (send m :intercept intercept)
+    (send m :weights weights)
+    (send m :included included)
+    (send m :predictor-names predictor-names)
+    (send m :response-name response-name)
+    (send m :case-labels case-labels)
+    (if debug
+	(progn
+	  (format t "~%")
+	  (format t "~S~%" (send m :doc))
+	  (format t "X: ~S~%" (send m :x))
+	  (format t "Y: ~S~%" (send m :y))))
+    (if print (send m :display))
+    m))
+|#
