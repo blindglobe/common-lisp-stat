@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-09 11:55:10 tony>
+;;; Time-stamp: <2009-01-11 17:10:57 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -23,10 +23,10 @@
 
 (in-package :lisp-stat-unittests)
 
+;; tests = 54, failures = 7, errors = 3
+
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
-
-;; tests = 54, failures = 7, errors = 3
 
 (in-package :ls-user)
 
@@ -60,7 +60,7 @@
   (send m :print)
   (send m :own-slots)
   (send m :own-methods)
-  ;; (lsos::ls-objects-methods m)
+  ;; (lsos::ls-objects-methods m) ; bogus?
   (send m :show)
   
   (def m (regression-model (list->vector-like iron)
@@ -68,29 +68,122 @@
 
   (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
 			   (list->vector-like  absorbtion) :print nil))
-  
+
+
+  (documentation 'make-matrix 'function)
+
+  ;; Making data-frames (i.e. cases (rows) by variables (columns))
+  ;; takes a bit of getting used to.  For this, it is important to
+  ;; realize that we can do the following:
+  ;; #1 - consider the possibility of having a row, and transposing
+  ;; it, so the list-of-lists is:  ((1 2 3 4 5))     (1 row, 5 columns)
+  ;; #2 - naturally list-of-lists: ((1)(2)(3)(4)(5)) (5 rows, 1 column)
   (defparameter *indep-vars-1-matrix*
-    (make-matrix 1 (length iron)
+    (transpose  (make-matrix 1 (length iron)
 		 :initial-contents
 		 (list (mapcar #'(lambda (x) (coerce x 'double-float))
 			       iron))))
+    "test param")
+
+  (documentation '*indep-vars-1-matrix* 'variable)
   ;; *indep-vars-1-matrix*
-  
-  (defparameter *indep-vars-2-matrix*
-    (make-matrix 2 (length iron)
+
+  ;; or directly:
+  (defparameter *indep-vars-1a-matrix*
+    (make-matrix (length iron)  1 
 		 :initial-contents
-		 (list
-		  (mapcar #'(lambda (x) (coerce x 'double-float))
-			  iron)
-		  (mapcar #'(lambda (x) (coerce x 'double-float))
-			  aluminum))))
+		 (mapcar #'(lambda (x) (list  (coerce x 'double-float)))
+			       iron)))
+  ;; *indep-vars-1a-matrix*
+
+  ;; and mathematically, they seem equal:
+  (m= *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => T
+  (eql *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => NIL
+  (eq *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => NIL
+
+  (print *indep-vars-1-matrix*)
+  (print *indep-vars-1a-matrix*)
+
+  ;; the weird way  
+  (defparameter *indep-vars-2-matrix*
+    (transpose (make-matrix  2 (length iron)
+			     :initial-contents
+			     (list
+			      (mapcar #'(lambda (x) (coerce x 'double-float))
+				      iron)
+			      (mapcar #'(lambda (x) (coerce x 'double-float))
+				      aluminum)))))
   ;; *indep-vars-2-matrix*
   
+  ;; the "right"? way  
+  (defparameter *indep-vars-2-matrix*
+    (make-matrix (length iron) 2
+		 :initial-contents
+		 (mapcar #'(lambda (x y) 
+			     (list (coerce x 'double-float)
+				   (coerce y 'double-float)))
+			 iron aluminum)))
+  ;; *indep-vars-2-matrix*
 
-  ;; FAILS due to coercion issues; it just isn't lispy, it's R'y.
-  ;; (defparameter *dep-var* (make-vector (length absorbtion)
-  ;; 				     :initial-contents (list absorbtion)))
-  ;; BUT this should be the right type.
+  (defun lists-of-same-size (&rest list-of-list-names)
+    "Check to see if the lengths of the lists are equal, to justify
+further processing and initial conditions."
+    (if (< 0  (reduce #'(lambda (x y) (if  (= x y) y -1))
+		(mapcar #'length list-of-list-names)))
+	T nil))
+    
+
+  ;; (and T T nil T)
+  ;; (and T T T)
+  ;; (defparameter *x1* (list 1 2 3))
+  ;; (defparameter *x2* (list 1 2 3))
+  ;; (defparameter *x3* (list 1 2 3 4))
+  ;; (defparameter *x4* (list 1 2 3))
+#|
+  (reduce #'(lambda (x y)
+	      (if (= x y) y -1))
+	  (mapcar #'length (list *x1* *x2* *x3*)))
+  (reduce #'(lambda (x y)
+	      (if (= x y) y -1))  (list 2 3 2))
+|#
+  ;; (lists-of-same-size *x1* *x2* *x4*) ; => T
+  ;; (lists-of-same-size *x1* *x3* *x4*) ; => F
+  ;; (lists-of-same-size *x1* *x2* *x3*) ; => F
+  ;; (lists-of-same-size *x3* *x1* *x3*) ; => F
+
+
+
+  (defmacro make-data-set-from-lists (datasetname
+				      &optional (force-overwrite nil)
+				      &rest lists-of-data-lists)
+    "Create a cases-by-variables data frame consisting of numeric data."
+    (if (or (not (boundp datasetname))
+	    force-overwrite)
+	(if (lists-of-same-size lists-of-data-lists)
+	    `(defparameter ,datasetname
+	       (make-matrix (length iron) 2
+			    :initial-contents
+			    (mapcar #'(lambda (x y) 
+					(list (coerce x 'double-float)
+					      (coerce y 'double-float)))
+				    @lists-of-data-lists)))
+	    (error "make-data-set-from-lists: no combining different length lists"))
+	(error "make-data-set-from-lists: proposed name exists")))
+
+  (macroexpand (make-data-set-from-lists
+		this-data
+		:force-overwrite nil
+		aluminum iron))
+
+
+
+
+  ;; The below FAILS due to coercion issues; it just isn't lispy, it's R'y.
+#|
+  (defparameter *dep-var* (make-vector (length absorbtion)
+				       :initial-contents (list absorbtion)))
+|#
+  ;; BUT below, this should be the right type.
   (defparameter *dep-var*
     (make-vector (length absorbtion)
 		 :type :row
