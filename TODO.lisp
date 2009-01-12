@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-11 17:10:57 tony>
+;;; Time-stamp: <2009-01-12 17:41:04 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -28,52 +28,21 @@
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
 
-(in-package :ls-user)
-
-;;; FIXME: Example: currently not relevant, yet
 #|
+  ;; FIXME: Example: currently not relevant, yet
   (describe 
     (lift::run-test
       :test-case  'lisp-stat-unittests::create-proto
       :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 |#
 
-:;; FIXME: data frames and structural inheritance
-;;
-;; Serious flaw -- need to consider that we are not really well
-;; working with the data structures, in that Luke created compound as
-;; a base class, which turns out to be slightly backward if we are to
-;; maintain the numerical structures as well as computational
-;; efficiency.
+(in-package :ls-user)
 
-;; Currently, we assume that the list-of-list representation is in
-;; row-major form, i.e. that lists represent rows and not columns.
-;; The original lisp-stat had the other way around.  We could augment
-;; the top-level list with a property to check orientation
-;; (row-major/column-major), but this hasn't been done yet.
 
+:;; FIXME: data frames and structural inheritance.  See
+;; listoflist.lisp for supporting functions.
 #+nil
-(progn ;; FIXME: Regression modeling
-
-  (defparameter m nil
-    "holding variable.")
-  ;; need to make vectors and matrices from the lists...
-
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion) :print nil))
-			   ;;Good
-  (send m :print)
-  (send m :own-slots)
-  (send m :own-methods)
-  ;; (lsos::ls-objects-methods m) ; bogus?
-  (send m :show)
-  
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion)))
-
-  (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
-			   (list->vector-like  absorbtion) :print nil))
-
+(progn
 
   (documentation 'make-matrix 'function)
 
@@ -83,12 +52,14 @@
   ;; #1 - consider the possibility of having a row, and transposing
   ;; it, so the list-of-lists is:  ((1 2 3 4 5))     (1 row, 5 columns)
   ;; #2 - naturally list-of-lists: ((1)(2)(3)(4)(5)) (5 rows, 1 column)
+  ;; see src/data/listoflist.lisp for code to process this particular
+  ;; data structure.
   (defparameter *indep-vars-1-matrix*
     (transpose  (make-matrix 1 (length iron)
 		 :initial-contents
 		 (list (mapcar #'(lambda (x) (coerce x 'double-float))
 			       iron))))
-    "test param")
+    "creating iron into double float, straightforward")
 
   (documentation '*indep-vars-1-matrix* 'variable)
   ;; *indep-vars-1-matrix*
@@ -103,12 +74,19 @@
 
   ;; and mathematically, they seem equal:
   (m= *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => T
+  ;; but of course not completely... 
   (eql *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => NIL
   (eq *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => NIL
 
+  ;; and verify...
   (print *indep-vars-1-matrix*)
   (print *indep-vars-1a-matrix*)
 
+  (documentation 'lisp-matrix:bind2 'function) ; by which we mean:
+  (documentation 'bind2 'function)
+  (bind2 *indep-vars-1-matrix* *indep-vars-1a-matrix* :by :column) ; 2 col
+  (bind2 *indep-vars-1-matrix* *indep-vars-1a-matrix* :by :row) ; 1 long col
+  
   ;; the weird way  
   (defparameter *indep-vars-2-matrix*
     (transpose (make-matrix  2 (length iron)
@@ -129,69 +107,7 @@
 				   (coerce y 'double-float)))
 			 iron aluminum)))
   ;; *indep-vars-2-matrix*
-
-  (defun lists-of-same-size (&rest list-of-list-names)
-    "Check to see if the lengths of the lists are equal, to justify
-further processing and initial conditions."
-    (if (< 0  (reduce #'(lambda (x y) (if  (= x y) y -1))
-		(mapcar #'length list-of-list-names)))
-	T nil))
     
-
-  ;; (and T T nil T)
-  ;; (and T T T)
-  ;; (defparameter *x1* (list 1 2 3))
-  ;; (defparameter *x2* (list 1 2 3))
-  ;; (defparameter *x3* (list 1 2 3 4))
-  ;; (defparameter *x4* (list 1 2 3))
-#|
-  (reduce #'(lambda (x y)
-	      (if (= x y) y -1))
-	  (mapcar #'length (list *x1* *x2* *x3*)))
-  (reduce #'(lambda (x y)
-	      (if (= x y) y -1))  (list 2 3 2))
-|#
-  ;; (lists-of-same-size *x1* *x2* *x4*) ; => T
-  ;; (lists-of-same-size *x1* *x3* *x4*) ; => F
-  ;; (lists-of-same-size *x1* *x2* *x3*) ; => F
-  ;; (lists-of-same-size *x3* *x1* *x3*) ; => F
-
-
-
-  (defmacro make-data-set-from-lists (datasetname
-				      &optional (force-overwrite nil)
-				      &rest lists-of-data-lists)
-    "Create a cases-by-variables data frame consisting of numeric data."
-    (if (or (not (boundp datasetname))
-	    force-overwrite)
-	(if (lists-of-same-size lists-of-data-lists)
-	    `(defparameter ,datasetname
-	       (make-matrix (length iron) 2
-			    :initial-contents
-			    (mapcar #'(lambda (x y) 
-					(list (coerce x 'double-float)
-					      (coerce y 'double-float)))
-				    @lists-of-data-lists)))
-	    (error "make-data-set-from-lists: no combining different length lists"))
-	(error "make-data-set-from-lists: proposed name exists")))
-
-  (macroexpand (make-data-set-from-lists
-		this-data
-		:force-overwrite nil
-		aluminum iron))
-
-
-  (defun transpose-listoflists (listoflists)
-    "This function does the moral-equivalent of a matrix transpose on
-    a list-of-lists data structure"
-    (apply #'mapcar #'list listoflists))
-
-  ;; (defparameter LOL-2by3 (list (list 1 2) (list 3 4) (list 5 6)))
-  ;; (values-list LOL-2by3)
-  ;; (apply #'mapcar #'list LOL-2by3)
-  ;; (transpose-listoflists (transpose-listoflists LOL-2by3))
-  ;; => (list (list 1 3 5) (list 2 4 6))
-  ;; (mapcar #'list LOL-2by3)
 
   ;; The below FAILS due to coercion issues; it just isn't lispy, it's R'y.
 #|
@@ -233,9 +149,38 @@ further processing and initial conditions."
 
   ;; the following is a general list-conversion coercion approach -- is
   ;; there a more efficient way?
+  (coerce 1 'real)
   (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
 
-  (coerce 1 'real)
+  (princ "Data Set up"))
+
+
+
+
+#+nil
+(progn ;; FIXME: Regression modeling
+
+  ;; data setup in previous FIXME
+  (defparameter m nil
+    "holding variable.")
+  ;; need to make vectors and matrices from the lists...
+
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion) :print nil))
+			   ;;Good
+  (send m :print)
+  (send m :own-slots)
+  (send m :own-methods)
+  ;; (lsos::ls-objects-methods m) ; bogus?
+  (send m :show)
+  
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion)))
+
+  (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
+			   (list->vector-like  absorbtion) :print nil))
+
+
 
   (send m :compute)
   (send m :sweep-matrix)
@@ -258,7 +203,9 @@ further processing and initial conditions."
   diabetes )
 
 #+nil
-(progn ;; FIXME: Data.Frames probably deserve to be related to lists --
+(progn 
+
+  ;; FIXME: Data.Frames probably deserve to be related to lists --
   ;; either lists of cases, or lists of variables.  We probably do not
   ;; want to mix them, but want to be able to convert between such
   ;; structures.
@@ -487,7 +434,10 @@ further processing and initial conditions."
 
 
 #+nil
-(progn  ;;; QR factorization
+(progn  
+  ;; FIXME: Numerical linear algebra, least squares, and QR
+  ;; factorization
+
   ;; Need to incorporate the xGEQRF routines, to support linear
   ;; regression work.   
 
