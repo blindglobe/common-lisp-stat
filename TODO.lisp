@@ -181,7 +181,17 @@ further processing and initial conditions."
 		aluminum iron))
 
 
+  (defun transpose-listoflists (listoflists)
+    "This function does the moral-equivalent of a matrix transpose on
+    a list-of-lists data structure"
+    (apply #'mapcar #'list listoflists))
 
+  ;; (defparameter LOL-2by3 (list (list 1 2) (list 3 4) (list 5 6)))
+  ;; (values-list LOL-2by3)
+  ;; (apply #'mapcar #'list LOL-2by3)
+  ;; (transpose-listoflists (transpose-listoflists LOL-2by3))
+  ;; => (list (list 1 3 5) (list 2 4 6))
+  ;; (mapcar #'list LOL-2by3)
 
   ;; The below FAILS due to coercion issues; it just isn't lispy, it's R'y.
 #|
