@@ -46,6 +46,11 @@
 ;; maintain the numerical structures as well as computational
 ;; efficiency.
 
+;; Currently, we assume that the list-of-list representation is in
+;; row-major form, i.e. that lists represent rows and not columns.
+;; The original lisp-stat had the other way around.  We could augment
+;; the top-level list with a property to check orientation
+;; (row-major/column-major), but this hasn't been done yet.
 
 #+nil
 (progn ;; FIXME: Regression modeling
