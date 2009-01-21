@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-12 17:41:04 tony>
+;;; Time-stamp: <2009-01-20 08:19:58 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -39,12 +39,7 @@
 (in-package :ls-user)
 
 
-:;; FIXME: data frames and structural inheritance.  See
-;; listoflist.lisp for supporting functions.
-#+nil
-(progn
-
-  (documentation 'make-matrix 'function)
+(progn ;; Data setup
 
   ;; Making data-frames (i.e. cases (rows) by variables (columns))
   ;; takes a bit of getting used to.  For this, it is important to
@@ -139,9 +134,6 @@
   (typep *indep-vars-2-matrix* 'matrix-like) ; => T
   (typep *indep-vars-2-matrix* 'vector-like) ; => F
 
-  (def m1 (regression-model-new *indep-vars-1-matrix* *dep-var* ))
-  (def m2 (regression-model-new *indep-vars-2-matrix* *dep-var* ))
-  
   iron
   ;; following fails, need to ensure that we work on list elts, not just
   ;; elts within a list:
@@ -157,6 +149,43 @@
 
 
 
+
+
+#+nil
+(progn
+  ;; REVIEW: general Lisp use guidance
+
+  (documentation 'make-matrix 'function)
+  (fdefinition 'make-matrix)
+
+#| Examples from CLHS, a bit of guidance.
+
+
+
+  ;; This function assumes its callers have checked the types of the
+  ;; arguments, and authorizes the compiler to build in that assumption.
+  (defun discriminant (a b c)
+   (declare (number a b c))
+   "Compute the discriminant for a quadratic equation."
+   (- (* b b) (* 4 a c))) =>  DISCRIMINANT
+  (discriminant 1 2/3 -2) =>  76/9
+
+  ;; This function assumes its callers have not checked the types of the
+  ;; arguments, and performs explicit type checks before making any assumptions. 
+ (defun careful-discriminant (a b c)
+   "Compute the discriminant for a quadratic equation."
+   (check-type a number)
+   (check-type b number)
+   (check-type c number)
+   (locally (declare (number a b c))
+     (- (* b b) (* 4 a c)))) =>  CAREFUL-DISCRIMINANT
+ (careful-discriminant 1 2/3 -2) =>  76/9
+
+
+|#
+  )
+
+
 #+nil
 (progn ;; FIXME: Regression modeling
 
@@ -164,6 +193,9 @@
   (defparameter m nil
     "holding variable.")
   ;; need to make vectors and matrices from the lists...
+
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion)))
 
   (def m (regression-model (list->vector-like iron)
 			   (list->vector-like absorbtion) :print nil))
@@ -179,7 +211,6 @@
 
   (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
 			   (list->vector-like  absorbtion) :print nil))
-
 
 
   (send m :compute)
@@ -229,7 +260,7 @@
   (elt (elt (elt *my-case-data* 0) 1) 2)
   (elt (elt *my-case-data* 0) 3))
 
-#+nil
+#+nil)
 (progn ;; FIXME: read data from CSV file.  To do.
 
   ;; challenge is to ensure that we get mixed arrays when we want them,
@@ -329,6 +360,13 @@
      (def-single-function axpb2)
      axpb2)
    1d0 2d0)
+
+  ;; Linear least squares
+
+  (gsll:gsl-lookup "gsl_linalg_LU_decomp") ; => gsll:lu-decomposition
+  (gsll:gsl-lookup "gsl_linalg_LU_solve") ; => gsll:lu-solve
+
+  
 
 
   )
@@ -482,37 +520,45 @@
      8
      :initial-contents '((1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
 
-  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  ;; so something like (NOTE: matrices are transposed to begin with,
+  ;; hence the incongruety)
   (defparameter *xtx* (m* *xv* (transpose *xv*)))
   (defparameter *xty* (m* *xv* (transpose  *y*)))
-  (defparameter *rcond* 1)
+  (defparameter *rcond* 1d0) ; condition number bound -- examples
+			   ; suggest should be zero on input? 
+
   (defparameter *betahat*  (gelsy *xtx* *xty* *rcond*))
   *betahat*
 
 #|
-(#<LA-SIMPLE-VECTOR-DOUBLE (1 x 1)
- 1.293103448275862>
- 1)
+  (#<LA-SIMPLE-VECTOR-DOUBLE (1 x 1)
+     1.293103448275862>
+     1)
 
-## Test case in R:
-x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
-y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
-lm (y ~ x  -1)
-## => 
-Call:
-lm(formula = y ~ x - 1)
+   ## Test case in R:
+   x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
+   y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+   lm (y ~ x  -1)
+   ## => 
+   Call:
+   lm(formula = y ~ x - 1)
 
-Coefficients:
-    x  
-1.293  
+   Coefficients:
+      x  
+   1.293  
 |#
 
 
   ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
   (defparameter *xtx* (m* *xv+1* (transpose *xv+1*)))
-  (defparameter *xty* (m* *xv+1* (transpose  *y*)))
-  (defparameter *rcond* 1)
-  (defparameter *betahat*  (gelsy *xtx* *xty* *rcond*))
+  (defparameter *xty* (m* (transpose *xv+1*) (transpose  *y*)))
+  (defparameter *rcond* 1d0)
+  (defparameter *jpvt* (make-matrix 1 8))
+  (defparameter *betahat*  (gelsy *xtx* *xty* *rcond* *jpvt*))
+  ;; Kills SBCL, with:
+  ;; * Parameter 7 to routine DGELSYSPM was incorrect
+  ;; clearly a bit of error checking needed!
+
   *betahat*
 
 
