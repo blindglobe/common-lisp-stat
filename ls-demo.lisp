@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-12-08 08:10:41 tony>
+;;; Time-stamp: <2009-02-04 17:58:19 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -622,6 +622,32 @@ my.lib
 
 (progn
   (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
+  ;; estimating a mean, simple way.
   (/ (loop for i from 0 to (- (nelts *x*) 1)
 	summing (vref *x* i))
-     (nelts *x*)))
+     (nelts *x*))
+
+  (defun mean (x)
+    (checktype x 'vector-like)
+    (/ (loop for i from 0 to (- (nelts *x*) 1)
+	  summing (vref *x* i))
+       (nelts *x*)))
+
+  ;; estimating variance, Moments
+  (let ((meanx (mean *x*))
+	(n (nelts *x*)))
+    (/ (loop for i from 0 to (- n  1)
+	  summing (* (- (vref *x* i) meanx)
+		     (- (vref *x* i) meanx) ))
+       n))
+
+  ;; estimating variance, Moments
+  (let ((meanx (mean *x*))
+	(nm1 (1- (nelts *x*))))
+    (/ (loop for i from 0 to nm1
+	  summing (* (- (vref *x* i) meanx)
+		     (- (vref *x* i) meanx) ))
+       nm1))
+
+ )
+
