@@ -139,6 +139,25 @@ Returns an expression that will reconstruct the regression model."
                        
 ;;; Computing and Display Methods
 
+;; [X|Y]t [X|Y]
+;; = XtX  XtY
+;;   YtX  YtY
+;; so with (= (dim X) (list n p))
+;; we end up with p x p   p x 1
+;;                1 x p   1 x 1
+;;
+;; and this can be implemented by
+#|
+  (setf XY (bind2 X Y :by :row))
+  (setf XYtXY (m* (transpose XY) XY))
+|#
+;; which is too procedural.  Sigh, I meant
+#|
+  (setf XYtXY (let ((XY (bind2 X Y :by :row)))
+                 (m*  (transpose XY) XY)))
+|#
+;; which at least looks lispy.
+
 (defmeth regression-model-proto :compute ()
 "Message args: ()
 Recomputes the estimates. For internal use by other messages"
@@ -146,19 +165,20 @@ Recomputes the estimates. For internal use by other messages"
          (x (send self :x))
          (y (send self :y))
          (intercept (send self :intercept)) ;; T/nil
-         (weights (send self :weights)) ;; vector-like
+         (weights (send self :weights)) ;; vector-like or nil
          (w (if weights (* included weights) included))
+	 (send :beta-coefficents (lm x y))
+	 (send :xtxinv (XtXinv x))
          (m (make-sweep-matrix x y w)) ;;; ERROR HERE of course!
          (n (matrix-dimension x 1))
-         (p (- (matrix-dimension m 0) 1)) ;; remove intercept from # params -- right?
-         (tss (mref m p p))
+         (p (if intercept
+		(1- (matrix-dimension m 0))
+		(matrix-dimension m 0))) ;; remove intercept from # params -- right?
+         (tss ;; recompute, since we aren't sweeping...
+	  )
          (tol (* 0.001
 		 (reduce #'* (mapcar #'standard-deviation
-				     (list-of-columns x)))))
-         (sweep-result
-          (if intercept
-              (sweep-operator m (iseq 1 n) tol)
-              (sweep-operator m (iseq 0 n) (cons 0.0 tol)))))
+				     (list-of-columns x))))))
     (format t
 	    "~%REMOVEME: regr-mdl-prto :compute~%Sweep= ~A~%x= ~A~%y= ~A~%m= ~A~%tss= ~A~%"
 	   sweep-result x y m tss)
@@ -275,8 +295,9 @@ NEW-INTERCEPT."
 With no argument returns the weight vector-like as supplied to m; NIL
 means an unweighted model. NEW-W sets the weights vector-like to NEW-W
 and recomputes the estimates."
-  (when (and set
-	     (typep new-w 'vector-like))
+  (when (and set  nil
+	     (or (= new-w nil)
+		 (typep new-w 'vector-like)))
     (setf (slot-value 'weights) new-w) 
     (send self :needs-computing t))
   (slot-value 'weights))
@@ -309,15 +330,6 @@ This is recomputed if an update is needed."
       (send self :compute))
   (slot-value 'basis))
   
-
-(defmeth regression-model-proto :sweep-matrix ()
-"Message args: ()
-
-Returns the swept sweep matrix. For internal use"
-  (if (send self :needs-computing)
-      (send self :compute))
-  (slot-value 'sweep-matrix))
-
 (defmeth regression-model-proto :included (&optional new-included)
 "Message args: (&optional new-included)
 
@@ -468,7 +480,7 @@ basis."
         (m (send self :sweep-matrix)))
     (format t "~%REMOVEME2: Coef-ests: ~% Sweep Matrix: ~A ~% array dim 1: ~A ~% Swept indices:  ~A ~% basis: ~A"
 	    m n indices (send self :basis))
-    (coerce (compound-data-seq (select m (+ 1 n) indices)) 'list))) ;; ERROR
+    (coerce (compound-data-seq (select m (1+ n) indices)) 'list))) ;; ERROR
 
 (defmeth regression-model-proto :xtxinv () 
 "Message args: ()
@@ -529,8 +541,8 @@ link-views function. Returns a plot object."
                (send self :residuals)
                :title "Residual Plot"
                :point-labels (send self :case-labels)))
-
-(defmeth regression-model-proto :plot-bayes-residuals 
+#|
+ (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)
   "Message args: (&optional x-values)
 
@@ -553,3 +565,4 @@ plots with the link-views function.  Returns a plot object."
 	 x-values low x-values high)
     (send p :adjust-to-data)
     p))
+|#

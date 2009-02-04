@@ -559,7 +559,7 @@ is true."
        (make-sweep-front x y w n p mode has-w x-mean result)
        result)))
 
- (defun sweep-in-place (a k tol)
+(defun sweep-in-place (a k tol)
   (assert (typep a 'matrix-like))
   (check-one-fixnum k)
   (check-one-real tol)
