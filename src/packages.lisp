@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-12-19 08:35:50 tony>
+;;; Time-stamp: <2009-02-04 10:19:31 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -284,12 +284,16 @@
   (:use :common-lisp
 	:lisp-matrix
 	:lisp-stat-object-system
+#|	
 	:lisp-stat-basics
 	:lisp-stat-compound-data
 	:lisp-stat-math
-	:lisp-stat-descriptive-statistics)
+	:lisp-stat-descriptive-statistics
+|#
+	)
   (:shadowing-import-from :lisp-stat-object-system
 			  slot-value call-method call-next-method)
+#|
   (:shadowing-import-from :lisp-stat-math
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -298,8 +302,11 @@
       conjugate realpart imagpart phase
       min max logand logior logxor lognot ffloor fceiling
       ftruncate fround signum cis)
-  (:export regression-model regression-model-proto x y intercept sweep-matrix
-	   basis weights included total-sum-of-squares residual-sum-of-squares
+|#
+  (:export regression-model regression-model-proto x y intercept
+	   ;; sweep-matrix
+	   basis weights included
+	   total-sum-of-squares residual-sum-of-squares
 	   predictor-names response-name case-labels))
 
 (defpackage :lisp-stat
