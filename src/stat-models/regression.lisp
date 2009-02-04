@@ -167,15 +167,14 @@ Recomputes the estimates. For internal use by other messages"
          (intercept (send self :intercept)) ;; T/nil
          (weights (send self :weights)) ;; vector-like or nil
          (w (if weights (* included weights) included))
-	 (send :beta-coefficents (lm x y))
-	 (send :xtxinv (XtXinv x))
+	 (beta  (send :beta-coefficents (lm x y)))
+	 (xtxinv  (send :xtxinv (XtXinv x)))
          (m (make-sweep-matrix x y w)) ;;; ERROR HERE of course!
          (n (matrix-dimension x 1))
          (p (if intercept
 		(1- (matrix-dimension m 0))
 		(matrix-dimension m 0))) ;; remove intercept from # params -- right?
-         (tss ;; recompute, since we aren't sweeping...
-	  )
+         (tss  ) ; recompute, since we aren't sweeping...
          (tol (* 0.001
 		 (reduce #'* (mapcar #'standard-deviation
 				     (list-of-columns x))))))
@@ -295,9 +294,12 @@ NEW-INTERCEPT."
 With no argument returns the weight vector-like as supplied to m; NIL
 means an unweighted model. NEW-W sets the weights vector-like to NEW-W
 and recomputes the estimates."
-  (when (and set  nil
-	     (or (= new-w nil)
-		 (typep new-w 'vector-like)))
+  (when set
+#|    ;; probably need to use "check-type" or similar?
+      (and set nil
+	   (or (= new-w nil)
+	       (typep new-w 'vector-like)))
+|#
     (setf (slot-value 'weights) new-w) 
     (send self :needs-computing t))
   (slot-value 'weights))
@@ -337,8 +339,11 @@ With no argument, NIL means a case is not used in calculating
 estimates, and non-nil means it is used.  NEW-INCLUDED is a sequence
 of length of y of nil and t to select cases.  Estimates are
 recomputed."
-  (when (and new-included 
-             (= (length new-included) (send self :num-cases)))
+  (when new-included
+#|
+    (and new-included 
+         (= (length new-included) (send self :num-cases)))
+|#
         (setf (slot-value 'included) (copy-seq new-included)) 
         (send self :needs-computing t))
   (if (slot-value 'included)
