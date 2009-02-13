@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-22 17:02:09 tony>
+;;; Time-stamp: <2009-02-13 16:07:43 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -148,19 +148,14 @@
 
 
 
-
-
-
 #+nil
 (progn
   ;; REVIEW: general Lisp use guidance
 
-  (documentation 'make-matrix 'function)
   (fdefinition 'make-matrix)
+  (documentation 'make-matrix 'function)
 
 #| Examples from CLHS, a bit of guidance.
-
-
 
   ;; This function assumes its callers have checked the types of the
   ;; arguments, and authorizes the compiler to build in that assumption.
@@ -180,8 +175,6 @@
    (locally (declare (number a b c))
      (- (* b b) (* 4 a c)))) =>  CAREFUL-DISCRIMINANT
  (careful-discriminant 1 2/3 -2) =>  76/9
-
-
 |#
   )
 
@@ -252,15 +245,15 @@
 
   (elt *my-case-data* 1)
   (elt *my-case-data* 0)
-  (elt *my-case-data* 2) ;; error
+  ;;(elt *my-case-data* 2) ;; error
   (elt (elt *my-case-data* 0) 1)
   (elt (elt *my-case-data* 0) 0)
   (elt (elt (elt *my-case-data* 0) 1) 0)
   (elt (elt (elt *my-case-data* 0) 1) 1)
-  (elt (elt (elt *my-case-data* 0) 1) 2)
-  (elt (elt *my-case-data* 0) 3))
+  (elt (elt *my-case-data* 0) 2))
 
-#+nil)
+
+
 (progn ;; FIXME: read data from CSV file.  To do.
 
   ;; challenge is to ensure that we get mixed arrays when we want them,
@@ -306,8 +299,6 @@
   (defparameter *test-string1* "1.2")
   (defparameter *test-string2* " 1.2")
   (defparameter *test-string3* " 1.2 ")
-
-  
   )
 
 
@@ -334,8 +325,7 @@
   ;; from (gsll:examples 'gsll::numerical-integration) ...
   (gsll:integration-qng gsll::one-sine 0.0d0 PI)
 
-
-  (defun-single axpb (x) (+ (* 2 x) 3)) ;; a<-2, b<-3
+  (gsll:defun-single axpb (x) (+ (* 2 x) 3)) ;; a<-2, b<-3
   (gsll:integration-qng axpb 1d0 2d0)
 
   (let ((a 2)
@@ -343,21 +333,19 @@
     (defun-single axpb2 (x) (+ (* a x) b)))
   (gsll:integration-qng axpb2 1d0 2d0)
 
-
-#| BAD
-  (gsll:integration-qng 
-   (let ((a 2)
-	 (b 3))
-     (defun-single axpb2 (x) (+ (* a x) b)))
-   1d0 2d0)
-|#
+  ;;   BAD
+  ;;   (gsll:integration-qng 
+  ;;    (let ((a 2)
+  ;; 	 (b 3))
+  ;;      (defun-single axpb2 (x) (+ (* a x) b)))
+  ;;    1d0 2d0)
 
   ;; right, but weird expansion...
-  (gsll:integration-qng 
+  (gsll:integration-qng
    (let ((a 2)
 	 (b 3))
      (defun axpb2 (x) (+ (* a x) b))
-     (def-single-function axpb2)
+     (gsll:def-single-function axpb2)
      axpb2)
    1d0 2d0)
 
@@ -365,10 +353,6 @@
 
   (gsll:gsl-lookup "gsl_linalg_LU_decomp") ; => gsll:lu-decomposition
   (gsll:gsl-lookup "gsl_linalg_LU_solve") ; => gsll:lu-solve
-
-  
-
-
   )
 
 
@@ -462,3 +446,185 @@
 		:parametric
 		:partially-parametric))
     "start of ontology"))
+
+
+;;;; LM
+
+(progn 
+
+  (defparameter *y*
+    (make-vector
+     8
+     :type :row
+     :initial-contents '((1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
+
+
+  (defparameter *xv+1*
+    (make-matrix
+     8 2
+     :initial-contents '((1d0 1d0)
+			 (1d0 3d0)
+			 (1d0 2d0)
+			 (1d0 4d0)
+			 (1d0 3d0)
+			 (1d0 5d0)
+			 (1d0 4d0)
+			 (1d0 6d0))))
+
+  (defparameter *xv+1a*
+    (make-matrix
+     8 2
+     :initial-contents #2A((1d0 1d0)
+			   (1d0 3d0)
+			   (1d0 2d0)
+			   (1d0 4d0)
+			   (1d0 3d0)
+			   (1d0 5d0)
+			   (1d0 4d0)
+			   (1d0 6d0))))
+
+  (defparameter *xv+1b*
+    (bind2
+     (ones 8 1)
+     (make-matrix
+      8 1
+      :initial-contents '((1d0)
+			  (3d0)
+			  (2d0)
+			  (4d0)
+			  (3d0)
+			  (5d0)
+			  (4d0)
+			  (6d0)))
+     :by :column))
+
+  (m= *xv+1a* *xv+1b*) ; => T
+
+  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  (defparameter *xtx-2* (m* (transpose *xv+1*) *xv+1*))
+  ;; #<LA-SIMPLE-MATRIX-DOUBLE  2 x 2
+  ;;  8.0d0 28.0d0
+  ;;  28.0d0 116.0d0>
+
+  (defparameter *xty-2* (m* (transpose *xv+1*)  (transpose *y*)))
+  ;; #<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+  ;;  36.0d0
+  ;;  150.0d0>
+
+  (defparameter *rcond-2* 0.000001)
+  (defparameter *betahat-2*  (gelsy *xtx-2* *xty-2* *rcond-2*))
+  ;; *xtx-2* => "details of complete orthogonal factorization"
+  ;; according to man page:
+  ;; #<LA-SIMPLE-MATRIX-DOUBLE  2 x 2
+  ;;  -119.33147112141039d0 -29.095426104883202d0
+  ;;  0.7873402682880205d0 -1.20672274167718d0>
+
+  ;; *xty-2* => output becomes solution:
+  ;; #<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+  ;;  -0.16666666666668312d0
+  ;;  1.333333333333337d0>
+
+  *betahat-2* ; which matches R, see below
+
+  (documentation 'gelsy 'function)
+
+
+;;   (#<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+;;    -0.16666666666668312 1.333333333333337>
+;;    2)
+
+;;   ## Test case in R:
+;;   x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
+;;   y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+;;   lm(y~x)
+;;   ## => Call:  lm(formula = y ~ x)
+
+;;   Coefficients:  (Intercept)            x  
+;;                      -0.1667       1.3333  
+
+;;   summary(lm(y~x))
+;;   ## =>
+
+;;   Call:
+;;   lm(formula = y ~ x)
+
+;;   Residuals:
+;;          Min         1Q     Median         3Q        Max 
+;;   -1.833e+00 -6.667e-01 -3.886e-16  6.667e-01  1.833e+00 
+
+;;   Coefficients:
+;;               Estimate Std. Error t value Pr(>|t|)   
+;;   (Intercept)  -0.1667     1.1587  -0.144  0.89034   
+;;   x             1.3333     0.3043   4.382  0.00466 **
+;;   ---
+;;   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+;;   Residual standard error: 1.291 on 6 degrees of freedom
+;;   Multiple R-squared: 0.7619,	Adjusted R-squared: 0.7222 
+;;   F-statistic:  19.2 on 1 and 6 DF,  p-value: 0.004659 
+
+
+
+  ;; which suggests one might do (modulo ensuring correct
+  ;; orientations).  When this is finalized, it should migrate to
+  ;; CLS.
+  ;;
+  ;; might add args: (method 'gelsy), or do we want to put a more
+  ;; general front end, linear-least-square, across the range of
+  ;; LAPACK solvers? 
+  (defun lm (x y &optional rcond)
+    "fit the linear model:
+           y = x \beta + e 
+
+and estimate \beta.  X,Y should be in cases-by-vars form, i.e. X
+should be n x p, Y should be n x 1.  Returns estimates, n and p.
+Probably should return a form providing the call, as well.
+
+R's lm object returns: coefficients, residuals, effects, rank, fitted,
+qr-results for numerical considerations, DF_resid.  Need to
+encapsulate into a class or struct.
+"
+    (check-type x matrix-like)
+    (check-type y vector-like) ; vector-like might be too strict?
+					; maybe matrix-like?
+    (assert (= (nrows y) (nrows x)) ; same number of observations/cases
+	    (x y) "Can not multiply x:~S by y:~S" x y)
+    (let ((betahat (gelsy (m* (transpose x) x)
+ 		 	  (m* (transpose x) y)
+			  (if rcond rcond (* (coerce (expt 2 -52) 'double-float)
+					     (max (nrows x)
+						  (ncols y))))))
+	  (betahat1 (gelsy x
+			   y
+			   (* (coerce (expt 2 -52) 'double-float)
+					      (max (nrows x)
+						   (ncols y))))))
+      ;; need computation for SEs, 
+      (format t "")
+      (list betahat  ; LA-SIMPLE-VECTOR-DOUBLE
+	    betahat1 ; LA-SLICE-VECVIEW-DOUBLE
+	    (v- (first  betahat) (first  betahat1))
+	    ;; (sebetahat betahat x y) ; TODO: write me!
+	    (nrows x)    ; surrogate for n
+	    (ncols x)))) ; surrogate for p
+
+
+  (defparameter *n* 20) ; # rows = # obsns
+  (defparameter *p* 10) ; # cols = # vars 
+  (defparameter *x-temp*  (rand *n* *p*))
+  (defparameter *b-temp*  (rand *p* 1))
+  (defparameter *y-temp*  (m* *x-temp* *b-temp*))
+  ;; so Y=Xb + \eps
+  (defparameter *rcond* (* (coerce (expt 2 -52) 'double-float)
+		   (max (nrows *x-temp*) (ncols *y-temp*))))
+  (defparameter *orig-x* (copy *x-temp*))
+  (defparameter *orig-b* (copy *b-temp*))
+  (defparameter *orig-y* (copy *y-temp*))
+
+  (defparameter *lm-result* (lm *x-temp* *y-temp*))
+  (princ (first *lm-result*))
+  (princ (second *lm-result*))
+  (princ (third *lm-result*))
+  (v= (third *lm-result*)
+      (v- (first (first *lm-result*)) 
+	  (first  (second *lm-result*)))))
