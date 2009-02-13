@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-23 13:18:30 tony>
+;;; Time-stamp: <2009-02-06 16:06:02 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       bootstrap.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -34,19 +34,23 @@ bootstrap realizations of dataset1 and dataset2."
 
 (defmacro with-correlated-data-bootstrap ())
 
+;;; functional
+
+(defgeneric bootstrap-sample (data &optional n replace)
+  (:documentation "generate a dataset of N obs from DATA either with
+  or without replace(ment)")
+  (:default-method (data &optional n replace)))
+
 (defgeneric bootstrap (data function args)
   (:documentation  "used such as: (bootstrap dataset t-test :significance 0.5)")
   (:default-method (funcall #'function (bootstrap-sample data) (values args))))
 
 
-
 #|
-
   2 possible paradigms:
 
    (with-data-bootstrap ((a dataset1))
       (t-test a :significance 0.05))
 
    (bootstrap #'t-test a :significance 0.05)
-
 |#
