@@ -8,22 +8,6 @@
 ;;;; Copyright (c) 1991, by Luke Tierney. Permission is granted for
 ;;;; unrestricted use.
 
-;;; Package Setup
-
-(in-package :cl-user)
-
-(defpackage :lisp-stat-basics
-    (:use :common-lisp
-	  :lisp-stat-object-system
-	  :lisp-stat-types
-	  :lisp-stat-float
-	  :lisp-stat-macros
-	  :lisp-stat-compound-data)
-  (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
-  (:export permute-array sum prod count-elements mean
-	   if-else sample))
-
 (in-package :lisp-stat-basics)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -133,13 +117,15 @@ Returns a copy of the array A permuted according to the permutation P."
           (sum 0))
       (if (consp seq)
         (dolist (x seq sum)
-          (setf sum (+ sum (if (numberp x) x (sum-1 x)))))
+          (incf sum (+ sum (if (numberp x) x (sum-1 x))))) ;; was setf
         (let ((n (length seq)))
           (declare (fixnum n))
           (dotimes (i n sum)
             (declare (fixnum i))
             (let ((x (aref seq i)))
               (setf sum (+ sum (if (numberp x) x (sum-1 x)))))))))))
+
+;; incr
 
 (defun sum (&rest args)
 "Args: (&rest number-data)
@@ -200,8 +186,7 @@ Returns the number of its arguments. Vector reducing"
 
 (defun if-else (a x y)
 "Args: (first x y)
-Takes simple or compound data items FIRST, X and Y and returns result
-of elementswise selecting from X if FIRST is not NIL and from Y
-otherwise."
+Takes simple or compound data items A, X and Y and returns result
+of elementswise selection, from X if A is not NIL, otherwise from Y."
   (flet ((base-if-else (a x y) (if a x y)))
     (recursive-map-elements #'base-if-else #'if-else a x y)))
