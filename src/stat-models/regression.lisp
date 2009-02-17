@@ -51,6 +51,54 @@
   "Normal Linear Regression Model")
 
 
+
+;; might add args: (method 'gelsy), or do we want to put a more
+;; general front end, linear-least-square, across the range of
+;; LAPACK solvers? 
+(defun lm (x y &optional rcond (intercept T))
+  "fit the linear model:
+           y = x \beta + e 
+
+and estimate \beta.  X,Y should be in cases-by-vars form, i.e. X
+should be n x p, Y should be n x 1.  Returns estimates, n and p.
+Probably should return a form providing the call, as well.
+
+R's lm object returns: coefficients, residuals, effects, rank, fitted,
+qr-results for numerical considerations, DF_resid.  Need to
+encapsulate into a class or struct."
+    (check-type x matrix-like)
+    (check-type y vector-like) ; vector-like might be too strict?
+					; maybe matrix-like?
+    (assert (= (nrows y) (nrows x)) ; same number of observations/cases
+	    (x y) "Can not multiply x:~S by y:~S" x y)
+    (let ((x1 (if intercept
+		  (bind2 (ones (matrix-dimension x 0) 1)
+			 x :by :column)
+		  x)))
+      (let ((betahat (gelsy (m* (transpose x1) x1)
+			    (m* (transpose x1) y)
+			    (if rcond rcond (*
+					     (coerce (expt 2 -52) 'double-float)
+					     (max (nrows x1)
+						  (ncols y))))))
+	    (betahat1 (gelsy x1
+			     y
+			     (if rcond rcond
+				  (* (coerce (expt 2 -52) 'double-float)
+				     (max (nrows x1)
+					  (ncols y)))))))
+	;; need computation for SEs, 
+	(format t "")
+	(list betahat  ; LA-SIMPLE-VECTOR-DOUBLE
+	      betahat1 ; LA-SLICE-VECVIEW-DOUBLE
+	      (xtxinv x1); (sebetahat betahat x y) ; TODO: write me!
+	      (nrows x)  ; surrogate for n
+	      (ncols x1) ; surrogate for p
+	      (v- (first betahat) (first betahat1))))))
+
+
+
+
 (defun regression-model
     (x y &key 
      (intercept T) 
@@ -167,8 +215,6 @@ Recomputes the estimates. For internal use by other messages"
          (intercept (send self :intercept)) ;; T/nil
          (weights (send self :weights)) ;; vector-like or nil
          (w (if weights (* included weights) included))
-	 (beta  (send :beta-coefficents (lm x y)))
-	 (xtxinv  (send :xtxinv (XtXinv x)))
          (m (make-sweep-matrix x y w)) ;;; ERROR HERE of course!
          (n (matrix-dimension x 1))
          (p (if intercept
@@ -181,6 +227,10 @@ Recomputes the estimates. For internal use by other messages"
     (format t
 	    "~%REMOVEME: regr-mdl-prto :compute~%Sweep= ~A~%x= ~A~%y= ~A~%m= ~A~%tss= ~A~%"
 	   sweep-result x y m tss)
+
+    (send self :beta-coefficents (lm x y))
+    (send self :xtxinv (xtxinv x)) ;; could extract from (lm ...)
+
     (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
@@ -510,7 +560,7 @@ Computes the internally studentized residuals for included cases and externally 
         (sig (send self :sigma-hat))
         (inc (send self :included)))
     (if-else inc
-             (/ res (* sig (sqrt (pmax .00001 (- 1 lev)))))
+             (/ res (* sig (sqrt (max .00001 (- 1 lev))))) ; vectorize max
              (/ res (* sig (sqrt (+ 1 lev)))))))
 
 (defmeth regression-model-proto :externally-studentized-residuals ()

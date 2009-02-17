@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-02-13 16:07:43 tony>
+;;; Time-stamp: <2009-02-16 17:33:06 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,7 +19,6 @@
 (in-package :cl-user)
 ;;(asdf:oos 'asdf:compile-op 'lispstat)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
-
 
 (in-package :lisp-stat-unittests)
 
@@ -141,9 +140,9 @@
 
   ;; the following is a general list-conversion coercion approach -- is
   ;; there a more efficient way?
-  (coerce 1 'real)
-  (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
-
+  ;;  (coerce 1 'real)
+  ;;  (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
+  
   (princ "Data Set up"))
 
 
@@ -183,12 +182,13 @@
 (progn ;; FIXME: Regression modeling
 
   ;; data setup in previous FIXME
-  (defparameter m nil
+  (defparameter  *m* nil
     "holding variable.")
   ;; need to make vectors and matrices from the lists...
 
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion)))
+  ;; BROKEN
+  (def *m* (regression-model (list->vector-like iron)
+			     (list->vector-like absorbtion)))
 
   (def m (regression-model (list->vector-like iron)
 			   (list->vector-like absorbtion) :print nil))
@@ -569,44 +569,6 @@
   ;; orientations).  When this is finalized, it should migrate to
   ;; CLS.
   ;;
-  ;; might add args: (method 'gelsy), or do we want to put a more
-  ;; general front end, linear-least-square, across the range of
-  ;; LAPACK solvers? 
-  (defun lm (x y &optional rcond)
-    "fit the linear model:
-           y = x \beta + e 
-
-and estimate \beta.  X,Y should be in cases-by-vars form, i.e. X
-should be n x p, Y should be n x 1.  Returns estimates, n and p.
-Probably should return a form providing the call, as well.
-
-R's lm object returns: coefficients, residuals, effects, rank, fitted,
-qr-results for numerical considerations, DF_resid.  Need to
-encapsulate into a class or struct.
-"
-    (check-type x matrix-like)
-    (check-type y vector-like) ; vector-like might be too strict?
-					; maybe matrix-like?
-    (assert (= (nrows y) (nrows x)) ; same number of observations/cases
-	    (x y) "Can not multiply x:~S by y:~S" x y)
-    (let ((betahat (gelsy (m* (transpose x) x)
- 		 	  (m* (transpose x) y)
-			  (if rcond rcond (* (coerce (expt 2 -52) 'double-float)
-					     (max (nrows x)
-						  (ncols y))))))
-	  (betahat1 (gelsy x
-			   y
-			   (* (coerce (expt 2 -52) 'double-float)
-					      (max (nrows x)
-						   (ncols y))))))
-      ;; need computation for SEs, 
-      (format t "")
-      (list betahat  ; LA-SIMPLE-VECTOR-DOUBLE
-	    betahat1 ; LA-SLICE-VECVIEW-DOUBLE
-	    (v- (first  betahat) (first  betahat1))
-	    ;; (sebetahat betahat x y) ; TODO: write me!
-	    (nrows x)    ; surrogate for n
-	    (ncols x)))) ; surrogate for p
 
 
   (defparameter *n* 20) ; # rows = # obsns
