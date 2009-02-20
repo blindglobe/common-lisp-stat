@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-02-16 17:33:06 tony>
+;;; Time-stamp: <2009-02-17 08:37:49 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -136,18 +136,17 @@
   iron
   ;; following fails, need to ensure that we work on list elts, not just
   ;; elts within a list:
-  ;; (coerce iron 'real) 
-
+  ;;
+  ;;     (coerce iron 'real) 
+  ;;
   ;; the following is a general list-conversion coercion approach -- is
   ;; there a more efficient way?
-  ;;  (coerce 1 'real)
-  ;;  (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
+  ;;     (coerce 1 'real)
+  ;;     (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
   
   (princ "Data Set up"))
 
 
-
-#+nil
 (progn
   ;; REVIEW: general Lisp use guidance
 

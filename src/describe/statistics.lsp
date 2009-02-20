@@ -109,6 +109,10 @@ consist of lists, vectors or matrices."
     (error "FIXME: define SD for matrix-like objects")))
 
 (defun standard-deviation-fn (x)
+  "Function front-end to generic.  Do we really need this?"
+  (standard-deviation x))
+
+(defun standard-deviation-old (x)
 "Args: (x)
 Returns the standard deviation of the elements x. Vector reducing.
 
