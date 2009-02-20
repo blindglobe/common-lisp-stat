@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-01-07 17:42:26 tony>
+;;; Time-stamp: <2009-02-19 17:53:25 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -50,7 +50,9 @@
   (ls-defdir *lispstat-external-dir* "external/")
 )
 
-(pushnew *lispstat-asdf-dir* asdf:*central-registry*)
+;;(pushnew *lispstat-asdf-dir* asdf:*central-registry*)
+
+
 ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
 
 ;;; back to our regularly scheduled work...
