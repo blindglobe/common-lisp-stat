@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-02-13 17:18:50 tony>
+;;; Time-stamp: <2009-02-17 08:22:21 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -276,7 +276,8 @@
       conjugate realpart imagpart phase
       min max logand logior logxor lognot ffloor fceiling
       ftruncate fround signum cis)
-   (:export standard-deviation quantile median interquartile-range
+   (:export standard-deviation 
+	    quantile median interquartile-range
 	    fivnum sample))
 
 
@@ -286,9 +287,9 @@
 	:lisp-stat-object-system
 	:lisp-stat-basics
 	:lisp-stat-compound-data
+	:lisp-stat-descriptive-statistics
 #|	
 	:lisp-stat-math
-	:lisp-stat-descriptive-statistics
 |#
 	)
   (:shadowing-import-from :lisp-stat-object-system
