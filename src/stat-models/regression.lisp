@@ -635,3 +635,45 @@ plots with the link-views function.  Returns a plot object."
     (send p :adjust-to-data)
     p))
 |#
+
+;;;; Other code
+
+#|
+  (defun print-lm (lm-obj)
+    "transcribed from R"
+    (p (rank lm-obj)
+    (when (= p 0) 
+      ;; EVIL LOGIC!  Just to store for now.
+      (let ()
+	    (n (length (residuals lm-obj)))
+	    (w (if (weights lm-obj)
+		   (weights lm-obj)
+		   (ones n 1)))
+	    (r  (if (weights lm-obj)
+		      (residuals lm-obj)
+		      (v.* (residuals lm-obj)
+			   (mapcar #'sqrt (weights lm-obj)))))
+	    (rss (sum (v.* r r)))
+	    (resvar (/ rss (- n p)))
+	    ;; then answer, to be encapsulated in a struct/class
+	    ;; instance, 
+	    (aliased (is.na (coef lm-obj)))
+	    (residuals r)
+	    (df (list 0 n (length aliased)))
+	    (coefficients (list 'NA 0d0 4d0))o
+	    (sigma (sqrt resvar))
+	    (r.squared 0d0)
+	    (adj.r.squared 0d0)))
+      )
+    ;;otherwise...
+    (when (not (= p 0))
+      (let ((n (nrows (qr lm-obj)))
+	    (rdf  (- n p))
+	    ))))
+
+  (lm *xv+1* *y2*)
+  (lm (transpose *xv*) *y2*)
+
+  (princ "Linear Models Code setup")
+
+|#
