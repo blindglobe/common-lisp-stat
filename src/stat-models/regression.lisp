@@ -232,31 +232,26 @@ Recomputes the estimates. For internal use by other messages"
          (intercept (send self :intercept)) ;; T/nil
          (weights (send self :weights)) ;; vector-like or nil
          (w (if weights (* included weights) included))
-         (m (make-sweep-matrix x y w)) ;;; ERROR HERE of course!
-         (n (matrix-dimension x 1))
+         (n (matrix-dimension x 0))
          (p (if intercept
-		(1- (matrix-dimension m 0))
-		(matrix-dimension m 0))) ;; remove intercept from # params -- right?
-         (tss  ) ; recompute, since we aren't sweeping...
+		(1- (matrix-dimension x 1))
+		(matrix-dimension x 1))) ;; remove intercept from # params -- right?
+         (tss 0)
+	 (res 0 ;  (compute-residuals y yhat)
+	   )
          (tol (* 0.001
 		 (reduce #'* (mapcar #'standard-deviation
 				     (list-of-columns x))))))
     (format t
-	    "~%REMOVEME: regr-mdl-prto :compute~%Sweep= ~A~%x= ~A~%y= ~A~%m= ~A~%tss= ~A~%"
-	   sweep-result x y m tss)
+	    "~%REMOVEME: regr-mdl-prto :compute~%x= ~A~%y= ~A~% tss= ~A~% tol= ~A~%  w= ~A~% n= ~A~%  p= ~A~%"
+	   x y tss tol w n p )
 
     (send self :beta-coefficents (lm x y))
-    (send self :xtxinv (xtxinv x)) ;; could extract from (lm ...)
+    (send self :xtxinv (xtxinv x)) 
 
-    (setf (slot-value 'sweep-matrix) (first sweep-result))
     (setf (slot-value 'total-sum-of-squares) tss)
     (setf (slot-value 'residual-sum-of-squares) 
-          (mref (first sweep-result) p p))
-    ;; SOMETHING WRONG HERE! FIX-ME
-    (setf (slot-value 'basis)
-          (let ((b (remove 0 (second sweep-result))))
-            (if b (- (reduce #'- (reverse b)) 1)
-                (error "no columns could be swept"))))))
+          (m* (ones 1 n) (v* res res)))))
 
 (defmeth regression-model-proto :needs-computing (&optional set)
 "Message args: ( &optional set )
@@ -583,25 +578,28 @@ Computes the externally studentized residuals."
   (let* ((res (send self :studentized-residuals))
          (df (send self :df)))
     (if-else (send self :included)
-             (* res (sqrt (/ (- df 1) (- df (^ res 2)))))
+             (* res (sqrt (/ (- df 1) (- df (v* res res)))))
              res)))
 
 (defmeth regression-model-proto :cooks-distances ()
 "Message args: ()
 Computes Cook's distances."
   (let ((lev (send self :leverages))
-        (res (/ (^ (send self :studentized-residuals) 2)
+        (res (/ (v* (send self :studentized-residuals)
+		    (send self :studentized-residuals))
                 (send self :num-coefs))))
     (if-else (send self :included) (* res (/ lev (- 1 lev) )) (* res lev))))
 
-
-(defun plot-points (x y &rest args)
+#|
+ (defun plot-points (x y &rest args)
   "need to fix."
-  (declare (ignore x y args))
   (error "Graphics not implemented yet."))
+|#
 
+
+#|
 ;; Can not plot points yet!!
-(defmeth regression-model-proto :plot-residuals (&optional x-values)
+ (defmeth regression-model-proto :plot-residuals (&optional x-values)
 "Message args: (&optional x-values)
 Opens a window with a plot of the residuals. If X-VALUES are not supplied 
 the fitted values are used. The plot can be linked to other plots with the 
@@ -610,6 +608,8 @@ link-views function. Returns a plot object."
                (send self :residuals)
                :title "Residual Plot"
                :point-labels (send self :case-labels)))
+|#
+
 #|
  (defmeth regression-model-proto :plot-bayes-residuals 
   (&optional x-values)
