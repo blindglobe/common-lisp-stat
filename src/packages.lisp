@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-02-17 08:22:21 tony>
+;;; Time-stamp: <2009-03-10 08:43:49 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -310,8 +310,7 @@
 	   total-sum-of-squares residual-sum-of-squares
 	   predictor-names response-name case-labels
 	   ;; functions for helpers
-	   lm xtxinv
-	   ))
+	   lm xtxinv   ))
 
 (defpackage :lisp-stat
     (:documentation "Experimentation package for LispStat.  Serious

@@ -52,6 +52,23 @@
 
 
 
+
+(defun xtxinv (x)
+  "In: X
+   Out: (XtX)^-1 
+
+X is NxP, so result is PxP.  Represents Var[\hat\beta], the vars for
+\hat \beta from Y = X \beta + \eps.  Done by Cholesky decomposition,
+using LAPACK's dpotri routine to invert, after factorizing with dpotrf.
+
+<example>
+  (let ((m1 (rand 7 5)))
+     (xtxinv m1))
+</example>"
+  (check-type x matrix-like)
+  (minv-cholesky (m* (transpose x) x)))
+
+
 ;; might add args: (method 'gelsy), or do we want to put a more
 ;; general front end, linear-least-square, across the range of
 ;; LAPACK solvers? 
@@ -538,12 +555,9 @@ basis."
     (coerce (compound-data-seq (select m (1+ n) indices)) 'list))) ;; ERROR
 
 (defmeth regression-model-proto :xtxinv () 
-"Message args: ()
+   "Message args: ()
 Returns ((X^T) X)^(-1) or ((X^T) W X)^(-1)."
-  (let ((indices (if (send self :intercept) 
-                     (cons 0 (1+ (send self :basis))) 
-                     (1+ (send self :basis)))))
-    (select (send self :sweep-matrix) indices indices)))
+  (xtxinv (send self x)))
 
 (defmeth regression-model-proto :coef-standard-errors ()
 "Message args: ()
