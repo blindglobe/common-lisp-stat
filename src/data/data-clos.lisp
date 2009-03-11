@@ -1,37 +1,38 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2008-10-03 02:15:49 tony>
+;;; Time-stamp: <2009-03-10 21:36:40 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
-;;; Purpose:    data package for lispstat.   redoing data structures
-;;;             in a CLOS based framework. 
-;;;
-;;; No real basis for work, there is a bit of new-ness and R-ness to
-;;; this work. In particular, the notion of relation is key and
-;;; integral to the analysis.  Tables are related and matched
-;;; vectors,for example.  "column" vectors are related observations
-;;; (by measure/recording) while "row" vectors are related readings
-;;; (by case) 
 
+;;; Purpose:    Data packaging and access for Common Lisp Statistics.
+;;;             This redoes data storage structures in a CLOS based
+;;;             framework.
+;;;
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;;; This organization and structure is new to the 21st Century
-;;; version.
 
 (in-package :lisp-stat-data-clos)
+
+;;; No real basis for work, there is a bit of new-ness and R-ness to
+;;; this work. In particular, the notion of relation is key and
+;;; integral to the analysis.  Tables are related and matched vectors,
+;;; for example.  "column" vectors are related observations (by
+;;; measure/recording) while "row" vectors are related readings (by
+;;; case)
+;;; 
 
 ;;; Relational structure -- can we capture a completely unnormalized
 ;;; data strucutre to propose possible modeling approaches, and
 ;;; propose appropriate models and inferential strategies?
-
-;; verb-driven schema for data collection.  Should encode independence
-;; or lack of when possible.
+;;; 
+;;; So we want a verb-driven API for data collection construction.  We
+;;; should encode independence or lack of, as possible.
 
 #+nil(progn
        (def-statschema MyDB
@@ -39,8 +40,7 @@
 			 (list t2 )
 			 (list t4 ))
 	   :unique-key key
-	   :stat-relation '(t1 (:nest-within t2) (:nest-within t3))
-	   :))
+	   :stat-relation '(t1 (:nest-within t2) (:nest-within t3))))
 
 ;; Need to figure out typed vectors.   We then map a series of typed
 ;; vectors over to tables where columns are equal typed.  In a sense,
@@ -49,13 +49,13 @@
 ;; block (considering 1-1 mappings using row ID as a relation).  
 ;; Is this a worthwhile generalization?
 
-;;; verbs vs semantics for dt conversion -- consider the possibily of
+;;; verbs vs semantics for DS conversion -- consider the possibily of
 ;;; how adverbs and verbs relate, where to put which semantically to
 ;;; allow for general approach.
 
 ;;; eg. Kasper's talk on the FUSION collection of parsers.
 
-
+;;; 
 ;;; Need to consider modification APIs
 ;;; actions are:
 ;;; - import 
@@ -73,12 +73,20 @@
 ;;;           data information.
 ;;; - 
 
-(defclass data-pointer ()
-  ((store :initform nil
+(defclass DataFrame-like (matrix-like)
+  (
+#|
+   ;; STORE is the storage component.  We ignore this in the -like ;
+   ;; class, as it is the primary differentiator, driving how access
+   ;; (getting/setting) is done.   We create methods depending on the
+   ;; storage component, which access data as appropriate.
+
+   (store :initform nil
 	  :initarg :storage
 	  :accessor dataset
 	  :documentation "Data storage: typed as table, array,
                           relation, or pointer/reference to such.")
+|#
    (documentation-string :initform nil
 			 :initarg :doc
 			 :accessor doc-string
@@ -97,8 +105,11 @@
 	       :initarg :var-labels
 	       :accessor var-labels
 	       :documentation "Variable names."))
-  (:documentation "Standard Cases by Variables Statistical-Dataset,
-                   i.e. an S data.frame."))
+  (:documentation "Abstract class for standard statistical analysis
+                   dataset for independent data.  Rows are considered
+                   to be independent, matching observations.  Columns
+                   are considered to be type-consistent, match a
+                   varioable with distribution."))
 
 
 (defgeneric get-variable-matrix (dataset-pointer list-of-variable-names)
