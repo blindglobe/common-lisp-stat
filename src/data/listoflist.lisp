@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-01-12 17:38:14 tony>
+;;; Time-stamp: <2009-03-11 09:27:36 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -98,7 +98,7 @@ list-of-lists data structure"
 ;; (defparameter LOL-2by3 (list (list 1 2) (list 3 4) (list 5 6)))
 ;; (defparameter LOL-3by2 (list (list 1 3 5) (list 2 4 6)))
 ;; (transpose-listoflists (transpose-listoflists LOL-2by3))
-;; (transpose-listoflists (transpose-listoflists LOL-2by3))
+;; (transpose-listoflists (transpose-listoflists LOL-3by2))
 
 (defun equal-listoflists (x y)
   "FIXME: This function, when written, should walk through 2 listoflists and
@@ -111,3 +111,23 @@ return T/nil based on equality."
    ()
    ;; FIXME: flattened values same, walking through
    (loop over x and verify same tree as y)))
+
+
+(defun make-datatable-from-listoflists (lol &key (type 'row-major))
+  "From a listoflists structure, make a datatable."
+  (let ((n (length lol))
+	(p (length (elt lol 0))))
+    (let ((result (make-array n p)))
+      (dotimes (i n)
+	(dotimes (j p)
+	  (setf (aref result i j) (elt (elt lol j) i))))
+      result)))
+
+(defun ensure-consistent-datatable-type (dt lot)
+  "given a datatable and a listoftypes, ensure that the datatble
+  variables are consistent."
+  (destructuring-bind (n p)
+      (array-dimensions dt)
+    (dotimes (i n)
+      (dotimes (j p)
+	(check-type  (aref dt i j) (elt lot j))))))
