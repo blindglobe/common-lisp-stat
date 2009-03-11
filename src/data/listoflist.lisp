@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-11 09:27:36 tony>
+;;; Time-stamp: <2009-03-11 16:04:26 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -113,15 +113,42 @@ return T/nil based on equality."
    (loop over x and verify same tree as y)))
 
 
-(defun make-datatable-from-listoflists (lol &key (type 'row-major))
-  "From a listoflists structure, make a datatable."
+(defun make-datatable-from-listoflists (lol) ; &key (type 'row-major)
+  "From a listoflists structure, make a datatable.
+
+<example>
+  (defparameter *mdfl-test*
+      (list (list 'a 1 2.1)
+            (list 'b 2 1.1)
+            (list 'c 1 2.0)
+            (list 'd 2 3.0)))
+  (length *mdfl-test*)
+  (length (elt *mdfl-test* 0))
+
+  (defparameter *mdfl-test-dt* (make-datatable-from-listoflists *mdfl-test*))
+  (array-dimensions *mdfl-test-dt*)
+</example>"
   (let ((n (length lol))
 	(p (length (elt lol 0))))
-    (let ((result (make-array n p)))
+    (let ((result (make-array (list n p))))
       (dotimes (i n)
 	(dotimes (j p)
-	  (setf (aref result i j) (elt (elt lol j) i))))
+	  (setf (aref result i j) (elt (elt lol i) j))))
       result)))
+
+#|
+  (defparameter *mdfl-test*
+      (list (list 'a 1 2.1)
+            (list 'b 2 1.1)
+            (list 'c 1 2.0)
+            (list 'd 2 3.0)))
+  (length *mdfl-test*)
+  (length (elt *mdfl-test* 0))
+
+  (defparameter *mdfl-test-dt* (make-datatable-from-listoflists *mdfl-test*))
+  (array-dimensions *mdfl-test-dt*)
+
+|#
 
 (defun ensure-consistent-datatable-type (dt lot)
   "given a datatable and a listoftypes, ensure that the datatble
