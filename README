@@ -136,3 +136,23 @@ account and work from there.  In that case, you'd need to D/L the
 libraries. 
 
 That gets a bit tricky, but see ./bin/GetRepos.sh for an example. 
+
+===========
+
+I've started putting examples of use in function documentation.   If
+you are a lisp'er, you'll find this pendantic and insulting.  Many of
+the uses are trivial.  However, this has been tested out on a number
+of research statisticians (the primary user audience) and found
+useful.
+
+Still need to write the (run-doc-ex 'function-name)  function, which
+would print out the example and run it live.  Hopefully with the same
+results.  I've used XML markup for this, but for no particular reason,
+we could have used SEXPs as well.   This is currently done by using an
+<example> tag set, as in
+    <example>
+    (progn
+       (example-code-for-function))
+    </example>
+
+===========
