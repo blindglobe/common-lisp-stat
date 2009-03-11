@@ -38,7 +38,7 @@
   "Prototype for all regression model instances.")
 
 (defproto regression-model-proto
-    '(x y intercept sweep-matrix basis weights 
+    '(x y intercept betahat basis weights 
       included
       total-sum-of-squares
       residual-sum-of-squares
@@ -84,7 +84,7 @@ R's lm object returns: coefficients, residuals, effects, rank, fitted,
 qr-results for numerical considerations, DF_resid.  Need to
 encapsulate into a class or struct."
     (check-type x matrix-like)
-    (check-type y vector-like) ; vector-like might be too strict?
+    (check-type y vector-like)          ; vector-like might be too strict?
 					; maybe matrix-like?
     (assert (= (nrows y) (nrows x)) ; same number of observations/cases
 	    (x y) "Can not multiply x:~S by y:~S" x y)
@@ -111,7 +111,8 @@ encapsulate into a class or struct."
 	      (xtxinv x1); (sebetahat betahat x y) ; TODO: write me!
 	      (nrows x)  ; surrogate for n
 	      (ncols x1) ; surrogate for p
-	      (v- (first betahat) (first betahat1))))))
+	      ;; (v- (first betahat) (first betahat1))
+	      ))))
 
 
 
@@ -239,14 +240,14 @@ Recomputes the estimates. For internal use by other messages"
          (tss 0)
 	 (res 0 ;  (compute-residuals y yhat)
 	   )
-         (tol (* 0.001
-		 (reduce #'* (mapcar #'standard-deviation
-				     (list-of-columns x))))))
+         (tol 0.000001 
+	   ;;  (* 0.001 (reduce #'* (mapcar #'standard-deviation (list-of-columns x))))
+	  ))
     (format t
 	    "~%REMOVEME: regr-mdl-prto :compute~%x= ~A~%y= ~A~% tss= ~A~% tol= ~A~%  w= ~A~% n= ~A~%  p= ~A~%"
 	   x y tss tol w n p )
 
-    (send self :beta-coefficents (lm x y))
+    ;; (send self :beta-coefficents (lm x y)) ;; FIXME!
     (send self :xtxinv (xtxinv x)) 
 
     (setf (slot-value 'total-sum-of-squares) tss)
@@ -259,8 +260,8 @@ Recomputes the estimates. For internal use by other messages"
 If value given, sets the flag for whether (re)computation is needed to
 update the model fits."	 
    (send self :nop)
-   (if set (setf (slot-value 'sweep-matrix) nil))
-   (null (slot-value 'sweep-matrix)))
+   (if set (setf (slot-value 'beta-hat) nil))
+   (null (slot-value 'beta-hat)))
   
 (defmeth regression-model-proto :display ()
 "Message args: ()
@@ -451,7 +452,7 @@ With no argument returns the case-labels. LABELS sets the labels."
 (defmeth regression-model-proto :num-cases ()
 "Message args: ()
 Returns the number of cases in the model."
-  (nelts (send self :y)))
+  (nelts (send self :y))) ; # cases in data, must accomodate weights or masking!
 
 (defmeth regression-model-proto :num-included ()
 "Message args: ()
@@ -544,9 +545,9 @@ basis."
 		  (if (send self :intercept) 
                      (cons 0 (+ 1 (send self :basis)))
                      (list (+ 1 (send self :basis))))))
-        (m (send self :sweep-matrix)))
+        (x (send self :x)))
     (format t "~%REMOVEME2: Coef-ests: ~% Sweep Matrix: ~A ~% array dim 1: ~A ~% Swept indices:  ~A ~% basis: ~A"
-	    m n indices (send self :basis))
+	    x n indices (send self :basis))
     (coerce (compound-data-seq (select m (1+ n) indices)) 'list))) ;; ERROR
 
 (defmeth regression-model-proto :xtxinv () 
