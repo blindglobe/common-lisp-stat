@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-11 06:12:57 tony>
+;;; Time-stamp: <2009-03-11 09:27:31 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -174,32 +174,6 @@
   (variables)
   diabetes )
 
-#+nil
-(progn 
-
-  ;; FIXME: Barf'd version of Data.Frames.  See data/data-clos.lisp
-  ;; for better philosophy.  For example, we could say that they
-  ;; probably deserve to be related to lists -- either lists of cases,
-  ;; or lists of variables.  We probably do not want to mix them, but
-  ;; want to be able to convert between such structures.
-
-  (defparameter *my-case-data*
-    '((:cases
-       (:case1 Y Med  3.4 5)
-       (:case2 N Low  3.2 3)
-       (:case3 Y High 3.1 4))
-      (:var-names (list "Response" "Level" "Pressure" "Size"))))
-
-  *my-case-data*
-
-  (elt *my-case-data* 1)
-  (elt *my-case-data* 0)
-  ;;(elt *my-case-data* 2) ;; error
-  (elt (elt *my-case-data* 0) 1)
-  (elt (elt *my-case-data* 0) 0)
-  (elt (elt (elt *my-case-data* 0) 1) 0)
-  (elt (elt (elt *my-case-data* 0) 1) 1)
-  (elt (elt *my-case-data* 0) 2))
 
 
 
@@ -237,15 +211,46 @@
   ;; coding, and such.  So the structures should probably consider 
 
   ;; Using the CSV file:
+
+  (defun parse-number (s)
+    (let* ((*read-eval* nil)
+	   (n (read-from-string s)))
+      (if (numberp n) n)))
+
+  (parse-number "34")
+  (parse-number "34 ")
+  (parse-number " 34")
+  (parse-number " 34 ")
+
+  (+  (parse-number "3.4") 3)
+  (parse-number "3.4 ")
+  (parse-number " 3.4")
+  (+  (parse-number " 3.4 ") 3)
+
+  (parse-number "a")
+
+  ;; (coerce "2.3" 'number)  => ERROR
+  ;; (coerce "2" 'float)  => ERROR
+
+
+
+  (defparameter *csv-num*
+    (cybertiggyr-dsv::load-escaped
+     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv"
+     :field-separator #\,
+     :filter #'parse-number
+     :trace T))
+
+  (nth 0 (nth 0 *csv-num*))
+
+  (defparameter *csv-num*
+    (cybertiggyr-dsv::load-escaped
+     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric2.dsv"
+     :field-separator #\:
+     :filter #'parse-number))
+
+  (nth 0 (nth 0 *csv-num*))
   
-  (asdf:oos 'asdf:compile-op 'csv :force t)
-  (asdf:oos 'asdf:load-op 'parse-number)
-  (asdf:oos 'asdf:load-op 'csv)
-  (fare-csv:read-csv-file "Data/example-numeric.csv")
-
-  ;; but I think the cl-csv package is broken, need to use the dsv-style
-  ;; package.
-
   ;; now we've got the DSV code in the codebase, auto-loaded I hope:
   cybertiggyr-dsv:*field-separator*
   (defparameter *example-numeric.csv* 

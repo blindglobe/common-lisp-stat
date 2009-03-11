@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    data package for lispstat
-;;; Time-stamp: <2008-09-02 18:40:53 tony>
+;;; Time-stamp: <2009-03-11 07:34:37 tony>
 ;;; Creation:   <2008-03-12 17:18:42 user>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -388,3 +388,30 @@ Usually used by:
 
 ;;;; REAL STUFF
 
+
+#+nil
+(progn 
+
+  ;; FIXME: Barf'd version of Data.Frames.  See data/data-clos.lisp
+  ;; for better philosophy.  For example, we could say that they
+  ;; probably deserve to be related to lists -- either lists of cases,
+  ;; or lists of variables.  We probably do not want to mix them, but
+  ;; want to be able to convert between such structures.
+
+  (defparameter *my-case-data*
+    '((:cases
+       (:case1 Y Med  3.4 5)
+       (:case2 N Low  3.2 3)
+       (:case3 Y High 3.1 4))
+      (:var-names (list "Response" "Level" "Pressure" "Size"))))
+
+  *my-case-data*
+
+  (elt *my-case-data* 1)
+  (elt *my-case-data* 0)
+  ;;(elt *my-case-data* 2) ;; error
+  (elt (elt *my-case-data* 0) 1)
+  (elt (elt *my-case-data* 0) 0)
+  (elt (elt (elt *my-case-data* 0) 1) 0)
+  (elt (elt (elt *my-case-data* 0) 1) 1)
+  (elt (elt *my-case-data* 0) 2))
