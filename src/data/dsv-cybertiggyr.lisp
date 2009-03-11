@@ -17,7 +17,11 @@
 ;;; License along with this program; if not, write to the Free Software
 ;;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 ;;; USA
-;;;
+
+;;; This package provides tools for reading a DSV file on a stream and
+;;; returning a list of lists of strings, in row-major form ("list of
+;;; rows" format).   One needs to convert these strings to something
+;;; useful at the end if strings are not useful.
 
 (defpackage :cybertiggyr-dsv
   (:use :common-lisp)
@@ -29,7 +33,7 @@
 	   "LOAD-ESCAPED"
 	   "READ-ESCAPED"))
 
-(in-package "CYBERTIGGYR-DSV")
+(in-package :cybertiggyr-dsv)
 
 ;;;
 ;;; UNEXPORTED HELPER FUNCTIONS & STOOF
@@ -54,18 +58,21 @@ Consumes the character which ends the field.  TERMINATORS is a list
 of characters & the stream which could terminate the field."
   (if (eq (xpeek strm) strm)
       strm                              ; already at end-of-input
-    ;; else, Consume & collect characters until we find a terminator (field
-    ;; terminator, record terminator, or end-of-input).  Do not collect
-    ;; the terminator.
-    (coerce
-     (loop until (member (xpeek strm) terminators)
-	   collect (if (eql (xpeek strm) escape)
-		       ;; It's an escape, so discard it & use the next
-		       ;; character, verbatim.
-		       (progn (read-char strm) (read-char strm))
-		     ;; else, Use this character.
-		     (read-char strm)))
-     'string)))
+      ;; else, Consume & collect characters until we find a terminator (field
+      ;; terminator, record terminator, or end-of-input).  Do not collect
+      ;; the terminator.
+      (coerce
+       (loop
+	  until (member (xpeek strm) terminators)
+	  collect (if (eql (xpeek strm) escape)
+		      ;; It's an escape, so discard it & use the next
+		      ;; character, verbatim.
+		      (progn
+			(read-char strm)
+			(read-char strm))
+		      ;; else, Use this character.
+		      (read-char strm)))
+       'string)))
 
 ;;;
 ;;;
@@ -133,7 +140,7 @@ records.  Each record is a list."
 	     (xread () (read-escaped strm :field-separator field-separator
 				     :end-of-record end-of-record
 				     :escape escape)))
-      (do ((lst () (if (is-good x) (cons x lst) lst))
+      (do ((lst () (if (is-good x) (cons x lst) lst)) ;second (is-good x) was x
 	   (x (xread) (xread))
 	   (i 0 (1+ i)))
 	  ((eq x strm) lst)
