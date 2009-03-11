@@ -19,9 +19,9 @@
 ;;; USA
 ;;;
 
-(defpackage "CYBERTIGGYR-DSV"
-  (:use "COMMON-LISP")
-  (:import-from "CYBERTIGGYR-TEST" "DEFTEST")
+(defpackage :cybertiggyr-dsv
+  (:use :common-lisp)
+  (:import-from :cybertiggyr-test "DEFTEST")
   (:export "*END-OF-RECORD*"
 	   "*ESCAPE*"
 	   "*FIELD-SEPARATOR*"
@@ -96,7 +96,13 @@ character.  Since NIL is not a character, it will never be equal to a
 character read from STRM, so there will be no possible escape character.
 In fact, you could use any non-character to disable the escape
 character.  Ignors empty lines.  On end-of-input, returns STRM.  It is
-an error if an escape character is followed by end-of-input."
+an error if an escape character is followed by end-of-input.
+
+<example broken=TRUE>
+  (with-open-stream (s (make-stream-from-file \"test.csv\"))
+     (loop (read-escaped s) collecting result))
+</example>
+"
   (consume-leading-crap strm end-of-record)
   (if (eq (xpeek strm) strm)
       strm				; normal end-of-input
