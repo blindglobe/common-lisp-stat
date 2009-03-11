@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-08 12:29:51 tony>
+;;; Time-stamp: <2009-03-10 21:38:11 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -40,59 +40,6 @@
 
 (progn ;; Data setup
 
-  ;; Making data-frames (i.e. cases (rows) by variables (columns))
-  ;; takes a bit of getting used to.  For this, it is important to
-  ;; realize that we can do the following:
-  ;; #1 - consider the possibility of having a row, and transposing
-  ;; it, so the list-of-lists is:  ((1 2 3 4 5))     (1 row, 5 columns)
-  ;; #2 - naturally list-of-lists: ((1)(2)(3)(4)(5)) (5 rows, 1 column)
-  ;; see src/data/listoflist.lisp for code to process this particular
-  ;; data structure.
-  (defparameter *indep-vars-1-matrix*
-    (transpose  (make-matrix 1 (length iron)
-		 :initial-contents
-		 (list (mapcar #'(lambda (x) (coerce x 'double-float))
-			       iron))))
-    "creating iron into double float, straightforward")
-
-  (documentation '*indep-vars-1-matrix* 'variable)
-  ;; *indep-vars-1-matrix*
-
-  ;; or directly:
-  (defparameter *indep-vars-1a-matrix*
-    (make-matrix (length iron)  1 
-		 :initial-contents
-		 (mapcar #'(lambda (x) (list  (coerce x 'double-float)))
-			       iron)))
-  ;; *indep-vars-1a-matrix*
-
-  ;; and mathematically, they seem equal:
-  (m= *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => T
-  ;; but of course not completely... 
-  (eql *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => NIL
-  (eq *indep-vars-1-matrix* *indep-vars-1a-matrix*) ; => NIL
-
-  ;; and verify...
-  (print *indep-vars-1-matrix*)
-  (print *indep-vars-1a-matrix*)
-
-  (documentation 'lisp-matrix:bind2 'function) ; by which we mean:
-  (documentation 'bind2 'function)
-  (bind2 *indep-vars-1-matrix* *indep-vars-1a-matrix* :by :column) ; 2 col
-  (bind2 *indep-vars-1-matrix* *indep-vars-1a-matrix* :by :row) ; 1 long col
-  
-  ;; the weird way  
-  (defparameter *indep-vars-2-matrix*
-    (transpose (make-matrix  2 (length iron)
-			     :initial-contents
-			     (list
-			      (mapcar #'(lambda (x) (coerce x 'double-float))
-				      iron)
-			      (mapcar #'(lambda (x) (coerce x 'double-float))
-				      aluminum)))))
-  ;; *indep-vars-2-matrix*
-  
-  ;; the "right"? way  
   (defparameter *indep-vars-2-matrix*
     (make-matrix (length iron) 2
 		 :initial-contents
@@ -100,15 +47,8 @@
 			     (list (coerce x 'double-float)
 				   (coerce y 'double-float)))
 			 iron aluminum)))
-  ;; *indep-vars-2-matrix*
-    
 
-  ;; The below FAILS due to coercion issues; it just isn't lispy, it's R'y.
-#|
-  (defparameter *dep-var* (make-vector (length absorbtion)
-				       :initial-contents (list absorbtion)))
-|#
-  ;; BUT below, this should be the right type.
+    
   (defparameter *dep-var*
     (make-vector (length absorbtion)
 		 :type :row
@@ -116,33 +56,42 @@
 		 (list 
 		  (mapcar #'(lambda (x) (coerce x 'double-float))
 			  absorbtion))))
-  ;; *dep-var*
-
   
   (defparameter *dep-var-int*
     (make-vector (length absorbtion)
 		 :type :row
 		 :element-type 'integer
 		 :initial-contents (list absorbtion)))
-  
-  (typep *dep-var* 'matrix-like)	; => T
-  (typep *dep-var* 'vector-like)	; => T
-  
-  (typep *indep-vars-1-matrix* 'matrix-like) ; => T
-  (typep *indep-vars-1-matrix* 'vector-like) ; => T
-  (typep *indep-vars-2-matrix* 'matrix-like) ; => T
-  (typep *indep-vars-2-matrix* 'vector-like) ; => F
 
-  iron
-  ;; following fails, need to ensure that we work on list elts, not just
-  ;; elts within a list:
-  ;;
-  ;;     (coerce iron 'real) 
-  ;;
-  ;; the following is a general list-conversion coercion approach -- is
-  ;; there a more efficient way?
-  ;;     (coerce 1 'real)
-  ;;     (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
+
+  (defparameter *xv+1a*
+    (make-matrix
+     8 2
+     :initial-contents #2A((1d0 1d0)
+			   (1d0 3d0)
+			   (1d0 2d0)
+			   (1d0 4d0)
+			   (1d0 3d0)
+			   (1d0 5d0)
+			   (1d0 4d0)
+			   (1d0 6d0))))
+
+  (defparameter *xv+1b*
+    (bind2
+     (ones 8 1)
+     (make-matrix
+      8 1
+      :initial-contents '((1d0)
+			  (3d0)
+			  (2d0)
+			  (4d0)
+			  (3d0)
+			  (5d0)
+			  (4d0)
+			  (6d0)))
+     :by :column))
+
+  (m= *xv+1a* *xv+1b*) ; => T
   
   (princ "Data Set up"))
 
@@ -228,10 +177,11 @@
 #+nil
 (progn 
 
-  ;; FIXME: Data.Frames probably deserve to be related to lists --
-  ;; either lists of cases, or lists of variables.  We probably do not
-  ;; want to mix them, but want to be able to convert between such
-  ;; structures.
+  ;; FIXME: Barf'd version of Data.Frames.  See data/data-clos.lisp
+  ;; for better philosophy.  For example, we could say that they
+  ;; probably deserve to be related to lists -- either lists of cases,
+  ;; or lists of variables.  We probably do not want to mix them, but
+  ;; want to be able to convert between such structures.
 
   (defparameter *my-case-data*
     '((:cases
@@ -477,34 +427,6 @@
 			 (1d0 4d0)
 			 (1d0 6d0))))
 
-  (defparameter *xv+1a*
-    (make-matrix
-     8 2
-     :initial-contents #2A((1d0 1d0)
-			   (1d0 3d0)
-			   (1d0 2d0)
-			   (1d0 4d0)
-			   (1d0 3d0)
-			   (1d0 5d0)
-			   (1d0 4d0)
-			   (1d0 6d0))))
-
-  (defparameter *xv+1b*
-    (bind2
-     (ones 8 1)
-     (make-matrix
-      8 1
-      :initial-contents '((1d0)
-			  (3d0)
-			  (2d0)
-			  (4d0)
-			  (3d0)
-			  (5d0)
-			  (4d0)
-			  (6d0)))
-     :by :column))
-
-  (m= *xv+1a* *xv+1b*) ; => T
 
   ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
   (defparameter *xtx-2* (m* (transpose *xv+1*) *xv+1*))
