@@ -55,18 +55,22 @@
 
 \section{Preliminaries}
 
+\subsection{Context}
+
 \begin{frame}{Goals for this Talk}{(define, strategic approach,
     justify)}
 
   \begin{itemize}
   \item To describe the concept of \alert{computable and executable
-      statistics}.
+      statistics}, placing it in a historical context.
 
-  \item To demonstrate that \alert{there exists a research program}
-    consisting of simple steps which can increase the use of
-    statistical computing approaches to allow for clear description
-    not only of the numerical characteristics of procedures, but the
-    statistical concepts behind them.
+  \item To demonstrate that \alert{a research program}
+    implemented through  simple steps can increase the efficiency  of
+    statistical computing approaches by  clearly describing both:
+    \begin{itemize}
+    \item numerical characteristics of procedures,
+    \item statistical concepts driving them.
+    \end{itemize}
 
   \item To justify that the \alert{approach is worthwhile} and
     represents a staged effort towards \alert{increased use of best
@@ -75,18 +79,77 @@
   (unfortunately, the last is still incomplete)
 \end{frame}
 
+
+\begin{frame}{Historical Computing Languages}
+  \begin{itemize}
+  \item FORTRAN : FORmula TRANslator.  Original numerical computing
+    language, designed for clean implementation of numerical
+    algorithms
+  \item LISP : LISt Processor.  Associated with symbolic
+    manipulation, AI, and knowledge approaches
+  \end{itemize}
+
+  They represent the 2 generalized needs of statistical computing,
+  which could be summarized as
+  \begin{itemize}
+  \item algorithms/numerics,
+  \item elicitation, communication, and generation of knowledge (``data
+    analysis'')
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Statistical Computing Environments}
+
+  Past: 
+  \begin{itemize}
+  \item SPSS / BMDP / SAS
+  \item S ( S, S-PLUS, R)
+  \item LispStat ( XLispStat,  ViSta, ARC , CommonLispStat ) ; QUAIL
+  \item XGobi (Orca / GGobi / Statistical Reality Engine)
+  \item MiniTab
+  \item Stata
+  \item DataDesk
+  \item Augsburg Impressionist series (MANET, 
+  \item Excel
+  \end{itemize}
+  many others...
+
+\end{frame}
+
+\begin{frame}{How many are left?}
+
+  \begin{itemize}
+  \item R 
+  \item SAS
+  \item SPSS
+  \item Stata
+  \item Minitab
+  \item very few others...    
+  \end{itemize}
+  ``R is the Microsoft of the statistical computing world'' -- anonymous.
+\end{frame}
+
+\begin{frame}{Selection Pressure}
+  \begin{itemize}
+  \item the R user population is growing rapidly, fueled by critical
+    mass, quality, and value
+  \item R is a great system for applied data analysis
+  \item R is not such a great system for research into statistical
+    computing (backwards compatibility, inertia due to user population)
+  \end{itemize}
+  There is a need for alternative experiments for developing new
+  approaches/ideas/concepts. 
+\end{frame}
+
 \begin{frame}{Philosophically, why Common Lisp?}
   Philosophically:
   \begin{itemize}
-  \item Lisp as an ancient ``AI'' language; Statistics as ``artificial
-    intelligence'' (not real intelligence, \alert{humans are too
-      flawed and inconsistent} for Bayesian work to be anything but
-    AI).
+  \item Lisp can cleanly present computational intentions, both
+    symbolically and numerically.
   \item Semantics and context are important: well supported by Lisp
     paradigms.
-  \item Lisp's parentheses describe single, multi-scale,
-    \alert{complete thought}.  See \#1 for why that could make it
-    difficult.
+  \item Lisp's parentheses describe singular, multi-scale,
+    \alert{complete thoughts}.
   \end{itemize}
 
 \end{frame}
@@ -95,42 +158,23 @@
   \begin{itemize}
   \item interactive COMPILED language (``R with a compiler'')
   \item CLOS is R's S4 object system ``done right''.
-  \item clean semantics
+  \item clean semantics: modality, typing, can be expressed the way
+    one wants it.
   \item programs are data, data are programs, leading to
   \item Most modern computing tools available (XML, WWW technologies)
   \item ``executable XML''
   \end{itemize}
+  Common Lisp is very close in usage to how people currently use R
+  (mostly interactive, some batch, and a wish for compilation efficiency).
 \end{frame}
 
 \subsection{Background}
 
-\begin{frame}{Many systems existed concurrently for statistical
-    computing}
-
-  \begin{itemize}
-  \item LispStat (ViSta, ARC)
-  \item SPSS (BMDP)
-  \item MiniTab
-  \item Stata
-  \item SAS
-  \item Quail
-  \item XGobi (Orca, GGobi, Statistical Reality Engine)
-  \item DataDesk
-  \item R
-  \item Excel
-  \end{itemize}
-\end{frame}
-
-
 \begin{frame}
-  \frametitle{Semantics and Statistics}
+  \frametitle{Desire: Semantics and Statistics}
   \begin{itemize}
-  \item
-    There have been many wonderful talks about the semantic web which \\
-    \alert{demonstrated its coolness} \\
-    while completely \\
-    \alert{failed to demonstrate its usefulness}.\\
-    This talk follows in the tradition of such giants\ldots{}
+  \item The semantic web (content which is self-descriptive) is an
+    interesting and potentially useful idea.
     
   \item 
     Biological informatics support (GO, Entrez) has allowed for
@@ -140,37 +184,43 @@
     precision, has less than an imprecise and temporally instable
     field such as biology\ldots
   \end{itemize}
+
+  How can we express statistical work (research, applied work) which
+  is both human and computer readable (perhaps subject to
+  transformations first)?
 \end{frame}
 
 
-\subsection{Context}
+% \subsection{Context}
 
-\begin{frame}{Context}{(where I'm coming from, my ``priors'')}
-  \begin{itemize}
-  \item Pharmaceutical Industry
-  \item Modeling and Simulation uses mathematical models/constructs to
-    record beliefs for explication, clinical team alignment, decision
-    support, and quality management.
-  \item My major role at Novartis is to work at the intersection of
-    biomedical informatics, statistics, and mathematical modeling.
-  \item I need a mix of applications and novel research development to
-    solve challenges better, faster, more efficiently.
-  \item Data analysis is a specialized approach to computer
-    programming, \alert{different} than applications programming or
-    systems programming.
-  \item \alert{Nearly all of the research challenges I face today
-      existed for me in academia, and vice-versa.}
-  \end{itemize}
-\end{frame}
+% \begin{frame}{Context}{(where I'm coming from, my ``priors'')}
+%   \begin{itemize}
+%   \item Pharmaceutical Industry
+%   \item Modeling and Simulation uses mathematical models/constructs to
+%     record beliefs (biology, pharmacology, clinical science) for
+%     explication, clinical team alignment, decision support, and
+%     quality.
+%   \item My work at Novartis is at the intersection of biomedical
+%     informatics, statistics, and mathematical modeling.
+%   \item As manager: I need a mix of applications and novel research development to
+%     solve our challenges better, faster, more efficiently.
+%   \item Data analysis is a specialized approach to computer
+%     programming, \alert{different} than applications programming or
+%     systems programming.
+%   \end{itemize}
+% \end{frame}
 
 \section{Computable and Executable Statistics}
 
 \begin{frame}{Can we compute with them?}
-  
-  For the following examples, consider whether one can ``compute''
-  with the information given.
+  3 Examples:
+  \begin{itemize}
+  \item Research
+  \item Consulting
+  \item Reimplementation
+  \end{itemize}
+  Consider whether one can ``compute'' with the information given?
 \end{frame}
-
 
 \begin{frame}[fragile]{Example 1: Theory\ldots}
   \label{example1}
@@ -196,6 +246,9 @@
   \item we ought to have a framework for initial coding for the
     actual simulations (test-first!)
   \item the implementation is somewhat clear
+  \item We should ask: what theorems have similar assumptions?
+  \item We should ask: what theorems have similar conclusions but
+    different assumptions?
   \end{itemize}
 \end{frame}
 
@@ -212,14 +265,14 @@
         (exponential-family theta gamma)))
    (:compute-by
       '(progn
-         (compute-starting-values thetahat gammahat
+         (compute-starting-values thetahat gammahat)
          (until (convergence)
            (setf convergence
                  (or (step-1 thetahat)
-                     (step-2 gammahat)))))))
+                     (step-2 gammahat))))))
    (:claim (assert 
-             (and (equal-distribution thetahat normal)
-                  (equal-distribution gammahat normal)))))
+             (and (equal-distribution thetahat 'normal)
+                  (equal-distribution gammahat 'normal)))))
 \end{verbatim}
   }
 \end{frame}
@@ -244,9 +297,11 @@
 \begin{frame}{Comments}
   \begin{itemize}
   \item The general problem is very difficult
-  \item Some progress has been made in small areas of basic statistics
-  \item Areas targetted for medium-term future: resampling methods,
-    likelihood theory and algorithms.
+  \item Some progress has been made in small areas of basic
+    statistics: currently working on linear regression (LS-based,
+    Normal-bayesian) and the T-test.
+  \item Areas targetted for medium-term future: resampling methods and
+    similar algorithms.
   \end{itemize}
 
 \end{frame}
@@ -272,7 +327,7 @@
 
 \begin{frame}[fragile]{Can we compute?}
 \begin{verbatim}
-  (dataset paper-1
+  (dataset-metadata paper-1
     :context 'clinical-trials
     :variables '((relief :model-type dependent
                          :distribution binary)
@@ -282,8 +337,9 @@
     :metadata '(inclusion-criteria
                 exclusion-criteria
                 recruitment-rate))
-  (propose-analysis paper-1) ; => '(tables
-                             ;      (logistic regression))
+  (propose-analysis paper-1)
+     ; => '(tables
+     ;      (logistic regression))
 \end{verbatim}
 \end{frame}
 
@@ -319,7 +375,7 @@
 
 \begin{frame}{Literate Statistical Practice.}
   \begin{enumerate}
-  \item Literate Programming applied to data analysis
+  \item Literate Programming applied to data analysis (Rossini, 1997/2001)
   \item among the \alert{most annoying} techniques to integrate into
     work-flow if one is not perfectly methodological.
   \item Some tools:
@@ -336,62 +392,9 @@
     as a documentation/computational reproducibility technique, rarely
     integrated into work-flow.
   \end{enumerate}
-  Many contributors to this general theory/approach:
-  Knuth, Claerbout, de Leeuw, Leisch, Gentleman, Temple-Lang,
+  Many contributors:
+  Knuth, Claerbout, Carey, de Leeuw, Leisch, Gentleman, Temple-Lang,
   \ldots{}
-\end{frame}
-
-% \begin{frame}
-%   \frametitle{Literate Programming}
-%   \framesubtitle{Why is it not enough?}
-
-%   Claim: it isn't
-%   \begin{enumerate}
-%   \item used for statistics since mid 90s (Emacs/ESS support in 1997)
-%   \item active popular use with R  (Leisch, 2001)
-%   \end{enumerate}
-
-%   but it provides a work-flow which is difficult and unnatural for many
-%   people (no perceived ROI).
-% \end{frame}
-
-\begin{frame}{Related work}
-
-  Mathematica Workbooks for mathematics concepts
-  \begin{itemize}
-  \item Mathematical storage and reproducibility, what bout Statistical
-    Concepts?
-  \item Not open, but freely reproducible.
-  \item Some semantics, hopefully this will improve.
-  \end{itemize}
-
-  Electronic Lab Notebooks for data and the data/data analytics
-  interaction (but not quantitative methodological development).
-\end{frame}
-
-\section{Results/Contribution}
-
-\subsection{Claims}
-
-% \begin{frame}{Semantic Web}{How do we communicate "things"?}
-%   Recall Monday evening talk:   What kinds of communication problems can we have?
-%   \begin{itemize}
-%   \item I say "reinigung", you say "waschen"
-%   \item I say "clean", you say "sauber"
-%   \end{itemize}
-%   In the context of our work, how do we communicate what we've done?
-% \end{frame}
-
-\begin{frame}{Communication in Statistical Practice}{\ldots is essential for \ldots}
-  \begin{itemize}
-  \item finding
-  \item explanations
-  \item agreement
-  \item receiving information
-  \end{itemize}
-  \alert{``machine-readable'' communication/computation lets the
-    computer help} \\
-  Semantic Web is about ``machine-enabled computability''.
 \end{frame}
 
 \begin{frame}
@@ -416,6 +419,19 @@
   (i.e. informatics framework ala biology)
 \end{frame}
 
+
+\begin{frame}{Communication in Statistical Practice}{\ldots is essential for \ldots}
+  \begin{itemize}
+  \item finding
+  \item explanations
+  \item agreement
+  \item receiving information
+  \end{itemize}
+  \alert{``machine-readable'' communication/computation lets the
+    computer help} \\
+  Semantic Web is about ``machine-enabled computability''.
+\end{frame}
+
 \begin{frame}  \frametitle{Semantics}
   \framesubtitle{One definition: description and context}
 
@@ -431,6 +447,7 @@
   \end{itemize}
 \end{frame}
 
+
 \begin{frame}{Statistical Practice is somewhat restricted}
   {...but in a good sense, enabling potential for semantics...}
 
@@ -443,33 +460,36 @@
   \item common description of activities for simpler programming/data
     analysis (S approach to objects and methods)
   \end{itemize}
-  R is a good primitive start (model formulation approach, simple
+  R is a good basic start (model formulation approach, simple
   ``programming with data'' paradigm); we should see if we can do
   better!
 \end{frame}
 
+\begin{frame}{Computable and Executable Statistics requires}
 
-% \begin{frame}{Semantics}{Capturing Ideas, Concepts, Proposals.}
-%   \begin{itemize}
-%   \item Capturing the historical state and corresponding decisions is
-%     essential for developing improved approaches.  A common problem in
-%     ``product development'' (stat research, drug development) is
-%     cycling through the same issues repeatedly.
-%   \item These should be captured semantically
-%   \item Conversion of concepts to computable semantics is sensible
-%     when you need it, difficult without a compelling reasons
-%   \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}{Lowering the bounds to interactive work.}
-%   \begin{enumerate}
-%   \item Limitations of object-orientation and information-hiding
-%     routines: require context in order to keep the context.
-%   \item Statistical and Data analysis: context is central and obvious.
-%   \end{enumerate}
-% \end{frame}
-
+  \begin{itemize}
+  \item approaches to describe data and metadata (``data'')
+    \begin{itemize}
+    \item semantic WWW
+    \item metadata management and integration, driving
+    \item data integration
+    \end{itemize}
+  \item approaches to describe data analysis methods (``models'')
+    \begin{itemize}
+    \item quantitatively: many ontologies (AMS, etc), few meeting
+      statistical needs.
+    \item many substantive fields have implementations
+      (bioinformatics, etc) but not well focused.
+    \end{itemize}
+  \item approaches to describe the specific form of interaction
+    (``instances of models'')
+    \begin{itemize}
+    \item Original idea behind ``Literate Statistical Analysis''.
+    \item That idea is suboptimal, more structure needed (not
+      necessarily built upon existing...).
+    \end{itemize}
+  \end{itemize}
+\end{frame}
 
 \subsection{Common Lisp Statistics}
 
@@ -484,7 +504,7 @@
     for using R.
   \end{itemize}
 \end{frame}
-
+ 
 \begin{frame}[fragile]
   \frametitle{Lisp}
 
@@ -517,36 +537,6 @@
 \end{frame}
 
 
-\subsection{Current Approach / Implementation}
-
-
-
-
-\begin{frame}{Computable and Executable Statistics requires}
-
-  \begin{itemize}
-  \item approaches to describe data and metadata (``data'')
-    \begin{itemize}
-    \item semantic WWW
-    \item metadata management and integration, driving
-    \item data integration
-    \end{itemize}
-  \item approaches to describe data analysis methods (``models'')
-    \begin{itemize}
-    \item quantitatively: many ontologies (AMS, etc), few meeting
-      statistical needs.
-    \item many substantive fields have implementations
-      (bioinformatics, etc) but not well focused.
-    \end{itemize}
-  \item approaches to describe the specific form of interaction
-    (``instances of models'')
-    \begin{itemize}
-    \item Original idea behind ``Literate Statistical Analysis''.
-    \item That idea is suboptimal, more structure needed (not
-      necessarily built upon existing...).
-    \end{itemize}
-  \end{itemize}
-\end{frame}
 
 \begin{frame}[fragile]{Representation: XML and Lisp}{executing your data}
   Many people are familiar with XML: 
@@ -564,9 +554,34 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Common Lisp Statistics}
-  Ross talked about Lisp.   I generally agree.  My current
-  research program dates back over 3 years, and:
+\begin{frame}[fragile]{Numerics with Lisp}
+  \begin{itemize}
+  \item addition of rational numbers and arithmetic
+  \item example for mean
+\begin{verbatim}
+ (defun mean (x)
+    (checktype x 'vector-like)
+    (/ (loop for i from 0 to (- (nelts *x*) 1)
+	  summing (vref *x* i))
+       (nelts *x*)))
+\end{verbatim}
+  \item example for variance
+\begin{verbatim}
+(defun variance (x)
+  (let ((meanx (mean x))
+	(nm1 (1- (nelts x))))
+     (/ (loop for i from 0 to nm1
+	   summing (power (- (vref *x* i) meanx) 2)
+        nm1))))
+\end{verbatim}
+  \item But through macros, \verb+(vref *x* i)+ could be
+    \verb+#V(X[i])+ or your favorite syntax.
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}{Common Lisp Statistics 1}
   \begin{itemize}
   \item Originally based on LispStat (reusability)
   \item Re-factored structure (some numerics worked with a 1990-era code base). 
@@ -584,7 +599,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Common Lisp Statistics}
+\begin{frame}{Common Lisp Statistics 2}
 
   \begin{itemize}
   \item Implemented using SBCL.  Contributed fixes for
@@ -594,17 +609,6 @@
     the components whose API you like.
   \end{itemize}
 \end{frame}
-\section*{Summary}
-
-% \begin{frame}{Delivering Better Data Analyses Faster}
-%   Industrial settings: 
-%   \begin{enumerate}
-%   \item Pharmaceutical companies
-%   \item Academic departments
-%   \item Review-centric organizations (Health Authorities, Regulators)
-%   \end{enumerate}
-% \end{frame}
-
 
 \section{Discussion}
 
@@ -625,17 +629,20 @@
     for some people, they are not difficult.
   \end{itemize}
 
-  The research program described in this talk is currently driving the
-  design of CommonLisp Stat, which leverages concepts and approaches
-  from the dead and moribund XLisp-Stat project.
-
-  \url{http://repo.or.cz/w/CommonLispStat.git/}
-
-  \url{http://www.github.com/blindglobe/}
-
 \end{frame}
 
-\begin{frame}{Summary}
+\begin{frame}
+  The research program described in this talk is currently driving the
+  design of CommonLisp Stat, which leverages concepts and approaches
+  from the dead and moribund LispStat project.
+
+  \begin{itemize}
+  \item \url{http://repo.or.cz/w/CommonLispStat.git/}
+  \item \url{http://www.github.com/blindglobe/}
+  \end{itemize}
+
+\end{frame}
+\begin{frame}{Final Comment}
 
   \begin{itemize}
   \item In the Pharma industry, it is all about getting the right
