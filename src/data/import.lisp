@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2008-11-16 20:23:53 tony> 
+;;; Time-stamp: <2009-03-16 14:47:15 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -170,3 +170,61 @@ load command."
       vars)))
 
         
+
+;;; General modification approaches.
+
+(defgeneric importData (source featureList)
+  (:documentation "command to get data into CLS.  Specific methods
+  will need to handle pathnames, internal data structures, and
+  external services such as DBMS's.  We would like to be able to do
+  thinks like: 
+     (importData MyPathName '(:formattype 'csvString))
+     (importData '(sqlConnection :server host.domain.net :port 666)
+                 '(:formattype 'table   
+  and so on."))
+
+
+(defun pathname-example (name) 
+  (let ((my-path (parse-namestring name)))
+    (values (pathname-name my-path :case :common) 
+            (pathname-name my-path :case :local))))
+
+(defvar sourceTypes (list 'csv 'lisp 'tsv 'special)
+  "list of possible symbols.
+
+Thsees are used to specify source formats that might be supported for
+input.  CSV and TSV are standard, LISP refers to forms, and SPECIAL
+refers to a FUNCTION which parses as appropriately.")
+
+;;; WRONG LOGIC.
+(defmethod importData ((fileHandle pathname)
+		       (fmt list)) ;sourceTypes))
+  "File-based input for data.
+Usually used by:
+ (importData (parse-namestring 'path/to/file')
+	     (list :format 'csv))
+
+ (importData myPathName (list :format 'lisp))
+."
+  (let* ((fmtType (getf fmt :format))
+	 (newData (getDataAsLists fileHandle fmtType)))
+    (case fmtType
+      ('csv (  ))
+      ('tsv (  ))
+      ('lisp ( ))
+      ('special (let ((parserFcn (getf fmt :special-parser)))))
+      (:default (error "no standard default importData format")))))
+
+(defmethod importData ((ds array) (fmt list))
+  "mapping arrays into CLS data.")
+
+(defmethod importData ((dsSpec DBMSandSQLextract)
+		       (fmt mappingTypes))
+  "mapping DBMS into CLS data.")
+
+
+
+;;(defmacro with-dataframe (env &rest progn) 
+;;  "Compute using variable names with with.data.frame type semantics.")
+
+

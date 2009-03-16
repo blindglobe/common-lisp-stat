@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-10 21:36:40 tony>
+;;; Time-stamp: <2009-03-16 14:45:31 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -104,7 +104,12 @@
    (var-labels :initform nil
 	       :initarg :var-labels
 	       :accessor var-labels
-	       :documentation "Variable names."))
+	       :documentation "Variable names.")
+   (var-types :initform nil
+	      :initarg :var-types
+	      :accessor var-types
+	      :documentation "variable types to ensure fit"
+	      ))
   (:documentation "Abstract class for standard statistical analysis
                    dataset for independent data.  Rows are considered
                    to be independent, matching observations.  Columns
@@ -125,3 +130,186 @@
 ;; correlation, interference, and similar concepts.
 ;;
 ;; Actions on a statistical data structure.
+
+
+(defgeneric consistent-statistical-dataset-p (ds)
+  (:documentation "methods to check for consistency."))
+
+(defmethod consistent-statistical-dataset-p ((ds statistical-dataset))
+  "Test that statistical-dataset is internally consistent with metadata.
+Ensure that dims of stored data are same as case and var labels."
+  (equal (array-dimensions (dataset ds))
+       (list (length (var-labels ds))
+	     (length (case-labels ds)))))
+
+
+;;; Extraction
+
+(defun extract-1 (sds idx1 idx2)
+  "Returns a scalar."
+  (aref (dataset sds) idx1 idx2))
+
+(defun extract-1-as-sds (sds idx1 idx2)
+  "Need a version which returns a dataset."
+  (make-instance 'statistical-dataset
+		 :storage (make-array
+			   (list 1 1)
+			   :initial-contents (extract-1 sds idx1 idx2))
+		 ;; ensure copy for this and following
+		 :doc (doc-string sds)
+		 :case-labels (caseNames sds)
+		 :var-labels (varNames sds)))
+
+(defun gen-seq (n &optional (start 1))
+  "There has to be a better way -- I'm sure of it!  Always count from 1."
+  (if (>= n start)
+      (append (gen-seq (- n 1) start) (list n))))
+;; (gen-seq 4)
+;; =>  (1 2 3 4)
+;; (gen-seq 0)
+;; => nil
+;; (gen-seq 5 3)
+;; => 3 4 5
+;; 
+
+(defun extract-col (sds index)
+  "Returns data as sequence."
+  (map 'sequence
+       #'(lambda (x) (extract-1 sds index x))
+       (gen-seq (nth 2 (array-dimensions (dataset sds))))))
+
+(defun extract-col-as-sds (sds index)
+  "Returns data as SDS, copied."
+  (map 'sequence
+       #'(lambda (x) (extract-1 sds index x))
+       (gen-seq (nth 2 (array-dimensions (dataset sds))))))
+
+(defun extract-row (sds index)
+  "Returns row as sequence."
+  (map 'sequence
+       #'(lambda (x) (extract-1 sds x index))
+       (gen-seq (nth 1 (array-dimensions (dataset sds))))))
+
+(defun extract-idx (sds idx1Lst idx2Lst)
+  "return an array, row X col dims.  FIXME TESTME"
+  (let ((my-pre-array (list)))
+    (dolist (x idx1Lst)
+      (dolist (y idx2Lst)
+	(append my-pre-array (extract-1 sds x y))))
+    (make-array (list (length idx1Lst) (length idx2Lst))
+		:initial-contents my-pre-array)))
+
+
+(defun extract-idx-sds (sds idx1Lst idx2Lst)
+  "return a dataset encapsulated version of extract-idx."
+  (make-instance 'statistical-dataset
+		 :storage (make-array
+			   (list (length idx1Lst) (length idx2Lst))
+				 :initial-contents (dataset sds))
+		 ;; ensure copy for this and following
+		 :doc (doc-string sds)
+		 :case-labels (caseNames sds)
+		 :var-labels (varNames sds)))
+
+(defgeneric extract (sds whatAndRange)
+  (:documentation "data extraction approach"))
+
+
+;;; Printing methods and support.
+
+(defun print-as-row (seq)
+  "Print a sequence formated as a row in a table."
+  (format t "~{~D~T~}" seq))
+
+;; (print-as-row (list 1 2 3))
+
+(defun print-structure-table (ds)
+  "example of what we want the methods to look like.  Should be sort
+of like a spreadsheet if the storage is a table."
+  (print-as-row (var-labels ds))
+  (let ((j -1))
+    (dolist (i (case-labels ds))
+      (print-as-row (append (list i)
+			    (extract-row (dataset ds) (incf j)))))))
+
+#|
+(defun print-structure-relational (ds)
+  "example of what we want the methods to look like.  Should be sort
+of like a graph of spreadsheets if the storage is a relational
+structure."
+  (dolist (k (relations ds))
+    (let ((currentRelationSet (getRelation ds k)))
+      (print-as-row (var-labels currentRelationSet))
+      (let ((j -1))
+	(dolist (i (case-labels currentRelationSet))
+	  (print-as-row
+	   (append (list i)
+		   (extract-row (dataset currentRelationSet)
+				(incf j)))))))))
+|#
+  
+
+;;; Shaping for computation
+
+(defgeneric reshapeData  (dataform into-form as-copy)
+  (:documentation "pulling data into a new form"))
+
+(defmethod reshapeData ((sds statistical-dataset) what into-form))
+
+(defmethod reshapeData ((ds array) (sp list) copy-p)
+  "Array via specList specialization: similar to the common R
+approaches to redistribution.")
+
+(defclass data-format () ())
+
+(defun row-order-as-list (ary)
+  "Pull out data in row order into a list."
+  (let ((result (list))
+	(nrows (nth 0 (array-dimensions ary)))
+	(ncols (nth 1 (array-dimensions ary))))
+    (dotimes (i ncols)
+      (dotimes (j nrows)
+	(nappend result (aref ary i j))))))
+
+(defun col-order-as-list (ary)
+  "Pull out data in row order into a list."
+  (let ((result (list))
+	(nrows (nth 0 (array-dimensions ary)))
+	(ncols (nth 1 (array-dimensions ary))))
+    (dotimes (i nrows)
+      (dotimes (j ncols)
+	(nappend result (aref ary i j))))))
+
+
+
+
+(defun transpose (ary)
+  "map NxM to MxN."
+  (make-array (reverse (array-dimensions ary))
+      :initial-contents (col-order-as-list ary)))
+
+
+;;; Variable-name handling for Tables.  Needs error checking.
+(defun varNames (ds)
+  (var-labels ds))
+
+(defun set-varNames (ds vN)
+  (if (= (length (var-labels ds))
+	 (length vN))
+      (setf (var-labels ds) vN)
+      (error "wrong size.")))
+
+(defsetf varNames set-varNames)
+
+;;; Case-name handling for Tables.  Needs error checking.
+(defun caseNames (ds)
+  (case-labels ds))
+
+(defun set-caseNames (ds vN)
+  (if (= (length (case-labels ds))
+	 (length vN))
+      (setf (case-labels ds) vN)
+      (error "wrong size.")))
+
+(defsetf caseNames set-caseNames)
+
