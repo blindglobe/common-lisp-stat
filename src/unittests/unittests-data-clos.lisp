@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the data-clos package
-;;; Time-stamp: <2008-11-03 08:32:24 tony>
+;;; Time-stamp: <2009-03-16 20:49:53 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -39,21 +39,21 @@
 (addtest (lisp-stat-dataclos) equaltestnameData
 	 (ensure-error
 	  (equal (lisp-stat-data-clos::dataset
-		  (make-instance 'statistical-dataset
+		  (make-instance 'dataframe-array
 				 :storage #2A(('a 'b) ('c 'd))))
 		 #2A(('a 'b) ('c 'd)))))
 
 (defvar my-ds-1 nil 
   "test ds for experiment.")
-(setf my-ds-1 (make-instance 'statistical-dataset))
+(setf my-ds-1 (make-instance 'dataframe-array))
 my-ds-1
 
 
 (defvar my-ds-2 nil 
   "test ds for experiment.")
-(setf my-ds-2 (make-instance 'statistical-dataset
+(setf my-ds-2 (make-instance 'dataframe-array
 			     :storage #2A((1 2 3 4 5) (10 20 30 40 50))
-			     :doc "This is an interesting statistical-dataset"
+			     :doc "This is an interesting dataframe-array"
 			     :case-labels (list "a" "b" "c" "d" "e")
 			     :var-labels (list "x" "y")))
 my-ds-2
@@ -64,7 +64,7 @@ my-ds-2
 
 (addtest (lisp-stat-dataclos) consData
 	 (ensure
-	  (consistent-statistical-dataset-p my-ds-2)))
+	  (consistent-dataframe-like-p my-ds-2)))
 
 (addtest (lisp-stat-dataclos) badAccess1
 	 (ensure-error
@@ -106,7 +106,7 @@ my-ds-2
 
 ;; need to ensure that for things like the following, that we protect
 ;; this a bit more so that the results are not going to to be wrong.
-;; That would be a bit nasty if the statistical-dataset becomes
+;; That would be a bit nasty if the dataframe-array becomes
 ;; inconsistent.
 
 (addtest (lisp-stat-dataclos) badAccess9
@@ -121,7 +121,7 @@ my-ds-2
 	    (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		  (list "a" "b" "c"))
 	    ;; error happens here
-	    (not (consistent-statistical-dataset-p my-ds-2))))) ;; Nil
+	    (not (consistent-dataframe-like-p my-ds-2))))) ;; Nil
 
 (addtest (lisp-stat-dataclos) badAccess12
 	 (ensure
@@ -130,7 +130,7 @@ my-ds-2
 
 (addtest (lisp-stat-dataclos) badAccess13
 	 (ensure
-	  (consistent-statistical-dataset-p my-ds-2))) ;; T
+	  (consistent-dataframe-like-p my-ds-2))) ;; T
 
 ;; This is now done by:
 (addtest (lisp-stat-dataclos) badAccess14

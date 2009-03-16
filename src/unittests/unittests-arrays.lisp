@@ -23,6 +23,15 @@
 		  5.000000000000003)
 	  :test 'almost=lists))
 
+(addtest (lisp-stat-ut-array) cholesky-decomposition-1
+	 (ensure-same
+	  (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+	  (list #2A((1.7888543819998317 0.0 0.0)
+		    (1.6770509831248424 0.11180339887498929 0.0)
+		    (2.23606797749979 2.23606797749979 3.332000937312528e-8))
+		  5.000000000000003)
+	  :test 'almost=lists))
+
 #|
 (addtest (lisp-stat-ut-array) cholesky-decomposition-2
 	 (ensure-same
