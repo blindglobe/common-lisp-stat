@@ -141,7 +141,41 @@
 	       (example :toe-nail infection severity within as a
 	       past/current marker to be managed when missing) )
 
+	 (talk :name "mike daniels"
+	       :title
+	       
+	       (example BCPT
+			(endpoints dose-efficacy QOL)
+			(rationale clinical-depression assoc with dose)
+			:N 11034
+			:dropout (> 0.45)
+			
+			)
+	       (non-ignoreable missingness in longitudinal trials)
 
+	       (motivation :priors on missingness structure,
+			   MAR as a strong point-mass prior)
+	       
+	       (assumptions
+		(list (assert-hypothesis non-future-dependence 'data)
+		      (assert-hypothesis selection-model-rpresenttion 'model)))
+
+	       (model :observed-data 'transistion-model-parameterization
+		      :missing-data 
+		      )
+	       
+	       (issue :priors "spec ORs, but ORs diff to spec, so push to RR")
+
+	       
+	       )
+
+	 (talk :name "joe hogan"
+	       :title "formulating priors for calibrating priors with incomplete data"
+
+	       
+
+	       )
+	 
 	 
 	 )
 
