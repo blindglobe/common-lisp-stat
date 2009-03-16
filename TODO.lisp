@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-11 09:27:31 tony>
+;;; Time-stamp: <2009-03-16 22:08:25 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -231,9 +231,7 @@
 
   ;; (coerce "2.3" 'number)  => ERROR
   ;; (coerce "2" 'float)  => ERROR
-
-
-
+  
   (defparameter *csv-num*
     (cybertiggyr-dsv::load-escaped
      #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv"
@@ -538,3 +536,16 @@
   (v= (third *lm-result*)
       (v- (first (first *lm-result*)) 
 	  (first  (second *lm-result*)))))
+
+
+#+nil
+(progn 
+  (let ((df (make-instance 'dataframe-array))
+	)
+    df)
+
+  (let ((df2 (make-instance 'dataframe-array
+			    :nrows 10
+			    :ncols 5 )))
+    df2)
+  )
