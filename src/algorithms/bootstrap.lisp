@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-02-06 16:06:02 tony>
+;;; Time-stamp: <2009-03-12 17:46:34 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       bootstrap.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,22 +19,29 @@
 ;;;            (bootstrap data #'function args) 
 ;;;
 
-(defmacro with-data-bootstrap ((list-of-sources-and-var n) @body)
+(defmacro with-data-bootstrap (n (list-of-sources-and-vars) @body)
   "A proposed lispy implementation, such as:
-     (with-data-bootstrap ((a dataset1)
+     (with-data-bootstrap n 
+                          ((a dataset1)
                            (b dataset2))
         (some-form-with-inputs a b c))
 where there could be multiple datasets, with a and b, etc, being
 bootstrap realizations of dataset1 and dataset2."
   (Destructure list-of-sources-and-var)
   (loop repeat n
-       (progn (pull-samples sources)
-	      @body)
+        (progn (pull-samples sources)
+	       @body)
      accumulate in result-list))
 
-(defmacro with-correlated-data-bootstrap ())
+;; (defmacro with-correlated-data-bootstrap ())
 
-;;; functional
+;; The point of this goes away when we have assurance that
+;; observations are independent.  And by being able to embed complex
+;; objects (temporal / spatial / network structures) into the dataset
+;; as typed variables, we now are able to assure such a probability
+;; structure. 
+ 
+;;; functional approach
 
 (defgeneric bootstrap-sample (data &optional n replace)
   (:documentation "generate a dataset of N obs from DATA either with
