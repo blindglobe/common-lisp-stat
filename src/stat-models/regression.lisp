@@ -260,8 +260,8 @@ Recomputes the estimates. For internal use by other messages"
 If value given, sets the flag for whether (re)computation is needed to
 update the model fits."	 
    (send self :nop)
-   (if set (setf (slot-value 'beta-hat) nil))
-   (null (slot-value 'beta-hat)))
+   (if set (setf (slot-value 'betahat) nil))
+   (null (slot-value 'betahat)))
   
 (defmeth regression-model-proto :display ()
 "Message args: ()
@@ -486,22 +486,26 @@ appropriate. Columns of X matrix correspond to entries in basis."
 (defmeth regression-model-proto :leverages ()
 "Message args: ()
 Returns the diagonal elements of the hat matrix."
-  (let* ((weights (send self :weights))
-         (x (send self :x-matrix))
+  (let* ((x (send self :x-matrix))
          (raw-levs 
-          (m* (* (m* x (send self :xtxinv)) x)
+          (m* (m* (m* x
+		      (send self :xtxinv))
+		  x)
 	      (repeat 1 (send self :num-coefs)))))
-    (if weights (* weights raw-levs) raw-levs)))
+    (if (send self :weights)
+	(m* weights raw-levs)
+	raw-levs)))
 
 (defmeth regression-model-proto :fit-values ()
 "Message args: ()
 Returns the fitted values for the model."
-  (m* (send self :x-matrix) (send self :coef-estimates)))
+  (m* (send self :x-matrix)
+      (send self :coef-estimates)))
 
 (defmeth regression-model-proto :raw-residuals () 
 "Message args: ()
 Returns the raw residuals for a model."
-  (- (send self :y) (send self :fit-values)))
+  (v- (send self :y) (send self :fit-values)))
 
 (defmeth regression-model-proto :residuals () 
 "Message args: ()
@@ -540,6 +544,9 @@ the regression."
 Returns the OLS (ordinary least squares) estimates of the regression
 coefficients. Entries beyond the intercept correspond to entries in
 basis."
+  
+  )
+#|
   (let ((n (matrix-dimension (send self :x) 1))
         (indices (flatten-list
 		  (if (send self :intercept) 
@@ -549,6 +556,7 @@ basis."
     (format t "~%REMOVEME2: Coef-ests: ~% Sweep Matrix: ~A ~% array dim 1: ~A ~% Swept indices:  ~A ~% basis: ~A"
 	    x n indices (send self :basis))
     (coerce (compound-data-seq (select m (1+ n) indices)) 'list))) ;; ERROR
+|#
 
 (defmeth regression-model-proto :xtxinv () 
    "Message args: ()
