@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-03-11 20:06:32 tony>
+;;; Time-stamp: <2009-03-16 20:47:22 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -293,8 +293,7 @@
 			      (:file "unittests-prob" :depends-on ("unittests"))
 			      (:file "unittests-proto" :depends-on ("unittests"))
 			      (:file "unittests-regression" :depends-on ("unittests"))
-			      ;; not ready yet:
-			      ;; (:file "unittests-data-clos" :depends-on ("unittests"))
-			      ;; changing linear algebra system
-			      ;; (:file "unittests-arrays" :depends-on ("unittests"))
+			      (:file "unittests-arrays" :depends-on ("unittests"))
+			      (:file "unittests-data-clos" :depends-on ("unittests"))
+
 			      ))))
