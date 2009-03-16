@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-16 14:45:31 tony>
+;;; Time-stamp: <2009-03-16 20:20:07 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -73,13 +73,16 @@
 ;;;           data information.
 ;;; - 
 
-(defclass DataFrame-like (matrix-like)
+(defclass dataframe-like (matrix-like)
   (
 #|
    ;; STORE is the storage component.  We ignore this in the -like ;
    ;; class, as it is the primary differentiator, driving how access
    ;; (getting/setting) is done.   We create methods depending on the
    ;; storage component, which access data as appropriate.
+
+   ;; so: subclass this based on storage type, and ensure that generic
+   ;; accessors have the right methods to do the right thing.
 
    (store :initform nil
 	  :initarg :storage
@@ -91,7 +94,7 @@
 			 :initarg :doc
 			 :accessor doc-string
 			 :documentation "uncomputable information
-                                         about statistical-dataset
+                                         about dataframe-like
                                          instance.")
 
    ;; the rest of this is metadata.  In particular, we should find a
@@ -114,36 +117,53 @@
                    dataset for independent data.  Rows are considered
                    to be independent, matching observations.  Columns
                    are considered to be type-consistent, match a
-                   varioable with distribution."))
+                   varioable with distribution.  inherits from
+                   lisp-matrix base matrix-like class. "))
 
 
-(defgeneric get-variable-matrix (dataset-pointer list-of-variable-names)
-  (:documentation "retrieves a matrix whose columns are the variable
-  names in same order specified.")) 
+;; dataframe-like is the basic cases by variables framework.  Need to
+;; embed this within other structures which allow for generalized
+;; relations.  Goal is to ensure that relations imply and drive the
+;; potential for statistical relativeness such as correlation,
+;; interference, and similar concepts.
 
-(defgeneric get-variable-vector (dataset-pointer variable-name))
 
-;; statistical-dataset is the basic cases by variables framework.
-;; Need to embed this within other structures which allow for
-;; generalized relations.  Goal is to ensure that relations imply and
-;; drive the potential for statistical relativeness such as
-;; correlation, interference, and similar concepts.
-;;
+(defclass dataframe-array (dataframe-like)
+  ((store :initform nil
+	  :initarg :storage
+	  :type (array * *)
+	  :accessor dataset
+	  :documentation "Data storage: typed as table, array,
+                          relation, or pointer/reference to such."))
+  (:documentation "example implementation of dataframe-like using storage
+  based on lisp arrays."))
+
+
 ;; Actions on a statistical data structure.
 
 
-(defgeneric consistent-statistical-dataset-p (ds)
+(defgeneric consistent-dataframe-like-p (ds)
   (:documentation "methods to check for consistency."))
 
-(defmethod consistent-statistical-dataset-p ((ds statistical-dataset))
-  "Test that statistical-dataset is internally consistent with metadata.
+(defmethod consistent-dataframe-like-p ((ds dataframe-like))
+  "Test that dataframe-like is internally consistent with metadata.
 Ensure that dims of stored data are same as case and var labels."
   (equal (array-dimensions (dataset ds))
        (list (length (var-labels ds))
 	     (length (case-labels ds)))))
+;; FIXME: NEED TO CHECK TYPING AS WELL!
 
 
 ;;; Extraction
+
+(defgeneric access (dataframe-like spec-list)
+  (:documentation "access to array presevingtype."))
+
+(defgeneric get-variable-matrix (dataframe-like-object list-of-variable-names)
+  (:documentation "retrieves a matrix whose columns are the variable
+  names in same order specified.")) 
+
+(defgeneric get-variable-vector (dataframe-like-object variable-name))
 
 (defun extract-1 (sds idx1 idx2)
   "Returns a scalar."
@@ -151,7 +171,7 @@ Ensure that dims of stored data are same as case and var labels."
 
 (defun extract-1-as-sds (sds idx1 idx2)
   "Need a version which returns a dataset."
-  (make-instance 'statistical-dataset
+  (make-instance 'dataframe-array
 		 :storage (make-array
 			   (list 1 1)
 			   :initial-contents (extract-1 sds idx1 idx2))
@@ -202,7 +222,7 @@ Ensure that dims of stored data are same as case and var labels."
 
 (defun extract-idx-sds (sds idx1Lst idx2Lst)
   "return a dataset encapsulated version of extract-idx."
-  (make-instance 'statistical-dataset
+  (make-instance 'dataframe-array
 		 :storage (make-array
 			   (list (length idx1Lst) (length idx2Lst))
 				 :initial-contents (dataset sds))
@@ -254,7 +274,7 @@ structure."
 (defgeneric reshapeData  (dataform into-form as-copy)
   (:documentation "pulling data into a new form"))
 
-(defmethod reshapeData ((sds statistical-dataset) what into-form))
+(defmethod reshapeData ((sds dataframe-like) what into-form))
 
 (defmethod reshapeData ((ds array) (sp list) copy-p)
   "Array via specList specialization: similar to the common R
@@ -269,7 +289,7 @@ approaches to redistribution.")
 	(ncols (nth 1 (array-dimensions ary))))
     (dotimes (i ncols)
       (dotimes (j nrows)
-	(nappend result (aref ary i j))))))
+	(append result (aref ary i j))))))
 
 (defun col-order-as-list (ary)
   "Pull out data in row order into a list."
@@ -278,9 +298,7 @@ approaches to redistribution.")
 	(ncols (nth 1 (array-dimensions ary))))
     (dotimes (i nrows)
       (dotimes (j ncols)
-	(nappend result (aref ary i j))))))
-
-
+	(append result (aref ary i j))))))
 
 
 (defun transpose (ary)
