@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-02-19 17:53:25 tony>
+;;; Time-stamp: <2009-03-11 20:06:32 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -114,18 +114,29 @@
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
-	       
-	       (:module "packaging"
-			:pathname #p"src/"
-			:components
-			((:file "packages")))
 
-	       (:module "proto-objects"
-			:pathname "src/objsys/"
-			:serial t
-			:depends-on ("packaging")
-			:components
-			((:lispstat-lsp-source-file "lsobjects")))
+	       ;; reading in DSV files for data access
+	       (:module 
+		"csv-data"
+		:pathname "src/data/"
+		:components
+		((:file "test-cybertiggyr")
+		 (:file "dsv-cybertiggyr" :depends-on ( "test-cybertiggyr"))))
+	       
+	       (:module
+		"packaging"
+		:pathname #p"src/"
+		:depends-on ("csv-data")
+		:components
+		((:file "packages")))
+
+	       (:module
+		"proto-objects"
+		:pathname "src/objsys/"
+		:serial t
+		:depends-on ("packaging")
+		:components
+		((:lispstat-lsp-source-file "lsobjects")))
 
 	       (:module "lispstat-core"
 			:pathname "src/basics/"
@@ -166,13 +177,6 @@
 |#
 		 ))
 
-	       ;; reading in DSV files for data access
-	       (:module 
-		"csv-data"
-		:pathname "src/data/"
-		:components
-		((:file "test-cybertiggyr")
-		 (:file "dsv-cybertiggyr" :depends-on ( "test-cybertiggyr"))))
 
 	       ;; prototype and CLOS approaches.
 	       (:module
