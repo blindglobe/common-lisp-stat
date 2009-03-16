@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-03-10 20:45:49 tony>
+;;; Time-stamp: <2009-03-12 23:18:12 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -395,8 +395,8 @@ iron
 ;; rclg-init::*r-started*
 (rclg-init::check-stack)
 (r "Cstack_info")
-(defparameter *x* (r seq 1 10))
-(defparameter *y* (rnbi rnorm 10))
+(defparameter *x* (r seq 1 11))
+(defparameter *y* (r rnorm 10))
 *y*
 (r plot *x* *y*)
 *y*
@@ -618,7 +618,7 @@ my.lib
   *y*
   )
 
-
+(in-package :ls-user)
 
 (progn
   (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
@@ -636,9 +636,9 @@ my.lib
   ;; estimating variance, Moments
   (let ((meanx (mean *x*))
 	(n (nelts *x*)))
-    (/ (loop for i from 0 to (- n  1)
+    (/ (loop for i from 0 to (1-  n)
 	  summing (* (- (vref *x* i) meanx)
-		     (- (vref *x* i) meanx) ))
+		     (- (vref *x* i) meanx)))
        n))
 
   ;; estimating variance, Moments
