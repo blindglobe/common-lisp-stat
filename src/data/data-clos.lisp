@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-16 20:20:07 tony>
+;;; Time-stamp: <2009-03-16 21:03:58 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,7 +15,6 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
 
 (in-package :lisp-stat-data-clos)
 
@@ -33,14 +32,6 @@
 ;;; 
 ;;; So we want a verb-driven API for data collection construction.  We
 ;;; should encode independence or lack of, as possible.
-
-#+nil(progn
-       (def-statschema MyDB
-	   :tables (list (list t1 )
-			 (list t2 )
-			 (list t4 ))
-	   :unique-key key
-	   :stat-relation '(t1 (:nest-within t2) (:nest-within t3))))
 
 ;; Need to figure out typed vectors.   We then map a series of typed
 ;; vectors over to tables where columns are equal typed.  In a sense,
@@ -118,26 +109,32 @@
                    to be independent, matching observations.  Columns
                    are considered to be type-consistent, match a
                    varioable with distribution.  inherits from
-                   lisp-matrix base matrix-like class. "))
+                   lisp-matrix base matrix-like class. 
 
+                   dataframe-like
+                   is the basic cases by variables framework.  Need to
+                   embed this within other structures which allow for
+                   generalized relations.  Goal is to ensure that
+                   relations imply and drive the potential for
+                   statistical relativeness such as correlation,
+                   interference, and similar concepts.
+"))
 
-;; dataframe-like is the basic cases by variables framework.  Need to
-;; embed this within other structures which allow for generalized
-;; relations.  Goal is to ensure that relations imply and drive the
-;; potential for statistical relativeness such as correlation,
-;; interference, and similar concepts.
-
+;; (documentation 'dataframe-like  'type)
 
 (defclass dataframe-array (dataframe-like)
   ((store :initform nil
 	  :initarg :storage
 	  :type (array * *)
 	  :accessor dataset
-	  :documentation "Data storage: typed as table, array,
-                          relation, or pointer/reference to such."))
+	  :documentation "Data storage: typed as array."))
   (:documentation "example implementation of dataframe-like using storage
   based on lisp arrays."))
 
+#|
+  (let ((df (make-new 'dataframe-array))))
+
+|#
 
 ;; Actions on a statistical data structure.
 
@@ -299,7 +296,6 @@ approaches to redistribution.")
     (dotimes (i nrows)
       (dotimes (j ncols)
 	(append result (aref ary i j))))))
-
 
 (defun transpose (ary)
   "map NxM to MxN."
