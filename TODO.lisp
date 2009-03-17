@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-16 22:08:25 tony>
+;;; Time-stamp: <2009-03-17 20:39:16 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -535,7 +535,125 @@
   (princ (third *lm-result*))
   (v= (third *lm-result*)
       (v- (first (first *lm-result*)) 
-	  (first  (second *lm-result*)))))
+	  (first  (second *lm-result*))))
+
+
+
+  
+  ;; Some issues exist in the LAPACK vs. LINPACK variants, hence R
+  ;; uses LINPACK primarily, rather than LAPACK.  See comments in R
+  ;; source for issues.  
+
+
+  ;; Goal is to start from X, Y and then realize that if
+  ;; Y = X \beta, then,   i.e. 8x1 = 8xp px1  + 8x1
+  ;;      XtX \hat\beta = Xt Y
+  ;; so that we can solve the equation  W \beta = Z   where W and Z
+  ;; are known, to estimate \beta.
+
+  ;; the above is known to be numerically instable -- some processing
+  ;; of X is preferred and should be done prior.  And most of the
+  ;; transformation-based work does precisely that.
+
+  ;; recall:  Var[Y] = E[(Y - E[Y])(Y-E[Y])t]
+  ;;   = E[Y Yt] - 2 \mu \mut + \mu \mut
+  ;;   = E[Y Yt] - \mu \mut
+
+  ;; Var Y = E[Y^2] - \mu^2
+
+
+  ;; For initial estimates of covariance of \hat\beta:
+
+  ;; \hat\beta = (Xt X)^-1 Xt Y
+  ;; with E[ \hat\beta ] 
+  ;;        = E[ (Xt X)^-1 Xt Y ]
+  ;;        = E[(Xt X)^-1 Xt (X\beta)]
+  ;;        = \beta 
+  ;;        
+  ;; So Var[\hat\beta] = ...
+  ;;     (Xt X)
+  ;; and this gives SE(\beta_i) = (* (sqrt (mref Var i i)) adjustment)
+
+
+  ;; from docs:
+
+  (setf *temp-result* 
+	(let ((*default-implementation* :foreign-array))
+	  (let* ((m 10)
+		 (n 10)
+		 (a (rand m n))
+		 (x (rand n 1))
+		 (b (m* a x))
+		 (rcond (* (coerce (expt 2 -52) 'double-float)
+			   (max (nrows a) (ncols a))))
+		 (orig-a (copy a))
+		 (orig-b (copy b))
+		 (orig-x (copy x)))
+	    (list x (gelsy a b rcond))
+	    ;; no applicable conversion?
+	    ;; (m-   (#<FA-SIMPLE-VECTOR-DOUBLE (10 x 1)) 
+	    ;;       (#<FA-SIMPLE-VECTOR-DOUBLE (10 x 1)) )
+	    (v- x (first (gelsy a b rcond))))))
+
+  
+  (princ *temp-result*)
+  
+  (setf *temp-result* 
+	(let ((*default-implementation* :lisp-array))
+	  (let* ((m 10)
+		 (n 10)
+		 (a (rand m n))
+		 (x (rand n 1))
+		 (b (m* a x))
+		 (rcond (* (coerce (expt 2 -52) 'double-float)
+			   (max (nrows a) (ncols a))))
+		 (orig-a (copy a))
+		 (orig-b (copy b))
+		 (orig-x (copy x)))
+	    (list x (gelsy a b rcond))
+	    (m- x (first  (gelsy a b rcond)))
+	    )))
+  (princ *temp-result*)
+
+
+  (defparameter *xv*
+    (make-vector
+     8
+     :type :row ;; default, not usually needed!
+     :initial-contents '((1d0 3d0 2d0 4d0 3d0 5d0 4d0 6d0))))
+
+  (defparameter *y*
+    (make-vector
+     8
+     :type :row
+     :initial-contents '((1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
+
+  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  (defparameter *xtx-1* (m* *xv* (transpose *xv*)))
+  (defparameter *xty-1* (m* *xv* (transpose  *y*)))
+  (defparameter *rcond-in* (* (coerce (expt 2 -52) 'double-float)
+			      (max (nrows *xtx-1*)
+				   (ncols *xty-1*))))
+
+  (defparameter *betahat*  (gelsy *xtx-1* *xty-1* *rcond-in*))
+
+  ;;  (#<LA-SIMPLE-VECTOR-DOUBLE (1 x 1)
+  ;;  1.293103448275862>
+  ;;  1)
+
+  ;;   ## Test case in R:
+  ;;   x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
+  ;;   y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+  ;;   lm(y~x-1)
+  ;;   ## => 
+  ;;   Call:
+  ;;   lm(formula = y ~ x - 1)
+
+  ;;   Coefficients:
+  ;;       x  
+  ;;   1.293  
+
+  (first  *betahat*))
 
 
 #+nil
@@ -549,3 +667,9 @@
 			    :ncols 5 )))
     df2)
   )
+
+
+#+nil
+(progn
+
+  (plot-ex))
