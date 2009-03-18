@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-16 21:56:47 tony>
+;;; Time-stamp: <2009-03-18 12:12:51 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -120,12 +120,29 @@
    data-pointer))
 
 #|
-(defpackage :lisp-stat-regression-linear-clos
+ (defpackage :lisp-stat-regression-linear-clos
   (:use :common-lisp
 	:lisp-matrix
 	:lisp-stat-data-clos)
   (:export regression-model))
 |#
+
+(defpackage :lisp-stat-visualize
+  (:use :common-lisp
+	:lisp-matrix
+	:lisp-stat-data-clos))
+
+(defpackage :lisp-stat-visualize-plplot
+  (:use :common-lisp
+	:lisp-matrix
+	:lisp-stat-data-clos
+	:cl-plplot-system)
+  (:export
+   plot-ex
+   contour-plot-ex
+   fn-contour-plot-ex
+   shade-plot-ex
+   3D-plot-ex ))
 
 
 ;;; USER PACKAGES
@@ -466,7 +483,17 @@
    ;; encapsulated, so we use the one in regression.lisp
 
    ;; bayes.lsp
-   bayes-model bayes-model-proto bayes-internals))
+   bayes-model bayes-model-proto bayes-internals
+
+
+   ;; plots.lisp
+   plot-ex
+   contour-plot-ex
+   fn-contour-plot-ex
+   shade-plot-ex
+   3D-plot-ex 
+   
+   ))
 
 
 ;;;; PACKAGES FOR USEABILITY

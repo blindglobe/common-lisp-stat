@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-03-16 20:47:22 tony>
+;;; Time-stamp: <2009-03-18 12:11:44 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -110,7 +110,10 @@
   at CMU, on leave somewhere?).   Last touched by him in 1991, then in
   2005--2009." 
   :serial t
-  :depends-on (:cffi :lisp-matrix :lift)
+  :depends-on (:cffi
+	       :cl-plplot  ;; FIXME: conditionally load only, not always simple to install?
+	       :lisp-matrix
+	       :lift)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
@@ -216,6 +219,13 @@
 		((:lispstat-lsp-source-file "statistics")))
 
 	       (:module
+		"visualize"
+		:pathname "src/visualize/"
+		:depends-on ("lispstat-core")
+		:components
+		((:file "plot")))
+
+	       (:module
 		"optimization"
 		:pathname "src/numerics/"
 		:depends-on ("packaging"
@@ -294,6 +304,4 @@
 			      (:file "unittests-proto" :depends-on ("unittests"))
 			      (:file "unittests-regression" :depends-on ("unittests"))
 			      (:file "unittests-arrays" :depends-on ("unittests"))
-			      (:file "unittests-data-clos" :depends-on ("unittests"))
-
-			      ))))
+			      (:file "unittests-data-clos" :depends-on ("unittests"))))))
