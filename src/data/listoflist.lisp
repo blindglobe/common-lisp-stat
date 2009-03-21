@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-11 16:04:26 tony>
+;;; Time-stamp: <2009-03-21 09:30:48 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -14,7 +14,7 @@
 
 
 ;; Where should this go?
-(in-package :cls-data)
+(in-package :cls-data-listoflist)
 
 
 ;; Glib commentary:
@@ -30,25 +30,27 @@
 ;; the top-level list with a property to check orientation
 ;; (row-major/column-major), but this hasn't been done yet.
 
+;; This file contains code for going between listoflists,
+;; arrays/vectors, and matrix-like/vector-like data structures.  
 
 
 #|
 ;; Test cases:
-(and T T nil T)
-(and T T T)
-(defparameter *x1* (list 1 2 3))
-(defparameter *x2* (list 1 2 3))
-(defparameter *x3* (list 1 2 3 4))
-(defparameter *x4* (list 1 2 3))
-(reduce #'(lambda (x y)
+ (and T T nil T)
+ (and T T T)
+ (defparameter *x1* (list 1 2 3))
+ (defparameter *x2* (list 1 2 3))
+ (defparameter *x3* (list 1 2 3 4))
+ (defparameter *x4* (list 1 2 3))
+ (reduce #'(lambda (x y)
 	      (if (= x y) y -1))
 	  (mapcar #'length (list *x1* *x2* *x3*)))
-(reduce #'(lambda (x y)
+ (reduce #'(lambda (x y)
 	      (if (= x y) y -1))  (list 2 3 2))
-(lists-of-same-size *x1* *x2* *x4*) ; => T
-(lists-of-same-size *x1* *x3* *x4*) ; => F
-(lists-of-same-size *x1* *x2* *x3*) ; => F
-(lists-of-same-size *x3* *x1* *x3*) ; => F
+ (lists-of-same-size *x1* *x2* *x4*) ; => T
+ (lists-of-same-size *x1* *x3* *x4*) ; => F
+ (lists-of-same-size *x1* *x2* *x3*) ; => F
+ (lists-of-same-size *x3* *x1* *x3*) ; => F
 |#
 
 
@@ -62,9 +64,9 @@ justify further processing and initial conditions."
 
 ;; the following will be handy to help out folks adjust.  It should
 ;; provide a means to write code faster and better.
-(defmacro make-data-set-from-lists (datasetname
-				    &optional (force-overwrite nil)
-				    &rest lists-of-data-lists)
+(defmacro make-dataframe-from-listoflist (datasetname
+					  &optional (force-overwrite nil)
+					  &rest lists-of-data-lists)
   "Create a cases-by-variables data frame consisting of numeric data,
 from a ROW-MAJOR list-of-lists representation.  A COLUMN-MAJOR
 representation should be handled using the transpose-listoflists
@@ -90,31 +92,32 @@ function."
 (princ this-data)
 |#
 
-(defun transpose-listoflists (listoflists)
+(defun transpose-listoflist (listoflist)
   "This function does the moral-equivalent of a matrix transpose on a
 list-of-lists data structure"
-  (apply #'mapcar #'list listoflists))
+  (apply #'mapcar #'list listoflist))
 
 ;; (defparameter LOL-2by3 (list (list 1 2) (list 3 4) (list 5 6)))
 ;; (defparameter LOL-3by2 (list (list 1 3 5) (list 2 4 6)))
 ;; (transpose-listoflists (transpose-listoflists LOL-2by3))
 ;; (transpose-listoflists (transpose-listoflists LOL-3by2))
 
-(defun equal-listoflists (x y)
+(defun equal-listoflist (x y)
   "FIXME: This function, when written, should walk through 2 listoflists and
 return T/nil based on equality."
-  (and
-   ;; top-level length same
-   (= (list-length x)
-      (list-length y))
-   ;; FIXME: within-level lengths same
-   ()
-   ;; FIXME: flattened values same, walking through
-   (loop over x and verify same tree as y)))
+  (and (= (list-length x) ;; top-level length same
+	  (list-length y))
+       ;; FIXME: within-level lengths same
+       ;; FIXME: flattened values same, walking through
+       ;; (loop over x and verify same tree as y)
+       ))
 
 
-(defun make-datatable-from-listoflists (lol) ; &key (type 'row-major)
-  "From a listoflists structure, make a datatable.
+(defun make-array-from-listoflist (lol) ; &key (type 'row-major)
+  "From a listoflists structure, make an array.
+
+FIXME: need to verify that the listoflists is a valid structure (same
+size rows, typing if required, etc.
 
 <example>
   (defparameter *mdfl-test*
@@ -149,12 +152,3 @@ return T/nil based on equality."
   (array-dimensions *mdfl-test-dt*)
 
 |#
-
-(defun ensure-consistent-datatable-type (dt lot)
-  "given a datatable and a listoftypes, ensure that the datatble
-  variables are consistent."
-  (destructuring-bind (n p)
-      (array-dimensions dt)
-    (dotimes (i n)
-      (dotimes (j p)
-	(check-type  (aref dt i j) (elt lot j))))))

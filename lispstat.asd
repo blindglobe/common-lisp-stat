@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-03-18 12:11:44 tony>
+;;; Time-stamp: <2009-03-21 09:27:37 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -191,7 +191,8 @@
 			     "numerics-internal")
 		:components
 		((:file "data-clos")
-		 (:file "data")))
+		 (:file "data")
+		 (:file "listoflist")))
 
 	       (:module
 		"lispstat-basics"

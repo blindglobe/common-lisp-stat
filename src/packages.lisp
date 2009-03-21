@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-18 12:12:51 tony>
+;;; Time-stamp: <2009-03-21 09:28:46 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -108,6 +108,8 @@
 
 ;;; NEW CLOS STRUCTURE
 
+
+
 (defpackage :lisp-stat-data-clos
   (:use :common-lisp
 	:lisp-matrix)
@@ -116,8 +118,26 @@
    ;; could be value, otherwise might be reference.
    dataframe-like
    dataframe-array
+
+   ;; accessors
+   dataset
+   nrows ncols
+   list-of-columns ;; list-of-variables
+   list-of-rows ;; list-of-observations
+
+   ;; ???
    get-variable-matrix get-variable-vector
-   data-pointer))
+   data-pointer
+   ))
+
+(defpackage :cls-data-listoflist
+  (:use :common-lisp
+	:lisp-stat-data-clos) ; for dataframe
+  (:export lists-of-same-size
+	   equal-listoflist
+	   transpose-listoflist
+	   make-dataframe-from-listoflist
+	   make-array-from-listoflist))
 
 #|
  (defpackage :lisp-stat-regression-linear-clos
@@ -440,7 +460,10 @@
    dataframe-like
    dataframe-array
 
-
+   ;; listoflist
+   lists-of-same-size equal-listoflist
+   transpose-listoflist
+   make-dataframe-from-listoflist  make-array-from-listoflist
 
    ;; statistics.lsp  (descriptions, should probably be moved
    ;; later...?
