@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-17 20:39:16 tony>
+;;; Time-stamp: <2009-03-21 09:32:59 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -22,7 +22,7 @@
 
 (in-package :lisp-stat-unittests)
 
-;; tests = 54, failures = 7, errors = 3
+;; tests = 89, failures = 7, errors = 37
 
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
@@ -35,10 +35,12 @@
       :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 |#
 
+(describe 'lisp-stat-ut)
 (in-package :ls-user)
 
-
 (progn ;; Data setup
+
+  (describe 'make-matrix)
 
   (defparameter *indep-vars-2-matrix*
     (make-matrix (length iron) 2
@@ -95,6 +97,31 @@
   
   (princ "Data Set up"))
 
+
+(progn ;; dataframe
+
+  (defparameter *my-df-1*
+	(make-instance 'dataframe-array
+		       :storage #2A((1 2 3 4 5)
+				    (10 20 30 40 50))
+		       :doc "This is an interesting dataframe-array"
+		       :case-labels (list "x" "y")
+		       :var-labels (list "a" "b" "c" "d" "e")))
+
+
+  (defparameter *my-df-2*
+	(make-instance 'dataframe-array
+		       :storage
+		       (make-array-from-listoflists
+			(cybertiggyr-dsv::load-escaped
+			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv"))
+		       :doc "This is an interesting dataframe-array"))
+#|		       :case-labels (list "x" "y")
+		       :var-labels (list "a" "b" "c" "d" "e")
+|#  
+
+
+  )
 
 (progn
   ;; REVIEW: general Lisp use guidance
@@ -656,20 +683,10 @@
   (first  *betahat*))
 
 
-#+nil
-(progn 
-  (let ((df (make-instance 'dataframe-array))
-	)
-    df)
-
-  (let ((df2 (make-instance 'dataframe-array
-			    :nrows 10
-			    :ncols 5 )))
-    df2)
-  )
-
 
 #+nil
 (progn
+
+  (asdf:oos 'asdf:load-op 'cl-plplot)
 
   (plot-ex))
