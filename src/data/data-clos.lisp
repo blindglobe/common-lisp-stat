@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-23 08:14:41 tony>
+;;; Time-stamp: <2009-03-23 17:47:38 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -329,7 +329,10 @@ structure."
   (print-unreadable-object (object stream :type t)
     (format stream " ~d x ~d" (nrows object) (ncols object))
     (terpri stream)
-    (format stream "~T ~{~S ~T~}" (var-labels object))
+    ;; (format stream "~T ~{~S ~T~}" (var-labels object))
+    (dotimes (j (ncols object))
+      (write-char #\tab stream)
+      (format stream "~A~T" (nth j (var-labels object))))
     (dotimes (i (nrows object))
       (terpri stream)
       (format stream "~A:~T" (nth i (case-labels object)))
