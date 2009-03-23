@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the data-clos package
-;;; Time-stamp: <2009-03-16 20:49:53 tony>
+;;; Time-stamp: <2009-03-21 01:01:29 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -26,15 +26,18 @@
 
 (addtest (lisp-stat-dataclos) genseq
 	 (ensure
-	  (equal (lisp-stat-data-clos::gen-seq 4) (list 1 2 3 4))))
+	  (equal (lisp-stat-data-clos::gen-seq 4)
+		 (list 1 2 3 4))))
 
 (addtest (lisp-stat-dataclos) genseq-null
 	 (ensure
-	  (equal (lisp-stat-data-clos::gen-seq 0) nil)))
+	  (equal (lisp-stat-data-clos::gen-seq 0)
+		 nil)))
 
 (addtest (lisp-stat-dataclos) genseq-offset
 	 (ensure
-	  (equal (lisp-stat-data-clos::gen-seq 4 2) (list 2 3 4))))
+	  (equal (lisp-stat-data-clos::gen-seq 4 2)
+		 (list 2 3 4))))
 
 (addtest (lisp-stat-dataclos) equaltestnameData
 	 (ensure-error
@@ -43,16 +46,19 @@
 				 :storage #2A(('a 'b) ('c 'd))))
 		 #2A(('a 'b) ('c 'd)))))
 
-(defvar my-ds-1 nil 
+#|
+ (defvar my-ds-1 nil 
   "test ds for experiment.")
-(setf my-ds-1 (make-instance 'dataframe-array))
-my-ds-1
-
+ (setf my-ds-1 (make-instance 'dataframe-array))
+ my-ds-1
+|#
 
 (defvar my-ds-2 nil 
   "test ds for experiment.")
+
 (setf my-ds-2 (make-instance 'dataframe-array
-			     :storage #2A((1 2 3 4 5) (10 20 30 40 50))
+			     :storage #2A((1 2 3 4 5)
+					  (10 20 30 40 50))
 			     :doc "This is an interesting dataframe-array"
 			     :case-labels (list "a" "b" "c" "d" "e")
 			     :var-labels (list "x" "y")))
