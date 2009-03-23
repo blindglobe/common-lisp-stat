@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-21 09:24:56 tony>
+;;; Time-stamp: <2009-03-23 08:14:41 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -139,48 +139,49 @@ idx1/2 is row/col or case/var."
   (if (>= n start)
       (append (gen-seq (- n 1) start) (list n))))
 
-(defun dfref-var (sds index &key (type :list))
-  "Returns data as type.
+(defun dfref-var (df index &key (return-type :list))
+  "Returns the data in a single variable as type.
 type = sequence, vector, vector-like (if valid numeric type) or dataframe."
-  (ecase type
+  (ecase return-type
     (:list 
      (map 'list
-	  #'(lambda (x) (dfref sds index x))
-	  (gen-seq (nth 2 (array-dimensions (dataset sds))))))
+	  #'(lambda (x) (dfref df index x))
+	  (gen-seq (nth 2 (array-dimensions (dataset df))))))
     (:vector t)
     (:vector-like t)
     (:dataframe t)))
 
-(defun dfref-obsn (sds index)
+(defun dfref-obsn (df index)
   "Returns row as sequence."
   (map 'sequence
-       #'(lambda (x) (extract-1 sds x index))
-       (gen-seq (nth 1 (array-dimensions (dataset sds))))))
+       #'(lambda (x) (dfref df x index))
+       (gen-seq (nth 1 (array-dimensions (dataset df))))))
 
 ;; FIXME
-(defun extract-idx (sds idx1Lst idx2Lst)
+(defun dfref-2indexlist (df indexlist1 indexlist2 &key (return-type :array))
   "return an array, row X col dims.  FIXME TESTME"
-  (let ((my-pre-array (list)))
-    (dolist (x idx1Lst)
-      (dolist (y idx2Lst)
-	(append my-pre-array (extract-1 sds x y))))
-    (make-array (list (length idx1Lst) (length idx2Lst))
-		:initial-contents my-pre-array)))
+  (case return-type
+    (:array 
+     (let ((my-pre-array (list)))
+       (dolist (x indexlist1)
+	 (dolist (y indexlist2)
+	   (append my-pre-array (dfref df x y))))
+       (make-array (list (length indexlist1)
+			 (length indexlist2))
+		   :initial-contents my-pre-array)))
+    (:dataframe
+     (make-instance 'dataframe-array
+		    :storage (make-array
+			      (list (length indexlist1)
+				    (length indexlist2))
+			      :initial-contents (dataset df))
+		    ;; ensure copy for this and following
+		    :doc (doc-string df)
+		    ;; the following 2 need to be subseted based on
+		    ;; the values of indexlist1 and indexlist2
+		    :case-labels (case-labels df)
+		    :var-labels (var-labels df)))))
 
-
-(defun extract-idx-sds (sds idx1Lst idx2Lst)
-  "return a dataset encapsulated version of extract-idx."
-  (make-instance 'dataframe-array
-		 :storage (make-array
-			   (list (length idx1Lst) (length idx2Lst))
-				 :initial-contents (dataset sds))
-		 ;; ensure copy for this and following
-		 :doc (doc-string sds)
-		 :case-labels (caseNames sds)
-		 :var-labels (varNames sds)))
-
-(defgeneric extract (sds whatAndRange)
-  (:documentation "data extraction approach"))
 
 ;; Testing consistency/coherency.
 
@@ -233,7 +234,7 @@ of like a spreadsheet if the storage is a table."
   (let ((j -1))
     (dolist (i (case-labels ds))
       (print-as-row (append (list i)
-			    (extract-row (dataset ds) (incf j)))))))
+			    (dfref-obsn (dataset ds) (incf j)))))))
 
 #|
  (defun print-structure-relational (ds)
@@ -247,23 +248,10 @@ structure."
 	(dolist (i (case-labels currentRelationSet))
 	  (print-as-row
 	   (append (list i)
-		   (extract-row (dataset currentRelationSet)
-				(incf j)))))))))
+		   (dfref-obsn (dataset currentRelationSet)
+                               (incf j)))))))))
 |#
   
-
-;;; Shaping for computation
-
-(defgeneric reshapeData  (dataform into-form as-copy)
-  (:documentation "pulling data into a new form"))
-
-(defmethod reshapeData ((sds dataframe-like) what into-form))
-
-(defmethod reshapeData ((ds array) (sp list) copy-p)
-  "Array via specList specialization: similar to the common R
-approaches to redistribution.")
-
-(defclass data-format () ())
 
 (defun row-order-as-list (ary)
   "Pull out data in row order into a list."
@@ -283,7 +271,8 @@ approaches to redistribution.")
       (dotimes (j ncols)
 	(append result (aref ary i j))))))
 
-(defun transpose (ary)
+
+(defun transpose-array (ary)
   "map NxM to MxN."
   (make-array (reverse (array-dimensions ary))
       :initial-contents (col-order-as-list ary)))
@@ -336,17 +325,17 @@ approaches to redistribution.")
 ;;; NEED TO FIGURE OUT HOW TO EXTEND THE MATRIX-LIKE CLASS PRINT
 ;;; METHOD!
 
-
 (defmethod print-object ((object dataframe-array) stream)
   (print-unreadable-object (object stream :type t)
     (format stream " ~d x ~d" (nrows object) (ncols object))
     (terpri stream)
-    (format stream "~{~A~}" (var-labels object))
+    (format stream "~T ~{~S ~T~}" (var-labels object))
     (dotimes (i (nrows object))
       (terpri stream)
+      (format stream "~A:~T" (nth i (case-labels object)))
       (dotimes (j (ncols object))
-	(format stream " obs ~A" (nth i (case-labels object)))
-        (write-char #\space stream)
+        ;; (write-char #\space stream)
+        (write-char #\tab stream)
         (write (dfref object i j) :stream stream)))))
 
 
