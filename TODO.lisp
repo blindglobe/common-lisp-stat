@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-21 09:32:59 tony>
+;;; Time-stamp: <2009-03-23 08:15:54 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -37,6 +37,32 @@
 
 (describe 'lisp-stat-ut)
 (in-package :ls-user)
+
+
+(progn ;; dataframe
+
+  (defparameter *my-df-1*
+	(make-instance 'dataframe-array
+		       :storage #2A((1 2 3 4 5)
+				    (10 20 30 40 50))
+		       :doc "This is an interesting dataframe-array"
+		       :case-labels (list "x" "y")
+		       :var-labels (list "a" "b" "c" "d" "e")))
+
+
+  (defparameter *my-df-2*
+	(make-instance 'dataframe-array
+		       :storage
+		       (make-array-from-listoflists
+			(cybertiggyr-dsv::load-escaped
+			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv"))
+		       :doc "This is an interesting dataframe-array"))
+#|		       :case-labels (list "x" "y")
+		       :var-labels (list "a" "b" "c" "d" "e")
+|#  
+
+
+  )
 
 (progn ;; Data setup
 
@@ -98,30 +124,7 @@
   (princ "Data Set up"))
 
 
-(progn ;; dataframe
 
-  (defparameter *my-df-1*
-	(make-instance 'dataframe-array
-		       :storage #2A((1 2 3 4 5)
-				    (10 20 30 40 50))
-		       :doc "This is an interesting dataframe-array"
-		       :case-labels (list "x" "y")
-		       :var-labels (list "a" "b" "c" "d" "e")))
-
-
-  (defparameter *my-df-2*
-	(make-instance 'dataframe-array
-		       :storage
-		       (make-array-from-listoflists
-			(cybertiggyr-dsv::load-escaped
-			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv"))
-		       :doc "This is an interesting dataframe-array"))
-#|		       :case-labels (list "x" "y")
-		       :var-labels (list "a" "b" "c" "d" "e")
-|#  
-
-
-  )
 
 (progn
   ;; REVIEW: general Lisp use guidance
