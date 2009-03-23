@@ -40,10 +40,10 @@
 
 (defun mode-of (x) 
   (etypecase x
-	     (fixnum +mode-in+)
-	     (rational +mode-re+)
-	     (float +mode-re+)
-	     (complex +mode-cx+)))
+    (fixnum +mode-in+)
+    (rational +mode-re+)
+    (float +mode-re+)
+    (complex +mode-cx+)))
 
 (defun la-data-mode (data)
   (let ((data (compound-data-seq data))
