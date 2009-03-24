@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-21 09:28:46 tony>
+;;; Time-stamp: <2009-03-24 18:10:47 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -120,14 +120,15 @@
    dataframe-array
 
    ;; accessors
+   varlabels caselabels nrows ncols
+   dataframe-dimension dataframe-dimensons
+   dfref dfref-case dfref-var 
+   consistent-dataframe-p
+
    dataset
-   nrows ncols
    list-of-columns ;; list-of-variables
    list-of-rows ;; list-of-observations
 
-   ;; ???
-   get-variable-matrix get-variable-vector
-   data-pointer
    ))
 
 (defpackage :cls-data-listoflist
@@ -457,8 +458,13 @@
    def variables savevar undef
 
    ;; data-clos
-   dataframe-like
-   dataframe-array
+   dataframe-like dataframe-array
+   varlabels caselabels nrows ncols
+   dataframe-dimension dataframe-dimensons
+   dfref dfref-case dfref-var 
+   consistent-dataframe-p
+   dataset
+   list-of-columns list-of-rows
 
    ;; listoflist
    lists-of-same-size equal-listoflist
