@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-24 08:14:16 tony>
+;;; Time-stamp: <2009-03-24 18:22:33 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,21 +24,20 @@
 ;;; for example.  "column" vectors are related observations (by
 ;;; measure/recording) while "row" vectors are related readings (by
 ;;; case)
-;;; 
 
 ;;; Relational structure -- can we capture a completely unnormalized
 ;;; data strucutre to propose possible modeling approaches, and
 ;;; propose appropriate models and inferential strategies?
-;;; 
+
 ;;; So we want a verb-driven API for data collection construction.  We
 ;;; should encode independence or lack of, as possible.
 
-;; Need to figure out typed vectors.   We then map a series of typed
-;; vectors over to tables where columns are equal typed.  In a sense,
-;; this is a relation (1-1) of equal-typed arrays.  For the most part,
-;; this ends up making the R data.frame into a relational building
-;; block (considering 1-1 mappings using row ID as a relation).  
-;; Is this a worthwhile generalization?
+;;; Need to figure out typed vectors.  We then map a series of typed
+;;; vectors over to tables where columns are equal typed.  In a sense,
+;;; this is a relation (1-1) of equal-typed arrays.  For the most
+;;; part, this ends up making the R data.frame into a relational
+;;; building block (considering 1-1 mappings using row ID as a
+;;; relation).  Is this a worthwhile generalization?
 
 ;;; verbs vs semantics for DS conversion -- consider the possibily of
 ;;; how adverbs and verbs relate, where to put which semantically to
@@ -65,7 +64,7 @@
 ;;; - 
 
 
-;;;; Misc Fucntions
+;;; Misc Functions
 
 (defun gen-seq (n &optional (start 1))
   "There has to be a better way -- I'm sure of it!  default count from 1.
@@ -76,7 +75,23 @@
   (if (>= n start)
       (append (gen-seq (- n 1) start) (list n))))
 
-;;;; abstract dataframe class
+
+(defun strsym->indexnum (df strsym)
+  "Probably should be a method dispatching on the type of
+DATAFRAME-LIKE."
+  (position strsym (varlabels df)))
+
+#|
+
+  (equal 'testme 'testme)
+  (defparameter *test-pos* 'testme)
+  (position *test-pos* (list 'a 'b 'testme 'c))
+  (position #'(lambda (x) (equal x "testme")) (list "a" "b" "testme" "c"))
+  (position #'(lambda (x) (equal x 1)) (list 2 1 3 4))
+
+
+|#
+;;; abstract dataframe class
 
 (defclass dataframe-like (matrix-like)
   (
@@ -132,30 +147,41 @@
 ;;; dataframe-like objects.  Need methods for any storage
 ;;; implementation.
 
+(defgeneric dataframe-dimensions (df)
+  (:documentation "")
+  (:method ((df dataframe-like))
+    (error "dispatch on virtual class.")))
+
+(defgeneric dataframe-dimension (df index)
+  (:documentation "")
+  (:method ((df dataframe-like) index)
+    (elt (dataframe-dimensions df) index)))
+
 (defgeneric dfref (df index1 index2 &key return-type)
   (:documentation "scalar access with selection of possible return
   object types.")
   (:method ((df dataframe-like) index1 index2 &key return-type)
     (error "need a real class with real storage to reference elements.")))
 
+;;; Specializing on superclasses...
 ;;; Access and Extraction: implementations needed for any storage
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
 
 (defmethod nrows ((df dataframe-like))
   "specializes on inheritance from matrix-like in lisp-matrix."
-  (error "Need implementation; can't dispatch on virtual class."))
+  (error "Need implementation; can't dispatch on virtual class DATAFRAME-LIKE."))
 
 (defmethod ncols ((df dataframe-like))
   "specializes on inheritance from matrix-like in lisp-matrix."
-  (error "Need implementation; can't dispatch on virtual class."))
+  (error "Need implementation; can't dispatch on virtual class DATAFRAME-LIKE."))
 
 ;; Testing consistency/coherency.
 
-(defgeneric consistent-dataframe-like-p (df)
+(defgeneric consistent-dataframe-p (df)
   (:documentation "methods to check for consistency.")
   (:method ((df dataframe-like))
-    (error "need a real class with real storage to reference elements.")))
+    (error "Need implementation; can't dispatch on virtual class DATAFRAME-LIKE.")))
 
 #|
 
@@ -195,36 +221,36 @@
   (make-array (reverse (array-dimensions ary))
       :initial-contents (col-order-as-list ary)))
 
+;;; THE FOLLOWING 2 dual-sets done to provide error checking
+;;; possibilities on top of the generic function structure.  Not
+;;; intended as make-work!
 
-;;;; THE FOLLOWING 2 dual-sets done to provide error checking
-;;;; possibilities.  Not intended as make-work!
-
-(defun varNames (ds)
+(defun varlabels (df)
   "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (var-labels ds))
+  (var-labels df))
 
-(defun set-varNames (ds vN)
+(defun set-varlabels (df vl)
   "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (if (= (length (var-labels ds))
-	 (length vN))
-      (setf (var-labels ds) vN)
+  (if (= (length (var-labels df))
+	 (length vl))
+      (setf (var-labels df) vl)
       (error "wrong size.")))
 
-(defsetf varNames set-varNames)
+(defsetf varlabels set-varlabels)
 
 ;;; Case-name handling for Tables.  Needs error checking.
-(defun caseNames (ds)
+(defun caselabels (df)
   "Case-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (case-labels ds))
+  (case-labels df))
 
-(defun set-caseNames (ds vN)
+(defun set-caselabels (df cl)
   "Case-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (if (= (length (case-labels ds))
-	 (length vN))
-      (setf (case-labels ds) vN)
+  (if (= (length (case-labels df))
+	 (length cl))
+      (setf (case-labels df) cl)
       (error "wrong size.")))
 
-(defsetf caseNames set-caseNames)
+(defsetf caselabels set-caselabels)
 
 ;;;;;;;;;;;; IMPLEMENTATIONS, with appropriate methods.
 
@@ -249,7 +275,7 @@
   "specializes on inheritance from matrix-like in lisp-matrix."
   (array-dimension (dataset df) 1))
 
-(defmethod consistent-dataframe-like-p ((ds dataframe-array))
+(defmethod consistent-dataframe-p ((ds dataframe-array))
   "Test that dataframe-like is internally consistent with metadata.
 Ensure that dims of stored data are same as case and var labels.
 
@@ -268,24 +294,64 @@ as well."
      t)))
 
 
-(defmethod dfref ((df dataframe-array) index1 index2 &key return-type)
-  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
-idx1/2 is row/col or case/var."
-  (ecase return-type
-    ((scalar) (aref (dataset df) index1 index2))
-    ((dataframe) (make-instance 'dataframe-array
-			       :storage (make-array
-					 (list 1 1)
-					 :initial-contents (dfref df index1 index2))
-			       ;; ensure copy for this and following
-			       :doc (doc-string df)
-			       :case-labels (nth index1 (caseNames df))
-			       :var-labels (nth index2  (varNames df))
-			       ;; shound the type spec assume, as
-			       ;; below, or should it inherit from the
-			       ;; dataframe we are selecting from?
-			       :var-types (nth index2 (var-types df))))))
 
+#|
+
+ (defun testecase (s)
+   (ecase s
+     ((scalar) 1)
+     ((asd asdf) 2)))
+
+ (testecase 'scalar)
+ (testecase 'asd)
+ (testecase 'asdf)
+ (testecase 'as)
+|#
+
+
+(defmethod dfref ((df dataframe-array) (index1 number) (index2 number) &key return-type)
+  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
+idx1/2 is row/col or case/var.  Return-type could be 'scalar,
+'dataframe, ..."
+  (ecase return-type
+    ((scalar)
+     (aref (dataset df) index1 index2))
+    ((dataframe)
+     (make-instance 'dataframe-array
+		    :storage (make-array
+			      (list 1 1)
+			      :initial-contents (dfref df index1 index2))
+		    ;; ensure copy for this and following
+		    :doc (doc-string df)
+		    :case-labels (nth index1 (caselabels df))
+		    :var-labels (nth index2  (varlabels df))
+		    ;; shound the type spec assume, as
+		    ;; below, or should it inherit from the
+		    ;; dataframe we are selecting from?
+		    :var-types (nth index2 (var-types df))))))
+
+
+
+(defmethod dfref ((df dataframe-array) (index1 string) (index2 string) &key return-type)
+  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
+idx1/2 is row/col or case/var.  This method dispatches when using
+strings or symbols.  Merge with the index-as-number variant?"
+  (let ((idx1 (strsym->indexnum df index1))
+	(idx2 (strsym->indexnum df index2)))
+    (ecase return-type
+      ((scalar) (aref (dataset df) idx1 idx2))
+      ((dataframe) (make-instance 'dataframe-array
+				  :storage (make-array
+					    (list 1 1)
+					    :initial-contents (dfref df idx1 idx2))
+				  ;; ensure copy for this and following
+				  :doc (doc-string df)
+				  :case-labels (elt (caselabels df) idx1)
+				  :var-labels  (elt (varlabels df) idx2)
+				  ;; shound the type spec assume, as
+				  ;; below, or should it inherit from the
+				  ;; dataframe we are selecting from?
+				  :var-types (nth idx2 (var-types df)))))))
 
 
 (defun dfref-var (df index return-type)
@@ -301,7 +367,7 @@ type = sequence, vector, vector-like (if valid numeric type) or dataframe."
     (:matrix-like t)
     (:dataframe t)))
 
-(defun dfref-obsn (df index return-type)
+(defun dfref-case (df index return-type)
   "Returns row as sequence."
   (ecase return-type
     (:list 
