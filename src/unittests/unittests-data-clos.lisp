@@ -5,46 +5,42 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the data-clos package
-;;; Time-stamp: <2009-03-21 01:01:29 tony>
+;;; Time-stamp: <2009-03-25 08:02:27 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;;; This organization and structure is new to the 21st Century
-;;; version.
-
 (in-package :lisp-stat-unittests)
-
-;;;
-;;; Use of this package:  To see what gets exported for use in others,
-;;; and how much corruption can be done to objects within a package.
-;;;
 
 (deftestsuite lisp-stat-ut-dataclos (lisp-stat-ut) ())
 
-(addtest (lisp-stat-dataclos) genseq
+;; Ensure helper-function support
+
+(addtest (lisp-stat-ut-dataclos) genseq
 	 (ensure
 	  (equal (lisp-stat-data-clos::gen-seq 4)
 		 (list 1 2 3 4))))
 
-(addtest (lisp-stat-dataclos) genseq-null
+(addtest (lisp-stat-ut-dataclos) genseq-null
 	 (ensure
 	  (equal (lisp-stat-data-clos::gen-seq 0)
 		 nil)))
 
-(addtest (lisp-stat-dataclos) genseq-offset
+(addtest (lisp-stat-ut-dataclos) genseq-offset
 	 (ensure
 	  (equal (lisp-stat-data-clos::gen-seq 4 2)
 		 (list 2 3 4))))
 
-(addtest (lisp-stat-dataclos) equaltestnameData
+(addtest (lisp-stat-ut-dataclos) equaltestnameData
 	 (ensure-error
 	  (equal (lisp-stat-data-clos::dataset
 		  (make-instance 'dataframe-array
-				 :storage #2A(('a 'b) ('c 'd))))
-		 #2A(('a 'b) ('c 'd)))))
+				 :storage #2A(('a 'b)
+					      ('c 'd))))
+		 #2A(('a 'b)
+		     ('c 'd)))))
 
 #|
  (defvar my-ds-1 nil 
@@ -68,45 +64,45 @@ my-ds-2
 (array-dimensions (lisp-stat-data-clos::dataset my-ds-2))
 
 
-(addtest (lisp-stat-dataclos) consData
+(addtest (lisp-stat-ut-dataclos) consData
 	 (ensure
 	  (consistent-dataframe-like-p my-ds-2)))
 
-(addtest (lisp-stat-dataclos) badAccess1
+(addtest (lisp-stat-ut-dataclos) badAccess1
 	 (ensure-error
 	  (slot-value my-ds-2 'store)))
 
-(addtest (lisp-stat-dataclos) badAccess2
+(addtest (lisp-stat-ut-dataclos) badAccess2
 	 (ensure-error
 	  (slot-value my-ds-2 'store)))
 
-(addtest (lisp-stat-dataclos) badAccess3
+(addtest (lisp-stat-ut-dataclos) badAccess3
 	 (ensure-error
 	  (lisp-stat-data-clos::dataset my-ds-2)))
 
-(addtest (lisp-stat-dataclos) badAccess4
+(addtest (lisp-stat-ut-dataclos) badAccess4
 	 (ensure
 	  (equal
 	   (slot-value my-ds-2 'lisp-stat-data-clos::store)
 	   (lisp-stat-data-clos::dataset my-ds-2))))
 
 
-(addtest (lisp-stat-dataclos) badAccess5
+(addtest (lisp-stat-ut-dataclos) badAccess5
 	 (ensure
 	  (eq (lisp-stat-data-clos::dataset my-ds-2)
 	      (slot-value my-ds-2 'lisp-stat-data-clos::store))))
 
 
 ;; NEVER DO THE FOLLOWING, UNLESS YOU WANT TO MUCK UP STRUCTURES...
-(addtest (lisp-stat-dataclos) badAccess6
+(addtest (lisp-stat-ut-dataclos) badAccess6
 	 (ensure
 	  (lisp-stat-data-clos::doc-string my-ds-2)))
 
-(addtest (lisp-stat-dataclos) badAccess7
+(addtest (lisp-stat-ut-dataclos) badAccess7
 	 (ensure
 	  (lisp-stat-data-clos::case-labels my-ds-2)))
 
-(addtest (lisp-stat-dataclos) badAccess8
+(addtest (lisp-stat-ut-dataclos) badAccess8
 	 (ensure
 	  (lisp-stat-data-clos::var-labels my-ds-2)))
 
@@ -115,12 +111,12 @@ my-ds-2
 ;; That would be a bit nasty if the dataframe-array becomes
 ;; inconsistent.
 
-(addtest (lisp-stat-dataclos) badAccess9
+(addtest (lisp-stat-ut-dataclos) badAccess9
 	 (ensure
 	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		(list "a" "b"))))
 
-(addtest (lisp-stat-dataclos) badAccess10
+(addtest (lisp-stat-ut-dataclos) badAccess10
 	 (ensure
 	  (progn 
 	    ;; no error, but corrupts structure
@@ -129,17 +125,17 @@ my-ds-2
 	    ;; error happens here
 	    (not (consistent-dataframe-like-p my-ds-2))))) ;; Nil
 
-(addtest (lisp-stat-dataclos) badAccess12
+(addtest (lisp-stat-ut-dataclos) badAccess12
 	 (ensure
 	  (setf (lisp-stat-data-clos::var-labels my-ds-2)
 		(list "a" "b"))))
 
-(addtest (lisp-stat-dataclos) badAccess13
+(addtest (lisp-stat-ut-dataclos) badAccess13
 	 (ensure
 	  (consistent-dataframe-like-p my-ds-2))) ;; T
 
 ;; This is now done by:
-(addtest (lisp-stat-dataclos) badAccess14
+(addtest (lisp-stat-ut-dataclos) badAccess14
 	 (ensure-error
 	  (let ((old-varnames (varNames my-ds-2)))
 	    (setf (varNames my-ds-2) (list "a" "b")) ;; should error
@@ -149,7 +145,7 @@ my-ds-2
 ;; break this up.
 (defvar origCaseNames nil)
 
-(addtest (lisp-stat-dataclos) badAccess15
+(addtest (lisp-stat-ut-dataclos) badAccess15
 	 (ensure
 	  (progn
 	    (setf origCaseNames (caseNames my-ds-2))
