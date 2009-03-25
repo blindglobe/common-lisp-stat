@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-24 18:22:33 tony>
+;;; Time-stamp: <2009-03-25 08:56:16 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -204,9 +204,42 @@ DATAFRAME-LIKE."
       (dotimes (j p)
 	(check-type  (aref dt i j) (elt lot j))))))
 |#
-  
-;;; change the following to generic functions and dispatch on 
+
+
+;;; GENERAL FUNCTIONS WHICH DISPATCH ON INTERNAL METHODS OR ARGS  
+;;;
+;;; Q: change the following to generic functions and dispatch on 
 ;;; array, matrix, and dataframe?  Others?
+(defun make-labels (initstr num &key (return-type 'string))
+  "generate a list of strings (or symbols?) which can be used as
+labels, i.e. something like 
+   '(a1 a2 a3) 
+or 
+   '(\"a1\" \"a2\" \"a3\")."
+  (concatenate return-type (repeat-seq initstr num) (gen-seq num)))
+
+(defun make-dataframe (newdata &key
+		       (vartypes nil)
+		       (caselabels nil) (varlabels nil)
+		       (doc "no docs"))
+  (check-type newdata array)
+  (check-type caselabels sequence)
+  (check-type varlabels sequence)
+  (check-type doc string)
+  
+  (let ((newcaselabels (if caselabels
+			   caselabels
+			   (make-labels "C" (array-dimension store 0))))
+	(newvarlabels (if varlabels
+			  varlabels
+			  (make-labels "C" (array-dimension store 1)))))
+    (make-instance 'dataframe-array
+		   :storage newdata
+		   :nrows (length newcaselabels)
+		   :ncols (length newvarlabels)
+		   :case-labels newcaselabels
+		   :var-labels newvarlabels
+		   :var-types)))
 
 (defun row-order-as-list (ary)
   "Pull out data in row order into a list."
