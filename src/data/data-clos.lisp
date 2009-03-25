@@ -64,7 +64,7 @@
 ;;; - 
 
 
-;;; Misc Functions
+;;; Misc Functions (to move into a lisp data manipulation support package)
 
 (defun gen-seq (n &optional (start 1))
   "There has to be a better way -- I'm sure of it!  default count from 1.
@@ -75,9 +75,19 @@
   (if (>= n start)
       (append (gen-seq (- n 1) start) (list n))))
 
+(defun repeat-seq (n item)
+  "FIXME: There has to be a better way -- I'm sure of it!
+ (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
+ (repeat-seq 3 'd) ; => ('d 'd 'd)
+"
+  (if (>= n 1)
+      (append (repeat-seq (1- n)  item) (list item))))
+
+
 
 (defun strsym->indexnum (df strsym)
-  "Probably should be a method dispatching on the type of
+  "Returns a number indicating which column in DF has STRSYM labeling
+it.  Probably should be a method dispatching on the type of
 DATAFRAME-LIKE."
   (position strsym (varlabels df)))
 
