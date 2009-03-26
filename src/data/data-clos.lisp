@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-25 08:56:16 tony>
+;;; Time-stamp: <2009-03-26 18:32:57 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -91,6 +91,19 @@ it.  Probably should be a method dispatching on the type of
 DATAFRAME-LIKE."
   (position strsym (varlabels df)))
 
+(defun string->number (str)
+  "Convert a string <str> representing a number to a number. A second value is
+returned indicating the success of the conversion.
+Example: (rsm.string:string->number \"123\")
+          123
+          t"
+  (let ((*read-eval* nil))
+    (let ((num (read-from-string str)))
+      (values num (numberp num)))))
+
+(string->number "1.22")
+
+
 #|
 
   (equal 'testme 'testme)
@@ -167,10 +180,10 @@ DATAFRAME-LIKE."
   (:method ((df dataframe-like) index)
     (elt (dataframe-dimensions df) index)))
 
-(defgeneric dfref (df index1 index2 &key return-type)
+(defgeneric dfref (df index1 index2) ; &key return-type
   (:documentation "scalar access with selection of possible return
   object types.")
-  (:method ((df dataframe-like) index1 index2 &key return-type)
+  (:method ((df dataframe-like) index1 index2) ;  &key return-type
     (error "need a real class with real storage to reference elements.")))
 
 ;;; Specializing on superclasses...
@@ -216,30 +229,51 @@ labels, i.e. something like
    '(a1 a2 a3) 
 or 
    '(\"a1\" \"a2\" \"a3\")."
-  (concatenate return-type (repeat-seq initstr num) (gen-seq num)))
+  (check-type initstr string)
+  (mapcar #'(lambda (x y)  (concatenate 'string x y))
+	  (repeat-seq num initstr)
+	  (mapcar #'(lambda (x) (format nil "~A" x)) (gen-seq num))))
 
-(defun make-dataframe (newdata &key
-		       (vartypes nil)
+#|
+ (make-labels 'c 2)
+ (make-labels "c" 4)
+|#
+
+(defun make-dataframe (newdata
+		       &key  (vartypes nil)
 		       (caselabels nil) (varlabels nil)
 		       (doc "no docs"))
+  "Helper function to use instead of make-instance to assure
+construction of proper DF-array."
   (check-type newdata array)
   (check-type caselabels sequence)
   (check-type varlabels sequence)
   (check-type doc string)
-  
+  (if caselabels (assert (= (array-dimension newdata 0) (length caselabels))))
+  (if varlabels (assert (= (array-dimension newdata 1) (length varlabels))))
   (let ((newcaselabels (if caselabels
 			   caselabels
-			   (make-labels "C" (array-dimension store 0))))
+			   (make-labels "C" (array-dimension newdata 0))))
 	(newvarlabels (if varlabels
 			  varlabels
-			  (make-labels "C" (array-dimension store 1)))))
+			  (make-labels "V" (array-dimension newdata 1)))))
     (make-instance 'dataframe-array
 		   :storage newdata
 		   :nrows (length newcaselabels)
 		   :ncols (length newvarlabels)
 		   :case-labels newcaselabels
 		   :var-labels newvarlabels
-		   :var-types)))
+		   :var-types vartypes)))
+
+#| 
+ (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
+ (make-dataframe #2A(('a 1) ('b 2)))
+ (dfref (make-dataframe #2A(('a 1) ('b 2))) 0 1)
+ (dfref (make-dataframe #2A(('a 1) ('b 2))) 1 0)
+ (make-dataframe 4) ; ERROR
+ (make-dataframe #2A((4)))
+|#
+
 
 (defun row-order-as-list (ary)
   "Pull out data in row order into a list."
@@ -351,8 +385,18 @@ as well."
  (testecase 'as)
 |#
 
+(defmethod dfref ((df dataframe-array)
+		  (index1 number) (index2 number))
+  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
+idx1/2 is row/col or case/var.  Return-type could be 'scalar,
+'dataframe, ..."
+  (aref (dataset df) index1 index2))
 
-(defmethod dfref ((df dataframe-array) (index1 number) (index2 number) &key return-type)
+#|
+
+ (defmethod dfref ((df dataframe-array)
+		  (index1 number) (index2 number)
+		  &key ((return-type scalar) symbol))
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var.  Return-type could be 'scalar,
 'dataframe, ..."
@@ -373,9 +417,9 @@ idx1/2 is row/col or case/var.  Return-type could be 'scalar,
 		    ;; dataframe we are selecting from?
 		    :var-types (nth index2 (var-types df))))))
 
-
-
-(defmethod dfref ((df dataframe-array) (index1 string) (index2 string) &key return-type)
+ (defmethod dfref ((df dataframe-array)
+		  (index1 string) (index2 string)
+		  &key ((return-type scalar) symbol))
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var.  This method dispatches when using
 strings or symbols.  Merge with the index-as-number variant?"
@@ -395,7 +439,7 @@ strings or symbols.  Merge with the index-as-number variant?"
 				  ;; below, or should it inherit from the
 				  ;; dataframe we are selecting from?
 				  :var-types (nth idx2 (var-types df)))))))
-
+|#
 
 (defun dfref-var (df index return-type)
   "Returns the data in a single variable as type.
