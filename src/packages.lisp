@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-24 18:10:47 tony>
+;;; Time-stamp: <2009-03-26 08:18:29 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -118,6 +118,7 @@
    ;; could be value, otherwise might be reference.
    dataframe-like
    dataframe-array
+   make-dataframe
 
    ;; accessors
    varlabels caselabels nrows ncols
@@ -458,7 +459,7 @@
    def variables savevar undef
 
    ;; data-clos
-   dataframe-like dataframe-array
+   dataframe-like dataframe-array make-dataframe
    varlabels caselabels nrows ncols
    dataframe-dimension dataframe-dimensons
    dfref dfref-case dfref-var 
