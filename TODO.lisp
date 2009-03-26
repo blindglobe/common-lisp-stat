@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-25 15:50:59 tony>
+;;; Time-stamp: <2009-03-26 08:27:28 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -57,6 +57,17 @@
 		       :case-labels (list "x" "y")
 		       :var-labels (list "a" "b" "c" "d" "e")))
 
+
+    (make-dataframe  #2A((1 2 3 4 5)
+			 (10 20 30 40 50)))
+
+  (defparameter *my-df-1*
+    (make-dataframe  #2A((1 2 3 4 5)
+			 (10 20 30 40 50))
+		     :caselabels (list "x" "y")
+		     :varlabels (list "a" "b" "c" "d" "e")	
+		     :doc "This is an interesting dataframe-array")
+    )
 
   (defparameter *my-df-2*
 	(make-instance 'dataframe-array
