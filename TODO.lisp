@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-27 17:05:50 tony>
+;;; Time-stamp: <2009-03-27 17:11:12 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -44,7 +44,6 @@
   (describe (lift::run-tests :suite 'lisp-stat-ut-dataclos))
   (lift::run-tests :suite 'lisp-stat-ut-dataclos)
 
-
   (describe 
     (lift::run-test
       :test-case  'lisp-stat-unittests::create-proto
@@ -58,39 +57,21 @@
 		       :case-labels (list "x" "y")
 		       :var-labels (list "a" "b" "c" "d" "e")))
 
-
-
-  (type-of #2A((1 2 3 4 5)
-		       (10 20 30 40 50)))
-
-  (type-of (rand 10 20))
-
-  (typep #2A((1 2 3 4 5)
-	     (10 20 30 40 50))
-	 'matrix-like)
-
-  (typep (rand 10 20) 'matrix-like)
-
-  (typep #2A((1 2 3 4 5)
-	     (10 20 30 40 50))
-	 'array)
-
-  (typep (rand 10 20) 'array)
-
-
   (make-dataframe  #2A((1 2 3 4 5)
 		       (10 20 30 40 50)))
 
   (make-dataframe (rand 6 3))
-
 
   (defparameter *my-df-1*
     (make-dataframe  #2A((1 2 3 4 5)
 			 (10 20 30 40 50))
 		     :caselabels (list "x" "y")
 		     :varlabels (list "a" "b" "c" "d" "e")	
-		     :doc "This is an interesting dataframe-array")
-    )
+		     :doc "This is an interesting dataframe-array"))
+
+  (caselabels *my-df-1*)
+  (varlabels *my-df-1*)
+
 
   (defparameter *my-df-2*
 	(make-instance 'dataframe-array
@@ -735,3 +716,24 @@
   (asdf:oos 'asdf:load-op 'cl-plplot)
 
   (plot-ex))
+
+#|
+
+  (type-of #2A((1 2 3 4 5)
+		       (10 20 30 40 50)))
+
+  (type-of (rand 10 20))
+
+  (typep #2A((1 2 3 4 5)
+	     (10 20 30 40 50))
+	 'matrix-like)
+
+  (typep (rand 10 20) 'matrix-like)
+
+  (typep #2A((1 2 3 4 5)
+	     (10 20 30 40 50))
+	 'array)
+
+  (typep (rand 10 20) 'array)
+
+|#
