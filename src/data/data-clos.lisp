@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-27 08:12:07 tony>
+;;; Time-stamp: <2009-03-27 17:03:01 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -223,12 +223,9 @@ Example: (rsm.string:string->number \"123\")
 ;;;
 ;;; Q: change the following to generic functions and dispatch on 
 ;;; array, matrix, and dataframe?  Others?
-(defun make-labels (initstr num &key (return-type 'string))
-  "generate a list of strings (or symbols?) which can be used as
-labels, i.e. something like 
-   '(a1 a2 a3) 
-or 
-   '(\"a1\" \"a2\" \"a3\")."
+(defun make-labels (initstr num)
+  "generate a list of strings which can be used as labels, i.e. something like 
+ '(\"a1\" \"a2\" \"a3\")."
   (check-type initstr string)
   (mapcar #'(lambda (x y)  (concatenate 'string x y))
 	  (repeat-seq num initstr)
@@ -238,6 +235,17 @@ or
  (make-labels 'c 2)
  (make-labels "c" 4)
 |#
+
+(defun ncase-store (store)
+  (etypecase store
+    (array (array-dimension store 0))
+    (matrix-like (nrows store))))
+
+(defun nvars-store (store)
+  (etypecase store
+    (array (array-dimension store 1))
+    (matrix-like (ncols store))))
+
 
 (defun make-dataframe (newdata
 		       &key  (vartypes nil)
@@ -249,31 +257,33 @@ construction of proper DF-array."
   (check-type caselabels sequence)
   (check-type varlabels sequence)
   (check-type doc string)
-  (if caselabels (assert (= (array-dimension newdata 0) (length caselabels))))
-  (if varlabels (assert (= (array-dimension newdata 1) (length varlabels))))
-  (let ((newcaselabels (if caselabels
-			   caselabels
-			   (make-labels "C" (array-dimension newdata 0))))
-	(newvarlabels (if varlabels
-			  varlabels
-			  (make-labels "V" (array-dimension newdata 1)))))
-    (typecase newdata 
-      (array
-       (make-instance 'dataframe-array
-		      :storage newdata
-		      :nrows (length newcaselabels)
-		      :ncols (length newvarlabels)
-		      :case-labels newcaselabels
-		      :var-labels newvarlabels
-		      :var-types vartypes))
-      (matrix-like
-       (make-instance 'dataframe-matraixlike
-		      :storage newdata
-		      :nrows (length newcaselabels)
-		      :ncols (length newvarlabels)
-		      :case-labels newcaselabels
-		      :var-labels newvarlabels
-		      :var-types vartypes)))))
+  (let ((ncases (ncase-store newdata))
+	(nvars (nvars-store newdata)))
+    (if caselabels (assert (= ncases (length caselabels))))
+    (if varlabels (assert (= nvars (length varlabels))))
+    (let ((newcaselabels (if caselabels
+			     caselabels
+			     (make-labels "C" ncases)))
+	  (newvarlabels (if varlabels
+			    varlabels
+			    (make-labels "V" nvars))))
+      (etypecase newdata 
+	(array
+	 (make-instance 'dataframe-array
+			:storage newdata
+			:nrows (length newcaselabels)
+			:ncols (length newvarlabels)
+			:case-labels newcaselabels
+			:var-labels newvarlabels
+			:var-types vartypes))
+	(matrix-like
+	 (make-instance 'dataframe-matrixlike
+			:storage newdata
+			:nrows (length newcaselabels)
+			:ncols (length newvarlabels)
+			:case-labels newcaselabels
+			:var-labels newvarlabels
+			:var-types vartypes))))))
 
 #| 
  (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
@@ -341,9 +351,10 @@ construction of proper DF-array."
 (defsetf caselabels set-caselabels)
 
 ;;;;;;;;;;;; IMPLEMENTATIONS, with appropriate methods.
-
 ;; See also:
 ;; (documentation 'dataframe-like  'type)
+
+;;;;; DATAFRAME-ARRAY
 
 (defclass dataframe-array (dataframe-like)
   ((store :initform nil
@@ -363,7 +374,46 @@ construction of proper DF-array."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (array-dimension (dataset df) 1))
 
-(defmethod consistent-dataframe-p ((ds dataframe-array))
+(defmethod dfref ((df dataframe-array)
+		  (index1 number) (index2 number))
+  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
+idx1/2 is row/col or case/var."
+  (aref (dataset df) index1 index2))
+
+
+;;;;; DATAFRAME-MATRIXLIKE
+
+(defclass dataframe-matrixlike (dataframe-like)
+  ((store :initform nil
+	  :initarg :storage
+	  :type matrix-like
+	  :accessor dataset
+	  :documentation "Data storage: typed as matrix-like
+  (numerical only)."))
+  (:documentation "example implementation of dataframe-like using storage
+  based on lisp-matrix structures."))
+
+(defmethod nrows ((df dataframe-matrixlike))
+  "specializes on inheritance from matrix-like in lisp-matrix."
+  (matrix-dimension (dataset df) 0))
+
+(defmethod ncols ((df dataframe-matrixlike))
+  "specializes on inheritance from matrix-like in lisp-matrix."
+  (matrix-dimension (dataset df) 1))
+
+(defmethod dfref ((df dataframe-matrixlike)
+		  (index1 number) (index2 number))
+  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
+idx1/2 is row/col or case/var."
+  (mref (dataset df) index1 index2))
+
+
+
+;;;;;; IMPLEMENTATION INDEPENDENT FUNCTIONS AND METHODS
+;;;;;; (use only dfref, nrows, ncols and similar dataframe-like
+;;;;;; components as core).
+
+(defmethod consistent-dataframe-p ((ds dataframe-like))
   "Test that dataframe-like is internally consistent with metadata.
 Ensure that dims of stored data are same as case and var labels.
 
@@ -378,30 +428,8 @@ as well."
    (progn
      (dolist (i (ncols ds))
        (dotimes (j (nrows ds))
-	 (typep (aref (dataset ds) i j) (nth i (var-types ds)))))
+	 (typep (dfref ds i j) (nth i (var-types ds)))))
      t)))
-
-
-
-#|
-
- (defun testecase (s)
-   (ecase s
-     ((scalar) 1)
-     ((asd asdf) 2)))
-
- (testecase 'scalar)
- (testecase 'asd)
- (testecase 'asdf)
- (testecase 'as)
-|#
-
-(defmethod dfref ((df dataframe-array)
-		  (index1 number) (index2 number))
-  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
-idx1/2 is row/col or case/var."
-  (aref (dataset df) index1 index2))
-
 
 (defun dfref-var (df index return-type)
   "Returns the data in a single variable as type.
@@ -456,7 +484,7 @@ type = sequence, vector, vector-like (if valid numeric type) or dataframe."
 ;;; Do we establish methods for dataframe-like, which specialize to
 ;;; particular instances of storage?
 
-(defmethod print-object ((object dataframe-array) stream)
+(defmethod print-object ((object dataframe-like) stream)
   (print-unreadable-object (object stream :type t)
     (format stream " ~d x ~d" (nrows object) (ncols object))
     (terpri stream)
@@ -486,4 +514,14 @@ structure."
 	   (append (list i)
 		   (dfref-obsn (dataset currentRelationSet)
                                (incf j)))))))))
+
+ (defun testecase (s)
+   (ecase s
+     ((scalar) 1)
+     ((asd asdf) 2)))
+
+ (testecase 'scalar)
+ (testecase 'asd)
+ (testecase 'asdf)
+ (testecase 'as)
 |#
