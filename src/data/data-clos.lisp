@@ -388,58 +388,9 @@ as well."
 (defmethod dfref ((df dataframe-array)
 		  (index1 number) (index2 number))
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
-idx1/2 is row/col or case/var.  Return-type could be 'scalar,
-'dataframe, ..."
+idx1/2 is row/col or case/var."
   (aref (dataset df) index1 index2))
 
-#|
-
- (defmethod dfref ((df dataframe-array)
-		  (index1 number) (index2 number)
-		  &key ((return-type scalar) symbol))
-  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
-idx1/2 is row/col or case/var.  Return-type could be 'scalar,
-'dataframe, ..."
-  (ecase return-type
-    ((scalar)
-     (aref (dataset df) index1 index2))
-    ((dataframe)
-     (make-instance 'dataframe-array
-		    :storage (make-array
-			      (list 1 1)
-			      :initial-contents (dfref df index1 index2))
-		    ;; ensure copy for this and following
-		    :doc (doc-string df)
-		    :case-labels (nth index1 (caselabels df))
-		    :var-labels (nth index2  (varlabels df))
-		    ;; shound the type spec assume, as
-		    ;; below, or should it inherit from the
-		    ;; dataframe we are selecting from?
-		    :var-types (nth index2 (var-types df))))))
-
- (defmethod dfref ((df dataframe-array)
-		  (index1 string) (index2 string)
-		  &key ((return-type scalar) symbol))
-  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
-idx1/2 is row/col or case/var.  This method dispatches when using
-strings or symbols.  Merge with the index-as-number variant?"
-  (let ((idx1 (strsym->indexnum df index1))
-	(idx2 (strsym->indexnum df index2)))
-    (ecase return-type
-      ((scalar) (aref (dataset df) idx1 idx2))
-      ((dataframe) (make-instance 'dataframe-array
-				  :storage (make-array
-					    (list 1 1)
-					    :initial-contents (dfref df idx1 idx2))
-				  ;; ensure copy for this and following
-				  :doc (doc-string df)
-				  :case-labels (elt (caselabels df) idx1)
-				  :var-labels  (elt (varlabels df) idx2)
-				  ;; shound the type spec assume, as
-				  ;; below, or should it inherit from the
-				  ;; dataframe we are selecting from?
-				  :var-types (nth idx2 (var-types df)))))))
-|#
 
 (defun dfref-var (df index return-type)
   "Returns the data in a single variable as type.
