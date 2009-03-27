@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-26 18:32:57 tony>
+;;; Time-stamp: <2009-03-27 08:12:07 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -245,7 +245,7 @@ or
 		       (doc "no docs"))
   "Helper function to use instead of make-instance to assure
 construction of proper DF-array."
-  (check-type newdata array)
+  (check-type newdata (or matrix-like array))
   (check-type caselabels sequence)
   (check-type varlabels sequence)
   (check-type doc string)
@@ -257,21 +257,32 @@ construction of proper DF-array."
 	(newvarlabels (if varlabels
 			  varlabels
 			  (make-labels "V" (array-dimension newdata 1)))))
-    (make-instance 'dataframe-array
-		   :storage newdata
-		   :nrows (length newcaselabels)
-		   :ncols (length newvarlabels)
-		   :case-labels newcaselabels
-		   :var-labels newvarlabels
-		   :var-types vartypes)))
+    (typecase newdata 
+      (array
+       (make-instance 'dataframe-array
+		      :storage newdata
+		      :nrows (length newcaselabels)
+		      :ncols (length newvarlabels)
+		      :case-labels newcaselabels
+		      :var-labels newvarlabels
+		      :var-types vartypes))
+      (matrix-like
+       (make-instance 'dataframe-matraixlike
+		      :storage newdata
+		      :nrows (length newcaselabels)
+		      :ncols (length newvarlabels)
+		      :case-labels newcaselabels
+		      :var-labels newvarlabels
+		      :var-types vartypes)))))
 
 #| 
  (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
  (make-dataframe #2A(('a 1) ('b 2)))
  (dfref (make-dataframe #2A(('a 1) ('b 2))) 0 1)
  (dfref (make-dataframe #2A(('a 1) ('b 2))) 1 0)
- (make-dataframe 4) ; ERROR
+ (make-dataframe 4) ; ERROR, should we allow?
  (make-dataframe #2A((4)))
+ (make-dataframe (rand 10 5)) ;; ERROR, but should work!
 |#
 
 
