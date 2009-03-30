@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-30 07:55:08 tony>
+;;; Time-stamp: <2009-03-30 08:17:46 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -107,7 +107,10 @@
 		 (list 
 		  (mapcar #'(lambda (x) (coerce x 'double-float))
 			  absorbtion))))
-  
+
+  (make-dataframe *dep-var*)
+  (make-dataframe (transpose *dep-var*))
+
   (defparameter *dep-var-int*
     (make-vector (length absorbtion)
 		 :type :row
