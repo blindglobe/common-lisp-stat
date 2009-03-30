@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-27 17:11:12 tony>
+;;; Time-stamp: <2009-03-30 07:55:08 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -60,7 +60,7 @@
   (make-dataframe  #2A((1 2 3 4 5)
 		       (10 20 30 40 50)))
 
-  (make-dataframe (rand 6 3))
+  (make-dataframe (rand 4 3))
 
   (defparameter *my-df-1*
     (make-dataframe  #2A((1 2 3 4 5)
