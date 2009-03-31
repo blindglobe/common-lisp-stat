@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-30 08:17:46 tony>
+;;; Time-stamp: <2009-03-31 17:05:06 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -22,7 +22,7 @@
 
 (in-package :lisp-stat-unittests)
 
-;; tests = 87, failures = 9, errors = 22
+;; tests = 87, failures = 8, errors = 21
 
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
@@ -61,6 +61,29 @@
 		       (10 20 30 40 50)))
 
   (make-dataframe (rand 4 3))
+
+
+  (equalp (dataset
+	  (make-instance 'dataframe-array
+			 :storage #2A(('a 'b)
+				      ('c 'd))))
+		 #2A(('a 'b)
+		     ('c 'd)) )
+
+  (equalp (dataset
+	  (make-instance 'dataframe-array
+			 :storage #2A((1 2)
+				      (3 4))))
+		 #2A((1 2)
+		     (3 4)))
+
+  (equalp (dataset
+	  (make-instance 'dataframe-array
+			 :storage #2A((1d0 2d0)
+				      (3d0 4d0))))
+		 #2A((1d0 2d0)
+		     (3d0 4d0)))
+
 
   (defparameter *my-df-1*
     (make-dataframe  #2A((1 2 3 4 5)
