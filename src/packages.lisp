@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-26 08:18:29 tony>
+;;; Time-stamp: <2009-03-31 17:25:41 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -22,10 +22,10 @@
 (defpackage :lisp-stat-object-system
   (:nicknames :ls-objects :lsos)
   (:use :common-lisp)
-  (:shadow :call-method :call-next-method :slot-value)
+  (:shadow :call-method :call-next-method)
   (:export ls-object objectp *object* kind-of-p make-object
 	   *message-hook*
-	   *set-slot-hook* slot-value self 
+	   *set-slot-hook* proto-slot-value self 
 	   send call-next-method call-method
 	   defmeth defproto instance-slots proto-name))
 
@@ -55,7 +55,6 @@
 	:lisp-stat-object-system
 	:lisp-stat-types)
   (:shadowing-import-from :lisp-stat-object-system
-			  slot-value
 			  call-next-method call-method)
   (:export compound-data-p *compound-data-proto*
 	   compound-object-p
@@ -84,7 +83,7 @@
 	  :lisp-stat-macros
 	  :lisp-stat-compound-data)
   (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
+			  call-method call-next-method)
   (:export permute-array sum prod count-elements mean
 	   if-else sample))
 
@@ -239,7 +238,7 @@
 	 :lisp-stat-compound-data
 	 :lisp-stat-float)
    (:shadowing-import-from :lisp-stat-object-system
-			   slot-value call-method call-next-method)
+			   call-method call-next-method)
    (:shadow expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
  	   asin acos atan sinh cosh tanh asinh acosh atanh float random
  	   truncate floor ceiling round minusp zerop plusp evenp oddp 
@@ -298,7 +297,7 @@
 	:lisp-stat-types
 	:lisp-stat-compound-data)
   (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
+			  call-method call-next-method)
   (:export open-file-dialog read-data-file read-data-columns load-data
 	   load-example *variables* *ask-on-redefine*
 	   def variables savevar undef))
@@ -335,7 +334,7 @@
 |#
 	)
   (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
+			  call-method call-next-method)
 #|
   (:shadowing-import-from :lisp-stat-math
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
@@ -374,7 +373,7 @@
 	:lisp-stat-regression-linear
 	:cybertiggyr-dsv)
   (:shadowing-import-from :lisp-stat-object-system
-	slot-value call-method call-next-method)
+			  call-method call-next-method)
   (:shadowing-import-from :lisp-stat-math
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
 	asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -533,7 +532,7 @@
   (:use :common-lisp
 	:lisp-stat)
   (:shadowing-import-from :lisp-stat
-      slot-value call-method call-next-method
+			  call-method call-next-method
 
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -559,7 +558,7 @@ done for a user- or analysis-package.")
 	:lisp-stat
 	:lisp-stat-data-examples) ;; this last is to have 'things to play with'
   (:shadowing-import-from :lisp-stat
-      slot-value call-method call-next-method
+			  call-method call-next-method
 
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
       asin acos atan sinh cosh tanh asinh acosh atanh float random
@@ -574,7 +573,7 @@ done for a user- or analysis-package.")
 (defpackage :lisp-stat-unittests
   (:use :common-lisp :lift :lisp-stat :lisp-stat-data-examples)
   (:shadowing-import-from :lisp-stat
-	slot-value call-method call-next-method ;; objects
+			  call-method call-next-method ;; objects
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
 	asin acos atan sinh cosh tanh asinh acosh atanh float random
 	truncate floor ceiling round minusp zerop plusp evenp oddp 
@@ -611,7 +610,7 @@ done for a user- or analysis-package.")
 |#
        )
  (:shadowing-import-from :lisp-stat-object-system
-			 slot-value call-method call-next-method)
+			 call-method call-next-method)
  (:shadowing-import-from :lisp-stat-math
 	   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
  	   asin acos atan sinh cosh tanh asinh acosh atanh float random
