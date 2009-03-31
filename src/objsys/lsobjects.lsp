@@ -24,7 +24,9 @@
 ;;;;
 ;;;;    This implementation does not make use of CLOS. It can coexist
 ;;;;    with CLOS, but there are two name conflicts: slot-value and
-;;;;    call-next-method. These two symbols are shadowed in the LSOS
+;;;;    call-next-method. 
+;;;;    FIXED-ME: SLOT-VALUE now becomes PROTO-SLOT-VALUE...
+;;;;    These two symbols are shadowed in the LSOS
 ;;;;    package and must be shadowed in any package that uses LSOS.
 ;;;;    Evaluating the function (lsos::use-lsos) from a package after
 ;;;;    loading this code shadows these two symbols and does a
@@ -355,14 +357,14 @@ Returns a new object with parents PARENTS. If PARENTS is NIL, (list *OBJECT*) is
   (setf (ls-object-slots x)
         (delete slot (ls-object-slots x) :key #'slot-entry-key)))
 
-(defun get-slot-value (x slot &optional no-err)  
+(defun get-proto-slot-value (x slot &optional no-err)  
   (check-object x)
   (let ((slot-entry (find-slot x slot)))
     (if (slot-entry-p slot-entry)
       (slot-entry-value slot-entry)
       (unless no-err (error "no slot named ~s in this object" slot)))))
 
-(defun set-slot-value (x slot value)
+(defun set-proto-slot-value (x slot value)
   (check-object x)
   (let ((slot-entry (find-own-slot x slot)))
     (cond
@@ -374,20 +376,20 @@ Returns a new object with parents PARENTS. If PARENTS is NIL, (list *OBJECT*) is
         (error "object does not own slot ~s" slot)
         (error "no slot named ~s in this object" slot))))))
 
-;;; FIXME: THIS IS EVIL -- need to rename to proto-slot-value or similar, so
-;;; that we can take advantage of CLOS.
-(defun slot-value (slot)
+;;; FIXME: THIS WAS EVIL -- renamed SLOT-VALUE to PROTO-SLOT-VALUE, so
+;;; that we can do CLOS simultaneously.
+(defun proto-slot-value (slot)
 "Args: (slot)
 
 Must be used in a method. Returns the value of current objects slot
 named SLOT.
 EVIL -- it conflicts with CLOS object slots."
-  (get-slot-value (get-self) slot))
+  (get-proto-slot-value (get-self) slot))
 
-(defun slot-value-setf (slot value)
-  (set-slot-value (get-self) slot value))
+(defun proto-slot-value-setf (slot value)
+  (set-proto-slot-value (get-self) slot value))
 
-(defsetf slot-value slot-value-setf)
+(defsetf proto-slot-value proto-slot-value-setf)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -511,10 +513,10 @@ Call method belonging to another object on current object."
      ((not (null doc-entry))
       (setf (rest doc-entry) value))
      (t
-      (set-slot-value x 
+      (set-proto-slot-value x 
                       'documentation
                       (cons (cons sym value)
-                            (get-slot-value x 'documentation))))))
+                            (get-proto-slot-value x 'documentation))))))
   nil)
 
 (defun get-documentation (x sym)
@@ -551,10 +553,10 @@ RETURNS: method-name."
 (defun find-instance-slots (x slots)
   (let ((result (nreverse (delete-duplicates (copy-list slots)))))
     (dolist (parent (ls-object-parents x) (nreverse result))
-      (dolist (slot (get-slot-value parent 'instance-slots))
+      (dolist (slot (get-proto-slot-value parent 'instance-slots))
         (pushnew slot result)))))
 
-(defun get-initial-slot-value (object slot)
+(defun get-initial-proto-slot-value (object slot)
   (let ((entry (find-slot object slot)))
     (if (slot-entry-p entry) (slot-entry-value entry))))
 
@@ -563,7 +565,7 @@ RETURNS: method-name."
   (add-slot object 'instance-slots ivars)
   (add-slot object 'proto-name name)
   (dolist (slot ivars)
-    (add-slot object slot (get-initial-slot-value object slot)))
+    (add-slot object slot (get-initial-proto-slot-value object slot)))
   (dolist (slot cvars)
     (add-slot object slot nil))
     
@@ -704,9 +706,9 @@ initialize slots."
     (dolist (slot-entry (ls-object-slots self))
       (let* ((slot (slot-entry-key slot-entry))
              (key (intern (symbol-name slot) (find-package 'keyword)))
-             (val (slot-value slot))
+             (val (proto-slot-value slot))
              (new-val (getf args key val)))
-        (unless (eq val new-val) (setf (slot-value slot) new-val)))))
+        (unless (eq val new-val) (setf (proto-slot-value slot) new-val)))))
   self)
 
 (defmeth *object* :has-slot (slot &key own)
@@ -803,9 +805,9 @@ Retrieves or installs documentation for topic."
 "Method args: (&rest args)
 Creates new object using self as prototype."
   (let* ((object (make-object self)))
-    (if (slot-value 'instance-slots)
-        (dolist (s (slot-value 'instance-slots))
-                (send object :add-slot s (slot-value s))))
+    (if (proto-slot-value 'instance-slots)
+        (dolist (s (proto-slot-value 'instance-slots))
+                (send object :add-slot s (proto-slot-value s))))
     (apply #'send object :isnew args)
     object))
 
@@ -818,8 +820,8 @@ must be a prototype and SELF must not be one."
   (if (not (send proto :has-slot 'instance-slots :own t))
       (error "not a prototype - ~a" proto))
   (send self :reparent proto)
-  (dolist (s (send proto :slot-value 'instance-slots))
-    (send self :add-slot s (slot-value s)))
+  (dolist (s (send proto :proto-slot-value 'instance-slots))
+    (send self :add-slot s (proto-slot-value s)))
   (apply #'send self :isnew args)
   self)
 
@@ -831,17 +833,17 @@ Default object printing method."
      (format stream
              "#<Object: ~D, prototype = ~A>"
 	     (ls-object-serial self)
-             (slot-value 'proto-name)))
+             (proto-slot-value 'proto-name)))
     (t (format stream "#<Object: ~D>" (ls-object-serial self)))))
 
-(defmeth *object* :slot-value (sym &optional (val nil set))
+(defmeth *object* :proto-slot-value (sym &optional (val nil set))
 "Method args: (sym &optional val)
 
 Sets and retrieves value of slot named SYM. Signals an error if slot
 does not exist."
     (send self :nop)
-    (if set (setf (slot-value sym) val))
-    (slot-value sym))
+    (if set (setf (proto-slot-value sym) val))
+    (proto-slot-value sym))
 
 (defmeth *object* :slot-names () 
 "Method args: ()
@@ -873,7 +875,7 @@ Returns all topics with documentation for this object."
                   (mapcar 
                    #'(lambda (x) 
                        (if (send x :has-slot 'documentation :own t)
-                           (send x :slot-value (quote documentation))))
+                           (send x :proto-slot-value (quote documentation))))
                    (send self :precedence-list))))))
 
 (defmeth *object* :documentation (topic &optional (val nil set))
@@ -888,7 +890,7 @@ Retrieves or sets object documentation for topic."
 (defmeth *object* :delete-documentation (topic)
 "Method args: (topic)
 Deletes object documentation for TOPIC."
-  (setf (slot-value 'documentation)
+  (setf (proto-slot-value 'documentation)
         ;;(remove :title nil :test #'(lambda (x y) (eql x (first y)))) ;; original
 	(remove topic (send self :documentation) :test #'(lambda (x y) (eql x (first y))))) ;; AJR:PROBLEM?
   nil)
@@ -906,7 +908,7 @@ Prints help message for TOPIC, or genreal help if TOPIC is NIL."
                                      (string-lessp (string x) (string y)))))
             (proto-doc (send self :documentation 'proto)))
         (if (send self :has-slot 'proto-name)
-	    (format t "~s~%" (slot-value 'proto-name)))
+	    (format t "~s~%" (proto-slot-value 'proto-name)))
         (when proto-doc (princ proto-doc) (terpri))
         (format t "Help is available on the following:~%~%")
         (dolist (i topics) (format t "~s " i))
