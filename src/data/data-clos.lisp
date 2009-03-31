@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-30 08:14:12 tony>
+;;; Time-stamp: <2009-03-31 07:53:40 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -66,42 +66,34 @@
 
 ;;; Misc Functions (to move into a lisp data manipulation support package)
 
+;; the next two should be merged into a general replicator pattern.
 (defun gen-seq (n &optional (start 1))
-  "There has to be a better way -- I'm sure of it!  default count from 1.
- (gen-seq 4) ; =>  (1 2 3 4)
- (gen-seq 0) ; => nil
- (gen-seq 5 3) ; => 3 4 5
-"
+  "Generates an integer sequence of length N starting at START. Used
+for indexing."
   (if (>= n start)
       (append (gen-seq (- n 1) start) (list n))))
 
 (defun repeat-seq (n item)
-  "FIXME: There has to be a better way -- I'm sure of it!
+  "FIXME: There has to be a better way -- I'm sure of it!   
  (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
- (repeat-seq 3 'd) ; => ('d 'd 'd)
-"
+ (repeat-seq 3 'd) ; => ('d 'd 'd)"
   (if (>= n 1)
       (append (repeat-seq (1- n)  item) (list item))))
 
-
-
 (defun strsym->indexnum (df strsym)
-  "Returns a number indicating which column in DF has STRSYM labeling
-it.  Probably should be a method dispatching on the type of
-DATAFRAME-LIKE."
+  "Returns a number indicating the DF column labelled by STRSYM.  
+Probably should be a method dispatching on DATAFRAME-LIKE type."
   (position strsym (varlabels df)))
 
 (defun string->number (str)
   "Convert a string <str> representing a number to a number. A second value is
 returned indicating the success of the conversion.
-Example: (rsm.string:string->number \"123\")
-          123
-          t"
+Examples:
+  (string->number \"123\") ; =>  123 t
+  (string->number \"1.23\") ; =>  1.23 t"
   (let ((*read-eval* nil))
     (let ((num (read-from-string str)))
       (values num (numberp num)))))
-
-(string->number "1.22")
 
 
 #|
