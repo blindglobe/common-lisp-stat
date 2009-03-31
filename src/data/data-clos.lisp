@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-31 07:53:40 tony>
+;;; Time-stamp: <2009-03-31 17:20:39 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -172,11 +172,10 @@ Examples:
   (:method ((df dataframe-like) index)
     (elt (dataframe-dimensions df) index)))
 
-(defgeneric dfref (df index1 index2) ; &key return-type
-  (:documentation "scalar access with selection of possible return
-  object types.")
-  (:method ((df dataframe-like) index1 index2) ;  &key return-type
-    (error "need a real class with real storage to reference elements.")))
+(defgeneric dfref (df index1 index2)
+  (:documentation "scalar access with selection of possible return object types.")
+  (:method ((df dataframe-like) index1 index2)
+    (error "Need real class with real storage to reference elements.")))
 
 ;;; Specializing on superclasses...
 ;;; Access and Extraction: implementations needed for any storage
@@ -196,7 +195,17 @@ Examples:
 (defgeneric consistent-dataframe-p (df)
   (:documentation "methods to check for consistency.")
   (:method ((df dataframe-like))
-    (error "Need implementation; can't dispatch on virtual class DATAFRAME-LIKE.")))
+    (and
+     ;; ensure dimensionality
+     (= (length (var-labels df)) (ncols df)) ; array-dimensions (dataset df))
+     (= (length (case-labels df)) (nrows df))
+     ;; when dims sane, check-type for each variable
+     (progn
+       (dotimes (i (nrows df))
+	 (dotimes (j (ncols df))
+	   ;; below, dfref bombs if not a df-like subclass...
+	   (typep (dfref df i j) (nth j (var-types df))))) 
+       t))))
 
 #|
 
@@ -404,24 +413,6 @@ idx1/2 is row/col or case/var."
 ;;;;;; IMPLEMENTATION INDEPENDENT FUNCTIONS AND METHODS
 ;;;;;; (use only dfref, nrows, ncols and similar dataframe-like
 ;;;;;; components as core).
-
-(defmethod consistent-dataframe-p ((ds dataframe-like))
-  "Test that dataframe-like is internally consistent with metadata.
-Ensure that dims of stored data are same as case and var labels.
-
-Currently checks length of things, but needs to check type of things
-as well."
-  (and
-   ;; ensure dimensionality
-   (equal (list (ncols ds) (nrows ds)) ; array-dimensions (dataset ds))
-	  (list (length (var-labels ds))
-		(length (case-labels ds))))
-   ;; when dims sane, check-type for each variable
-   (progn
-     (dolist (i (ncols ds))
-       (dotimes (j (nrows ds))
-	 (typep (dfref ds i j) (nth i (var-types ds)))))
-     t)))
 
 (defun dfref-var (df index return-type)
   "Returns the data in a single variable as type.
