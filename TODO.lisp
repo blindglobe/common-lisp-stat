@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-01 08:16:19 tony>
+;;; Time-stamp: <2009-04-01 18:08:45 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -56,6 +56,9 @@
 		       :doc "This is an interesting dataframe-array"
 		       :case-labels (list "x" "y")
 		       :var-labels (list "a" "b" "c" "d" "e")))
+
+  (setf (dfref *my-df-1* 0 0) -1d0)
+
 
   (make-dataframe  #2A((1 2 3 4 5)
 		       (10 20 30 40 50)))
