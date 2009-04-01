@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: tools for selection needed
+desc: dfselect needs to be written to extract subdf's as dfs.
+type: :feature
+component: Data
+release: "2.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-04-01 16:25:17.490750 Z
+references: []
+
+id: cec63ce5fce33219aee1aeeb0fe16e1586ec4668
+log_events: 
+- - 2009-04-01 16:25:19.013125 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - ""
