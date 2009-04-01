@@ -5,8 +5,8 @@ type: :task
 component: CLS.git
 release: "1.0"
 reporter: Tony <blindglobe@gmail.com>
-status: :in_progress
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-12-18 07:39:00.037450 Z
 references: []
 
@@ -22,3 +22,9 @@ log_events:
   - |-
     work is already in progress.  Goal is to remove the matrix code that is internal and homegrown, and
     remove current factored work.
+- - 2009-04-01 16:22:05.277878 Z
+  - Tony <blindglobe@gmail.com>
+  - closed with disposition fixed
+  - |-
+    In general, lisp-matrix structures are usable for internal work.  Still need
+    to distinguish between data and numerical representation.
