@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-31 17:20:39 tony>
+;;; Time-stamp: <2009-04-01 17:59:55 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -175,6 +175,18 @@ Examples:
 (defgeneric dfref (df index1 index2)
   (:documentation "scalar access with selection of possible return object types.")
   (:method ((df dataframe-like) index1 index2)
+    (error "Need real class with real storage to reference elements.")))
+
+(defgeneric set-dfref (df index1 index2 val)
+  (:documentation "setter for dfref")
+  (:method ((df dataframe-like) index1 index2 val)
+    (error "Need real class with real storage to reference elements.")))
+
+(defsetf dfref set-dfref)
+
+(defgeneric dfselect (df &key cases vars indices)
+  (:documentation "access to sub-dataframes. Always returns a dataframe.")
+  (:method ((df dataframe-like) &key cases vars indices)
     (error "Need real class with real storage to reference elements.")))
 
 ;;; Specializing on superclasses...
@@ -381,6 +393,33 @@ construction of proper DF-array."
 idx1/2 is row/col or case/var."
   (aref (dataset df) index1 index2))
 
+(defmethod set-dfref ((df dataframe-array) (index1 number) (index2 number) val)
+  "set value for df-ar."
+  ;; (check-type val (elt (var-type df) index2))
+  (setf (aref (dataset df) index1 index2) val))
+
+(defparameter *default-dataframe-class* 'dataframe-array)
+
+(defmethod dfselect ((df dataframe-array) 
+		     &key cases vars indices)
+  "Extract the OR of cases, vars, or have a list of indices to extract"
+  (declare (ignore indices))
+  (let ((newdf (make-instance *default-dataframe-class*
+		:storage (make-array (list  (length cases) (length vars)))
+		:nrows (length cases)
+		:ncols (length vars)
+#|
+		:case-labels (select-list caselist (case-labels df))
+		:var-labels (select-list varlist (var-labels df))
+		:var-types (select-list varlist (vartypes df))
+|#
+		)))
+    (dotimes (i (length cases))
+      (dotimes (j (length vars))
+	(setf (dfref newdf i j)
+	      (dfref df
+		     (position (elt cases i) (case-labels df))
+		     (position (elt vars j) (var-labels df))))))))
 
 ;;;;; DATAFRAME-MATRIXLIKE
 
@@ -407,6 +446,13 @@ idx1/2 is row/col or case/var."
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
   (mref (dataset df) index1 index2))
+
+(defmethod set-dfref ((df dataframe-matrixlike)
+		      (index1 number) (index2 number) val)
+  "Sets a value for df-ml."
+  ;; NEED TO CHECK TYPE!
+  ;; (check-type val (elt (vartype df) index2))
+  (setf (mref (dataset df) index1 index2) val))
 
 
 
