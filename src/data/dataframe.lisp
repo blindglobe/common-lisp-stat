@@ -1,8 +1,8 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-02 10:10:49 tony>
+;;; Time-stamp: <2009-04-02 15:48:29 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
-;;; File:       data-clos.lisp
+;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
@@ -17,7 +17,7 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(in-package :lisp-stat-data-clos)
+(in-package :lisp-stat-dataframe)
 
 ;;; No real basis for work, there is a bit of new-ness and R-ness to
 ;;; this work. In particular, the notion of relation is key and

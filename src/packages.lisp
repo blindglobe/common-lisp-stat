@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-31 17:25:41 tony>
+;;; Time-stamp: <2009-04-02 15:37:41 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -109,7 +109,7 @@
 
 
 
-(defpackage :lisp-stat-data-clos
+(defpackage :lisp-stat-dataframe
   (:use :common-lisp
 	:lisp-matrix)
   (:export
@@ -133,7 +133,7 @@
 
 (defpackage :cls-data-listoflist
   (:use :common-lisp
-	:lisp-stat-data-clos) ; for dataframe
+	:lisp-stat-dataframe) ; for dataframe
   (:export lists-of-same-size
 	   equal-listoflist
 	   transpose-listoflist
@@ -144,19 +144,19 @@
  (defpackage :lisp-stat-regression-linear-clos
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-data-clos)
+	:lisp-stat-dataframe)
   (:export regression-model))
 |#
 
 (defpackage :lisp-stat-visualize
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-data-clos))
+	:lisp-stat-dataframe))
 
 (defpackage :lisp-stat-visualize-plplot
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-data-clos
+	:lisp-stat-dataframe
 	:cl-plplot-system)
   (:export
    plot-ex
@@ -366,7 +366,7 @@
         :lisp-stat-float
 	:lisp-stat-basics
 	:lisp-stat-data
-	:lisp-stat-data-clos
+	:lisp-stat-dataframe
         :lisp-stat-math
 	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-descriptive-statistics
@@ -457,7 +457,7 @@
    load-example *variables* *ask-on-redefine*
    def variables savevar undef
 
-   ;; data-clos
+   ;; dataframe
    dataframe-like dataframe-array make-dataframe
    varlabels caselabels nrows ncols
    dataframe-dimension dataframe-dimensons
@@ -584,11 +584,11 @@ done for a user- or analysis-package.")
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
 	   almost= almost=lists numerical=)) ; compare
 
-(defpackage :lisp-stat-data-clos-example
+(defpackage :lisp-stat-dataframe-example
   (:use :common-lisp
 	:lift  :lisp-stat-unittests
 	:lisp-stat-data-examples
-	:lisp-stat-data-clos)
+	:lisp-stat-dataframe)
   (:export absorbtion aluminum iron))
 
 

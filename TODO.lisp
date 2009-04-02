@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-01 18:08:45 tony>
+;;; Time-stamp: <2009-04-02 15:51:12 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -22,7 +22,7 @@
 
 (in-package :lisp-stat-unittests)
 
-;; tests = 80, failures = 7, errors = 17
+;; tests = 79, failures = 7, errors = 17
 
 (describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
@@ -41,8 +41,8 @@
 
 (progn ;; dataframe
 
-  (describe (lift::run-tests :suite 'lisp-stat-ut-dataclos))
-  (lift::run-tests :suite 'lisp-stat-ut-dataclos)
+  (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
+  (lift::run-tests :suite 'lisp-stat-ut-dataframe)
 
   (describe 
     (lift::run-test
@@ -59,6 +59,7 @@
 
   (setf (dfref *my-df-1* 0 0) -1d0)
 
+  
 
   (make-dataframe  #2A((1 2 3 4 5)
 		       (10 20 30 40 50)))
