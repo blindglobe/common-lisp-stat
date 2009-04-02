@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the dataframe package
-;;; Time-stamp: <2009-04-02 15:59:43 tony>
+;;; Time-stamp: <2009-04-02 16:21:09 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 
@@ -155,16 +155,18 @@
 	     (setf (varNames my-df-1) (list "a" "b")) ;; should error
 	     (setf (varNames my-df-1) old-varnames)
 	     (error "don't reach this point in badaccess14"))))
-  
+
+
+;; NEED TO CONFIRM THERE IS AN ERROR.  
 (addtest (lisp-stat-ut-dataframe) badAccess15
-	 (ensure
-	  (let ((origCaseNames (caseNames my-df-1)))
-	    (setf (caseNames my-df-1) (list "a" "b" "c" 4 5))
-	    (caseNames my-df-1)
+	 (ensure-error
+	  (let ((origCaseNames (caselabels my-df-1)))
+	    (setf (caselabels my-df-1) (list "a" "b" "c" 4 5))
+	    (caselabels my-df-1)
 	    (ignore-errors
-	      (setf (caseNames my-df-1)
+	      (setf (caselabels my-df-1)
 		    (list "a" "b" 4 5)))
-	    (setf (caseNames my-df-1) origCaseNames))))
+	    (setf (caselabels my-df-1) origCaseNames))))
 
 ;;;
 ;; (run-tests)
