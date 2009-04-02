@@ -5,15 +5,12 @@
 ;;; Copyright:  (c)2008, AJ Rossini.
 ;;; License:    BSD, see LICENSE.BSD file for details.
 ;;; Purpose:    unit-tests for lispstat typing.
-;;; Time-stamp: <2008-11-03 08:37:37 tony>
+;;; Time-stamp: <2009-04-02 16:13:25 tony>
 ;;; Creation:   <2008-05-09 14:16:56 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
-;;; This organization and structure is new to the 21st Century
-;;; version.
 
 (in-package :lisp-stat-unittests)
 
@@ -21,18 +18,10 @@
 
 (addtest (lisp-stat-ut-types) check-one-nonneg-fixnum1
 	 (ensure-error
-	   ;; (check-one-nonneg-fixnum -3) => error
-	   (check-one-nonneg-fixnum -3)))
-
-(addtest (lisp-stat-ut-types) check-one-nonneg-fixnum2
+	   (check-one-nonneg-fixnum -3))
 	 (ensure
-	  ;; (check-one-nonneg-fixnum 3) => 3
 	  (= 3
 	     (check-one-nonneg-fixnum 3))))
-
-
-
-;;; check-one-nonneg-fixnum
 
 (addtest (lisp-stat-ut-types) check-nonneg-fixnum1
 	 (ensure
@@ -67,5 +56,5 @@
 	   (check-nonneg-fixnum (list 1 2 -3))))
 
 ;;; 
-;; (run-tests :suite 'lisp-stat-ut-lstypes)
-;; (describe (run-tests :suite 'lisp-stat-ut-lstypes))
+;; (run-tests :suite 'lisp-stat-ut-types)
+;; (describe (run-tests :suite 'lisp-stat-ut-types))

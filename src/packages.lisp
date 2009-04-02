@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-02 15:37:41 tony>
+;;; Time-stamp: <2009-04-02 16:09:24 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -393,6 +393,7 @@
   
    ;; lstypes :
    fixnump check-nonneg-fixnum check-one-fixnum
+   check-one-nonneg-fixnum
    check-one-real check-one-number
 
    ;; lsmacros: 
