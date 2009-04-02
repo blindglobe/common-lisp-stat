@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-02 09:33:51 tony>
+;;; Time-stamp: <2009-04-02 10:10:49 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,29 +24,27 @@
 ;;; integral to the analysis.  Tables are related and matched vectors,
 ;;; for example.  "column" vectors are related observations (by
 ;;; measure/recording) while "row" vectors are related readings (by
-;;; case)
-
-;;; Relational structure -- can we capture a completely unnormalized
-;;; data strucutre to propose possible modeling approaches, and
-;;; propose appropriate models and inferential strategies?
+;;; case, independence).   This does mean that we are placing
+;;; statistical semantics into the computational data object -- and
+;;; that it is a violation of use to consider rows which are not at
+;;; the least conditionally independent (though the conditioning
+;;; should be outside the data set, not internally specified).
 
 ;;; So we want a verb-driven API for data collection construction.  We
 ;;; should encode independence or lack of, as possible.
 
-;;; Need to figure out typed vectors.  We then map a series of typed
-;;; vectors over to tables where columns are equal typed.  In a sense,
-;;; this is a relation (1-1) of equal-typed arrays.  For the most
-;;; part, this ends up making the R data.frame into a relational
-;;; building block (considering 1-1 mappings using row ID as a
-;;; relation).  Is this a worthwhile generalization?
+;;; Need to figure out statistically-typed vectors.  We then map a
+;;; series of typed vectors over to tables where columns are equal
+;;; typed.  In a sense, this is a relation (1-1) of equal-typed
+;;; arrays.  For the most part, this ends up making the R data.frame
+;;; into a relational building block (considering 1-1 mappings using
+;;; row ID as a relation).  Is this a worthwhile generalization or
+;;; communicable analogy?
 
-;;; verbs vs semantics for DS conversion -- consider the possibily of
-;;; how adverbs and verbs relate, where to put which semantically to
-;;; allow for general approach.
+;;; verbs vs semantics for DF construction -- consider the possibily
+;;; of how adverbs and verbs relate, where to put which semantically
+;;; to allow for general approach.
 
-;;; eg. Kasper's talk on the FUSION collection of parsers.
-
-;;; 
 ;;; Need to consider modification APIs
 ;;; actions are:
 ;;; - import 
@@ -62,7 +60,6 @@
 ;;; -         either overwriting or not, i.e. with or without copy.
 ;;; - check consistency of resulting data with metadata and related
 ;;;           data information.
-;;; - 
 
 
 ;;; Misc Functions (to move into a lisp data manipulation support package)
@@ -96,33 +93,18 @@ Examples:
     (let ((num (read-from-string str)))
       (values num (numberp num)))))
 
-
 #|
-
   (equal 'testme 'testme)
   (defparameter *test-pos* 'testme)
   (position *test-pos* (list 'a 'b 'testme 'c))
   (position #'(lambda (x) (equal x "testme")) (list "a" "b" "testme" "c"))
   (position #'(lambda (x) (equal x 1)) (list 2 1 3 4))
-
-
 |#
+
 ;;; abstract dataframe class
 
 (defclass dataframe-like (matrix-like)
-  (
-   ;; Matrix-like (from lisp-matrix) is basically a rectangular table
-   ;; without storage.  We emulate that, and add storage, row/column
-   ;; labels, and within-column-typing.
-
-   ;; STORE is the storage component.  We ignore this in the DATAFRAME-LIKE
-   ;; class, as it is the primary differentiator, driving how access
-   ;; (getting/setting) is done.   We create methods depending on the
-   ;; storage component, which access data as appropriate.  See
-   ;; DATAFRAME-ARRAY for an example implementation.
-   ;; the rest of this is metadata.  In particular, we should find a
-   ;; more flexible, compact way to store this.
-   (case-labels :initform nil
+  ((case-labels :initform nil
 		:initarg :case-labels
 		:type list
 		:accessor case-labels
@@ -138,35 +120,47 @@ Examples:
 	      :type list
 	      :accessor var-types
 	      :documentation "variable types to ensure fit")
-   (documentation-string :initform nil
-			 :initarg :doc
-			 :accessor doc-string
-			 :documentation "additional information,
-  potentially uncomputable, possibly metadata, about dataframe-like
-  instance."))
+   (doc-string :initform nil
+	       :initarg :doc
+	       :accessor doc-string
+	       :documentation "additional information, potentially
+                               uncomputable, possibly metadata, about
+                               dataframe-like instance."))
   (:documentation "Abstract class for standard statistical analysis
                    dataset for independent data.  Rows are considered
                    to be independent, matching observations.  Columns
                    are considered to be type-consistent, match a
                    variable with distribution.  inherits from
                    lisp-matrix base MATRIX-LIKE class.
+                   MATRIX-LIKE (from lisp-matrix) is basically a
+                   rectangular table without storage.  We emulate
+                   that, and add storage, row/column labels, and
+                   within-column-typing.
 
                    DATAFRAME-LIKE is the basic cases by variables
                    framework.  Need to embed this within other
                    structures which allow for generalized relations.
                    Goal is to ensure that relations imply and drive
                    the potential for statistical relativeness such as
-                   correlation, interference, and similar concepts."))
+                   correlation, interference, and similar concepts.
 
+                   STORE is the storage component.  We ignore this in
+                   the DATAFRAME-LIKE class, as it is the primary
+                   differentiator, spec'ing the structure used for
+                   storing the actual data.  We create methods which
+                   depend on STORE for access.  See DATAFRAME-ARRAY
+                   and DATAFRAME-MATRIXLIKE for examples.  The rest of
+                   this is metadata."))
 
 ;;; Generics specialized above matrix-like, particularly for
-;;; dataframe-like objects.  Need methods for any storage
-;;; implementation.
+;;; dataframe-like objects.  Need implementation of methods which
+;;; depend on storage form.
 
 (defgeneric dataframe-dimensions (df)
   (:documentation "")
   (:method ((df dataframe-like))
-    (error "dispatch on virtual class.")))
+    (error "Dispatch on virtual class, Method needed for
+  DATAFRAME-DIMENSIONS with class ~A." (find-class df))))
 
 (defgeneric dataframe-dimension (df index)
   (:documentation "")
@@ -174,23 +168,29 @@ Examples:
     (elt (dataframe-dimensions df) index)))
 
 (defgeneric dfref (df index1 index2)
-  (:documentation "scalar access with selection of possible return object types.")
+  (:documentation "Scalar access to entries in dataframe.")
   (:method ((df dataframe-like) index1 index2)
-    (error "Need real class with real storage to reference elements.")))
+    (error "Dispatch on virtual class, Method needed for DFREF with
+  class ~A." (find-class df))))
 
 (defgeneric set-dfref (df index1 index2 val)
   (:documentation "setter for dfref")
   (:method ((df dataframe-like) index1 index2 val)
-    (error "Need real class with real storage to reference elements.")))
+    (error "Dispatch on virtual class, Method needed for SET-DFREF
+  with class ~A." (find-class df))))
 
 (defsetf dfref set-dfref)
 
-(defgeneric dfselect (df &key cases vars indices)
+(defgeneric dfselect (df &optional cases vars indices)
   (:documentation "access to sub-dataframes. Always returns a dataframe.")
-  (:method ((df dataframe-like) &key cases vars indices)
-    (error "Need real class with real storage to reference elements.")))
+  (:method ((df dataframe-like) &optional cases vars indices)
+    (declare (ignorable cases vars))
+    (if indices (error "Indicies not used yet"))
+    (error "Dispatch on virtual class, Method needed for DFSELECT with
+  class ~A." (find-class df))))
 
 ;;; Specializing on superclasses...
+;;;
 ;;; Access and Extraction: implementations needed for any storage
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
@@ -216,39 +216,24 @@ Examples:
      (progn
        (dotimes (i (nrows df))
 	 (dotimes (j (ncols df))
-	   ;; below, dfref bombs if not a df-like subclass...
+	   ;; dfref bombs if not a df-like subclass so we don't worry
+	   ;; about specialization.
+	   ;; (check-type  (aref dt i j) (elt lot j)))))) ???
 	   (typep (dfref df i j) (nth j (var-types df))))) 
        t))))
 
-#|
 
- (defun ensure-consistent-datatable-type (dt lot)
-  "given a datatable and a listoftypes, ensure that the datatble
-  variables are consistent."
-  (destructuring-bind (n p) ;; why use let when we can be cool?  Sigh.
-      (array-dimensions dt)
-    (dotimes (i n)
-      (dotimes (j p)
-	(check-type  (aref dt i j) (elt lot j))))))
-|#
-
-
-;;; GENERAL FUNCTIONS WHICH DISPATCH ON INTERNAL METHODS OR ARGS  
+;;; FUNCTIONS WHICH DISPATCH ON INTERNAL METHODS OR ARGS
 ;;;
 ;;; Q: change the following to generic functions and dispatch on 
 ;;; array, matrix, and dataframe?  Others?
 (defun make-labels (initstr num)
   "generate a list of strings which can be used as labels, i.e. something like 
- '(\"a1\" \"a2\" \"a3\")."
+  (make-labels \"a\" 3) => '(\"a1\" \"a2\" \"a3\")."
   (check-type initstr string)
   (mapcar #'(lambda (x y)  (concatenate 'string x y))
 	  (repeat-seq num initstr)
 	  (mapcar #'(lambda (x) (format nil "~A" x)) (gen-seq num))))
-
-#|
- (make-labels 'c 2)
- (make-labels "c" 4)
-|#
 
 (defun ncase-store (store)
   (etypecase store
@@ -402,9 +387,9 @@ idx1/2 is row/col or case/var."
 (defparameter *default-dataframe-class* 'dataframe-array)
 
 (defmethod dfselect ((df dataframe-array) 
-		     &key cases vars indices)
+		     &optional cases vars indices)
   "Extract the OR of cases, vars, or have a list of indices to extract"
-  (declare (ignore indices))
+  (if indices (error "Indicies not used yet"))
   (let ((newdf (make-instance *default-dataframe-class*
 		:storage (make-array (list  (length cases) (length vars)))
 		:nrows (length cases)

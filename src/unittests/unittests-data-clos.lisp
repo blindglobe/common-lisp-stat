@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the data-clos package
-;;; Time-stamp: <2009-04-01 07:59:08 tony>
+;;; Time-stamp: <2009-04-02 10:05:07 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -35,18 +35,13 @@
 (addtest (lisp-stat-ut-dataclos) genseq
 	 (ensure
 	  (equal (lisp-stat-data-clos::gen-seq 4)
-		 (list 1 2 3 4))))
-
-(addtest (lisp-stat-ut-dataclos) genseq-null
+		 (list 1 2 3 4)))
 	 (ensure
 	  (equal (lisp-stat-data-clos::gen-seq 0)
-		 nil)))
-
-(addtest (lisp-stat-ut-dataclos) genseq-offset
+		 nil))
 	 (ensure
 	  (equal (lisp-stat-data-clos::gen-seq 4 2)
 		 (list 2 3 4))))
-
 
 (addtest (lisp-stat-ut-dataclos) repeatseq
 	 (ensure
@@ -55,6 +50,14 @@
 	 	 (ensure
 	  (equal (lisp-stat-data-clos::repeat-seq 3 'd)
 		 (list 'd 'd 'd))))
+
+
+(addtest (lisp-stat-ut-dataclos) make-labels
+	 (ensure
+	  (equal (lisp-stat-data-clos::make-labels "c" 3)
+		 (list "c1" "c2" "c3")))
+	 (ensure-error
+	   (lisp-stat-data-clos::make-labels 'c 3)))
 
 
 ;;; Dataframe tests
