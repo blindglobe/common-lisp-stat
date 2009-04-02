@@ -1,0 +1,23 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Need a datafrae-window class similar to matrix-window
+desc: |-
+  To avoid excess copying, need to include a dataframe-window class which
+  supports copy-free subsetting (of course, we can copy if needed when
+  needed.
+type: :feature
+component: Data
+release: "2.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-04-02 07:35:18.748271 Z
+references: []
+
+id: e72fe751814170d6f9bcfd94919f9cb8585d5808
+log_events: 
+- - 2009-04-02 07:35:55.751431 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - |-
+    This is simply a copy of the lisp-matrix approach which sees to work
+    reasonably well (c/sees/seems)

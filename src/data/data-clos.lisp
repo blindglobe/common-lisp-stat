@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-01 17:59:55 tony>
+;;; Time-stamp: <2009-04-02 09:33:51 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       data-clos.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -8,9 +8,10 @@
 ;;;             on how it arrives.  
 
 ;;; Purpose:    Data packaging and access for Common Lisp Statistics.
-;;;             This redoes data storage structures in a CLOS based
-;;;             framework.
-;;;
+;;;             This redoes dataframe structures in a CLOS based
+;;;             framework.   Currently contains the virtual class
+;;;             DATAFRAME-LIKE as well as the actual classes
+;;;             DATAFRAME-ARRAY and DATAFRAME-MATRIXLIKE
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
