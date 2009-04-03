@@ -34,6 +34,8 @@
 ;; challenge of reproducibility in the setting of prototype "on-line"
 ;; computation. 
 
+
+
 (defvar regression-model-proto nil
   "Prototype for all regression model instances.")
 
@@ -51,6 +53,91 @@
   "Normal Linear Regression Model")
 
 
+(defclass regression-model-store (statistical-model)
+  ((x :initform nil :initarg :x :accessor x)
+   (y :initform nil :initarg :y :accessor y)
+   (included :initform nil :initarg :y :accessor y)
+   (total-sum-of-squares :initform nil :initarg :y :accessor y)
+   (residual-sum-of-squares :initform nil :initarg :y :accessor y)
+   (predictor-names :initform nil :initarg :y :accessor y)
+   (response-name :initform nil :initarg :y :accessor y)
+   (case-labels :initform nil :initarg :y :accessor y)
+   (needs-computing :initform T :initarg :compute? :accessor compute?))
+  (:documentation "Normal Linear Regression Model through CLOS.
+  Historical design based on what was done for LispStat, not modern."))
+
+(defclass model-specification ()
+  ((spec-string :initform nil
+		:initarg :specification
+		:accessor :specification)
+   (spec-form :initform nil
+	      :initarg :spec-form
+	      :accessor :spec-form)
+   (model-class :initform nil))
+  (:documentation "container for mathematical structure"))
+
+(defclass bayesian-model-specification (model-specification)
+  ((prior-model-class)
+   (spec-string :initform nil
+		:initarg :specification
+		:accessor :specification)
+   (spec-form :initform nil
+	      :initarg :spec-form
+	      :accessor :spec-form))
+  (:documentation "adds structure holding priors to the model"))
+
+;;; The following should be self-created based on introspection of
+;;; available:
+;;; ## inferential technologies (bayesian, frequentist, etc),
+;;; ## optimization criteria (likelihood, least-squares, min-entropy,
+;;;    minimax, etc) 
+;;; ## simplification macros, i.e. mapping directly to linear
+;;;    regression and other applications. fast specialized
+;;;    algorithms for edge cases and narrow conditions.
+;;; ## 
+
+(defparameter *model-class-list*
+  '((linear-regression frequentist)
+    (generalized-linear-regression  parametric)
+    (linear-regression bayesian)
+    ()))
+
+;;;;; More mischief from a different time
+
+
+;; regression-model is the old API, but regression as a generic will
+;; be the new API.  We need to distinguish between APIs which enable
+;; the user to do clear activities, and APIs which enable developers
+;; to do clear extensions and development, and underlying
+;; infrastructure to keep everything straight and enabled.
+
+;; There are conflicting theories for how to structure the
+;; specification of mathematical models, along with the statistical
+;; inference, along with the data which is instantiating the model.
+;; 
+;; i.e.:  mathematical model for the relationships between components,
+;; between a component and a summarizing parameter, and between
+;; parameters.
+;; 
+;; statistical inference describes the general approach for
+;; aggregating into a decision and has impliciations for the scale up
+;; from the model on a single instance to the generalization.
+;;
+;; The data represents the particular substantive context that is
+;; driving the model/inference combination, and about which we hope to
+;; generate knowledge.
+;; 
+;; numerical analysis selects appropriate algorithms/implementations
+;; for combining the above 3.  
+;; 
+;; the end result is input on the decision being made (which could be
+;; specific (decision analysis/testing), risk-analysis (interval
+;; estimation) , most likely/appropriate selection (point estimation)
+;; 
+
+
+
+;;;;;;;; Helper functions
 
 
 (defun xtxinv (x)
