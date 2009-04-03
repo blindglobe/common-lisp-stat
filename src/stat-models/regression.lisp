@@ -238,21 +238,22 @@ Recomputes the estimates. For internal use by other messages"
 		(1- (matrix-dimension x 1))
 		(matrix-dimension x 1))) ;; remove intercept from # params -- right?
          (tss 0)
-	 (res 0 ;  (compute-residuals y yhat)
-	   )
+	 (res (make-vector (nrows x) :type :column :initial-element 0d0)) ;  (compute-residuals y yhat)
          (tol 0.000001 
 	   ;;  (* 0.001 (reduce #'* (mapcar #'standard-deviation (list-of-columns x))))
 	  ))
     (format t
-	    "~%REMOVEME: regr-mdl-prto :compute~%x= ~A~%y= ~A~% tss= ~A~% tol= ~A~%  w= ~A~% n= ~A~%  p= ~A~%"
-	   x y tss tol w n p )
+	    "~%REMVME: regr-mdl-prto :compute~%x= ~A~%y= ~A~% tss= ~A~% tol= ~A~%  w= ~A~% n= ~A~%  res= ~A~%"
+	   x y tss tol w n p res)
 
     ;; (send self :beta-coefficents (lm x y)) ;; FIXME!
-    (send self :xtxinv (xtxinv x)) 
+    ;; (send self :xtxinv (xtxinv x))  ;; not settable?
 
-    (setf (slot-value 'total-sum-of-squares) tss)
-    (setf (slot-value 'residual-sum-of-squares) 
-          (m* (ones 1 n) (v* res res)))))
+    (setf (proto-slot-value 'total-sum-of-squares) tss)
+    (setf (proto-slot-value 'residual-sum-of-squares) 
+	  0d0
+          ;; (m* (ones 1 n) (v* res res))
+	  )))
 
 (defmeth regression-model-proto :needs-computing (&optional set)
 "Message args: ( &optional set )
@@ -260,15 +261,15 @@ Recomputes the estimates. For internal use by other messages"
 If value given, sets the flag for whether (re)computation is needed to
 update the model fits."	 
    (send self :nop)
-   (if set (setf (slot-value 'betahat) nil))
-   (null (slot-value 'betahat)))
+   (if set (setf (proto-slot-value 'betahat) nil))
+   (null (proto-slot-value 'betahat)))
   
 (defmeth regression-model-proto :display ()
 "Message args: ()
 
 Prints the least squares regression summary. Variables not used in the fit
 are marked as aliased."
-  (let ((coefs (coerce (send self :coef-estimates) 'list))
+  (let ((coefs (vector-like->list (send self :coef-estimates)))
         (se-s (send self :coef-standard-errors))
         (x (send self :x))
         (p-names (send self :predictor-names)))
@@ -307,13 +308,13 @@ NEW-DOC.  In this setting, when APPEND is T, don't replace and just
 append NEW-DOC to DOC."
   (send self :nop)
   (when (and new-doc (stringp new-doc))
-    (setf (slot-value 'doc)
+    (setf (proto-slot-value 'doc)
 	  (if append
 	      (concatenate 'string
-			   (slot-value 'doc)
+			   (proto-slot-value 'doc)
 			   new-doc)
 	      new-doc)))
-  (slot-value 'doc))
+  (proto-slot-value 'doc))
 
 
 (defmeth regression-model-proto :x (&optional new-x)
@@ -323,9 +324,9 @@ With no argument returns the x matrix-like as supplied to m. With an
 argument, NEW-X sets the x matrix-like to NEW-X and recomputes the
 estimates."
   (when (and new-x (typep new-x 'matrix-like))
-    (setf (slot-value 'x) new-x)
+    (setf (proto-slot-value 'x) new-x)
     (send self :needs-computing t))
-  (slot-value 'x))
+  (proto-slot-value 'x))
 
 (defmeth regression-model-proto :y (&optional new-y)
 "Message args: (&optional new-y)
@@ -335,9 +336,9 @@ argument, NEW-Y sets the y vector-like to NEW-Y and recomputes the
 estimates."
   (when (and new-y
 	     (typep new-y 'vector-like))
-    (setf (slot-value 'y) new-y) ;; fixme -- pls set slot value to a vector-like!
+    (setf (proto-slot-value 'y) new-y) ;; fixme -- pls set slot value to a vector-like!
     (send self :needs-computing t))
-  (slot-value 'y))
+  (proto-slot-value 'y))
 
 (defmeth regression-model-proto :intercept (&optional (val nil set))
 "Message args: (&optional new-intercept)
@@ -347,9 +348,9 @@ nil if not. With an argument NEW-INTERCEPT the model is changed to
 include or exclude an intercept, according to the value of
 NEW-INTERCEPT."
   (when set 
-    (setf (slot-value 'intercept) val)
+    (setf (proto-slot-value 'intercept) val)
     (send self :needs-computing t))
-  (slot-value 'intercept))
+  (proto-slot-value 'intercept))
 
 (defmeth regression-model-proto :weights (&optional (new-w nil set))
 "Message args: (&optional new-w)
@@ -363,9 +364,9 @@ and recomputes the estimates."
 	   (or (= new-w nil)
 	       (typep new-w 'vector-like)))
 |#
-    (setf (slot-value 'weights) new-w) 
+    (setf (proto-slot-value 'weights) new-w) 
     (send self :needs-computing t))
-  (slot-value 'weights))
+  (proto-slot-value 'weights))
 
 (defmeth regression-model-proto :total-sum-of-squares ()
 "Message args: ()
@@ -374,7 +375,7 @@ Returns the total sum of squares around the mean.
 This is recomputed if an update is needed."
   (if (send self :needs-computing)
       (send self :compute))
-  (slot-value 'total-sum-of-squares))
+  (proto-slot-value 'total-sum-of-squares))
 
 (defmeth regression-model-proto :residual-sum-of-squares () 
 "Message args: ()
@@ -383,7 +384,7 @@ Returns the residual sum of squares for the model.
 This is recomputed if an update is needed."
   (if (send self :needs-computing)
       (send self :compute))
-  (slot-value 'residual-sum-of-squares))
+  (proto-slot-value 'residual-sum-of-squares))
 
 (defmeth regression-model-proto :basis ()
 "Message args: ()
@@ -393,7 +394,7 @@ sequence.
 This is recomputed if an update is needed."
   (if (send self :needs-computing)
       (send self :compute))
-  (slot-value 'basis))
+  (proto-slot-value 'basis))
   
 (defmeth regression-model-proto :included (&optional new-included)
 "Message args: (&optional new-included)
@@ -407,42 +408,42 @@ recomputed."
     (and new-included 
          (= (length new-included) (send self :num-cases)))
 |#
-        (setf (slot-value 'included) (copy-seq new-included)) 
+        (setf (proto-slot-value 'included) (copy-seq new-included)) 
         (send self :needs-computing t))
-  (if (slot-value 'included)
-      (slot-value 'included)
+  (if (proto-slot-value 'included)
+      (proto-slot-value 'included)
       (repeat t (send self :num-cases))))
 
 (defmeth regression-model-proto :predictor-names (&optional (names nil set))
 "Message args: (&optional (names nil set))
 
 With no argument returns the predictor names. NAMES sets the names."
-  (if set (setf (slot-value 'predictor-names) (mapcar #'string names)))
+  (if set (setf (proto-slot-value 'predictor-names) (mapcar #'string names)))
   (let ((p (matrix-dimension (send self :x) 1))
-        (p-names (slot-value 'predictor-names)))
+        (p-names (proto-slot-value 'predictor-names)))
     (if (not (and p-names (= (length p-names) p)))
-        (setf (slot-value 'predictor-names)
+        (setf (proto-slot-value 'predictor-names)
               (mapcar #'(lambda (a) (format nil "Variable ~a" a)) 
                       (iseq 0 (- p 1))))))
-  (slot-value 'predictor-names))
+  (proto-slot-value 'predictor-names))
 
 (defmeth regression-model-proto :response-name (&optional (name "Y" set))
    "Message args: (&optional name)
 
 With no argument returns the response name. NAME sets the name."
    (send self :nop)
-   (if set (setf (slot-value 'response-name) (if name (string name) "Y")))
-   (slot-value 'response-name))
+   (if set (setf (proto-slot-value 'response-name) (if name (string name) "Y")))
+   (proto-slot-value 'response-name))
 
 (defmeth regression-model-proto :case-labels (&optional (labels nil set))
 "Message args: (&optional labels)
 With no argument returns the case-labels. LABELS sets the labels."
-  (if set (setf (slot-value 'case-labels) 
+  (if set (setf (proto-slot-value 'case-labels) 
                 (if labels 
                     (mapcar #'string labels)
                     (mapcar #'(lambda (x) (format nil "~d" x)) 
                             (iseq 0 (- (send self :num-cases) 1))))))
-  (slot-value 'case-labels))
+  (proto-slot-value 'case-labels))
 
 ;;;
 ;;; Other Methods
@@ -464,8 +465,8 @@ Returns the number of cases used in the computations."
 Returns the number of coefficients in the fit model (including the
 intercept if the model includes one)."
   (if (send self :intercept)
-      (+ 1 (nelts (send self :basis)))
-      (nelts (send self :basis))))
+      (+ 1 (ncols (send self :x)))
+      (ncols  (send self :x))))
 
 (defmeth regression-model-proto :df ()
 "Message args: ()
@@ -493,7 +494,7 @@ Returns the diagonal elements of the hat matrix."
 		  x)
 	      (repeat 1 (send self :num-coefs)))))
     (if (send self :weights)
-	(m* weights raw-levs)
+	(m* (send self :weights) raw-levs)
 	raw-levs)))
 
 (defmeth regression-model-proto :fit-values ()
@@ -544,8 +545,8 @@ the regression."
 Returns the OLS (ordinary least squares) estimates of the regression
 coefficients. Entries beyond the intercept correspond to entries in
 basis."
-  
-  )
+  (let ((x (send self :x)))
+    (princ x)))
 #|
   (let ((n (matrix-dimension (send self :x) 1))
         (indices (flatten-list
