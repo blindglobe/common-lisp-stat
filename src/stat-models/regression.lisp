@@ -330,11 +330,12 @@ Recomputes the estimates. For internal use by other messages"
 	   ;;  (* 0.001 (reduce #'* (mapcar #'standard-deviation (list-of-columns x))))
 	  ))
     (format t
-	    "~%REMVME: regr-mdl-prto :compute~%x= ~A~%y= ~A~% tss= ~A~% tol= ~A~%  w= ~A~% n= ~A~%  res= ~A~%"
-	   x y tss tol w n p res)
+	    "~%REMVME: regr-pr :compute~%x= ~A~%y= ~A~% tss= ~A~% tol= ~A~%  w= ~A~% n= ~A~%  res= ~A  p=~A ~% "
+	   x y tss tol w n res p)
 
-    ;; (send self :beta-coefficents (lm x y)) ;; FIXME!
-    ;; (send self :xtxinv (xtxinv x))  ;; not settable?
+    (setf (proto-slot-value 'betahat)
+	  (first  (lm (send self :x)
+		      (send self :y)))) ;; FIXME!
 
     (setf (proto-slot-value 'total-sum-of-squares) tss)
     (setf (proto-slot-value 'residual-sum-of-squares) 
@@ -352,10 +353,13 @@ update the model fits."
    (null (proto-slot-value 'betahat)))
   
 (defmeth regression-model-proto :display ()
-"Message args: ()
-
+  "Message args: ()
 Prints the least squares regression summary. Variables not used in the fit
 are marked as aliased."
+  (send self :x)
+  (format nil "Computing Regression Proto :display"))
+
+#|
   (let ((coefs (vector-like->list (send self :coef-estimates)))
         (se-s (send self :coef-standard-errors))
         (x (send self :x))
@@ -366,7 +370,7 @@ are marked as aliased."
     (when (send self :intercept)
           (format t "Constant               ~10f   ~A~%"
                   (car coefs) (list (car se-s)))
-          (setf coefs (cdr coefs))
+	  (setf coefs (cdr coefs))
           (setf se-s (cdr se-s)))
     (dotimes (i (array-dimension x 1)) 
              (cond 
@@ -383,6 +387,7 @@ are marked as aliased."
         (format t "Number of cases used:  ~10d~%" (send self :num-included)))
     (format t "Degrees of freedom:    ~10d~%" (send self :df))
     (format t "~%")))
+|#
 
 ;;; Slot accessors and mutators
 
@@ -649,14 +654,19 @@ basis."
 (defmeth regression-model-proto :xtxinv () 
    "Message args: ()
 Returns ((X^T) X)^(-1) or ((X^T) W X)^(-1)."
-  (xtxinv (send self x)))
+  (xtxinv (send self :x)))
 
 (defmeth regression-model-proto :coef-standard-errors ()
 "Message args: ()
 Returns estimated standard errors of coefficients. Entries beyond the
 intercept correspond to entries in basis."
-  (let ((s (send self :sigma-hat)))
-    (if s (* (send self :sigma-hat) (sqrt (diagonalf (send self :xtxinv)))))))
+  (let ((s (send self :sigma-hat))
+	(v (map-vec #'sqrt (diagonalf (send self :xtxinv)))))
+    (if s
+	(etypecase s
+	  (double (axpy s v (make-vector (nelts v) :type :column :initial-element 0d0)))
+	  (vector-like (v* (send self :sigma-hat) v)))
+	v)))
 
 (defmeth regression-model-proto :studentized-residuals ()
 "Message args:  ()

@@ -1,19 +1,19 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-02 16:22:00 tony>
+;;; Time-stamp: <2009-04-03 17:37:08 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007-2008, AJ Rossini <blindglobe@gmail.com>.  BSD.
-;;; Purpose:    Stuff that needs to be made working sits inside the progns...
-
+;;; Purpose: Stuff that needs to be made working sits inside the
+;;;          progns... This file contains the current challenges to
+;;;          solve, including a description of the setup and the work
+;;;          to solve....
+ 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;;; This file contains the current challenges to solve, including a
-;;; description of the setup and the work to solve....
- 
 ;;; SET UP
 
 (in-package :cl-user)
@@ -23,20 +23,58 @@
 (in-package :lisp-stat-unittests)
 
 ;; tests = 79, failures = 7, errors = 15
-
-(describe (run-tests :suite 'lisp-stat-ut))
 (run-tests :suite 'lisp-stat-ut)
+(describe (run-tests :suite 'lisp-stat-ut))
 
-#|
-  ;; FIXME: Example: currently not relevant, yet
-  (describe 
-    (lift::run-test
-      :test-case  'lisp-stat-unittests::create-proto
-      :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
-|#
+;; FIXME: Example: currently not relevant, yet
+;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
+;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 
 (describe 'lisp-stat-ut)
+
 (in-package :ls-user)
+
+(progn ;; FIXME: Regression modeling (some data future-ish)
+
+  (defparameter  *m* nil  "holding variable.")
+  (def *m* (regression-model (list->vector-like iron)   ;; BROKEN
+			     (list->vector-like absorbtion)))
+
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion) :print nil))
+			   ;;Good
+  (send m :print)
+  (send m :own-slots)
+  (send m :own-methods)
+  ;; (lsos::ls-objects-methods m) ; bogus?
+  (send m :show)
+  
+  (def m (regression-model (list->vector-like iron)
+			   (list->vector-like absorbtion)))
+
+  (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
+			   (list->vector-like  absorbtion) :print nil))
+
+  (send m :compute)
+  (send m :sweep-matrix)
+  (format t "~%~A~%" (send m :sweep-matrix))
+
+  ;; need to get multiple-linear regression working (simple linear regr
+  ;; works)... to do this, we need to redo the whole numeric structure,
+  ;; I'm keeping these in as example of brokenness...
+  
+  (send m :basis) ;; this should be positive?
+  (send m :coef-estimates)  )
+
+#+nil
+(progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
+  ;; The following breaks because we should use a package to hold
+  ;; configuration details, and this would be the only package outside
+  ;; of packages.lisp, as it holds the overall defsystem structure.
+  (load-data "iris.lsp")  ;; (the above partially fixed).
+  (variables)
+  diabetes )
+
 
 (progn ;; dataframe
 
@@ -207,54 +245,6 @@
 |#
   )
 
-
-#+nil
-(progn ;; FIXME: Regression modeling
-
-  ;; data setup in previous FIXME
-  (defparameter  *m* nil
-    "holding variable.")
-  ;; need to make vectors and matrices from the lists...
-
-  ;; BROKEN
-  (def *m* (regression-model (list->vector-like iron)
-			     (list->vector-like absorbtion)))
-
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion) :print nil))
-			   ;;Good
-  (send m :print)
-  (send m :own-slots)
-  (send m :own-methods)
-  ;; (lsos::ls-objects-methods m) ; bogus?
-  (send m :show)
-  
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion)))
-
-  (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
-			   (list->vector-like  absorbtion) :print nil))
-
-
-  (send m :compute)
-  (send m :sweep-matrix)
-  (format t "~%~A~%" (send m :sweep-matrix))
-
-  ;; need to get multiple-linear regression working (simple linear regr
-  ;; works)... to do this, we need to redo the whole numeric structure,
-  ;; I'm keeping these in as example of brokenness...
-  
-  (send m :basis) ;; this should be positive?
-  (send m :coef-estimates)  )
-
-#+nil
-(progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
-  ;; The following breaks because we should use a package to hold
-  ;; configuration details, and this would be the only package outside
-  ;; of packages.lisp, as it holds the overall defsystem structure.
-  (load-data "iris.lsp")  ;; (the above partially fixed).
-  (variables)
-  diabetes )
 
 
 
