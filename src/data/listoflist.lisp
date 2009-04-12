@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-21 09:30:48 tony>
+;;; Time-stamp: <2009-04-11 19:01:27 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -62,58 +62,7 @@ justify further processing and initial conditions."
       T nil))
 
 
-;; the following will be handy to help out folks adjust.  It should
-;; provide a means to write code faster and better.
-(defmacro make-dataframe-from-listoflist (datasetname
-					  &optional (force-overwrite nil)
-					  &rest lists-of-data-lists)
-  "Create a cases-by-variables data frame consisting of numeric data,
-from a ROW-MAJOR list-of-lists representation.  A COLUMN-MAJOR
-representation should be handled using the transpose-listoflists
-function."
-  (if (or (not (boundp datasetname))
-	  force-overwrite)
-      (if (lists-of-same-size lists-of-data-lists)
-	  `(defparameter ,datasetname
-	     (make-matrix (length iron) 2
-			  :initial-contents
-			  (mapcar #'(lambda (x y) 
-				      (list (coerce x 'double-float)
-					    (coerce y 'double-float)))
-				  ,@lists-of-data-lists)))
-	  (error "make-data-set-from-lists: no combining different length lists"))
-      (error "make-data-set-from-lists: proposed name exists")))
-
-#|
-(macroexpand '(make-data-set-from-lists
-	       this-data
-	       :force-overwrite nil
-	       aluminum iron))
-(princ this-data)
-|#
-
-(defun transpose-listoflist (listoflist)
-  "This function does the moral-equivalent of a matrix transpose on a
-list-of-lists data structure"
-  (apply #'mapcar #'list listoflist))
-
-;; (defparameter LOL-2by3 (list (list 1 2) (list 3 4) (list 5 6)))
-;; (defparameter LOL-3by2 (list (list 1 3 5) (list 2 4 6)))
-;; (transpose-listoflists (transpose-listoflists LOL-2by3))
-;; (transpose-listoflists (transpose-listoflists LOL-3by2))
-
-(defun equal-listoflist (x y)
-  "FIXME: This function, when written, should walk through 2 listoflists and
-return T/nil based on equality."
-  (and (= (list-length x) ;; top-level length same
-	  (list-length y))
-       ;; FIXME: within-level lengths same
-       ;; FIXME: flattened values same, walking through
-       ;; (loop over x and verify same tree as y)
-       ))
-
-
-(defun make-array-from-listoflist (lol) ; &key (type 'row-major)
+(defun listoflist->array (lol &key (type 'row-major))
   "From a listoflists structure, make an array.
 
 FIXME: need to verify that the listoflists is a valid structure (same
@@ -136,8 +85,46 @@ size rows, typing if required, etc.
     (let ((result (make-array (list n p))))
       (dotimes (i n)
 	(dotimes (j p)
-	  (setf (aref result i j) (elt (elt lol i) j))))
+	  (if (equal  type :row-major)
+	      (setf (aref result i j) (elt (elt lol i) j))
+	      (setf (aref result i j) (elt (elt lol j) i)))))
       result)))
+
+
+;; the following will be handy to help out folks adjust.  It should
+;; provide a means to write code faster and better.
+(defun listoflist->dataframe (lol) ; &key (type :row-major))
+  "Create a cases-by-variables data frame consisting of numeric data,
+from a ROW-MAJOR list-of-lists representation.  A COLUMN-MAJOR
+representation should be handled using the transpose-listoflists
+function."
+  (if (lists-of-same-size lol)
+      (make-dataframe  (listoflist->array lol))
+      (error "make-data-set-from-lists: no combining different length lists"))
+  (error "make-data-set-from-lists: proposed name exists"))
+
+
+(defun transpose-listoflist (listoflist)
+  "This function does the moral-equivalent of a matrix transpose on a
+list-of-lists data structure"
+  (apply #'mapcar #'list listoflist))
+
+;; (defparameter LOL-2by3 (list (list 1 2) (list 3 4) (list 5 6)))
+;; (defparameter LOL-3by2 (list (list 1 3 5) (list 2 4 6)))
+;; (transpose-listoflists (transpose-listoflists LOL-2by3))
+;; (transpose-listoflists (transpose-listoflists LOL-3by2))
+
+(defun equal-listoflist (x y)
+  "FIXME: This function, when written, should walk through 2 listoflists and
+return T/nil based on equality."
+  (and (= (list-length x) ;; top-level length same
+	  (list-length y))
+       ;; FIXME: within-level lengths same
+       ;; FIXME: flattened values same, walking through
+       ;; (loop over x and verify same tree as y)
+       ))
+
+
 
 #|
   (defparameter *mdfl-test*
