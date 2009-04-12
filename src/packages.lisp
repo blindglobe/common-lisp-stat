@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-02 16:09:24 tony>
+;;; Time-stamp: <2009-04-09 13:29:32 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,7 +17,8 @@
 
 (in-package :cl-user)
 
-;;; LispStat Basics
+;;; Basics
+
 
 (defpackage :lisp-stat-object-system
   (:nicknames :ls-objects :lsos)
@@ -128,8 +129,8 @@
    dataset
    list-of-columns ;; list-of-variables
    list-of-rows ;; list-of-observations
-
    ))
+
 
 (defpackage :cls-data-listoflist
   (:use :common-lisp
@@ -139,6 +140,14 @@
 	   transpose-listoflist
 	   make-dataframe-from-listoflist
 	   make-array-from-listoflist))
+
+(defpackage :lisp-stat-model
+  (:documentation "Model management for data analysis.")
+  (:use :common-lisp
+	:lisp-matrix)
+  (:export
+   ;; data structures for model and model/data combination
+   model statistical-model analysis))
 
 #|
  (defpackage :lisp-stat-regression-linear-clos
@@ -193,43 +202,6 @@
 	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
 
-#| removed, replace by lisp-matrix
-(defpackage :lisp-stat-matrix
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-compound-data)
-  (:export matrixp ;;  matrix -- conflicts!
-	   num-rows num-cols matmult identity-matrix diagonal
-	   row-list column-list inner-product outer-product
-	   cross-product
-	   ;; transpose bind-columns bind-rows 
-	   array-data-vector vector-to-array
-
-	   check-matrix check-square-matrix
-
-	   copy-array copy-vector
-	   ))
-|#
-
-#| replaced by lisp-matrix
-(defpackage :lisp-stat-linalg-data
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-ffi-int
-	:lisp-stat-types
-	:lisp-stat-compound-data
-	:lisp-stat-matrix)
-  (:export ;; more to add
-      +mode-in+ +mode-re+ +mode-cx+ mode-of
-      
-      la-data-mode la-allocate la-free
-
-      la-get-double la-put-double
-      la-put-integer
-      
-      la-matrix la-free-matrix la-matrix-to-data la-data-to-matrix
-      la-vector la-free-vector la-vector-to-data la-data-to-vector ))
-|#
 
 (defpackage :lisp-stat-math
    (:use :common-lisp
@@ -390,6 +362,7 @@
    ;; lsobjects :
    defproto defproto2
    defmeth send 
+   proto-slot-value
   
    ;; lstypes :
    fixnump check-nonneg-fixnum check-one-fixnum
