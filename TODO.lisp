@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-13 12:02:31 tony>
+;;; Time-stamp: <2009-04-13 12:14:44 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -48,32 +48,13 @@
   (estimates *m-fit*)
   (covariation-matrix *m-fit*)
 
-
-  (send m :print)
-  (send m :own-slots)
-  (send m :own-methods)
-  ;; (lsos::ls-objects-methods m) ; bogus?
-  (send m :show)
-  
-  (defparameter *m2*
-    (regression-model (list->vector-like iron)
-		      (list->vector-like absorbtion)))
-
-
   (defparameter *m3*
     (regression-model (listoflists->matrix-like  (list iron aluminum))
 		      (list->vector-like  absorbtion) :print nil))
-
-  (send m :compute)
-  (send m :sweep-matrix)
-  (format t "~%~A~%" (send m :sweep-matrix))
-
-  ;; need to get multiple-linear regression working (simple linear regr
-  ;; works)... to do this, we need to redo the whole numeric structure,
-  ;; I'm keeping these in as example of brokenness...
+  (defparameter *m3-fit*
+    (fit-model *m3*))
   
-  (send m :basis) ;; this should be positive?
-  (send m :coef-estimates)  )
+  )
 
 #+nil
 (progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
