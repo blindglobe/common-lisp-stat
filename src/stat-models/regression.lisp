@@ -34,119 +34,128 @@
 ;; challenge of reproducibility in the setting of prototype "on-line"
 ;; computation. 
 
-
-
 (defvar regression-model-proto nil
   "Prototype for all regression model instances.")
-
 (defproto regression-model-proto
-    '(x y intercept betahat basis weights 
-      included
-      total-sum-of-squares
-      residual-sum-of-squares
-      predictor-names
-      response-name
-      case-labels
-      doc)
-  ()
-  *object*
-  "Normal Linear Regression Model")
+    '(x y intercept betahat
+      basis weights included
+      total-sum-of-squares residual-sum-of-squares
+      predictor-names response-name case-labels doc)
+  () *object*  "Normal Linear Regression Model")
+
+(defclass regression-model-class () ; (statistical-model)
+  (;; data/design/state
+   (y
+    :initform nil
+    :initarg  :y
+    :accessor response-variable
+    :type     vector-like)
+   (x
+    :initform nil
+    :initarg  :x
+    :accessor design-matrix
+    :type matrix-like)
+   (interceptp
+    :initform nil
+    :initarg :interceptp
+    :accessor interceptp
+    :type boolean)
+
+   ;; metadata
+   (covariate-names
+    :initform nil
+    :initarg :covariate-names
+    :accessor covariate-names
+    :type list)
+   (response-name
+    :initform nil
+    :initarg :response-name
+    :accessor response-name
+    :type list)
+   (case-labels
+    :initform nil
+    :initarg :case-labels
+    :accessor case-labels
+    :type list)
+   (doc-string
+    :initform ""
+    :initarg :docs
+    :accessor doc-string
+    :type string))
+  (:documentation "Normal Linear Regression Model with CLOS.
+  Historical design based on LispStat."))
 
 
-(defclass regression-model-store (statistical-model)
-  ((x :initform nil :initarg :x :accessor x)
-   (y :initform nil :initarg :y :accessor y)
-   (included :initform nil :initarg :y :accessor y)
-   (total-sum-of-squares :initform nil :initarg :y :accessor y)
-   (residual-sum-of-squares :initform nil :initarg :y :accessor y)
-   (predictor-names :initform nil :initarg :y :accessor y)
-   (response-name :initform nil :initarg :y :accessor y)
-   (case-labels :initform nil :initarg :y :accessor y)
-   (needs-computing :initform T :initarg :compute? :accessor compute?))
-  (:documentation "Normal Linear Regression Model through CLOS.
-  Historical design based on what was done for LispStat, not modern."))
-
-(defclass model-specification ()
-  ((spec-string :initform nil
-		:initarg :specification
-		:accessor :specification)
-   (spec-form :initform nil
-	      :initarg :spec-form
-	      :accessor :spec-form)
-   (model-class :initform nil))
-  (:documentation "container for mathematical structure"))
-
-(defclass bayesian-model-specification (model-specification)
-  ((prior-model-class)
-   (spec-string :initform nil
-		:initarg :specification
-		:accessor :specification)
-   (spec-form :initform nil
-	      :initarg :spec-form
-	      :accessor :spec-form))
-  (:documentation "adds structure holding priors to the model"))
-
-;;; The following should be self-created based on introspection of
-;;; available:
-;;; ## inferential technologies (bayesian, frequentist, etc),
-;;; ## optimization criteria (likelihood, least-squares, min-entropy,
-;;;    minimax, etc) 
-;;; ## simplification macros, i.e. mapping directly to linear
-;;;    regression and other applications. fast specialized
-;;;    algorithms for edge cases and narrow conditions.
-;;; ## 
-
-(defparameter *model-class-list*
-  '((linear-regression frequentist)
-    (generalized-linear-regression  parametric)
-    (linear-regression bayesian)
-    ()))
-
-;;;;; More mischief from a different time
+(defclass regression-model-fit-class ()
+  (;; data/design/state
+   (data-model 
+    :initform nil
+    :initarg  :data-model
+    :accessor data-model
+    :type     regression-model-class)
+   (needs-computing
+    :initform T
+    :initarg  :needs-computing
+    :accessor needs-computing)
 
 
-;; regression-model is the old API, but regression as a generic will
-;; be the new API.  We need to distinguish between APIs which enable
-;; the user to do clear activities, and APIs which enable developers
-;; to do clear extensions and development, and underlying
-;; infrastructure to keep everything straight and enabled.
+   (included
+    :initform nil
+    :initarg  :included
+    :accessor included
+    :type     matrix-like)
+   (weights
+    :initform nil
+    :initarg  :weights
+    :accessor weights
+    :type     matrix-like)
 
-;; There are conflicting theories for how to structure the
-;; specification of mathematical models, along with the statistical
-;; inference, along with the data which is instantiating the model.
-;; 
-;; i.e.:  mathematical model for the relationships between components,
-;; between a component and a summarizing parameter, and between
-;; parameters.
-;; 
-;; statistical inference describes the general approach for
-;; aggregating into a decision and has impliciations for the scale up
-;; from the model on a single instance to the generalization.
-;;
-;; The data represents the particular substantive context that is
-;; driving the model/inference combination, and about which we hope to
-;; generate knowledge.
-;; 
-;; numerical analysis selects appropriate algorithms/implementations
-;; for combining the above 3.  
-;; 
-;; the end result is input on the decision being made (which could be
-;; specific (decision analysis/testing), risk-analysis (interval
-;; estimation) , most likely/appropriate selection (point estimation)
-;; 
+   (weights-types
+    :initform nil
+    :initarg  :weight-types
+    :accessor weight-types
+    :type     matrix-like)
 
+   ;; computational artifacts
 
+   (basis
+    :initform nil
+    :accessor basis
+    :type     matrix-like)
+   (estimates
+    :initform nil 
+    :initarg  :estimates
+    :accessor estimates
+    :type     vector-like)
+   (estimates-covariance-matrix
+    :initform nil
+    :initarg  :estimates-covariance-matrix
+    :accessor covariation-matrix
+    :type     matrix-like)
+   (total-sum-of-squares
+    :initform 0d0
+    :accessor tss
+    :type number)
+   (residual-sum-of-squares
+    :initform 0d0
+    :accessor rss
+    :type number)
+
+   (doc-string
+    :initform ""
+    :initarg :doc
+    :accessor doc-string
+    :type string))
+  (:documentation "Normal Linear Regression Model _FIT_ through CLOS."))
 
 ;;;;;;;; Helper functions
 
-
 (defun xtxinv (x)
-  "In: X
-   Out: (XtX)^-1 
+  "In: X      Out: (XtX)^-1 
 
-X is NxP, so result is PxP.  Represents Var[\hat\beta], the vars for
+X is NxP, resulting in PxP.  Represents Var[\hat\beta], the varest for
 \hat \beta from Y = X \beta + \eps.  Done by Cholesky decomposition,
-using LAPACK's dpotri routine to invert, after factorizing with dpotrf.
+with LAPACK's dpotri routine, factorizing with dpotrf.
 
 <example>
   (let ((m1 (rand 7 5)))
@@ -159,7 +168,7 @@ using LAPACK's dpotri routine to invert, after factorizing with dpotrf.
 ;; might add args: (method 'gelsy), or do we want to put a more
 ;; general front end, linear-least-square, across the range of
 ;; LAPACK solvers? 
-(defun lm (x y &optional rcond (intercept T))
+(defun lm (x y &key (intercept T) rcond)
   "fit the linear model:
            y = x \beta + e 
 
@@ -171,24 +180,24 @@ R's lm object returns: coefficients, residuals, effects, rank, fitted,
 qr-results for numerical considerations, DF_resid.  Need to
 encapsulate into a class or struct."
     (check-type x matrix-like)
-    (check-type y vector-like)          ; vector-like might be too strict?
-					; maybe matrix-like?
-    (assert (= (nrows y) (nrows x)) ; same number of observations/cases
-	    (x y) "Can not multiply x:~S by y:~S" x y)
+    (check-type y vector-like) ; vector-like might be too strict?
+    (assert
+     (= (nrows y) (nrows x)) ; same number of observations/cases
+     (x y) "Can not multiply x:~S by y:~S" x y)
     (let ((x1 (if intercept
 		  (bind2 (ones (matrix-dimension x 0) 1)
 			 x :by :column)
 		  x)))
       (let ((betahat (gelsy (m* (transpose x1) x1)
 			    (m* (transpose x1) y)
-			    (if rcond rcond (*
-					     (coerce (expt 2 -52) 'double-float)
-					     (max (nrows x1)
-						  (ncols y))))))
+			    (if rcond rcond
+				(* (coerce (expt 2 -52) 'double-float)
+				   (max (nrows x1)
+					(ncols y))))))
 	    (betahat1 (gelsy x1
 			     y
 			     (if rcond rcond
-				  (* (coerce (expt 2 -52) 'double-float)
+				 (* (coerce (expt 2 -52) 'double-float)
 				     (max (nrows x1)
 					  (ncols y)))))))
 	;; need computation for SEs, 
@@ -198,23 +207,12 @@ encapsulate into a class or struct."
 	      (xtxinv x1); (sebetahat betahat x y) ; TODO: write me!
 	      (nrows x)  ; surrogate for n
 	      (ncols x1) ; surrogate for p
-	      ;; (v- (first betahat) (first betahat1))
-	      ))))
+	      (v- (first betahat) (first betahat1)) ))))
 
 
-
-
-(defun regression-model
-    (x y &key 
-     (intercept T) 
-     (print T) 
-     (weights nil)
-     (included (repeat t (vector-dimension y)))
-     predictor-names
-     response-name
-     case-labels
-     (doc "Undocumented Regression Model Instance")
-     (debug T))
+(defun regression-model (x y &key  (intercept T)
+			 (predictor-names nil) (response-name nil) (case-labels nil)
+			 (doc "Undocumented Regression Model Instance"))
   "Args: (x y &key (intercept T) (print T) (weights nil)
           included predictor-names response-name case-labels)
 X           - list of independent variables or X matrix
@@ -226,51 +224,37 @@ WEIGHTS     - if supplied should be the same length as Y; error
               assumed to be inversely proportional to WEIGHTS
 PREDICTOR-NAMES, RESPONSE-NAME, CASE-LABELS
             - sequences of strings or symbols.
-INCLUDED    - if supplied should be the same length as Y, with
- 	      elements nil to skip a in computing estimates (but not
-              in residual analysis).
-Returns a regression model object. To examine the model further assign the
-result to a variable and send it messages.
-Example (data are in file absorbtion.lsp in the sample data directory): 
-  (def m (regression-model (list iron aluminum) absorbtion))
-  (send m :help) (send m :plot-residuals)"
-  (let ((x (cond 
-	     ((typep x 'matrix-like) x)
-#| assume only numerical vectors -- but we need to ensure coercion to float.
-	     ((or (typep x 'sequence) 
-		  (and (consp x)
-		       (numberp (car x)))
-		  (make-vector (length x) :initial-contents x)))
-|#
-	     (t (error "not matrix-like.");x
-		))) ;; actually, might should barf.
-	(y (cond
-	     ((typep y 'vector-like) y)
-#|
-	     ((and (consp x)
-		   (numberp (car x))) (make-vector (length y) :initial-contents y))
-|#
-	     (t (error "not vector-like."); y
-		))) ;; actually, might should barf.
-        (m (send regression-model-proto :new)))
-    (format t "~%")
-    (send m :doc doc)
-    (send m :x x)
-    (send m :y y)
-    (send m :intercept intercept)
-    (send m :weights weights)
-    (send m :included included)
-    (send m :predictor-names predictor-names)
-    (send m :response-name response-name)
-    (send m :case-labels case-labels)
-    (if debug
-	(progn
-	  (format t "~%")
-	  (format t "~S~%" (send m :doc))
-	  (format t "X: ~S~%" (send m :x))
-	  (format t "Y: ~S~%" (send m :y))))
-    (if print (send m :display))
-    m))
+INCLUDED    - if supplied, should be length Y or 1, with
+ 	      elements nil to skip or T to include for computing estimates
+              (always included in residual analysis).
+Returns a regression model object."
+  (check-type x matrix-like)
+  (check-type y vector-like)
+  (let ((newmodel (make-instance 'regression-model-class
+				 :y y
+				 :x x
+				 :interceptp intercept
+				 :case-labels case-labels
+				 :covariate-names predictor-names
+				 :response-name  response-name
+				 :docs doc )))
+    newmodel))
+
+(defun fit-model (model &key (included T) (wgts nil) (docs "No Docs"))
+  (let ((result (make-instance 'regression-model-fit-class
+		 :data-model model
+		 :needs-computing T
+		 :included included
+		 :weights wgts
+		 :estimates (first (lm (design-matrix model)
+				       (response-variable model)
+				       :intercept (interceptp model)))
+		 :estimates-covariance-matrix (xtxinv (design-matrix model))
+		 :doc docs)))
+    result))
+
+;(defmethod print-object (obj regression-model-class))
+
 
 
 

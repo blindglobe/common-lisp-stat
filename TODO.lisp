@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-03 17:37:08 tony>
+;;; Time-stamp: <2009-04-13 12:02:31 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,12 +17,13 @@
 ;;; SET UP
 
 (in-package :cl-user)
+;;(asdf:oos 'asdf:load-op 'lisp-matrix)
 ;;(asdf:oos 'asdf:compile-op 'lispstat)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
 
 (in-package :lisp-stat-unittests)
 
-;; tests = 79, failures = 7, errors = 15
+;; tests = 78, failures = 7, errors = 15
 (run-tests :suite 'lisp-stat-ut)
 (describe (run-tests :suite 'lisp-stat-ut))
 
@@ -36,24 +37,32 @@
 
 (progn ;; FIXME: Regression modeling (some data future-ish)
 
-  (defparameter  *m* nil  "holding variable.")
-  (def *m* (regression-model (list->vector-like iron)   ;; BROKEN
-			     (list->vector-like absorbtion)))
+  (defparameter *m*
+    (regression-model (list->vector-like iron) ;; BROKEN
+		      (list->vector-like absorbtion))
+    "holding variable.")
 
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion) :print nil))
-			   ;;Good
+  (defparameter *m-fit*
+    (fit-model *m*))
+
+  (estimates *m-fit*)
+  (covariation-matrix *m-fit*)
+
+
   (send m :print)
   (send m :own-slots)
   (send m :own-methods)
   ;; (lsos::ls-objects-methods m) ; bogus?
   (send m :show)
   
-  (def m (regression-model (list->vector-like iron)
-			   (list->vector-like absorbtion)))
+  (defparameter *m2*
+    (regression-model (list->vector-like iron)
+		      (list->vector-like absorbtion)))
 
-  (def m (regression-model (listoflists->matrix-like  (list iron aluminum))
-			   (list->vector-like  absorbtion) :print nil))
+
+  (defparameter *m3*
+    (regression-model (listoflists->matrix-like  (list iron aluminum))
+		      (list->vector-like  absorbtion) :print nil))
 
   (send m :compute)
   (send m :sweep-matrix)
