@@ -7,8 +7,8 @@ type: :bugfix
 component: StatModels
 release: "1.0"
 reporter: Tony <blindglobe@gmail.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :reorg
 creation_time: 2008-12-09 06:31:13.014590 Z
 references: []
 
@@ -24,3 +24,7 @@ log_events:
   - Tony <blindglobe@gmail.com>
   - assigned to release 1.0 from unassigned
   - can't release without descriptions and basic regression!
+- - 2009-04-13 10:08:13.673451 Z
+  - Tony <blindglobe@gmail.com>
+  - closed with disposition reorg
+  - The problem has been moved to become a CLOS-based issue.
