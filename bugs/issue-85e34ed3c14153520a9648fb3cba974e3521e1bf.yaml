@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: pRNG system needed, which suports use of both a recordable
+desc: |-
+  pRNG system with recordable seed and parallel/theadsafe-ness
+  needed.
+type: :feature
+component: StatModels
+release: "1.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-04-14 06:16:21.761194 Z
+references: []
+
+id: 85e34ed3c14153520a9648fb3cba974e3521e1bf
+log_events: 
+- - 2009-04-14 06:16:32.771511 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - name runs into comments
