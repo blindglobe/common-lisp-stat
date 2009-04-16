@@ -10,7 +10,8 @@
 
 (in-package :lisp-stat-unittests)
 
-;;; TEST for Arrays and Linear Algebra.
+;;; TEST for Matrices and Linear Algebra.  Should provide additional
+;;; tests for lisp-matrix integration.
 
 (deftestsuite lisp-stat-ut-array (lisp-stat-ut) ())
 
