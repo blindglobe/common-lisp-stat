@@ -30,12 +30,7 @@
 ;; other such features to capture stages and steps that are considered
 ;; along the goals of estimating a model.
 
-;; Note that the above is a stream-of-conscience response to the
-;; challenge of reproducibility in the setting of prototype "on-line"
-;; computation. 
-
-(defvar regression-model-proto nil
-  "Prototype for all regression model instances.")
+(defvar regression-model-proto nil "Prototype for all regression model instances.")
 (defproto regression-model-proto
     '(x y intercept betahat
       basis weights included
@@ -44,29 +39,38 @@
   () *object*  "Normal Linear Regression Model")
 
 (defclass regression-model-class () ; (statistical-model)
-  (;; data/design/state
+  (;; Data
    (y
     :initform nil
     :initarg  :y
     :accessor response-variable
-    :type     vector-like)
+    :type     vector-like
+    :documentation "vector-like containing univariate response values."
+    )
    (x
     :initform nil
     :initarg  :x
     :accessor design-matrix
-    :type matrix-like)
+    :type matrix-like
+    :documentation "matrix-like containing design/data matrix.  If
+  interceptp is T, assume first column is intercept (ones), and hence
+  a bit special.")
    (interceptp
     :initform nil
     :initarg :interceptp
     :accessor interceptp
-    :type boolean)
+    :type boolean
+    :documentation "When T, treat first column of design/data matrix
+  special as intercept fit.")
 
-   ;; metadata
+   ;; Metadata
    (covariate-names
     :initform nil
     :initarg :covariate-names
     :accessor covariate-names
-    :type list)
+    :type list
+    :documentation "List of strings representing covariate names.
+   Might include symbols at some point")
    (response-name
     :initform nil
     :initarg :response-name
@@ -93,12 +97,13 @@
     :initarg  :data-model
     :accessor data-model
     :type     regression-model-class)
+
+
    (needs-computing
     :initform T
     :initarg  :needs-computing
     :accessor needs-computing)
-
-
+   ;; above modified to TRUE when the following are changed
    (included
     :initform nil
     :initarg  :included
@@ -109,15 +114,14 @@
     :initarg  :weights
     :accessor weights
     :type     matrix-like)
-
    (weights-types
     :initform nil
     :initarg  :weight-types
     :accessor weight-types
     :type     matrix-like)
 
-   ;; computational artifacts
-
+   ;; computational artifacts for storage; when NEEDS-COMPUTING is
+   ;; NIL, these are up-to-date.
    (basis
     :initform nil
     :accessor basis
@@ -130,7 +134,7 @@
    (estimates-covariance-matrix
     :initform nil
     :initarg  :estimates-covariance-matrix
-    :accessor covariation-matrix
+    :accessor covariance-matrix
     :type     matrix-like)
    (total-sum-of-squares
     :initform 0d0
@@ -142,7 +146,7 @@
     :type number)
 
    (doc-string
-    :initform ""
+    :initform "No info given."
     :initarg :doc
     :accessor doc-string
     :type string))
@@ -150,7 +154,7 @@
 
 ;;;;;;;; Helper functions
 
-(defun xtxinv (x)
+(defun xtxinv (x &key (intercept T))
   "In: X      Out: (XtX)^-1 
 
 X is NxP, resulting in PxP.  Represents Var[\hat\beta], the varest for
@@ -162,8 +166,11 @@ with LAPACK's dpotri routine, factorizing with dpotrf.
      (xtxinv m1))
 </example>"
   (check-type x matrix-like)
-  (minv-cholesky (m* (transpose x) x)))
-
+  (let ((myx (if intercept
+		  (bind2 (ones (matrix-dimension x 0) 1)
+			 x :by :column)
+		  x)))
+    (minv-cholesky (m* (transpose myx) myx))))
 
 ;; might add args: (method 'gelsy), or do we want to put a more
 ;; general front end, linear-least-square, across the range of
@@ -249,23 +256,31 @@ Returns a regression model object."
 		 :estimates (first (lm (design-matrix model)
 				       (response-variable model)
 				       :intercept (interceptp model)))
-		 :estimates-covariance-matrix (xtxinv (design-matrix model))
+		 :estimates-covariance-matrix
+		    (xtxinv (design-matrix model)
+			    :intercept (interceptp model))
 		 :doc docs)))
     result))
 
-;(defmethod print-object (obj regression-model-class))
+(defmethod print-object ((obj regression-model-fit-class) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "Estimates: ~%~A~%" (estimates obj))
+    (format stream "Covariance: ~%~A~%" (covariance-matrix obj))
+    (format stream "Doc: ~%~A~%" (doc-string obj))))
+
+(defmethod print-object ((obj regression-model-class) stream)
+  "Need better formatting and output -- clearly this is a WRONG EXAMPLE."
+  (print-unreadable-object (obj stream :type t)
+    (format stream "Response: ~%~A~%" (response-variable obj))
+    (format stream "Design: ~%~A~%" (design-matrix obj))
+    (format stream "Covariates: ~%~A~%" (covariate-names obj))
+    (format stream "Doc: ~%~A~%" (doc-string obj))))
 
 
-
-
-
-(defmeth regression-model-proto :isnew ()
-  (send self :needs-computing t))
-
-(defmeth regression-model-proto :save ()
-"Message args: ()
-Returns an expression that will reconstruct the regression model."
-  `(regression-model ',(send self :x)
+#|
+ (defun regression-model-reconstruct  (regr-obj)
+  "ALL WRONG.  But when right, returns an expression to reconstruct the regression model."
+  `(regression-model ',(response-variable regr-obj)
                      ',(send self :y)
                      :intercept ',(send self :intercept)
                      :weights ',(send self :weights)
@@ -273,6 +288,7 @@ Returns an expression that will reconstruct the regression model."
                      :predictor-names ',(send self :predictor-names)
                      :response-name ',(send self :response-name)
                      :case-labels ',(send self :case-labels)))
+|#
                        
 ;;; Computing and Display Methods
 
@@ -635,10 +651,6 @@ basis."
     (coerce (compound-data-seq (select m (1+ n) indices)) 'list))) ;; ERROR
 |#
 
-(defmeth regression-model-proto :xtxinv () 
-   "Message args: ()
-Returns ((X^T) X)^(-1) or ((X^T) W X)^(-1)."
-  (xtxinv (send self :x)))
 
 (defmeth regression-model-proto :coef-standard-errors ()
 "Message args: ()
