@@ -1,38 +1,36 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-11 19:01:27 tony>
+;;; Time-stamp: <2009-04-15 08:39:53 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007-2008, AJ Rossini <blindglobe@gmail.com>.  BSD.
 ;;; Purpose:    Manipulating structures which are lists of lists
-;;;             rather than arrays or matrix-likes,
+;;;             rather than arrays or matrix-likes.
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
+;;; Thoughts for organization: there are 2 general flavors of
+;;; activities.  The first is that we do list-of-list to list-of-list
+;;; transforms, and these do not rely on external packages being in
+;;; existence.  The second is that we do transformations from them
+;;; into other similar rectangular or ragged data structures.
+;;; Within-structure should include item-selection and subsetting,
+;;; while between-structure should include copying and ideally,
+;;; "pass-through" referential structures.  The latter is probably
+;;; going to take a performance hit, but should allow for maximal
+;;; memory use.
 
 ;; Where should this go?
 (in-package :cls-data-listoflist)
 
-
-;; Glib commentary:
-;; Serious flaw -- need to consider that we are not really well
-;; working with the data structures, in that Luke created compound as
-;; a base class, which turns out to be slightly backward if we are to
-;; maintain the numerical structures as well as computational
-;; efficiency.
-;;
 ;; Currently, we assume that the list-of-list representation is in
 ;; row-major form, i.e. that lists represent rows and not columns.
 ;; The original lisp-stat had the other way around.  We could augment
 ;; the top-level list with a property to check orientation
 ;; (row-major/column-major), but this hasn't been done yet.
-
-;; This file contains code for going between listoflists,
-;; arrays/vectors, and matrix-like/vector-like data structures.  
-
 
 #|
 ;; Test cases:
@@ -88,6 +86,39 @@ size rows, typing if required, etc.
 	  (if (equal  type :row-major)
 	      (setf (aref result i j) (elt (elt lol i) j))
 	      (setf (aref result i j) (elt (elt lol j) i)))))
+      result)))
+
+
+(defun listoflist->matrix-like (lol
+				&key (orientation :row-major)
+				(coerce-to 'double))
+  "From a listoflists structure of numbers, return a matrix-like.
+
+FIXME: need to verify that the listoflists is a valid structure (same
+size rows, typing if required, etc.
+
+FIXME: need to grep special variables to make the right kind of
+matrix-like.
+
+<example>
+  (defparameter *lol-ml-test*
+      (list (list 1d0 1d0 2.1d0)
+            (list 2d0 2d0 1.1d0)))
+  (length *lol-ml-test*)
+  (length (elt *lol-ml-test* 0))
+
+  (defparameter *lol-ml-result* (listoflist->matrix-like *lol-ml-test*))
+  (matrix-dimensions *lol-ml-result*)
+</example>"
+  (declare (ignorable coerce-to))
+  (let ((n (length lol))
+	(p (length (elt lol 0))))
+    (let ((result (make-matrix  n p :initial-element 0d0)))
+      (dotimes (i n)
+	(dotimes (j p)
+	  (if (equal orientation :row-major)
+	      (setf (mref result i j) (elt (elt lol i) j))
+	      (setf (mref result i j) (elt (elt lol j) i)))))
       result)))
 
 
