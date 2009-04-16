@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-13 12:03:08 tony>
+;;; Time-stamp: <2009-04-15 08:47:26 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -134,12 +134,14 @@
 
 (defpackage :cls-data-listoflist
   (:use :common-lisp
+	:lisp-matrix
 	:lisp-stat-dataframe) ; for dataframe
   (:export lists-of-same-size
 	   equal-listoflist
 	   transpose-listoflist
-	   make-dataframe-from-listoflist
-	   make-array-from-listoflist))
+	   listoflist->dataframe
+	   listoflist->array
+	   listoflist->matrix-like))
 
 (defpackage :lisp-stat-model
   (:documentation "Model management for data analysis.")
@@ -305,9 +307,10 @@
 			  call-method call-next-method)
   (:export regression-model fit-model
 
-	   estimates covariation-matrix
+	   estimates covariance-matrix
 	   ;; functions for helpers
 	   lm xtxinv   
+	   print-object ;; for method dispatch
 
 	   ;; OLD to remove
 
@@ -436,7 +439,7 @@
    ;; listoflist
    lists-of-same-size equal-listoflist
    transpose-listoflist
-   make-dataframe-from-listoflist  make-array-from-listoflist
+   listoflist->dataframe listoflist->array listoflist->matrix-like
 
    ;; statistics.lsp  (descriptions, should probably be moved
    ;; later...?
@@ -467,7 +470,7 @@
    ;; regression.lsp
    ;; -- linear regressin models.
    regression-model fit-model
-   estimates covariation-matrix
+   estimates covariance-matrix
 
    regression-model-proto x y intercept sweep-matrix
    basis weights included total-sum-of-squares residual-sum-of-squares
@@ -541,7 +544,9 @@ done for a user- or analysis-package.")
       <= float imagpart))
 
 (defpackage :lisp-stat-unittests
-  (:use :common-lisp :lift :lisp-stat :lisp-stat-data-examples)
+  (:use :common-lisp
+	:lift :lisp-matrix
+	:lisp-stat :lisp-stat-data-examples)
   (:shadowing-import-from :lisp-stat
 			  call-method call-next-method ;; objects
 	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
