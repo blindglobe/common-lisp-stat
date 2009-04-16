@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-15 16:34:53 tony>
+;;; Time-stamp: <2009-04-16 17:41:10 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -45,7 +45,6 @@
   (defparameter *m-fit*
     (fit-model *m*))
 
-
   (princ *m*)
   (princ *m-fit*)
 
@@ -53,11 +52,16 @@
   (covariance-matrix *m-fit*)
 
   (defparameter *m3*
-    (regression-model (listoflist->matrix-like  (list iron aluminum))
-		      (list->vector-like  absorbtion) :print nil))
+    (regression-model (transpose  (listoflist->matrix-like (list iron aluminum)
+					       :orientation :row-major))
+		      (list->vector-like  absorbtion) ))
+  (princ *m3*)
   (defparameter *m3-fit*
     (fit-model *m3*))
   
+  (estimates *m3-fit*)
+  (covariance-matrix *m3-fit*)
+
   )
 
 #+nil
