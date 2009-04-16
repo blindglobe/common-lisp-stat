@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-15 08:39:53 tony>
+;;; Time-stamp: <2009-04-16 17:28:54 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -89,9 +89,9 @@ size rows, typing if required, etc.
       result)))
 
 
-(defun listoflist->matrix-like (lol
-				&key (orientation :row-major)
-				(coerce-to 'double))
+(defun listoflist->matrix-like (lol &key
+				(orientation :row-major)
+				(coerce-to 'double-float))
   "From a listoflists structure of numbers, return a matrix-like.
 
 FIXME: need to verify that the listoflists is a valid structure (same
@@ -117,8 +117,8 @@ matrix-like.
       (dotimes (i n)
 	(dotimes (j p)
 	  (if (equal orientation :row-major)
-	      (setf (mref result i j) (elt (elt lol i) j))
-	      (setf (mref result i j) (elt (elt lol j) i)))))
+	      (setf (mref result i j) (coerce (elt (elt lol i) j) coerce-to)) 
+	      (setf (mref result i j) (coerce (elt (elt lol j) i) coerce-to)))))
       result)))
 
 
