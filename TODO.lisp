@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-16 17:41:10 tony>
+;;; Time-stamp: <2009-04-17 13:05:00 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -31,11 +31,24 @@
 ;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
 ;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 
+  (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
+  (lift::run-tests :suite 'lisp-stat-ut-dataframe)
+
+  (describe 
+    (lift::run-test
+      :test-case  'lisp-stat-unittests::create-proto
+      :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+
 (describe 'lisp-stat-ut)
 
 (in-package :ls-user)
 
-(progn ;; FIXME: Regression modeling (some data future-ish)
+(progn ;; FIXME: Regression modeling (some data future-ish).
+
+  ;; TODO:
+  ;; - confirm estimates for multivariate case, 
+  ;; - pretty-print output
+  ;; - fix up API -- what do we want this to look like?
 
   (defparameter *m*
     (regression-model (list->vector-like iron) ;; BROKEN
@@ -58,11 +71,16 @@
   (princ *m3*)
   (defparameter *m3-fit*
     (fit-model *m3*))
+#|
+  ;; Should the above look something like:
+  (defparameter *m3-fit*
+                (spec-and-fit-model '(absorbtion = iron aluminum)))
+  ;; in which case we split the list before/after the "=" character.
+|#
   
   (estimates *m3-fit*)
-  (covariance-matrix *m3-fit*)
+  (covariance-matrix *m3-fit*))
 
-  )
 
 #+nil
 (progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
@@ -74,71 +92,12 @@
   diabetes )
 
 
-(progn ;; dataframe
-
-  (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
-  (lift::run-tests :suite 'lisp-stat-ut-dataframe)
-
-  (describe 
-    (lift::run-test
-      :test-case  'lisp-stat-unittests::create-proto
-      :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
-
-  (defparameter *my-df-1*
-	(make-instance 'dataframe-array
-		       :storage #2A((1 2 3 4 5)
-				    (10 20 30 40 50))
-		       :doc "This is an interesting dataframe-array"
-		       :case-labels (list "x" "y")
-		       :var-labels (list "a" "b" "c" "d" "e")))
-
-  (setf (dfref *my-df-1* 0 0) -1d0)
-
-  
-
-  (make-dataframe  #2A((1 2 3 4 5)
-		       (10 20 30 40 50)))
-
-  (make-dataframe (rand 4 3))
-
-
-  (equalp (dataset
-	  (make-instance 'dataframe-array
-			 :storage #2A(('a 'b)
-				      ('c 'd))))
-		 #2A(('a 'b)
-		     ('c 'd)) )
-
-  (equalp (dataset
-	  (make-instance 'dataframe-array
-			 :storage #2A((1 2)
-				      (3 4))))
-		 #2A((1 2)
-		     (3 4)))
-
-  (equalp (dataset
-	  (make-instance 'dataframe-array
-			 :storage #2A((1d0 2d0)
-				      (3d0 4d0))))
-		 #2A((1d0 2d0)
-		     (3d0 4d0)))
-
-
-  (defparameter *my-df-1*
-    (make-dataframe  #2A((1 2 3 4 5)
-			 (10 20 30 40 50))
-		     :caselabels (list "x" "y")
-		     :varlabels (list "a" "b" "c" "d" "e")	
-		     :doc "This is an interesting dataframe-array"))
-
-  (caselabels *my-df-1*)
-  (varlabels *my-df-1*)
-
+(progn ;; Importing data from DSV text files.
 
   (defparameter *my-df-2*
 	(make-instance 'dataframe-array
 		       :storage
-		       (make-array-from-listoflists
+		       (listoflist->array
 			(cybertiggyr-dsv::load-escaped
 			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv"))
 		       :doc "This is an interesting dataframe-array"))
@@ -146,6 +105,22 @@
 		       :var-labels (list "a" "b" "c" "d" "e")
 |#  
 
+  (asdf:oos 'asdf:load-op 'rsm-string)
+  (rsm.string:file->string-table
+   "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")
+
+  (rsm.string:file->number-table
+   "/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv")
+
+  (defparameter *my-df-2*
+	(make-instance 'dataframe-array
+		       :storage
+		       (listoflist->array
+			(transpose-listoflist 
+			(rsm.string:file->string-table
+			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
+		       :doc "This is an interesting dataframe-array"))
+  *my-df-2*
 
   )
 

@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-03-12 23:18:12 tony>
+;;; Time-stamp: <2009-04-16 17:47:18 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -760,4 +760,35 @@ my.lib
   ;;     (mapcar #'(lambda (x) (coerce x 'double-float)) iron)
   
   (princ "Data Set up"))
+
+
+
+  (defparameter *my-df-1*
+	(make-instance 'dataframe-array
+		       :storage #2A((1 2 3 4 5)
+				    (10 20 30 40 50))
+		       :doc "This is an interesting dataframe-array"
+		       :case-labels (list "x" "y")
+		       :var-labels (list "a" "b" "c" "d" "e")))
+
+  (setf (dfref *my-df-1* 0 0) -1d0)
+
+  
+
+  (make-dataframe  #2A((1 2 3 4 5)
+		       (10 20 30 40 50)))
+
+  (make-dataframe (rand 4 3))
+
+
+
+  (defparameter *my-df-1*
+    (make-dataframe  #2A((1 2 3 4 5)
+			 (10 20 30 40 50))
+		     :caselabels (list "x" "y")
+		     :varlabels (list "a" "b" "c" "d" "e")	
+		     :doc "This is an interesting dataframe-array"))
+
+  (caselabels *my-df-1*)
+  (varlabels *my-df-1*)
 
