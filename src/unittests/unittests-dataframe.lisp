@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the dataframe package
-;;; Time-stamp: <2009-04-02 16:21:09 tony>
+;;; Time-stamp: <2009-04-16 17:45:42 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 
@@ -171,3 +171,27 @@
 ;;;
 ;; (run-tests)
 ;; (describe (run-tests))
+
+
+
+  (equalp (dataset
+	   (make-instance 'dataframe-array
+			  :storage #2A(('a 'b)
+				       ('c 'd))))
+	  #2A(('a 'b)
+	      ('c 'd)) )
+
+  (equalp (dataset
+	  (make-instance 'dataframe-array
+			 :storage #2A((1 2)
+				      (3 4))))
+		 #2A((1 2)
+		     (3 4)))
+
+  (equalp (dataset
+	  (make-instance 'dataframe-array
+			 :storage #2A((1d0 2d0)
+				      (3d0 4d0))))
+		 #2A((1d0 2d0)
+		     (3d0 4d0)))
+
