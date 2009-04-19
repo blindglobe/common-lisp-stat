@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-18 12:15:18 tony>
+;;; Time-stamp: <2009-04-17 18:22:13 tony>
 ;;; Creation:   <2009-03-10 16:59:37 tony>
 ;;; File:       plot.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,7 +15,7 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
-(in-package :lisp-stat-visualize)
+(in-package :cls-visualize)
 
 ;;;; CL-PLPLOT experiments
 
@@ -26,7 +26,7 @@
 
 (asdf:oos 'asdf:load-op 'cl-plplot)
 
-(in-package :lisp-stat-visualize-plplot)
+(in-package :cls-visualize-plplot)
 
 ;; set this to the appropriate plplot device for your system
 #|

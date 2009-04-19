@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-16 17:21:52 tony>
+;;; Time-stamp: <2009-04-17 18:23:10 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -159,12 +159,12 @@
   (:export regression-model))
 |#
 
-(defpackage :lisp-stat-visualize
+(defpackage :cls-visualize
   (:use :common-lisp
 	:lisp-matrix
 	:lisp-stat-dataframe))
 
-(defpackage :lisp-stat-visualize-plplot
+(defpackage :cls-visualize-plplot
   (:use :common-lisp
 	:lisp-matrix
 	:lisp-stat-dataframe
@@ -340,7 +340,9 @@
 	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-descriptive-statistics
 	:lisp-stat-regression-linear
-	:cybertiggyr-dsv)
+	:cybertiggyr-dsv
+	:cls-visualize
+	:cls-visualize-plplot)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
   (:shadowing-import-from :lisp-stat-math
@@ -487,7 +489,6 @@
 
    ;; bayes.lsp
    bayes-model bayes-model-proto bayes-internals
-
 
    ;; plots.lisp
    plot-ex
