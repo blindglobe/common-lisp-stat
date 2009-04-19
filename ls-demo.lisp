@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-04-16 17:47:18 tony>
+;;; Time-stamp: <2009-04-17 13:32:06 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -792,3 +792,66 @@ my.lib
   (caselabels *my-df-1*)
   (varlabels *my-df-1*)
 
+
+
+(progn ;; Data setup
+
+  (describe 'make-matrix)
+
+  (defparameter *indep-vars-2-matrix*
+    (make-matrix (length iron) 2
+		 :initial-contents
+		 (mapcar #'(lambda (x y) 
+			     (list (coerce x 'double-float)
+				   (coerce y 'double-float)))
+			 iron aluminum)))
+
+    
+  (defparameter *dep-var*
+    (make-vector (length absorbtion)
+		 :type :row
+		 :initial-contents
+		 (list 
+		  (mapcar #'(lambda (x) (coerce x 'double-float))
+			  absorbtion))))
+
+  (make-dataframe *dep-var*)
+  (make-dataframe (transpose *dep-var*))
+
+  (defparameter *dep-var-int*
+    (make-vector (length absorbtion)
+		 :type :row
+		 :element-type 'integer
+		 :initial-contents (list absorbtion)))
+
+
+  (defparameter *xv+1a*
+    (make-matrix
+     8 2
+     :initial-contents #2A((1d0 1d0)
+			   (1d0 3d0)
+			   (1d0 2d0)
+			   (1d0 4d0)
+			   (1d0 3d0)
+			   (1d0 5d0)
+			   (1d0 4d0)
+			   (1d0 6d0))))
+
+  (defparameter *xv+1b*
+    (bind2
+     (ones 8 1)
+     (make-matrix
+      8 1
+      :initial-contents '((1d0)
+			  (3d0)
+			  (2d0)
+			  (4d0)
+			  (3d0)
+			  (5d0)
+			  (4d0)
+			  (6d0)))
+     :by :column))
+
+  (m= *xv+1a* *xv+1b*) ; => T
+  
+  (princ "Data Set up"))

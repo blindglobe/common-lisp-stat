@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-17 13:05:00 tony>
+;;; Time-stamp: <2009-04-17 18:25:00 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -92,6 +92,7 @@
   diabetes )
 
 
+
 (progn ;; Importing data from DSV text files.
 
   (defparameter *my-df-2*
@@ -105,6 +106,7 @@
 		       :var-labels (list "a" "b" "c" "d" "e")
 |#  
 
+  ;; a better approach is:
   (asdf:oos 'asdf:load-op 'rsm-string)
   (rsm.string:file->string-table
    "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")
@@ -117,77 +119,45 @@
 		       :storage
 		       (listoflist->array
 			(transpose-listoflist 
-			(rsm.string:file->string-table
-			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
+			 (rsm.string:file->string-table
+			  "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
 		       :doc "This is an interesting dataframe-array"))
   *my-df-2*
 
+  (defparameter *my-df-3*
+	(make-instance 'dataframe-array
+		       :storage
+		       (listoflist->array
+			(transpose-listoflist 
+			 (rsm.string:file->number-table
+			  "/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv")))
+		       :doc "This is an interesting dataframe-array"))
+  *my-df-3*
+
   )
 
-(progn ;; Data setup
-
-  (describe 'make-matrix)
-
-  (defparameter *indep-vars-2-matrix*
-    (make-matrix (length iron) 2
-		 :initial-contents
-		 (mapcar #'(lambda (x y) 
-			     (list (coerce x 'double-float)
-				   (coerce y 'double-float)))
-			 iron aluminum)))
-
-    
-  (defparameter *dep-var*
-    (make-vector (length absorbtion)
-		 :type :row
-		 :initial-contents
-		 (list 
-		  (mapcar #'(lambda (x) (coerce x 'double-float))
-			  absorbtion))))
-
-  (make-dataframe *dep-var*)
-  (make-dataframe (transpose *dep-var*))
-
-  (defparameter *dep-var-int*
-    (make-vector (length absorbtion)
-		 :type :row
-		 :element-type 'integer
-		 :initial-contents (list absorbtion)))
-
-
-  (defparameter *xv+1a*
-    (make-matrix
-     8 2
-     :initial-contents #2A((1d0 1d0)
-			   (1d0 3d0)
-			   (1d0 2d0)
-			   (1d0 4d0)
-			   (1d0 3d0)
-			   (1d0 5d0)
-			   (1d0 4d0)
-			   (1d0 6d0))))
-
-  (defparameter *xv+1b*
-    (bind2
-     (ones 8 1)
-     (make-matrix
-      8 1
-      :initial-contents '((1d0)
-			  (3d0)
-			  (2d0)
-			  (4d0)
-			  (3d0)
-			  (5d0)
-			  (4d0)
-			  (6d0)))
-     :by :column))
-
-  (m= *xv+1a* *xv+1b*) ; => T
-  
-  (princ "Data Set up"))
 
 
 
+(progn
+  ;; Plotting
+  (asdf:oos 'asdf:load-op 'cl-plplot)
+
+  (plot-ex)
+  (defparameter *gdev* "xcairo")
+  ;; (defparameter *gdev* "xwin")
+  (cl-plplot::plsdev *gdev*)
+
+  (contour-plot-ex)
+  (fn-contour-plot-ex)
+  (shade-plot-ex)
+  (3D-plot-ex)
+
+  )
+
+
+(in-package :ls-user)
+ 
 
 (progn
   ;; REVIEW: general Lisp use guidance
@@ -216,101 +186,6 @@
      (- (* b b) (* 4 a c)))) =>  CAREFUL-DISCRIMINANT
  (careful-discriminant 1 2/3 -2) =>  76/9
 |#
-  )
-
-
-
-
-
-(progn ;; FIXME: read data from CSV file.  To do.
-
-  
-  ;; challenge is to ensure that we get mixed arrays when we want them,
-  ;; and single-type (simple) arrays in other cases.
-
-
-  (defparameter *csv-num*
-    (cybertiggyr-dsv::load-escaped
-     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv"
-     :field-separator #\,
-     :trace T))
-
-  (nth 0 (nth 0 *csv-num*))
-
-  (defparameter *csv-num*
-    (cybertiggyr-dsv::load-escaped
-     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric2.dsv"
-     :field-separator #\:))
-
-  (nth 0 (nth 0 *csv-num*))
-
-
-  ;; The handling of these types should be compariable to what we do for
-  ;; matrices, but without the numerical processing.  i.e. mref, bind2,
-  ;; make-dataframe, and the class structure should be similar. 
-  
-  ;; With numerical data, there should be a straightforward mapping from
-  ;; the data.frame to a matrix.   With categorical data (including
-  ;; dense categories such as doc-strings, as well as sparse categories
-  ;; such as binary data), we need to include metadata about ordering,
-  ;; coding, and such.  So the structures should probably consider 
-
-  ;; Using the CSV file:
-
-  (defun parse-number (s)
-    (let* ((*read-eval* nil)
-	   (n (read-from-string s)))
-      (if (numberp n) n)))
-
-  (parse-number "34")
-  (parse-number "34 ")
-  (parse-number " 34")
-  (parse-number " 34 ")
-
-  (+  (parse-number "3.4") 3)
-  (parse-number "3.4 ")
-  (parse-number " 3.4")
-  (+  (parse-number " 3.4 ") 3)
-
-  (parse-number "a")
-
-  ;; (coerce "2.3" 'number)  => ERROR
-  ;; (coerce "2" 'float)  => ERROR
-  
-  (defparameter *csv-num*
-    (cybertiggyr-dsv::load-escaped
-     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv"
-     :field-separator #\,
-     :filter #'parse-number
-     :trace T))
-
-  (nth 0 (nth 0 *csv-num*))
-
-  (defparameter *csv-num*
-    (cybertiggyr-dsv::load-escaped
-     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric2.dsv"
-     :field-separator #\:
-     :filter #'parse-number))
-
-  (nth 0 (nth 0 *csv-num*))
-  
-  ;; now we've got the DSV code in the codebase, auto-loaded I hope:
-  cybertiggyr-dsv:*field-separator*
-  (defparameter *example-numeric.csv* 
-    (cybertiggyr-dsv:load-escaped "Data/example-numeric.csv"
-				  :field-separator #\,))
-  *example-numeric.csv*
-
-  ;; the following fails because we've got a bit of string conversion
-  ;; to do.   2 thoughts: #1 modify dsv package, but mucking with
-  ;; encapsulation.  #2 add a coercion tool (better, but potentially
-  ;; inefficient).
-  #+nil(coerce  (nth 3 (nth 3 *example-numeric.csv*)) 'double-float)
-
-  ;; cases, simple to not so
-  (defparameter *test-string1* "1.2")
-  (defparameter *test-string2* " 1.2")
-  (defparameter *test-string3* " 1.2 ")
   )
 
 
@@ -702,17 +577,9 @@
 
 
 
-#+nil
-(progn
-
-  (asdf:oos 'asdf:load-op 'cl-plplot)
-
-  (plot-ex))
-
 #|
-
   (type-of #2A((1 2 3 4 5)
-		       (10 20 30 40 50)))
+               (10 20 30 40 50)))
 
   (type-of (rand 10 20))
 
@@ -727,5 +594,4 @@
 	 'array)
 
   (typep (rand 10 20) 'array)
-
 |#
