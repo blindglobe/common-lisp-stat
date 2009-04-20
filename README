@@ -6,6 +6,10 @@ You probably did:
 
     git clone git://repo.or.cz/CLS.git
 
+or 
+
+    git clone git://github.com/blindglobe/common-lisp-stat.git
+
 (or perhaps:
     git clone http://repo.or.cz/w/CLS.git
 )
@@ -46,7 +50,6 @@ So basically ..
 2. start your lisp
 3. follow the commands in the ls-demo.lisp file, i.e.
  
-   0. (asdf:oos 'asdf:load-op 'lift) ;; Still need this, not sure why?
    a. (asdf:oos 'asdf:load-op 'lispstat) ;; use ASDF to load lispstat
    b. (in-package :ls-user)
    c. (normal-rand 20)
@@ -67,7 +70,7 @@ conversation.  In particular that we can not really do typing that we
 need to take care of.   I think this is my problem, not someone
 elses. 
 
-Need to test ECL.  Clozure-CL seems to somewhat work.
+Need to test ECL.  Clozure-CL seems to work.
 
 ===========
 
