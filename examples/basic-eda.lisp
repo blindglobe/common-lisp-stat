@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-19 09:50:21 tony>
+;;; Time-stamp: <2009-04-20 08:21:38 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,15 +17,18 @@
 
 (defparameter *my-df*
   (make-dataframe
-   (rsm.string::filestream->string-table
-    "/path/to/file.dsv"))
-  "Initial read-in of data.")
+   (listoflist->array
+    (transpose-listoflist 
+     (rsm.string:file->string-table
+      "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
+   :doc "This is an interesting dataframe-array")
+  "Initial dataset read-in.")
 
 ;; Summarize is the basic EDA tool -- it accepts symbols or lists of
-;; symbols, to describe what to do, and how to do it.  The resulting
+;; symbols, to describe what, when, and how to do it.  The resulting
 ;; data structure has a means for re-invoking the result as well as
 ;; partial storage of key results (when appropriate) as well as
-;; metadata about the results (time / context if provided).  
+;; metadata about the results (time / context if provided).
 
 (defparameter *my-df-smry-num*
   (summarize *my-df* :type 'numerical :io 'listing)
