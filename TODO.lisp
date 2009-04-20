@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-17 18:25:00 tony>
+;;; Time-stamp: <2009-04-20 08:08:46 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -18,7 +18,7 @@
 
 (in-package :cl-user)
 ;;(asdf:oos 'asdf:load-op 'lisp-matrix)
-;;(asdf:oos 'asdf:compile-op 'lispstat)
+;;(asdf:oos 'asdf:compile-op 'lispstat :force t)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
 
 (in-package :lisp-stat-unittests)
@@ -148,6 +148,9 @@
   ;; (defparameter *gdev* "xwin")
   (cl-plplot::plsdev *gdev*)
 
+  ;; there is currently a loose pointer floating around that causes
+  ;; errors the 3rd time that we create a plot (and crashes SBCL the
+  ;; 4th time).  Order independent.
   (contour-plot-ex)
   (fn-contour-plot-ex)
   (shade-plot-ex)
