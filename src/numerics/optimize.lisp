@@ -178,72 +178,72 @@
 #+xlisp (send minfo-proto :add-method :loglaplace #'|minfo-loglap|)
 #-xlisp
 (defmeth minfo-proto :isnew (&rest args)
-  (setf (slot-value 'internals) (apply #'new-minfo-internals args)))
+  (setf (proto-slot-value 'internals) (apply #'new-minfo-internals args)))
 #-xlisp
 (defmeth minfo-proto :maximize (&rest args)
-  (apply #'minfo-maximize (slot-value 'internals) args))
+  (apply #'minfo-maximize (proto-proto-slot-value 'internals) args))
 
-(defmeth minfo-proto :x () (aref (slot-value 'internals) 3))
-(defmeth minfo-proto :scale () (aref (slot-value 'internals) 4))
-(defmeth minfo-proto :derivstep () (aref (aref (slot-value 'internals) 9) 1))
-(defmeth minfo-proto :tilt () (aref (aref (slot-value 'internals) 9) 6))
+(defmeth minfo-proto :x () (aref (proto-slot-value 'internals) 3))
+(defmeth minfo-proto :scale () (aref (proto-slot-value 'internals) 4))
+(defmeth minfo-proto :derivstep () (aref (aref (proto-slot-value 'internals) 9) 1))
+(defmeth minfo-proto :tilt () (aref (aref (proto-slot-value 'internals) 9) 6))
 
 (defmeth minfo-proto :f (&optional (val nil set))
   (when set
 	(send self :set-no-vals-supplied)
-	(setf (aref (slot-value 'internals) 0) val))
-  (aref (slot-value 'internals) 0))
+	(setf (aref (proto-slot-value 'internals) 0) val))
+  (aref (proto-slot-value 'internals) 0))
 
 (defmeth minfo-proto :set-no-vals-supplied ()
-  (setf (aref (aref (slot-value 'internals) 8) 6) 0))
+  (setf (aref (aref (proto-slot-value 'internals) 8) 6) 0))
 
 (defmeth minfo-proto :exptilt (&optional (val nil set))
   (if set
       (let ((old (send self :exptilt)))
-	(setf (aref (aref (slot-value 'internals) 8) 7) (if val 1 0))
+	(setf (aref (aref (proto-slot-value 'internals) 8) 7) (if val 1 0))
 	(if (and (not (or (and old val) (and (not old) (not val))))
 		 (/= (send self :tilt) 0.0))
 	    (send self :set-no-vals-supplied))))
-  (= 1 (aref (aref (slot-value 'internals) 8) 7)))
+  (= 1 (aref (aref (proto-slot-value 'internals) 8) 7)))
 
 (defmeth minfo-proto :newtilt (&optional (val nil set))
   (when set
-	(setf (aref (aref (slot-value 'internals) 9) 7) (float val))
+	(setf (aref (aref (proto-slot-value 'internals) 9) 7) (float val))
 	(if (/= (send self :tilt) 0.0) (send self :set-no-vals-supplied)))
-  (aref (aref (slot-value 'internals) 9) 7))
+  (aref (aref (proto-slot-value 'internals) 9) 7))
 
 (defmeth minfo-proto :gfuns (&optional (val nil set))
   (when set
 	(if (or (not (consp val))
 		(not (every #'functionp val)))
 	    (error "not all functions"))
-	(setf (aref (slot-value 'internals) 1) val)
-	(setf (aref (aref (slot-value 'internals) 8) 1) (length val))
-	(setf (aref (slot-value 'internals) 10) (repeat 1.0 (length val)))
+	(setf (aref (proto-slot-value 'internals) 1) val)
+	(setf (aref (aref (proto-slot-value 'internals) 8) 1) (length val))
+	(setf (aref (proto-slot-value 'internals) 10) (repeat 1.0 (length val)))
 	(if (/= (send self :tilt) 0.0) (send self :set-no-vals-supplied)))
-  (aref (slot-value 'internals) 1))
+  (aref (proto-slot-value 'internals) 1))
 
 (defmeth minfo-proto :cfuns (&optional (val nil set))
   (when set
 	(if (or (not (consp val))
                 (not (every #'functionp val)))
             (error "not all functions"))
-	(setf (aref (slot-value 'internals) 2) val)
-	(setf (aref (aref (slot-value 'internals) 8) 2) (length val))
-	(setf (aref (slot-value 'internals) 7) (repeat 0.0 (length val)))
-	(setf (aref (slot-value 'internals) 11) (repeat 0.0 (length val)))
+	(setf (aref (proto-slot-value 'internals) 2) val)
+	(setf (aref (aref (proto-slot-value 'internals) 8) 2) (length val))
+	(setf (aref (proto-slot-value 'internals) 7) (repeat 0.0 (length val)))
+	(setf (aref (proto-slot-value 'internals) 11) (repeat 0.0 (length val)))
 	(send self :set-no-vals-supplied))
-  (aref (slot-value 'internals) 2))
+  (aref (proto-slot-value 'internals) 2))
 
 (defmeth minfo-proto :ctarget (&optional (val nil set))
   (when set
 	(if (/= (length val) (length (send self :ctarget)))
 	    (error "bad target length"))
-	(setf (aref (slot-value 'internals) 7) val))
-  (aref (slot-value 'internals) 7))
+	(setf (aref (proto-slot-value 'internals) 7) val))
+  (aref (proto-slot-value 'internals) 7))
 	
 (defmeth minfo-proto :fvals ()
-  (let* ((fv (aref (slot-value 'internals) 5))
+  (let* ((fv (aref (proto-slot-value 'internals) 5))
 	 (n (length (send self :x)))
 	 (val (select fv 0))
 	 (grad (select fv (iseq 1 n)))
@@ -255,7 +255,7 @@
 
 Make a copy of an minfo instance."
   (let ((obj (make-object minfo-proto))
-	(internals (copy-seq (slot-value 'internals))))
+	(internals (copy-seq (proto-slot-value 'internals))))
     (dotimes (i (length internals))
 	     (let ((x (aref internals i)))
 	       (if (typep x 'sequence)
@@ -269,32 +269,32 @@ Make a copy of an minfo instance."
 	 (scale (pmax (abs (send self :x)) (sqrt (abs (/ (diagonal hess)))))))
     (setf hess (numhess (send self :f) (send self :x) scale step))
     (setf scale (pmax (abs (send self :x)) (sqrt (abs (/ (diagonal hess))))))
-    (setf (aref (slot-value 'internals) 4) scale)
-    (setf (aref (aref (slot-value 'internals) 9) 1) step)))
+    (setf (aref (proto-slot-value 'internals) 4) scale)
+    (setf (aref (aref (proto-slot-value 'internals) 9) 1) step)))
 
 (defmeth minfo-proto :verbose (&optional (val nil set))
   (when set
-	(setf (aref (aref (slot-value 'internals) 8) 5)
+	(setf (aref (aref (proto-slot-value 'internals) 8) 5)
 	      (cond ((integerp val) val)
 		    ((null val) 0)
 		    (t 1))))
-  (aref (aref (slot-value 'internals) 8) 5))
+  (aref (aref (proto-slot-value 'internals) 8) 5))
 
 (defmeth minfo-proto :backtrack (&optional (val nil set))
-  (if set (setf (aref (aref (slot-value 'internals) 8) 4) (if val 1 0)))
-  (aref (aref (slot-value 'internals) 8) 4))
+  (if set (setf (aref (aref (proto-slot-value 'internals) 8) 4) (if val 1 0)))
+  (aref (aref (proto-slot-value 'internals) 8) 4))
 
 (defmeth minfo-proto :maxiter (&optional (val nil set))
-    (if set (setf (aref (aref (slot-value 'internals) 8) 3) 
+    (if set (setf (aref (aref (proto-slot-value 'internals) 8) 3) 
 		  (if (integerp val) val -1)))
-    (aref (aref (slot-value 'internals) 8) 3))
+    (aref (aref (proto-slot-value 'internals) 8) 3))
 
 (defmeth minfo-proto :tiltscale (&optional (val nil set))
   (when set
 	(if (/= (length val) (length (send self :gfuns)))
 	    (error "wrong size tilt scale sequence"))
-	(setf (aref (slot-value 'internals) 10) val))
-  (aref (slot-value 'internals) 10))
+	(setf (aref (proto-slot-value 'internals) 10) val))
+  (aref (proto-slot-value 'internals) 10))
 
 ;;;;
 ;;;;
@@ -417,24 +417,24 @@ control the behavior of simplex algorithm."
                                    (mapcar #'(lambda (x) (coerce x 'list))
                                            (column-list (diagonal diag))))))
                    (mapcar #'(lambda (x) (reduce #'+ (list (* size x) new))) pts)))))
-        (setf (slot-value 'simplex) 
+        (setf (proto-slot-value 'simplex) 
               (mapcar #'(lambda (x) (send self :make-point x)) simplex))
         (send self :sort-simplex)))
-  (slot-value 'simplex))
+  (proto-slot-value 'simplex))
 
 (defmeth simplex-proto :f (&optional f)
   (when f
-        (setf (slot-value 'f) f)
+        (setf (proto-slot-value 'f) f)
         (let ((simplex 
                (mapcar #'(lambda (x) (send self :point-location x))
                        (send self :simplex))))
           (send self :simplex simplex)))
-  (slot-value 'f))
+  (proto-slot-value 'f))
 
 (defmeth simplex-proto :sort-simplex ()
   (if (send self :f)
-      (setf (slot-value 'simplex) 
-            (sort (slot-value 'simplex)
+      (setf (proto-slot-value 'simplex) 
+            (sort (proto-slot-value  'simplex)
                   #'(lambda (x y) (send self :is-worse x y))))))
 
 ;;;
