@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-17 18:23:10 tony>
+;;; Time-stamp: <2009-04-21 08:11:39 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -110,7 +110,7 @@
 
 
 
-(defpackage :lisp-stat-dataframe
+(defpackage :cls-dataframe
   (:use :common-lisp
 	:lisp-matrix)
   (:export
@@ -135,7 +135,7 @@
 (defpackage :cls-data-listoflist
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-dataframe) ; for dataframe
+	:cls-dataframe) ; for dataframe
   (:export lists-of-same-size
 	   equal-listoflist
 	   transpose-listoflist
@@ -164,30 +164,21 @@
    ;; data structures for model and model/data combination
    model statistical-model analysis))
 
-#|
- (defpackage :lisp-stat-regression-linear-clos
-  (:use :common-lisp
-	:lisp-matrix
-	:lisp-stat-dataframe)
-  (:export regression-model))
-|#
+;;; visualization
 
 (defpackage :cls-visualize
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-dataframe))
+	:cls-dataframe))
 
 (defpackage :cls-visualize-plplot
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-dataframe
+	:cls-dataframe
 	:cl-plplot-system)
   (:export
-   plot-ex
-   contour-plot-ex
-   fn-contour-plot-ex
-   shade-plot-ex
-   3D-plot-ex ))
+   ;; examples 
+   plot-ex contour-plot-ex fn-contour-plot-ex shade-plot-ex 3D-plot-ex))
 
 
 ;;; USER PACKAGES
@@ -347,7 +338,7 @@
         :lisp-stat-float
 	:lisp-stat-basics
 	:lisp-stat-data
-	:lisp-stat-dataframe
+	:cls-dataframe
 	:cls-data-listoflist
         :lisp-stat-math
 	:lisp-matrix ;; conversion to a more robust linalg approach
@@ -574,11 +565,11 @@ done for a user- or analysis-package.")
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
 	   almost= almost=lists numerical=)) ; compare
 
-(defpackage :lisp-stat-dataframe-example
+(defpackage :cls-dataframe-example
   (:use :common-lisp
 	:lift  :lisp-stat-unittests
 	:lisp-stat-data-examples
-	:lisp-stat-dataframe)
+	:cls-dataframe)
   (:export absorbtion aluminum iron))
 
 

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-02 15:48:29 tony>
+;;; Time-stamp: <2009-04-20 18:49:51 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,7 +17,7 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(in-package :lisp-stat-dataframe)
+(in-package :cls-dataframe)
 
 ;;; No real basis for work, there is a bit of new-ness and R-ness to
 ;;; this work. In particular, the notion of relation is key and

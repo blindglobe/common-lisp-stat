@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the dataframe package
-;;; Time-stamp: <2009-04-16 17:45:42 tony>
+;;; Time-stamp: <2009-04-20 18:59:02 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 
@@ -36,30 +36,30 @@
 
 (addtest (lisp-stat-ut-dataframe) genseq
 	 (ensure
-	  (equal (lisp-stat-dataframe::gen-seq 4)
+	  (equal (cls-dataframe::gen-seq 4)
 		 (list 1 2 3 4)))
 	 (ensure
-	  (equal (lisp-stat-dataframe::gen-seq 0)
+	  (equal (cls-dataframe::gen-seq 0)
 		 nil))
 	 (ensure
-	  (equal (lisp-stat-dataframe::gen-seq 4 2)
+	  (equal (cls-dataframe::gen-seq 4 2)
 		 (list 2 3 4))))
 
 (addtest (lisp-stat-ut-dataframe) repeatseq
 	 (ensure
-	  (equal (lisp-stat-dataframe::repeat-seq 3 "d")
+	  (equal (cls-dataframe::repeat-seq 3 "d")
 		 (list "d" "d" "d")))
 	 	 (ensure
-	  (equal (lisp-stat-dataframe::repeat-seq 3 'd)
+	  (equal (cls-dataframe::repeat-seq 3 'd)
 		 (list 'd 'd 'd))))
 
 
 (addtest (lisp-stat-ut-dataframe) make-labels
 	 (ensure
-	  (equal (lisp-stat-dataframe::make-labels "c" 3)
+	  (equal (cls-dataframe::make-labels "c" 3)
 		 (list "c1" "c2" "c3")))
 	 (ensure-error
-	   (lisp-stat-dataframe::make-labels 'c 3)))
+	   (cls-dataframe::make-labels 'c 3)))
 
 
 ;;; Dataframe tests
@@ -82,7 +82,7 @@
 
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
-	  (slot-value my-df-1 'lisp-stat-dataframe::store)))
+	  (slot-value my-df-1 'cls-dataframe::store)))
 
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
@@ -91,32 +91,32 @@
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
 	  (equalp
-	   (slot-value my-df-1 'lisp-stat-dataframe::store)
-	   (lisp-stat-dataframe::dataset my-df-1))))
+	   (slot-value my-df-1 'cls-dataframe::store)
+	   (cls-dataframe::dataset my-df-1))))
 
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
-	  (eq (lisp-stat-dataframe::dataset my-df-1)
-	      (slot-value my-df-1 'lisp-stat-dataframe::store))))
+	  (eq (cls-dataframe::dataset my-df-1)
+	      (slot-value my-df-1 'cls-dataframe::store))))
 
 ;; NEVER REACH INTO CLASS INTERIORS, NO PROMISE
 ;; GUARANTEE OF LATER CONSISTENCY...
 	      
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
-	  (lisp-stat-dataframe::doc-string my-df-1))
+	  (cls-dataframe::doc-string my-df-1))
 	 (ensure-error 
 	   (doc-string my-df-1)))
   
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
-	  (lisp-stat-dataframe::case-labels my-df-1))
+	  (cls-dataframe::case-labels my-df-1))
 	 (ensure-error
 	   (case-labels my-df-1)))
   
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure
-	  (lisp-stat-dataframe::var-labels my-df-1))
+	  (cls-dataframe::var-labels my-df-1))
 	 (ensure-error
 	   (var-labels my-df-1)))
 
@@ -127,21 +127,21 @@
 
 (addtest (lisp-stat-ut-dataframe) badAccess9
 	 (ensure
-	  (setf (lisp-stat-dataframe::var-labels my-df-1)
+	  (setf (cls-dataframe::var-labels my-df-1)
 		(list "a" "b"))))
   
 (addtest (lisp-stat-ut-dataframe) badAccess10
 	 (ensure
 	  (progn 
 	    ;; no error, but corrupts structure
-	    (setf (lisp-stat-dataframe::var-labels my-df-1)
+	    (setf (cls-dataframe::var-labels my-df-1)
 		  (list "a" "b" "c"))
 	    ;; error happens here
 	    (not (consistent-dataframe-p my-df-1))))) ;; Nil
 
 (addtest (lisp-stat-ut-dataframe) badAccess12
 	 (ensure
-	  (setf (lisp-stat-dataframe::var-labels my-df-1)
+	  (setf (cls-dataframe::var-labels my-df-1)
 		(list "a" "b"))))
   
 (addtest (lisp-stat-ut-dataframe) badAccess13
