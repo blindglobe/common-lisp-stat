@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-20 08:08:46 tony>
+;;; Time-stamp: <2009-04-20 19:01:23 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -31,56 +31,17 @@
 ;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
 ;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 
-  (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
-  (lift::run-tests :suite 'lisp-stat-ut-dataframe)
+(describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
+(lift::run-tests :suite 'lisp-stat-ut-dataframe)
 
-  (describe 
-    (lift::run-test
-      :test-case  'lisp-stat-unittests::create-proto
-      :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+(describe 
+ (lift::run-test
+  :test-case  'lisp-stat-unittests::create-proto
+  :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 
 (describe 'lisp-stat-ut)
 
 (in-package :ls-user)
-
-(progn ;; FIXME: Regression modeling (some data future-ish).
-
-  ;; TODO:
-  ;; - confirm estimates for multivariate case, 
-  ;; - pretty-print output
-  ;; - fix up API -- what do we want this to look like?
-
-  (defparameter *m*
-    (regression-model (list->vector-like iron) ;; BROKEN
-		      (list->vector-like absorbtion))
-    "holding variable.")
-
-  (defparameter *m-fit*
-    (fit-model *m*))
-
-  (princ *m*)
-  (princ *m-fit*)
-
-  (estimates *m-fit*)
-  (covariance-matrix *m-fit*)
-
-  (defparameter *m3*
-    (regression-model (transpose  (listoflist->matrix-like (list iron aluminum)
-					       :orientation :row-major))
-		      (list->vector-like  absorbtion) ))
-  (princ *m3*)
-  (defparameter *m3-fit*
-    (fit-model *m3*))
-#|
-  ;; Should the above look something like:
-  (defparameter *m3-fit*
-                (spec-and-fit-model '(absorbtion = iron aluminum)))
-  ;; in which case we split the list before/after the "=" character.
-|#
-  
-  (estimates *m3-fit*)
-  (covariance-matrix *m3-fit*))
-
 
 #+nil
 (progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
@@ -90,7 +51,6 @@
   (load-data "iris.lsp")  ;; (the above partially fixed).
   (variables)
   diabetes )
-
 
 
 (progn ;; Importing data from DSV text files.
@@ -134,6 +94,8 @@
 		       :doc "This is an interesting dataframe-array"))
   *my-df-3*
 
+  ;; Need to the this using the make-dataframe example, or write a 
+  ;; dsvfile->dataframe command.
   )
 
 
@@ -141,7 +103,7 @@
 
 (progn
   ;; Plotting
-  (asdf:oos 'asdf:load-op 'cl-plplot)
+  ;; (asdf:oos 'asdf:load-op 'cl-plplot)
 
   (plot-ex)
   (defparameter *gdev* "xcairo")
@@ -158,9 +120,6 @@
 
   )
 
-
-(in-package :ls-user)
- 
 
 (progn
   ;; REVIEW: general Lisp use guidance
