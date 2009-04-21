@@ -143,6 +143,19 @@
 	   listoflist->array
 	   listoflist->matrix-like))
 
+
+(defpackage :cls-dataimport
+  (:documentation "Data I/O and similar import technologies.")
+  (:use :common-lisp
+	:lisp-stat-object-system
+	:cls-dataframe
+	:cls-data-listoflist
+	:rsm.string)
+  (:shadowing-import-from :lisp-stat-object-system
+			  call-method call-next-method)
+  (:export dsvstream->dataframe dsvstream->matrix dsvstream->listoflist))
+
+
 (defpackage :lisp-stat-model
   (:documentation "Model management for data analysis.")
   (:use :common-lisp

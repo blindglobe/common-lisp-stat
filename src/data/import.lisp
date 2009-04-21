@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-03-16 14:47:15 tony> 
+;;; Time-stamp: <2009-04-20 19:07:46 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,23 +15,10 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
+(in-package :cls-dataimport)
 
-(in-package :cl-user)
 
-(defpackage :lisp-stat-data-import
-  (:documentation "Data I/O and similar import technologies.")
-  (:nicknames :ls-data-import)
-  (:use :common-lisp
-	:lisp-stat-object-system
-	:lisp-stat-data)
-  (:shadowing-import-from :lisp-stat-object-system
-			  slot-value call-method call-next-method)
-  (:export data-import data-export))
 
-(in-package :lisp-stat-data-import)
-
-;;; The purpose of this package is to provide the basic structures for
-;;; importing data, to be further processed by LispStat.
 
 
 
@@ -44,6 +31,15 @@
 ;; of the non-native, there could be raw sources (ascii file formats),
 ;; xml sources (xml -> lisp, possible with some preprocessing.
 
+;;; Reading from DSV files:
+
+;;; consider either the cybertyggyr-dsv package, or the rsm.string
+;;; package.  The latter seems to actually work a bit at what we need
+;;; to acccomplish, but the former is a challenge to get right when we
+;;; need to think abut what it is that we need to get done.  The
+;;; latter is also better licensed. i.e. BSD-style.
+
+
 (defparameter *lisp-stat-data-external-source-formats*
   '(csv tsv xml ;; ex of text-based (UTF, ASCII, or similar) formats
     sql ;; ex of RDBMS call
@@ -51,8 +47,6 @@
 
 (defparameter *lisp-stat-data-import-referencing-type*
   '(lisp-data-structure reference lisp-function))
-
-
 
 (defgeneric data-import (source source-format referencing-type)
   (:documentation "read data from stream srce, in format srce-frmt; 

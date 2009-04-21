@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-04-15 08:50:46 tony>
+;;; Time-stamp: <2009-04-21 08:11:06 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -113,7 +113,8 @@
   :depends-on (:cffi
 	       :cl-plplot  ;; FIXME: conditionally load only, not always simple to install?
 	       :lisp-matrix
-	       :lift)
+	       :lift
+	       :rsm-string)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")
