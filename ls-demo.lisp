@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-04-17 13:32:06 tony>
+;;; Time-stamp: <2009-04-24 15:36:52 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -855,3 +855,259 @@ my.lib
   (m= *xv+1a* *xv+1b*) ; => T
   
   (princ "Data Set up"))
+
+
+
+;;;; LM
+
+(progn 
+
+  (defparameter *y*
+    (make-vector
+     8
+     :type :row
+     :initial-contents '((1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
+
+
+  (defparameter *xv+1*
+    (make-matrix
+     8 2
+     :initial-contents '((1d0 1d0)
+			 (1d0 3d0)
+			 (1d0 2d0)
+			 (1d0 4d0)
+			 (1d0 3d0)
+			 (1d0 5d0)
+			 (1d0 4d0)
+			 (1d0 6d0))))
+
+
+  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  (defparameter *xtx-2* (m* (transpose *xv+1*) *xv+1*))
+  ;; #<LA-SIMPLE-MATRIX-DOUBLE  2 x 2
+  ;;  8.0d0 28.0d0
+  ;;  28.0d0 116.0d0>
+
+  (defparameter *xty-2* (m* (transpose *xv+1*)  (transpose *y*)))
+  ;; #<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+  ;;  36.0d0
+  ;;  150.0d0>
+
+  (defparameter *rcond-2* 0.000001)
+  (defparameter *betahat-2*  (gelsy *xtx-2* *xty-2* *rcond-2*))
+  ;; *xtx-2* => "details of complete orthogonal factorization"
+  ;; according to man page:
+  ;; #<LA-SIMPLE-MATRIX-DOUBLE  2 x 2
+  ;;  -119.33147112141039d0 -29.095426104883202d0
+  ;;  0.7873402682880205d0 -1.20672274167718d0>
+
+  ;; *xty-2* => output becomes solution:
+  ;; #<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+  ;;  -0.16666666666668312d0
+  ;;  1.333333333333337d0>
+
+  *betahat-2* ; which matches R, see below
+
+  (documentation 'gelsy 'function)
+
+
+;;   (#<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+;;    -0.16666666666668312 1.333333333333337>
+;;    2)
+
+;;   ## Test case in R:
+;;   x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
+;;   y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+;;   lm(y~x)
+;;   ## => Call:  lm(formula = y ~ x)
+
+;;   Coefficients:  (Intercept)            x  
+;;                      -0.1667       1.3333  
+
+;;   summary(lm(y~x))
+;;   ## =>
+
+;;   Call:
+;;   lm(formula = y ~ x)
+
+;;   Residuals:
+;;          Min         1Q     Median         3Q        Max 
+;;   -1.833e+00 -6.667e-01 -3.886e-16  6.667e-01  1.833e+00 
+
+;;   Coefficients:
+;;               Estimate Std. Error t value Pr(>|t|)   
+;;   (Intercept)  -0.1667     1.1587  -0.144  0.89034   
+;;   x             1.3333     0.3043   4.382  0.00466 **
+;;   ---
+;;   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+;;   Residual standard error: 1.291 on 6 degrees of freedom
+;;   Multiple R-squared: 0.7619,	Adjusted R-squared: 0.7222 
+;;   F-statistic:  19.2 on 1 and 6 DF,  p-value: 0.004659 
+
+
+
+  ;; which suggests one might do (modulo ensuring correct
+  ;; orientations).  When this is finalized, it should migrate to
+  ;; CLS.
+  ;;
+
+
+  (defparameter *n* 20) ; # rows = # obsns
+  (defparameter *p* 10) ; # cols = # vars 
+  (defparameter *x-temp*  (rand *n* *p*))
+  (defparameter *b-temp*  (rand *p* 1))
+  (defparameter *y-temp*  (m* *x-temp* *b-temp*))
+  ;; so Y=Xb + \eps
+  (defparameter *rcond* (* (coerce (expt 2 -52) 'double-float)
+		   (max (nrows *x-temp*) (ncols *y-temp*))))
+  (defparameter *orig-x* (copy *x-temp*))
+  (defparameter *orig-b* (copy *b-temp*))
+  (defparameter *orig-y* (copy *y-temp*))
+
+  (defparameter *lm-result* (lm *x-temp* *y-temp*))
+  (princ (first *lm-result*))
+  (princ (second *lm-result*))
+  (princ (third *lm-result*))
+  (v= (third *lm-result*)
+      (v- (first (first *lm-result*))
+	  (first  (second *lm-result*))))
+
+
+
+  
+  ;; Some issues exist in the LAPACK vs. LINPACK variants, hence R
+  ;; uses LINPACK primarily, rather than LAPACK.  See comments in R
+  ;; source for issues.  
+
+
+  ;; Goal is to start from X, Y and then realize that if
+  ;; Y = X \beta, then,   i.e. 8x1 = 8xp px1  + 8x1
+  ;;      XtX \hat\beta = Xt Y
+  ;; so that we can solve the equation  W \beta = Z   where W and Z
+  ;; are known, to estimate \beta.
+
+  ;; the above is known to be numerically instable -- some processing
+  ;; of X is preferred and should be done prior.  And most of the
+  ;; transformation-based work does precisely that.
+
+  ;; recall:  Var[Y] = E[(Y - E[Y])(Y-E[Y])t]
+  ;;   = E[Y Yt] - 2 \mu \mut + \mu \mut
+  ;;   = E[Y Yt] - \mu \mut
+
+  ;; Var Y = E[Y^2] - \mu^2
+
+
+  ;; For initial estimates of covariance of \hat\beta:
+
+  ;; \hat\beta = (Xt X)^-1 Xt Y
+  ;; with E[ \hat\beta ] 
+  ;;        = E[ (Xt X)^-1 Xt Y ]
+  ;;        = E[(Xt X)^-1 Xt (X\beta)]
+  ;;        = \beta 
+  ;;        
+  ;; So Var[\hat\beta] = ...
+  ;;     (Xt X)
+  ;; and this gives SE(\beta_i) = (* (sqrt (mref Var i i)) adjustment)
+
+
+  ;; from docs:
+
+  (setf *temp-result* 
+	(let ((*default-implementation* :foreign-array))
+	  (let* ((m 10)
+		 (n 10)
+		 (a (rand m n))
+		 (x (rand n 1))
+		 (b (m* a x))
+		 (rcond (* (coerce (expt 2 -52) 'double-float)
+			   (max (nrows a) (ncols a))))
+		 (orig-a (copy a))
+		 (orig-b (copy b))
+		 (orig-x (copy x)))
+	    (list x (gelsy a b rcond))
+	    ;; no applicable conversion?
+	    ;; (m-   (#<FA-SIMPLE-VECTOR-DOUBLE (10 x 1)) 
+	    ;;       (#<FA-SIMPLE-VECTOR-DOUBLE (10 x 1)) )
+	    (v- x (first (gelsy a b rcond))))))
+
+  
+  (princ *temp-result*)
+  
+  (setf *temp-result* 
+	(let ((*default-implementation* :lisp-array))
+	  (let* ((m 10)
+		 (n 10)
+		 (a (rand m n))
+		 (x (rand n 1))
+		 (b (m* a x))
+		 (rcond (* (coerce (expt 2 -52) 'double-float)
+			   (max (nrows a) (ncols a))))
+		 (orig-a (copy a))
+		 (orig-b (copy b))
+		 (orig-x (copy x)))
+	    (list x (gelsy a b rcond))
+	    (m- x (first  (gelsy a b rcond)))
+	    )))
+  (princ *temp-result*)
+
+
+  (defparameter *xv*
+    (make-vector
+     8
+     :type :row ;; default, not usually needed!
+     :initial-contents '((1d0 3d0 2d0 4d0 3d0 5d0 4d0 6d0))))
+
+  (defparameter *y*
+    (make-vector
+     8
+     :type :row
+     :initial-contents '((1d0 2d0 3d0 4d0 5d0 6d0 7d0 8d0))))
+
+  ;; so something like (NOTE: matrices are transposed to begin with, hence the incongruety)
+  (defparameter *xtx-1* (m* *xv* (transpose *xv*)))
+  (defparameter *xty-1* (m* *xv* (transpose  *y*)))
+  (defparameter *rcond-in* (* (coerce (expt 2 -52) 'double-float)
+			      (max (nrows *xtx-1*)
+				   (ncols *xty-1*))))
+
+  (defparameter *betahat*  (gelsy *xtx-1* *xty-1* *rcond-in*))
+
+  ;;  (#<LA-SIMPLE-VECTOR-DOUBLE (1 x 1)
+  ;;  1.293103448275862>
+  ;;  1)
+
+  ;;   ## Test case in R:
+  ;;   x <- c( 1.0, 3.0, 2.0, 4.0, 3.0, 5.0, 4.0, 6.0)
+  ;;   y <- c( 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+  ;;   lm(y~x-1)
+  ;;   ## => 
+  ;;   Call:
+  ;;   lm(formula = y ~ x - 1)
+
+  ;;   Coefficients:
+  ;;       x  
+  ;;   1.293  
+
+  (first  *betahat*))
+
+
+
+#|
+  (type-of #2A((1 2 3 4 5)
+               (10 20 30 40 50)))
+
+  (type-of (rand 10 20))
+
+  (typep #2A((1 2 3 4 5)
+	     (10 20 30 40 50))
+	 'matrix-like)
+
+  (typep (rand 10 20) 'matrix-like)
+
+  (typep #2A((1 2 3 4 5)
+	     (10 20 30 40 50))
+	 'array)
+
+  (typep (rand 10 20) 'array)
+|#
