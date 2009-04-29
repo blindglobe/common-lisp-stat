@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-20 18:49:51 tony>
+;;; Time-stamp: <2009-04-28 23:15:27 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -74,9 +74,11 @@ for indexing."
 (defun repeat-seq (n item)
   "FIXME: There has to be a better way -- I'm sure of it!   
  (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
- (repeat-seq 3 'd) ; => ('d 'd 'd)"
+ (repeat-seq 3 'd) ; => ('d 'd 'd)
+ (repeat-seq 3 (list 1 2))"
   (if (>= n 1)
       (append (repeat-seq (1- n)  item) (list item))))
+
 
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.  
