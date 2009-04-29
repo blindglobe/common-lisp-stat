@@ -1,0 +1,12 @@
+;; -*- mode: lisp -*-
+
+;;; Need support for MUDBALLS and XCVB (and mksystem?) system tools.
+
+(in-package :sysdef-user)
+
+(define-system :cls ()
+  (:version 1)
+  (:author "AJ Rossini, based on ideas from Luke Tierney")
+  (:documentation "A Lisp Framework for Statistically-grounded Data Analysis.")
+  (:license "MIT")
+  (:components "cls")) ; wrong!
