@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-21 08:11:39 tony>
+;;; Time-stamp: <2009-04-28 23:03:22 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -11,9 +11,6 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
-;;; This organization and structure is new to the 21st Century
-;;; version.
 
 (in-package :cl-user)
 
@@ -303,7 +300,6 @@
 (defpackage :lisp-stat-regression-linear
   (:use :common-lisp
 	:lisp-matrix
-	:lisp-stat-object-system
 	:lisp-stat-basics
 	:lisp-stat-compound-data
 	:lisp-stat-descriptive-statistics )
@@ -315,14 +311,6 @@
 	   ;; functions for helpers
 	   lm xtxinv   
 	   print-object ;; for method dispatch
-
-	   ;; OLD to remove
-
-	   regression-model-proto x y intercept
-	   ;; sweep-matrix
-	   basis weights included
-	   total-sum-of-squares residual-sum-of-squares
-	   predictor-names response-name case-labels
 	   ))
 
 (defpackage :lisp-stat
