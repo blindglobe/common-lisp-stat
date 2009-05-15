@@ -136,7 +136,6 @@
     :initform 0d0
     :accessor rss
     :type number)
-
    (doc-string
     :initform "No info given."
     :initarg :doc
@@ -146,7 +145,9 @@
 
 ;;;;;;;; Helper functions
 
-(defun xtxinv (x &key (intercept T))
+;;(declaim (ftype (function (matrix-like) matrix-like) xtxinv))
+
+(defun xtxinv (x)
   "In: X      Out: (XtX)^-1 
 
 X is NxP, resulting in PxP.  Represents Var[\hat\beta], the varest for
@@ -158,11 +159,14 @@ with LAPACK's dpotri routine, factorizing with dpotrf.
      (xtxinv m1))
 </example>"
   (check-type x matrix-like)
+  (minv-cholesky (m* (transpose myx) myx)))
+
+#|
   (let ((myx (if intercept
 		  (bind2 (ones (matrix-dimension x 0) 1)
 			 x :by :column)
 		  x)))
-    (minv-cholesky (m* (transpose myx) myx))))
+|#
 
 ;; might add args: (method 'gelsy), or do we want to put a more
 ;; general front end, linear-least-square, across the range of
