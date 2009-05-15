@@ -5,8 +5,9 @@
 (in-package :sysdef-user)
 
 (define-system :cls ()
-  (:version 1)
   (:author "AJ Rossini, based on ideas from Luke Tierney")
+  (:maintainer "AJ Rossini <blindglobe@gmail.com>")
+  (:version 1)
   (:documentation "A Lisp Framework for Statistically-grounded Data Analysis.")
   (:license "MIT")
   (:components "cls")) ; wrong!
