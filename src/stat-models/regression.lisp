@@ -5,20 +5,10 @@
 ;;; Since 1991, ANSI was finally finished.  Modified to match ANSI
 ;;; Common Lisp.  
 
-;;;; Originally from:
-;;;; regression.lsp XLISP-STAT regression model proto and methods
-;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
-;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
-;;;; You may give out copies of this software; for conditions see the file
-;;;; COPYING included with this distribution.
-;;;;
-;;;; Incorporates modifications suggested by Sandy Weisberg.
-
-;;; This version uses lisp-matrix for underlying numerics.
+;;; This version uses LAPACK and lisp-matrix for underlying numerics.
+;;; No longer contains code from XLispStat.
 
 (in-package :lisp-stat-regression-linear)
-
-;;; Regresion Model Prototype
 
 ;; The general strategy behind the fitting of models using prototypes
 ;; is that we need to think about want the actual fits are, and then
@@ -30,30 +20,33 @@
 ;; other such features to capture stages and steps that are considered
 ;; along the goals of estimating a model.
 
+;; In migrating the thought process to R, we use more of a cross
+;; between the S3 and prototype approaches, but some of the thinking
+;; is CLOSy.
+
+;; statistical-model shuld contain some of the ingredients for
+;; traceability and embodiment of statistical characteristics.
+
 (defclass regression-model-class () ; (statistical-model)
-  (;; Data
-   (y
+  ((dependent-response
     :initform nil
     :initarg  :y
-    :accessor response-variable
+    :accessor dependent-response
     :type     vector-like
-    :documentation "vector-like containing univariate response values."
-    )
-   (x
+    :documentation "univariate responses/dependent var.")
+   (predictor-design
     :initform nil
     :initarg  :x
     :accessor design-matrix
     :type matrix-like
-    :documentation "matrix-like containing design/data matrix.  If
-  interceptp is T, assume first column is intercept (ones), and hence
-  a bit special.")
+    :documentation "design/data matrix, complete.  when interceptp T,
+    first column is intercept (ones), and hence special.")
    (interceptp
     :initform nil
     :initarg :interceptp
     :accessor interceptp
     :type boolean
-    :documentation "When T, treat first column of design/data matrix
-  special as intercept fit.")
+    :documentation "special indicator of first column status.")
 
    ;; Metadata
    (covariate-names
@@ -74,28 +67,27 @@
     :accessor case-labels
     :type list)
    (doc-string
-    :initform ""
+    :initform "no doc"
     :initarg :docs
     :accessor doc-string
     :type string))
-  (:documentation "Normal Linear Regression Model with CLOS.
-  Historical design based on LispStat."))
-
+  (:documentation "Normal Linear Regression Model with CLOS."))
 
 (defclass regression-model-fit-class ()
-  (;; data/design/state
-   (data-model 
+  ((data-model 
     :initform nil
     :initarg  :data-model
     :accessor data-model
-    :type     regression-model-class)
-
-
+    :type     regression-model-class
+    :documentation "data/design")
    (needs-computing
     :initform T
     :initarg  :needs-computing
-    :accessor needs-computing)
-   ;; above modified to TRUE when the following are changed
+    :accessor needs-computing
+    :documentation "ensure that this is set to TRUE when numerically
+  dependent pieces are modified (not metadata, for example).  Check
+  before access of results and printouts, so as to recompute if
+  necessary.")
    (included
     :initform nil
     :initarg  :included
