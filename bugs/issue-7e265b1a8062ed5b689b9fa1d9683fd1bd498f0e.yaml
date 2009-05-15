@@ -3,7 +3,7 @@ title: Incorporate GSLL as a package to provide numerics along with lisp-matrix
 desc: natural intersection with lisp-matrix, use for various tools and a bit more flexibility.
 type: :task
 component: CLS.git
-release: "1.0"
+release: "3.0"
 reporter: Tony <blindglobe@gmail.com>
 status: :unstarted
 disposition: 
@@ -16,3 +16,9 @@ log_events:
   - Tony <blindglobe@gmail.com>
   - created
   - am orking n this for a bit.
+- - 2009-05-15 05:55:40.695076 Z
+  - Tony <blindglobe@gmail.com>
+  - assigned to release 3.0 from 1.0
+  - |-
+    it might be useful later.
+    /stp

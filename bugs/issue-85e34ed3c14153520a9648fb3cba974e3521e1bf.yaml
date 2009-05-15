@@ -18,3 +18,7 @@ log_events:
   - Tony <blindglobe@gmail.com>
   - created
   - name runs into comments
+- - 2009-05-15 05:57:51.084433 Z
+  - Tony <blindglobe@gmail.com>
+  - commented
+  - Currently working with cl-randist to provide probability calculations.
