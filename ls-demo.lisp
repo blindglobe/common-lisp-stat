@@ -3,47 +3,77 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-04-24 15:36:52 tony>
+;;; Time-stamp: <2009-05-26 09:17:22 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
-;;; Purpose:    demonstrations of how one might use CLS.
+;;; Purpose:    demonstrations of how one might use CLSv2.
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
-;; (asdf:oos 'asdf:load-op 'lift)
-;; (asdf:oos 'asdf:load-op 'cffi)
+
 ;; (asdf:oos 'asdf:compile-op 'lispstat :force t)
-;; (asdf:oos 'asdf:compile-op 'lispstat)
 (asdf:oos 'asdf:load-op 'lispstat)
-
-;;; non-rigorous check for exports.
-;;; This is generally not how I expect it to be used.
-
-(in-package :cl-user)
-(lisp-stat:binomial-quant 0.95 3 0.4) ;;; 3
-(lisp-stat:binomial-quant 0 3 0.4) ;;; 0
-(lisp-stat:normal-rand 20) ;;; 20 floating-point numbers :-)
-
-;;;; THIS is how I expect it to be used, either with work in ls-user,
-;;;; or a cloned package similar to ls-user.
 
 (in-package :ls-user)
 
-;;; linear algebra (matrices and vectors)
 
-(in-package :cl-user) ; the following will barf, but...
-(+ #(2 3 4) #(4 5 6))
-(+ #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
-(* #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
-(in-package :ls-user) ; the next will succeed
-(+ #(2 3 4) #(4 5 6))
-(+ #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
-(* #2A((2 3 4) (2 3 4))  #2A ( (4 5 6) (1 1 1)))
+;;; == READ DATA
+
+(defparameter *my-df-1*
+  (make-instance 'dataframe-array
+		 :storage #2A((1 2 3 4 5)
+			      (10 20 30 40 50))
+		 :doc "This is an un-interesting dataframe-array"
+		 :case-labels (list "x" "y")
+		 :var-labels (list "a" "b" "c" "d" "e")))
+
+(setf (dfref *my-df-1* 0 0) -1d0)
+;; *my-df-1*
+
+
+(make-dataframe  #2A((1 2 3 4 5)
+		     (10 20 30 40 50)))
+
+(make-dataframe (rand 4 3))
+
+
+
+
+(defparameter *my-df-2*
+  (make-dataframe  #2A((1 2 3 4 5)
+		       (10 20 30 40 50))
+		   :caselabels (list "x" "y")
+		   :varlabels (list "a" "b" "c" "d" "e")	
+		   :doc "This is another boring dataframe-array"))
+
+(caselabels *my-df-1*)
+(varlabels *my-df-1*)
+
+
+
+(defparameter *my-df-2*
+  (make-dataframe  #2A((a 2    T  4  5)
+		       (b 20 nil 40 50))
+		   :caselabels (list "x" "y")
+		   :varlabels (list "a" "b" "c" "d" "e")	
+		   :doc "This is another boring dataframe-array"))
+
+;; *my-df-2*
+
+
+;;; HERE
+
+;;; read in a CSV dataframe...
+
+
+
+
+
 
 
 
@@ -375,9 +405,12 @@ iron
 (asdf:oos 'asdf:compile-op 'cl-cairo2 :force t)
 (asdf:oos 'asdf:load-op 'cl-cairo2)
 
-;; This can be used to generate PDF, PS, PNG, and X11/Microsoft
+;; The above can be used to generate PDF, PS, PNG, and X11/Microsoft
 ;; displays (the latter being a proof of concept, of limited use for
 ;; "real work".
+
+;; and this below, as well.
+(asdf:oos 'asdf:load-op 'cl-plplot)
 
 ;;; Using R!
 
@@ -761,36 +794,6 @@ my.lib
   
   (princ "Data Set up"))
 
-
-
-  (defparameter *my-df-1*
-	(make-instance 'dataframe-array
-		       :storage #2A((1 2 3 4 5)
-				    (10 20 30 40 50))
-		       :doc "This is an interesting dataframe-array"
-		       :case-labels (list "x" "y")
-		       :var-labels (list "a" "b" "c" "d" "e")))
-
-  (setf (dfref *my-df-1* 0 0) -1d0)
-
-  
-
-  (make-dataframe  #2A((1 2 3 4 5)
-		       (10 20 30 40 50)))
-
-  (make-dataframe (rand 4 3))
-
-
-
-  (defparameter *my-df-1*
-    (make-dataframe  #2A((1 2 3 4 5)
-			 (10 20 30 40 50))
-		     :caselabels (list "x" "y")
-		     :varlabels (list "a" "b" "c" "d" "e")	
-		     :doc "This is an interesting dataframe-array"))
-
-  (caselabels *my-df-1*)
-  (varlabels *my-df-1*)
 
 
 
