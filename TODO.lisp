@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-29 08:35:29 tony>
+;;; Time-stamp: <2009-05-25 08:11:27 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -148,3 +148,10 @@
   (gsll:gsl-lookup "gsl_linalg_LU_solve") ; => gsll:lu-solve
   )
 
+
+#+nil
+(progn
+  (asdf:oos 'asdf:load-op 'versioned-objects)
+  (asdf:oos 'asdf:load-op 'validations)
+
+  )
