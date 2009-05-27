@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-05-26 09:17:22 tony>
+;;; Time-stamp: <2009-05-26 20:56:17 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -71,12 +71,48 @@
 ;;; read in a CSV dataframe...
 
 
+;; a better approach is:
+(asdf:oos 'asdf:load-op 'rsm-string)
+(rsm.string:file->string-table
+ "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")
+
+(rsm.string:file->number-table
+ "/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv")
+
+(defparameter *my-df-2*
+  (make-instance 'dataframe-array
+		 :storage
+		 (listoflist->array
+		  (transpose-listoflist 
+		   (rsm.string:file->string-table
+		    "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
+		 :doc "This is an interesting dataframe-array"))
+;; *my-df-2*
+
+(defparameter *my-df-3*
+  (make-instance 'dataframe-array
+		 :storage
+		 (listoflist->array
+		  (transpose-listoflist 
+		   (rsm.string:file->number-table
+		    "/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv")))
+		 :doc "This is an interesting dataframe-array"))
+;; *my-df-3*
 
 
+(defparameter *mat-1*
+  (make-matrix 3 3
+	       :initial-contents #2A((2d0 3d0 4d0) (1d0 2d0 4d0) (2d0 4d0 5d0))))
 
+(potrf *mat-1*) ;; factor
+(potri *mat-1*) ;; invert 
 
+(defun minv-cholesky (a)
+  (assert (matrix-like-symmetric-p a))
+  (let ((a-fac (first  (potrf (copy a)))))
+    (trap2mat  (first (potri a-fac)))))
 
-
+;; #2A((2 3 4) (1 2 4) (2 4 5))
 
 (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((1.7888543819998317 0.0 0.0)
