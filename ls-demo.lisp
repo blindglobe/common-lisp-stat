@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-06-03 18:51:17 tony>
+;;; Time-stamp: <2009-06-04 17:42:31 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -75,7 +75,7 @@
 ;; *my-df-2*
 
 
-;;; HERE
+;;; HERE#1
 
 ;;; read in a CSV dataframe...
 
@@ -142,30 +142,62 @@
 
 (defparameter *mat-1*
   (make-matrix 3 3
-	       :initial-contents #2A((2d0 3d0 4d0) (1d0 2d0 4d0) (2d0 4d0 5d0))))
+	       :initial-contents #2A((2d0 3d0 4d0) (3d0 2d0 4d0) (4d0 4d0 5d0))))
 
-(potrf *mat-1*) ;; factor
-(potri *mat-1*) ;; invert 
+(defparameter *mat-2*
+  (let ((m (rand 3 3)))
+    (m* m (transpose m))))
 
-(defun minv-cholesky (a)
-  (assert (matrix-like-symmetric-p a))
-  (let ((a-fac (first  (potrf (copy a)))))
-    (trap2mat  (first (potri a-fac)))))
+(axpy 100.0d0 *mat-2* (eye 3 3))
 
-;; #2A((2 3 4) (1 2 4) (2 4 5))
+(potrf (copy *mat-2*)) ;; factor
+(potri (copy *mat-2*)) ;; invert 
+(minv-cholesky (copy *mat-2*))
+(m*  (minv-cholesky (copy *mat-2*)) *mat-2*)
 
-(chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
-;; (#2A((1.7888543819998317 0.0 0.0)
-;;      (1.6770509831248424 0.11180339887498929 0.0)
-;;      (2.23606797749979 2.23606797749979 3.332000937312528e-8))
-;;  5.000000000000003)
+(defparameter *mat-3*
+  (make-matrix
+   3 3
+   :initial-contents '((16d0 13d0 12d0)
+		       (13d0 22d0 7d0)
+		       (12d0 7d0  17d0))))
+
+(potrf (copy *mat-3*)) ;; factor
+
+#|
+ *mat-3* =>
+ #<LA-SIMPLE-MATRIX-DOUBLE  3 x 3
+  16.0 13.0 12.0
+  13.0 22.0 7.0
+  12.0 7.0 17.0>
+
+ (potrf (copy *mat-3*)) =>
+ (#<LA-SIMPLE-MATRIX-DOUBLE  3 x 3
+  4.0 3.25 3.0
+  13.0 3.3819373146171707 -0.8131433980500301
+  12.0 7.0 2.7090215603069034>
+  "U" NIL)
+
+ ;; and compare with...
+
+ > testm <- matrix(data=c(16,13,12,13,22,7,12,7,17),nrow=3)
+ > chol(testm)
+      [,1]     [,2]       [,3]
+ [1,]    4 3.250000  3.0000000
+ [2,]    0 3.381937 -0.8131434
+ [3,]    0 0.000000  2.7090216
+ > 
+
+ ;; which suggests that the major difference is that R zero's out the
+ ;; appropriate terms, and that CLS does not.
+
+|#
+
+(potri (copy *mat-2*)) ;; invert 
+(minv-cholesky (copy *mat-2*))
+(m*  (minv-cholesky (copy *mat-2*)) *mat-2*)
 
 
-
-(defparameter my-chol-decomp-test (chol-decomp  #2A((2 3 4) (1 2 4) (2 4 5))))
-my-chol-decomp-test
-(nth 0 my-chol-decomp-test)
-(nth 1 my-chol-decomp-test)
 
 
 (lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
@@ -176,12 +208,36 @@ my-chol-decomp-test
  #(2 3 4))
 ;; #(-2.333333333333333 1.3333333333333335 0.6666666666666666)
 
-(inverse #2A((2 3 4) (1 2 4) (2 4 5)))
+
+
+
+;; (inverse #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; #2A((2.0 -0.33333333333333326 -1.3333333333333335)
 ;;     (-1.0 -0.6666666666666666 1.3333333333333333)
 ;;     (0.0 0.6666666666666666 -0.3333333333333333))
 
-(sv-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+(minv-lu
+   (make-matrix
+    3 3
+    :initial-contents #2A((2d0 3d0 4d0)
+			  (1d0 2d0 4d0)
+			  (2d0 4d0 5d0))))
+
+#|
+
+ #<LA-SIMPLE-MATRIX-DOUBLE  3 x 3
+  2.0 -0.3333333333333333 -1.3333333333333333
+  -1.0 -0.6666666666666666 1.3333333333333333
+  0.0 0.6666666666666666 -0.3333333333333333>
+
+ ;; so is correct.
+
+|#
+
+;;;;;HERE#2
+
+
+;; (sv-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((-0.5536537653489974 0.34181191712789266 -0.7593629708013371)
 ;;      (-0.4653437312661058 -0.8832095891230851 -0.05827549615722014)
 ;;      (-0.6905959164998124 0.3211003503429828 0.6480523475178517))
@@ -190,6 +246,8 @@ my-chol-decomp-test
 ;;      (-0.5520024849987308 0.6057035911404464 0.5730762743603965)
 ;;      (-0.7762392122368734 -0.6242853493399995 -0.08786630745236332))
 ;;  T)
+
+()
 
 (qr-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((-0.6666666666666665 0.7453559924999298 5.551115123125783e-17)
