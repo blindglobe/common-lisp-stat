@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-16 17:28:54 tony>
+;;; Time-stamp: <2009-05-29 16:32:21 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -83,7 +83,7 @@ size rows, typing if required, etc.
     (let ((result (make-array (list n p))))
       (dotimes (i n)
 	(dotimes (j p)
-	  (if (equal  type :row-major)
+	  (if (equal  type 'row-major)
 	      (setf (aref result i j) (elt (elt lol i) j))
 	      (setf (aref result i j) (elt (elt lol j) i)))))
       result)))
