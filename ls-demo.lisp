@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-06-04 17:42:31 tony>
+;;; Time-stamp: <2009-06-08 09:20:26 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -198,16 +198,60 @@
 (m*  (minv-cholesky (copy *mat-2*)) *mat-2*)
 
 
+#|
+ (lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
+ ;; => (#2A((2.0 3.0 4.0) (1.0 1.0 1.0) (0.5 0.5 1.5)) #(0 2 2) -1.0 NIL)
+ (lu-solve 
+  (lu-decomp #2A((2 3 4) (1 2 4) (2 4 5))) 
+  #(2 3 4))
+ ;; => #(-2.333333333333333 1.3333333333333335 0.6666666666666666)
+|#
+(getrf
+ (make-matrix 3 3
+	      :initial-contents #2A((2d0 3d0 4d0) (1d0 2d0 4d0) (2d0 4d0 5d0))))
+
+#| => ; so not so good for the vector, but matrix matches.
+ (#<LA-SIMPLE-MATRIX-DOUBLE  3 x 3
+  2.0 3.0 4.0
+  1.0 1.0 1.0
+  0.5 0.5 1.5>
+  #<FNV-INT32 (3) 1 3 3> NIL)
+|#
+
+(msolve-lu 
+ (make-matrix 3 3
+	      :initial-contents #2A((2d0 3d0 4d0)
+				    (1d0 2d0 4d0)
+				    (2d0 4d0 5d0)))
+ (make-vector 3 :type :column
+	      :initial-contents '((2d0)
+				  (3d0)
+				  (4d0))))
+
+#| =>
+  #<LA-SIMPLE-VECTOR-DOUBLE (3 x 1)
+   -2.3333333333333335
+   1.3333333333333335
+   0.6666666666666666>
+|#
 
 
-(lu-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
-;; (#2A((2.0 3.0 4.0) (1.0 1.0 1.0) (0.5 0.5 1.5)) #(0 2 2) -1.0 NIL)
 
-(lu-solve 
- (lu-decomp #2A((2 3 4) (1 2 4) (2 4 5))) 
- #(2 3 4))
-;; #(-2.333333333333333 1.3333333333333335 0.6666666666666666)
+;;; LU common applications
 
+(defun minv-lu (a)
+  "invert A using LU Factorization"
+  (let ((a-fac (getrf (copy a))))
+    (first (getri (first a-fac) (second a-fac)))))
+
+#+nil (progn
+	(let ((m1 (rand 3 3)))
+	  (m* m1 (minv-lu m1))))
+
+(defun msolve-lu (a b)
+  "Compute `x1' solving `A x = b', with LU factorization."
+  (let ((a-fac (getrf (copy a))))
+    (first (getrs (first a-fac) b (second a-fac)))))
 
 
 
@@ -236,6 +280,12 @@
 
 ;;;;;HERE#2
 
+(factorize 
+ (make-matrix 3 3
+	      :initial-contents #2A((2d0 3d0 4d0)
+				    (1d0 2d0 4d0)
+				    (2d0 4d0 5d0)))
+ :by :svd)
 
 ;; (sv-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((-0.5536537653489974 0.34181191712789266 -0.7593629708013371)
