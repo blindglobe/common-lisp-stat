@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-04-21 08:11:06 tony>
+;;; Time-stamp: <2009-06-18 07:47:37 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -111,7 +111,7 @@
   2005--2009." 
   :serial t
   :depends-on (:cffi
-	       :cl-plplot  ;; FIXME: conditionally load only, not always simple to install?
+	       ;; :cl-plplot ; FIXME: conditional load, tends to crash.
 	       :lisp-matrix
 	       :lift
 	       :rsm-string)
@@ -219,14 +219,14 @@
 			     "lispstat-basics")
 		:components
 		((:lispstat-lsp-source-file "statistics")))
-
+#|
 	       (:module
 		"visualize"
 		:pathname "src/visualize/"
 		:depends-on ("lispstat-core")
 		:components
 		((:file "plot")))
-
+|#
 	       (:module
 		"optimization"
 		:pathname "src/numerics/"

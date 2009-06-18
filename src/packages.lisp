@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-28 23:03:22 tony>
+;;; Time-stamp: <2009-06-18 07:53:42 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -168,6 +168,7 @@
 	:lisp-matrix
 	:cls-dataframe))
 
+#|
 (defpackage :cls-visualize-plplot
   (:use :common-lisp
 	:lisp-matrix
@@ -176,7 +177,7 @@
   (:export
    ;; examples 
    plot-ex contour-plot-ex fn-contour-plot-ex shade-plot-ex 3D-plot-ex))
-
+|#
 
 ;;; USER PACKAGES
 
@@ -334,7 +335,8 @@
 	:lisp-stat-regression-linear
 	:cybertiggyr-dsv
 	:cls-visualize
-	:cls-visualize-plplot)
+	;; :cls-visualize-plplot
+	)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
   (:shadowing-import-from :lisp-stat-math
