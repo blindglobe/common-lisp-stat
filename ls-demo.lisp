@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-06-08 09:20:26 tony>
+;;; Time-stamp: <2009-06-15 08:15:54 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -101,9 +101,8 @@
   (make-instance 'dataframe-array
 		 :storage
 		 (listoflist->array
-		  (transpose-listoflist 
 		   (rsm.string:file->string-table
-		    (localized-pathto "Data/example-mixed.csv"))))
+		    (localized-pathto "Data/example-mixed.csv")))
 		 :doc "This is an interesting dataframe-array"))
 ;; *my-df-2*
 
