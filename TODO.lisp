@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-05-25 08:11:27 tony>
+;;; Time-stamp: <2009-06-18 18:43:02 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -42,6 +42,21 @@
 (describe 'lisp-stat-ut)
 
 (in-package :ls-user)
+
+
+#+nil
+(progn
+  (asdf:oos 'asdf:load-op 'xarray)
+
+  *features*
+  *package*
+
+  ;; need to consider CLS features:  CFFI, CL-BLAPACK, LISP-MATRIX, XARRAY
+  ;; CL-PLPLOT,  CL-CAIRO2/CL-2D.
+
+  ;; SBCL/CCL -> ...
+  ;; CLISP/... -> ...
+  )
 
 #+nil
 (progn
@@ -155,3 +170,71 @@
   (asdf:oos 'asdf:load-op 'validations)
 
   )
+
+
+;; SETUP FOR PLOT EXAMPLE:
+
+(asdf:oos 'asdf:load-op 'lispstat)
+(asdf:oos 'asdf:load-op 'cl-cairo2-x11)
+(asdf:oos 'asdf:load-op 'cl-2d)
+
+(defpackage :cl-2d-user-x11
+  (:use :cl :cl-cairo2  :cl-2d :cl-numlib :cl-colors :bind))
+
+(in-package :cl-2d-user-x11)
+
+;; PLOT EXAMPLE
+#+nil
+(progn
+
+
+  ;; this is how you create an X11 frame.  If you supply a
+  ;; background-color to as-frame, each plot will clear the frame with
+  ;; this color.
+
+  (defparameter *frame1* (as-frame (create-xlib-image-context 300 300)
+				  :background-color +white+))
+  
+  ;; or netbook size, picture is similar but on a lower-res display window. 
+  (defparameter *frame2* (as-frame (create-xlib-image-context 200 200)
+				  :background-color +white+))
+
+  (plot-function *frame1*
+		 #'exp (interval-of 0 2)
+		 :x-title "x"
+		 :y-title "exp(x)")
+  
+  ;; split the frame, and you can draw on the subframes independently.
+  ;; I do this a lot.
+
+  (bind ((#2A((f1 f2) (f3 f4))
+	     (split-frame *frame2* (percent 50) (percent 50))))
+	(defparameter *f1* f1)
+	(defparameter *f2* f2)
+	(defparameter *f3* f3)
+	(defparameter *f4* f4))
+
+  (plot-function *f1* #'sin (interval-of 0 2) :x-title "x" :y-title "sin(x)")
+  (plot-function *f2* #'cos (interval-of 0 2) :x-title "x" :y-title "cos(x)")
+  (plot-function *f3* #'tan (interval-of 0 2) :x-title "x" :y-title "tan(x)")
+  (plot-function *f4* #'/ (interval-of 0 2) :x-title "x" :y-title "1/x")
+  
+  (clear *frame1*)
+
+
+  (let* ((n 500)
+	 (xs (num-sequence :from 0 :to 10 :length n))
+	 (ys (map 'vector #'(lambda (x) (+ x 8 (random 4.0))) xs))
+	 (weights (replicate #'(lambda () (1+ (random 10))) n 'fixnum))
+	 (da (plot-simple frame (interval-of 0 10) (interval-of 10 20)
+			  :x-title "x" :y-title "y")))
+    (draw-symbols da xs ys :weights weights))
+
+
+  )
+
+
+;; back to normal application
+(in-package :ls-user)
+
+
