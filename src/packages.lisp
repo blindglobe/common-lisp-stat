@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-06-18 07:53:42 tony>
+;;; Time-stamp: <2009-06-23 07:52:13 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -419,6 +419,9 @@
    ;; lispstat-macros
    make-rv-function make-rv-function-1 
 
+   ;; xarray
+   xref xtype xdims xdim xdims* 
+
    ;; data
    open-file-dialog read-data-file read-data-columns load-data
    load-example *variables* *ask-on-redefine*
@@ -432,6 +435,8 @@
    consistent-dataframe-p
    dataset
    list-of-columns list-of-rows
+
+
 
    ;; listoflist
    lists-of-same-size equal-listoflist
