@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-03-12 17:15:10 tony>
+;;; Time-stamp: <2009-06-22 17:10:57 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,5 +13,4 @@
 ;;; designers and quality assurance people in its wake.
 
 ;;; This organization and structure is new to the 21st Century
-;;; version.
-
+;;; version..   Think, "21st Century Schizoid Man".
