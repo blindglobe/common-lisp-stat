@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: integrate xarray for dataframe
+desc: use the xarray API as a commn dataframe access tool.
+type: :task
+component: Data
+release: "1.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-06-23 06:07:04.270525 Z
+references: []
+
+id: 2f590301825afa4bed4263b4b4513fd86354edcd
+log_events: 
+- - 2009-06-23 06:08:02.123906 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - |-
+    need to consider the removal of the current API for DFs, but it might be better to simply leave, so as to
+    note the differences and similarities between datastructures.
