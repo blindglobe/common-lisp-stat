@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-28 23:15:27 tony>
+;;; Time-stamp: <2009-06-25 09:22:48 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -175,13 +175,11 @@ Examples:
     (error "Dispatch on virtual class, Method needed for DFREF with
   class ~A." (find-class df))))
 
-(defgeneric set-dfref (df index1 index2 val)
+(defgeneric (setf dfref) (df index1 index2 val)
   (:documentation "setter for dfref")
   (:method ((df dataframe-like) index1 index2 val)
     (error "Dispatch on virtual class, Method needed for SET-DFREF
   with class ~A." (find-class df))))
-
-(defsetf dfref set-dfref)
 
 (defgeneric dfselect (df &optional cases vars indices)
   (:documentation "access to sub-dataframes. Always returns a dataframe.")
