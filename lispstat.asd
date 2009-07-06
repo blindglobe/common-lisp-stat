@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-06-22 17:07:24 tony>
+;;; Time-stamp: <2009-07-06 17:25:24 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -26,12 +26,6 @@
   (directory-namestring
    (truename (asdf:system-definition-pathname :lispstat)))
   "Value considered \"home\" for our data")
-
-#|
-  (setf *lispstat-home-dir*
-      (directory-namestring (truename (asdf:system-definition-pathname
-				       :lispstat))))
-|#
 
 (macrolet ((ls-dir (root-str)
 	     `(pathname (concatenate 'string
@@ -104,18 +98,19 @@
                (read vers))
   :author "A.J. Rossini <blindglobe@gmail.com>"
   :license "BSD"
-  :description "CommonLispStat (CLS): A System for Statistical
+  :description "Common Lisp Statistics (CLS): A System for Statistical
   Computing with Common Lisp; based on CLS alpha1 by Luke Tierney
   <luke@stat.uiowa.edu> (apparently originally written when Luke was
-  at CMU, on leave somewhere?).   Last touched by him in 1991, then in
-  2005--2009." 
+  at CMU, on leave at Bell Labs?).  Last touched by him in 1991, then
+  by AJR in 2005--2009."
   :serial t
   :depends-on (:cffi
-	       ;; :cl-plplot ; FIXME: conditional load, tends to crash.
 	       :lisp-matrix
 	       :lift
 	       :xarray
-	       :rsm-string)
+	       :rsm-string
+	       ;;    :cl-cairo2  :cl-2d
+	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE")
 	       (:static-file "README")

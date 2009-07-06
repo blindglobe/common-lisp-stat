@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-06-29 21:19:00 tony>
+;;; Time-stamp: <2009-07-06 18:11:03 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,6 +17,17 @@
 ;;; SET UP
 
 (in-package :cl-user)
+
+(defun init-CLS ()
+  (asdf:oos 'asdf:load-op 'lispstat))
+
+(defun init-CLS-graphics ()
+  (init-CLS)
+  (asdf:oos 'asdf:load-op 'cl-cairo2-x11)
+  (asdf:oos 'asdf:load-op 'cl-2d))
+
+(init-CLS-graphics)
+
 ;;(asdf:oos 'asdf:load-op 'lisp-matrix)
 ;;(asdf:oos 'asdf:compile-op 'lispstat :force t)
 ;;(asdf:oos 'asdf:load-op 'lispstat)
@@ -27,6 +38,9 @@
 (run-tests :suite 'lisp-stat-ut)
 (describe (run-tests :suite 'lisp-stat-ut))
 
+(describe 'lisp-stat-ut)
+(documentation 'lisp-stat-ut 'type)
+
 ;; FIXME: Example: currently not relevant, yet
 ;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
 ;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
@@ -34,49 +48,12 @@
 (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
 (lift::run-tests :suite 'lisp-stat-ut-dataframe)
 
-(describe 
- (lift::run-test
-  :test-case  'lisp-stat-unittests::create-proto
-  :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+(describe (lift::run-test
+	   :test-case  'lisp-stat-unittests::create-proto
+	   :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 
-(describe 'lisp-stat-ut)
 
 (in-package :ls-user)
-
-
-#+nil
-(progn
-  (asdf:oos 'asdf:load-op 'xarray)
-
-  *features*
-  *package*
-
-  ;; need to consider CLS features:  CFFI, CL-BLAPACK, LISP-MATRIX, XARRAY
-  ;; CL-PLPLOT,  CL-CAIRO2/CL-2D.
-
-  ;; SBCL/CCL -> ...
-  ;; CLISP/... -> ...
-  )
-
-#+nil
-(progn
-  ;; Plotting -- need to figure out the core-dump, or change libraries.
-  ;; (asdf:oos 'asdf:load-op 'cl-plplot)
-
-  ;; (defparameter *gdev* "xwin")
-  (defparameter *gdev* "xcairo")
-  ;; (cl-plplot::plsdev *gdev*) ; -- usually handled within call.
-  (plot-ex)
-  (plot-ex)
-  ;; Boom! -- there is currently a loose pointer floating around that
-  ;; causes errors the 3rd time that we create a plot (and crashes
-  ;; SBCL the 4th time).  Order independent.
-  (plot-ex)
-
-  (contour-plot-ex)
-  (fn-contour-plot-ex)
-  (shade-plot-ex)
-  (3D-plot-ex))
 
 
 (progn
@@ -174,9 +151,6 @@
 
 ;; SETUP FOR PLOT EXAMPLE:
 
-(asdf:oos 'asdf:load-op 'lispstat)
-(asdf:oos 'asdf:load-op 'cl-cairo2-x11)
-(asdf:oos 'asdf:load-op 'cl-2d)
 
 (defpackage :cl-2d-user-x11
   (:use :cl :cl-cairo2  :cl-2d :cl-numlib :cl-colors :bind))
@@ -214,6 +188,14 @@
 	(defparameter *f3* f3)
 	(defparameter *f4* f4))
 
+
+  (bind ((#2A((f1 f2) (f3 f4))
+	     (split-frame *frame2* (percent 75) (percent 25))))
+	(defparameter *f1* f1)
+	(defparameter *f2* f2)
+	(defparameter *f3* f3)
+	(defparameter *f4* f4))
+
   (plot-function *f1* #'sin (interval-of 0 2) :x-title "x" :y-title "sin(x)")
   (plot-function *f2* #'cos (interval-of 0 2) :x-title "x" :y-title "cos(x)")
   (plot-function *f3* #'tan (interval-of 0 2) :x-title "x" :y-title "tan(x)")
@@ -236,8 +218,9 @@
 
 
 ;;; EXAMPLE FOR DSC2009
-  (defparameter *frame2* (as-frame (create-xlib-image-context 200 200)
+  (defparameter *frame2* (as-frame (create-xlib-image-context 400 400)
 				  :background-color +white+))
+
   (bind ((#2A((f1 f2) (f3 f4))
 	     (split-frame *frame2* (percent 50) (percent 50))))
 	(defparameter *f1* f1)
@@ -247,6 +230,9 @@
   (plot-function *f1* #'sin (interval-of 0 2) :x-title "x" :y-title "sin(x)")
   (plot-function *f2* #'cos (interval-of 0 2) :x-title "x" :y-title "cos(x)")
   (plot-function *f3* #'tan (interval-of 0 2) :x-title "x" :y-title "tan(x)")
+
+ (num-sequence :from 0 :to 10 :length 30)
+
   (let* ((n 500)
 	 (xs (num-sequence :from 0 :to 10 :length n))
 	 (ys (map 'vector #'(lambda (x) (+ x 8 (random 4.0))) xs))
@@ -256,11 +242,22 @@
     (draw-symbols da xs ys :weights weights))
   (xlib-image-context-to-png (context *f1*) "/home/tony/test1.png")
   (xlib-image-context-to-png (context *frame2*) "/home/tony/test2.png")
+  (destroy (context  *frame2*))
 
 
 
 ;; back to normal application
 (in-package :ls-user)
+
+
+
+#|
+  (with-data dataset ((dsvarname1 [usevarname1])
+                      (dsvarname2 [usevarname2]))
+      @body)
+|#
+
+
 
 
 (defun testme (&key (a 3) (b (+ a 3)))
