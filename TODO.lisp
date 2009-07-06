@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-06 18:11:03 tony>
+;;; Time-stamp: <2009-07-06 18:38:42 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -85,60 +85,6 @@
 |#
   )
 
-
-#+nil
-(progn ;; experiments with GSL and the Lisp interface.
-  (asdf:oos 'asdf:load-op 'gsll)
-  (asdf:oos 'asdf:load-op 'gsll-tests) ; requires lisp-unit
-
-  ;; the following should be equivalent
-  (defparameter *t1*  (LIST 6.18d0 6.647777777777779d0 6.18d0))
-  (defparameter *t2*  (MULTIPLE-VALUE-LIST
-	       (LET ((VEC
-		      (gsll:make-marray 'DOUBLE-FLOAT
-					:INITIAL-CONTENTS '(-3.21d0 1.0d0 12.8d0)))
-		     (WEIGHTS
-		      (gsll:MAKE-MARRAY 'DOUBLE-FLOAT
-					:INITIAL-CONTENTS '(3.0d0 1.0d0 2.0d0))))
-		 (LET ((MEAN (gsll:MEAN VEC)))
-		   (LIST (gsll:ABSOLUTE-DEVIATION VEC)
-			 (gsll:WEIGHTED-ABSOLUTE-DEVIATION VEC WEIGHTS)
-			 (gsll:ABSOLUTE-DEVIATION VEC MEAN))))))
-  (eql *t1* *t2*)
-  (equal *t1* *t2*)
-
-  ;; from (gsll:examples 'gsll::numerical-integration) ...
-  (gsll:integration-qng gsll::one-sine 0.0d0 PI)
-
-  (gsll:defun-single axpb (x) (+ (* 2 x) 3)) ;; a<-2, b<-3
-  (gsll:integration-qng axpb 1d0 2d0)
-
-  (let ((a 2)
-	(b 3))
-    (defun-single axpb2 (x) (+ (* a x) b)))
-  (gsll:integration-qng axpb2 1d0 2d0)
-
-  ;;   BAD
-  ;;   (gsll:integration-qng 
-  ;;    (let ((a 2)
-  ;; 	 (b 3))
-  ;;      (defun-single axpb2 (x) (+ (* a x) b)))
-  ;;    1d0 2d0)
-
-  ;; right, but weird expansion...
-  (gsll:integration-qng
-   (let ((a 2)
-	 (b 3))
-     (defun axpb2 (x) (+ (* a x) b))
-     (gsll:def-single-function axpb2)
-     axpb2)
-   1d0 2d0)
-
-  ;; Linear least squares
-
-  (gsll:gsl-lookup "gsl_linalg_LU_decomp") ; => gsll:lu-decomposition
-  (gsll:gsl-lookup "gsl_linalg_LU_solve") ; => gsll:lu-solve
-  )
 
 
 #+nil
