@@ -17,3 +17,10 @@ BrentWork
 Doc/Rossini-RiceU-2009Mar.*
 Doc/*.pdf
 Doc/*/*.pdf
+Doc/*/*.aux
+Doc/*/*.nav
+Doc/*/*.out
+Doc/*/*.snm
+Doc/*/*.toc
+Doc/*/*.log
+Doc/*/*.vrb
