@@ -17,7 +17,10 @@
 
 ;; (run-lisp-stat-tests)
 
-(deftestsuite lisp-stat-ut () ())
+;; top-level
+(deftestsuite
+    lisp-stat-ut () ()
+    (:documentation "top level CLS unittests."))
 
 ;;; Support for fine-grained numerical equivalence 
 
