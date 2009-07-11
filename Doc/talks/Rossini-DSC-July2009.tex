@@ -10,6 +10,7 @@
 \usepackage[latin1]{inputenc}
 \usepackage{times}
 \usepackage[T1]{fontenc}
+\usepackage{url}
 
 \title[CLS]{Common Lisp Statistics}
 \subtitle{Using History to design better data analysis environments}
@@ -29,10 +30,6 @@
 
 \begin{frame}
   \titlepage
-\end{frame}
-
-\begin{frame}{Outline}
-  \tableofcontents
 \end{frame}
 
 % Structuring a talk is a difficult task and the following structure
@@ -73,12 +70,13 @@
    (as-frame (create-xlib-image-context 200 200)
    	    :background-color +white+))
 (bind ((#2A((f1 f2) (f3 f4))
-         (split-frame *frame2*
-                      (percent 50) (percent 50))))
-  (defparameter *f1* f1)  ; bottom left   
-  (defparameter *f2* f2)  ; bottom right  f3  f4
-  (defparameter *f3* f3)  ; top left      f1  f2
-  (defparameter *f4* f4)) ; top right
+        (split-frame *frame2*
+                     (percent 50)
+                     (percent 50))))
+  (defparameter *f1* f1) ; lower left   
+  (defparameter *f2* f2) ; lower right  f3  f4
+  (defparameter *f3* f3) ; top left     f1  f2
+  (defparameter *f4* f4)); top right
 \end{verbatim}
 \end{frame}
 
@@ -95,6 +93,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{Things to Plot}
+\small{
 \begin{verbatim}
 (let* ((n 500)
        (xs (num-sequence
@@ -106,25 +105,37 @@
           (replicate #'(lambda () (1+ (random 10)))
                      n 'fixnum))
        (da (plot-simple *f4*
-             (interval-of 0 10) (interval-of 10 20)
+             (interval-of 0 10)
+             (interval-of 10 20)
              :x-title "x" :y-title "y")))
   (draw-symbols da xs ys :weights weights))
+\end{verbatim}
+}
+\end{frame}
+
+\begin{frame}[fragile]{Copying existing graphics}
+  And we generated the figure on the first page by:
+\begin{verbatim}
+(xlib-image-context-to-png
+   (context *f1*)
+   "/home/tony/test1.png")
 \end{verbatim}
 \end{frame}
 
 \subsection{Statistical Models}
 \label{sec:work:statmod}
 
-
 \begin{frame}[fragile]{Linear Regression}
   Primitive LispStat, a wrapper around LAPACK's \texttt{dgelsy}:
+\small{
 \begin{verbatim}
 (defparameter *result1*
-   (regression-model (list->vector-like iron)
-                     (list->vector-like absorbtion)))
+   (regression-model
+       (list->vector-like iron)
+       (list->vector-like absorbtion)))
 *result*1 =>
-
 \end{verbatim}
+}
 \end{frame}
 
 \subsection{Numerical Descriptions}
@@ -151,31 +162,33 @@
 \end{frame}
 
 
-
-\section{Graphics}
-\label{sec:practice}
-
-
-
-\begin{frame}[fragile]{Copying existing graphics}
-  And we generated the figure on the first page by:
-\begin{verbatim}
-(xlib-image-context-to-png
-   (context *f1*)
-   "/home/tony/test1.png")
-\end{verbatim}
+\begin{frame}{Outline}
+  \tableofcontents
 \end{frame}
 
-
 \section{Common Lisp Statistics}
+\label{sec:CLS}
 
 \begin{frame}{Why CLS?}
   \begin{itemize}
   \item a component-based structure for statistical computing
+  \item Common Lisp provides a simple, \emph{primitive}, syntax
+  \item Common Lisp provides an amazing number of advanced features
+    that keep getting reinvented in other languages.
+  \item Common Lisp has linkages to many amazing features developed in
+    other languages.
   \item ability to leverage non-statisticians interested in computing
-    technologies (compilers, protocols, interfaces)
+    technologies (compilers, protocols, interfaces, libraries,
+    functionality which can be reused for statistical purposes)
+  \item This is a ``customization'' through packages to support
+    statistical computing, not a independent language.  ``Ala Carte'',
+    not ``Menu''.
   \end{itemize}
 \end{frame}
+
+\subsection{Implementation Plans}
+\label{sec:CLS:impl}
+
 
 \begin{frame}{Current Functionality}
   \begin{itemize}
@@ -196,16 +209,118 @@
   \begin{itemize}
   \item Should  work on Linux, with recent SBCL versions
   \item Definitely works on bleeding edge Debian (unstable).
-  \item Has worked on 4 different people's environments (not quite,
-    but sort of requires a \verb+/home/tony/+ !)
+  \item Has worked for weak definitions of ``work'' on 4 different
+    people's environments (not quite, but sort of requires a
+    \verb+/home/tony/+ !)
+  \item Threaded support on threaded lisps (SBCL/CCL, soon CLISP).
+    But not yet integrated.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Goals}
+  Short Term
+  \begin{itemize}
+  \item Better integration of data structures with statistical routines
+    (auto-handling with dataframes, rather than manual parsing). 
+  \end{itemize}
+  Medium/Long Term 
+  \begin{itemize}
+  \item Support for CLISP (byte-compiled interpreted lisp) and Clozure
+    Common Lisp (formerly OpenMCL)
+  \item high-level Front-end API to a number of matrix and numerical
+    packages and numerical structures (
+  \item constraint system for interactive GUIs and graphics
+  \item full LispStat compatibility (object system partially works;
+    GUI support coming).
+  \item Integrated threading via Bordeaux threads (portable CL API package).
+  \end{itemize}
+\end{frame}
+
+\subsection{Common Lisp}
+\label{sec:CLS:lisp}
+
+\begin{frame}{Common Lisp}
+  \begin{itemize}
+  \item Lisp-2 (symbols can denote both a separate function and a value)
+  \item ANSI standard (built by committee, but the committee was
+    reasonably smart)
+  \item Many implementations
+  \item Most implementations are interactive \textbf{compiled}
+    languages (few are interpreted, and those are usually
+    byte-compiled).
+  \item Parens provide clear delineation of a \textbf{Complete
+      Thought} (functional programming with side effects).
+  \item The Original \emph{Programming with Data} Language
+    (\emph{Programs are Data} and \emph{Data are Executable} also
+    apply).
+  \item advanced, powerful, first-class macros (macros functionally
+    re-write code)
   \item 
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Common Lisp}
-  advanced iteration
+\begin{frame}{Common Lisp Packages}
+  (They are packages and called packages, not libraries.  Some people
+  can rejoice!)
+  \begin{itemize}
+  \item infrastructure enhancement:  infix-notation, data structures,
+    control and flow structures
+  \item numerics, graphics, GUIs, 
+  \item primitive R to CL compiler (which could also be considered an
+    object-code compiler for R); 3 interfaces which embed R within CL.
+  \item 
+  \end{itemize}
+  See \url{http://www.common-lisp.net/} and
+  \url{http://www.cliki.org/}.  CLS sources can be found on
+  \url{http://github.com/blindglobe/}
 \end{frame}
 
+\section{What else about CLS is still Vaporware?}
+
+\begin{frame}{What does NOT work?}
+  Primarily, the reason that we doing this:
+  
+  \textbf{Computable and Executable Statistics}
+
+  (which is the subject of another talk, slides in the backup).
+\end{frame}
+
+
+
+\section{Discussion}
+
+\begin{frame}{Conclusion}
+  Active but slow development, spanning the range of needs:
+  \begin{itemize}
+  \item Numerics: Linear algebra basics done -- full development
+  \item Static graphics: progress being made, have a partial
+    grid-solution, need interactive graphics
+  \item LispStat emulation needs to be finished
+  \item Model specification and unification 
+  \end{itemize}
+  Related numerical/statistical projects:
+  \begin{itemize}
+  \item Iterant : R/LispStat like system for Clozure (Lisp on the JVM)
+  \item FEMLisp : system/workshop for finite-element analysis modeling
+    using Lisp
+  \item matlisp/LispLab : LAPACK-based numerical linear algebra packages
+  \item GSLL : GNU Scientific Library, Lisp interface.
+  \end{itemize}
+  Finally: support for a new statistical programming environment
+  modality (subject for another talk).
+\end{frame}
+
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{BACKUPS}
+
+
+\section{Common Lisp}
 
 \begin{frame}[fragile]{Finding out things}
   \begin{itemize}
@@ -222,23 +337,24 @@
   \end{itemize}
 \end{frame}
 
-
 \section{Computable Statistics}
 
-\begin{frame}{What does NOT work?}
-  Primarily, the reason that we doing this:
-  
-  \textbf{Computable and Executable Statistics}
-\end{frame}
-
 \begin{frame}{Can we compute with them?}
-  3 Examples:
+  3 Examples, of which we only present the first
   \begin{itemize}
-  \item Research
-  \item Consulting
-  \item Reimplementation
+  \item Research.
+  \item Consulting, Applied Statistics, Scientific Honesty.
+  \item Reimplementation.
   \end{itemize}
   Consider whether one can ``compute'' with the information given?
+  (that is:
+  \begin{itemize}
+  \item do we have sufficient information to communicate enough
+    for the right person to recreate the analysis?
+  \item have we sufficient clarity to prevent misunderstandings about
+    intentions and claims?
+  \end{itemize}
+  )
 \end{frame}
 
 \begin{frame}[fragile]{Example 1: Theory\ldots}
@@ -316,13 +432,12 @@
 \begin{frame}{Comments}
   \begin{itemize}
   \item The general problem is very difficult
-  \item Some progress has been made in small areas of basic
-    statistics: currently working on linear regression (LS-based,
-    Normal-bayesian) and the T-test.
+  \item I'm working on some basic statistical proof of concepts (not
+    finished): linear regression (LS-based, Normal-bayesian) and the
+    T-test.
   \item Areas targetted for medium-term future: resampling methods and
     similar algorithms.
   \end{itemize}
-
 \end{frame}
 
 \begin{frame}
@@ -383,32 +498,14 @@
 
 \begin{frame}{Exercise left to the reader!}
 
-  (aside: I have been looking at the \textbf{stats} and \textbf{lme4}
-  packages recently -- \textit{for me}, very clear numerically, much
-  less so statistically)
+%   (aside: I have been looking at the \textbf{stats} and \textbf{lme4}
+%   packages recently -- \textit{for me}, very clear numerically, much
+%   less so statistically)
 \end{frame}
 
 
 
-\section{Discussion}
-
-\begin{frame}{Conclusion}
-  \begin{itemize}
-  \item Numerics: Linear algebra basics done -- full development
-  \item Static graphics: progress being made, have a partial grid-solution
-  \item 
-  \end{itemize}
-\end{frame}
-
-
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\section{Preliminaries}
-
-\subsection{Context}
+\section{Context}
 
 \begin{frame}{Goals for this Talk}{(define, strategic approach,
     justify)}
