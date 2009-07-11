@@ -11,14 +11,12 @@
 \usepackage{times}
 \usepackage[T1]{fontenc}
 
-
 \title[CLS]{Common Lisp Statistics}
 \subtitle{Using History to design better data analysis environments}
 \author[Rossini]{Anthony~(Tony)~Rossini}
 
-\institute[Novartis and University of Washington] % (optional, but mostly needed)
-{
-  Group Head, Modeling and Simulation\\
+\institute[Novartis and University of Washington]{
+  Group Head, Modeling and Simulation Statistics\\
   Novartis Pharma AG, Switzerland
   \and
   Affiliate Assoc Prof, Biomedical and Health Informatics\\
@@ -55,47 +53,31 @@
 %   just say so once. Everybody will be happy with that.
 
 \section{What Works?}
+\label{sec:work}
+
+\begin{frame}{Is it Vaporware?}
+  
+  Not quite...
+\end{frame}
+
+\subsection{Graphics}
+\label{sec:work:graphics}
 
 \begin{frame}{Silly Visualization Example}
 \includegraphics[width=3in,height=3in]{/home/tony/test1.png}
 \end{frame}
 
-
-\begin{frame}{Linear Regression}
-  
-\end{frame}
-
-
-\begin{frame}{Descriptives}
-  
-\end{frame}
-
-\begin{frame}{Data Management}
-  
-\end{frame}
-
-
-\begin{frame}{Workflow Management}
-  
-\end{frame}
-
-
-\section{The Practical}
-\label{sec:practice}
-
-
 \begin{frame}[fragile]{Graphics Device}
 \begin{verbatim}
 (defparameter *frame2*
-   (as-frame
-      (create-xlib-image-context 200 200)
- 	:background-color +white+))
+   (as-frame (create-xlib-image-context 200 200)
+   	    :background-color +white+))
 (bind ((#2A((f1 f2) (f3 f4))
          (split-frame *frame2*
                       (percent 50) (percent 50))))
   (defparameter *f1* f1)  ; bottom left   
-  (defparameter *f2* f2)  ; bottom right  3  4
-  (defparameter *f3* f3)  ; top left      1  2
+  (defparameter *f2* f2)  ; bottom right  f3  f4
+  (defparameter *f3* f3)  ; top left      f1  f2
   (defparameter *f4* f4)) ; top right
 \end{verbatim}
 \end{frame}
@@ -130,6 +112,51 @@
 \end{verbatim}
 \end{frame}
 
+\subsection{Statistical Models}
+\label{sec:work:statmod}
+
+
+\begin{frame}[fragile]{Linear Regression}
+  Primitive LispStat, a wrapper around LAPACK's \texttt{dgelsy}:
+\begin{verbatim}
+(defparameter *result1*
+   (regression-model (list->vector-like iron)
+                     (list->vector-like absorbtion)))
+*result*1 =>
+
+\end{verbatim}
+\end{frame}
+
+\subsection{Numerical Descriptions}
+\label{sec:work:numdesc}
+
+\begin{frame}[fragile]{Descriptives}
+  (mean iron)
+  
+\end{frame}
+
+\subsection{Data Manip/Mgmt}
+\label{sec:work:data}
+
+\begin{frame}[verbatim]{DataFrames}
+  
+\end{frame}
+
+\begin{frame}[verbatim]{Numerical Matrices}
+  
+\end{frame}
+
+\begin{frame}{Managing / Manipulating Data}
+  
+\end{frame}
+
+
+
+\section{Graphics}
+\label{sec:practice}
+
+
+
 \begin{frame}[fragile]{Copying existing graphics}
   And we generated the figure on the first page by:
 \begin{verbatim}
@@ -152,7 +179,8 @@
 
 \begin{frame}{Current Functionality}
   \begin{itemize}
-  \item dataframes (similar to R)
+  \item basic dataframes (similar to R); indexing/slicing API under
+    development. 
   \item Basic regression (similar to XLispStat)
   \item matrix storage both in foreign and lisp-centric areas.
   \item LAPACK (small percentage, increasing), working with both
@@ -164,7 +192,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Computational Environment Supported}
+\begin{frame}[fragile]{Computational Environment Supported}
   \begin{itemize}
   \item Should  work on Linux, with recent SBCL versions
   \item Definitely works on bleeding edge Debian (unstable).
@@ -197,8 +225,10 @@
 
 \section{Computable Statistics}
 
-\begin{frame}{Why are we doing this?}
-    Computable and Executable Statistics
+\begin{frame}{What does NOT work?}
+  Primarily, the reason that we doing this:
+  
+  \textbf{Computable and Executable Statistics}
 \end{frame}
 
 \begin{frame}{Can we compute with them?}
@@ -242,7 +272,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{Realizing Theory}
-  \small{
+\small{
 \begin{verbatim}  
 (define-theorem my-proposed-theorem
    (:theorem-type '(distribution-properties
@@ -263,7 +293,7 @@
              (and (equal-distribution thetahat 'normal)
                   (equal-distribution gammahat 'normal)))))
 \end{verbatim}
-  }
+}
 \end{frame}
 
 \begin{frame}[fragile]{It would be nice to have}
@@ -364,7 +394,9 @@
 
 \begin{frame}{Conclusion}
   \begin{itemize}
-  \item Numerics: Linear algebra basics done -- full development 
+  \item Numerics: Linear algebra basics done -- full development
+  \item Static graphics: progress being made, have a partial grid-solution
+  \item 
   \end{itemize}
 \end{frame}
 
@@ -822,9 +854,6 @@
       though...
     \item Outlook: Lots of work and experimentation to do!
     \end{itemize}
-  \item {\tiny Gratuitous Advert: We are hiring, have student
-      internships (undergrad, grad students), and a visiting faculty
-      program.  Talk with me if possibly interested.}
   \end{itemize}
 \end{frame}
 
