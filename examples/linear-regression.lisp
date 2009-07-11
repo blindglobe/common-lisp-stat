@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-20 18:44:42 tony>
+;;; Time-stamp: <2009-07-11 13:43:05 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       linear-regression.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -21,6 +21,11 @@
 
 (defparameter *m*
   (regression-model (list->vector-like iron)
+		    (list->vector-like absorbtion))
+  "holding variable.")
+
+(defparameter *m2*
+  (lm (list->vector-like iron)
 		    (list->vector-like absorbtion))
   "holding variable.")
 
