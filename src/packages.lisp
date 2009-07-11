@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-06-23 07:52:13 tony>
+;;; Time-stamp: <2009-07-11 14:17:46 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -314,11 +314,12 @@
 	   print-object ;; for method dispatch
 	   ))
 
-(defpackage :lisp-stat
-    (:documentation "Experimentation package for LispStat.  Serious
-    work should be packaged up elsewhere for reproducibility.  By this
-    I mean, creating a data/analytics/analysis package with the
-    minimal set of objects required.")   
+(defpackage :common-lisp-statistics
+  (:documentation "Experimentation package for LispStat.  Serious work
+    should be packaged up elsewhere for reproducibility.  By this I
+    mean, creating a data/analytics/analysis package with the minimal
+    set of objects required.")
+  (:nicknames :cls :common-lisp-statistics :lisp-stat)
   (:use :common-lisp
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
@@ -504,7 +505,7 @@
 (defpackage :lisp-stat-data-examples
   (:documentation "Example data for unittests, examples, illustrations,")
   (:use :common-lisp
-	:lisp-stat)
+	:common-lisp-statistics)
   (:shadowing-import-from :lisp-stat
 			  call-method call-next-method
 
@@ -522,14 +523,14 @@
 
 
 (defpackage :lisp-stat-user
-  (:documentation "Experimentation package for LispStat.
-Serious work should be placed in a similar package elsewhere for
-reproducibility.  But this should hint as to what needs to be
-done for a user- or analysis-package.")
+  (:documentation "Experimentation package for LispStat.  Serious work
+    should be placed in a similar package elsewhere for
+    reproducibility.  But this should hint as to what needs to be done
+    for a user- or analysis-package.")
   (:nicknames :ls-user)
-  (:use :common-lisp
+  (:use :common-lisp ; always needed for user playgrounds!
 	:lisp-matrix
-	:lisp-stat
+	:common-lisp-statistics
 	:lisp-stat-data-examples) ;; this last is to have 'things to play with'
   (:shadowing-import-from :lisp-stat
 			  call-method call-next-method
