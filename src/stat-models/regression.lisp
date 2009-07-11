@@ -151,7 +151,7 @@ with LAPACK's dpotri routine, factorizing with dpotrf.
      (xtxinv m1))
 </example>"
   (check-type x matrix-like)
-  (minv-cholesky (m* (transpose myx) myx)))
+  (minv-cholesky (m* (transpose x) x)))
 
 #|
   (let ((myx (if intercept
@@ -241,11 +241,10 @@ Returns a regression model object."
 		 :included included
 		 :weights wgts
 		 :estimates (first (lm (design-matrix model)
-				       (response-variable model)
+				       (dependent-response model)
 				       :intercept (interceptp model)))
 		 :estimates-covariance-matrix
-		    (xtxinv (design-matrix model)
-			    :intercept (interceptp model))
+		    (xtxinv (design-matrix model))
 		 :doc docs)))
     result))
 
@@ -258,7 +257,7 @@ Returns a regression model object."
 (defmethod print-object ((obj regression-model-class) stream)
   "Need better formatting and output -- clearly this is a WRONG EXAMPLE."
   (print-unreadable-object (obj stream :type t)
-    (format stream "Response: ~%~A~%" (response-variable obj))
+    (format stream "Response: ~%~A~%" (dependent-response obj))
     (format stream "Design: ~%~A~%" (design-matrix obj))
     (format stream "Covariates: ~%~A~%" (covariate-names obj))
     (format stream "Doc: ~%~A~%" (doc-string obj))))
