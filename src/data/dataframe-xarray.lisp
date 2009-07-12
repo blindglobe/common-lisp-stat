@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-05 02:08:15 tony>
+;;; Time-stamp: <2009-07-12 08:05:27 tony>
 ;;; Creation:   <2009-06-22 17:09:47 tony>
 ;;; File:       dataframe-xarray.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -27,7 +27,10 @@
 (defmethod xref ((obj matrix-like) &rest indices))
   
 (defmethod xtype ((obj dataframe-like))
-  "Unlike the standard xtype, here we need to return a vector of the types.")
+  "Unlike the standard xtype, here we need to return a vector of the
+  types.  Vectors can have single types, but arrays have single type.
+  Dataframe-like have multiple types, variable-like single type,
+  case-like has multiple types, and matrix-like has single type.")
 
 (defmethod xdims ((obj dataframe-like))
   (dataframe-dimensions obj))
