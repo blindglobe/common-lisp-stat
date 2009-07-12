@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-12 07:56:44 tony>
+;;; Time-stamp: <2009-07-12 13:01:09 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -335,7 +335,7 @@
 	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-descriptive-statistics
 	:lisp-stat-regression-linear
-	:cybertiggyr-dsv
+	;; :cybertiggyr-dsv
 	:cls-visualize
 	;; :cls-visualize-plplot
 	)
@@ -360,8 +360,7 @@
 
    ;; lsobjects :
    defproto defproto2
-   defmeth send 
-   proto-slot-value
+   defmeth send proto-slot-value
   
    ;; lstypes :
    fixnump check-nonneg-fixnum check-one-fixnum
