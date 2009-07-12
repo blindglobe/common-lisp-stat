@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-07-06 17:25:24 tony>
+;;; Time-stamp: <2009-07-12 07:58:55 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -116,17 +116,18 @@
 	       (:static-file "README")
 
 	       ;; reading in DSV files for data access
+#|
 	       (:module 
 		"csv-data"
 		:pathname "src/data/"
 		:components
 		((:file "test-cybertiggyr")
 		 (:file "dsv-cybertiggyr" :depends-on ( "test-cybertiggyr"))))
-	       
+|#	       
 	       (:module
 		"packaging"
 		:pathname #p"src/"
-		:depends-on ("csv-data")
+		;; :depends-on ("csv-data")
 		:components
 		((:file "packages")))
 
