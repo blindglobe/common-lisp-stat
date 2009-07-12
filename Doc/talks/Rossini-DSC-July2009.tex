@@ -32,29 +32,15 @@
   \titlepage
 \end{frame}
 
-% Structuring a talk is a difficult task and the following structure
-% may not be suitable. Here are some rules that apply for this
-% solution: 
-
-% - Exactly two or three sections (other than the summary).
-% - At *most* three subsections per section.
-% - Talk about 30s to 2min per frame. So there should be between about
-%   15 and 30 frames, all told.
-
-% - A conference audience is likely to know very little of what you
-%   are going to talk about. So *simplify*!
-% - In a 20min talk, getting the main ideas across is hard
-%   enough. Leave out details, even if it means being less precise than
-%   you think necessary.
-% - If you omit details that are vital to the proof/implementation,
-%   just say so once. Everybody will be happy with that.
-
 \section{What Works?}
 \label{sec:work}
 
-\begin{frame}{Is it Vaporware?}
-  
-  Not quite...
+\begin{frame}{Is it Vaporware? Not quite}
+  The follow is possible with the help of the open source Common Lisp
+  community, who provided most of the packages, tools, and glue.
+  (Tamas Papp, Raymond Toy, Mark Hoemmomem, and many, many others).
+  Most of the underlying code was written by others, and ``composed''
+  by me.
 \end{frame}
 
 \subsection{Graphics}
@@ -64,7 +50,7 @@
 \includegraphics[width=3in,height=3in]{/home/tony/test1.png}
 \end{frame}
 
-\begin{frame}[fragile]{Graphics Device}
+\begin{frame}[fragile]{How?}
 \begin{verbatim}
 (defparameter *frame2*
    (as-frame (create-xlib-image-context 200 200)
@@ -126,41 +112,80 @@
 \label{sec:work:statmod}
 
 \begin{frame}[fragile]{Linear Regression}
-  Primitive LispStat, a wrapper around LAPACK's \texttt{dgelsy}:
 \small{
 \begin{verbatim}
+;; Worse than LispStat, wrapping LAPACK's dgelsy:
 (defparameter *result1*
-   (regression-model
-       (list->vector-like iron)
+   (lm (list->vector-like iron)
        (list->vector-like absorbtion)))
 *result*1 =>
+((#<LA-SIMPLE-VECTOR-DOUBLE (2 x 1)
+ -11.504913191235342
+ 0.23525771181009483>
+  2)
+
+ #<LA-SIMPLE-MATRIX-DOUBLE  2 x 2
+ 9.730392177126686e-6 -0.001513787114206932
+ -0.001513787114206932 0.30357851215706255>   
+
+ 13 2)
 \end{verbatim}
 }
-\end{frame}
-
-\subsection{Numerical Descriptions}
-\label{sec:work:numdesc}
-
-\begin{frame}[fragile]{Descriptives}
-  (mean iron)
-  
 \end{frame}
 
 \subsection{Data Manip/Mgmt}
 \label{sec:work:data}
 
-\begin{frame}[verbatim]{DataFrames}
-  
+\begin{frame}[fragile]{DataFrames}
+\small{
+\begin{verbatim}
+(defparameter *my-df-1*
+  (make-instance 'dataframe-array
+	 :storage #2A((1 2 3 4 5) (10 20 30 40 50))
+	 :doc "This is a boring dataframe-array"
+	 :case-labels (list "x" "y")
+	 :var-labels (list "a" "b" "c" "d" "e")))
+
+(xref *my-df-1* 0 0) ; API change in progress
+
+(setf (xref *my-df-1* 0 0) -1d0)
+\end{verbatim}
+}
 \end{frame}
 
-\begin{frame}[verbatim]{Numerical Matrices}
-  
+\begin{frame}[fragile]{Numerical Matrices}
+\small{
+\begin{verbatim}
+(defparameter *mat-1*
+  (make-matrix 3 3
+     :initial-contents #2A((2d0 3d0 -4d0)
+                           (3d0 2d0 -4d0)
+                           (4d0 4d0 -5d0))))
+
+(xref *mat-1* 2 0) ; => 4d0  ; API change
+(setf (xref *mat-1* 2 0) -4d0) 
+
+(defparameter *xv*
+ (make-vector 4 :type :row 
+   :initial-contents '((1d0 3d0 2d0 4d0))))
+\end{verbatim}
+}
 \end{frame}
 
-\begin{frame}{Managing / Manipulating Data}
-  
-\end{frame}
+\begin{frame}[fragile]{Macros make the above tolerable}
+\begin{verbatim}
+(defparameter *xv*
+ (make-vector 4 :type :row 
+   :initial-contents '((1d0 3d0 2d0 4d0))))
 
+; can use defmacro for the following syntax =>
+
+(make-row-vector *xv* '((1d0 3d0 2d0 4d0)))
+
+; or reader macros for the following:
+#mrv(*xv* '((1d0 3d0 2d0 4d0)))
+\end{verbatim}
+\end{frame}
 
 \begin{frame}{Outline}
   \tableofcontents
@@ -241,6 +266,8 @@
 
 \begin{frame}{Common Lisp}
   \begin{itemize}
+  \item Parens provide clear delineation of a \textbf{Complete
+      Thought} (functional programming with side effects).
   \item Lisp-2 (symbols can denote both a separate function and a value)
   \item ANSI standard (built by committee, but the committee was
     reasonably smart)
@@ -248,14 +275,12 @@
   \item Most implementations are interactive \textbf{compiled}
     languages (few are interpreted, and those are usually
     byte-compiled).
-  \item Parens provide clear delineation of a \textbf{Complete
-      Thought} (functional programming with side effects).
   \item The Original \emph{Programming with Data} Language
     (\emph{Programs are Data} and \emph{Data are Executable} also
     apply).
   \item advanced, powerful, first-class macros (macros functionally
-    re-write code)
-  \item 
+    re-write code, allowing for structural clarity and complete
+    destruction of syntax, should that be reasonable)
   \end{itemize}
 \end{frame}
 
@@ -268,7 +293,7 @@
   \item numerics, graphics, GUIs, 
   \item primitive R to CL compiler (which could also be considered an
     object-code compiler for R); 3 interfaces which embed R within CL.
-  \item 
+  \item Web 2.0 support and reporting facilities (similar to TeX) for PDF.
   \end{itemize}
   See \url{http://www.common-lisp.net/} and
   \url{http://www.cliki.org/}.  CLS sources can be found on
@@ -277,15 +302,22 @@
 
 \section{What else about CLS is still Vaporware?}
 
-\begin{frame}{What does NOT work?}
+\begin{frame}[fragile]{What does NOT work?}
   Primarily, the reason that we doing this:
   
   \textbf{Computable and Executable Statistics}
 
-  (which is the subject of another talk, slides in the backup).
+  (which is the subject of another talk, slides in the backup).   But
+  consider XML:
+\begin{verbatim}
+<car brand="honda" engine="4cyl">accord</car>
+\end{verbatim}
+becomes
+\begin{verbatim}
+; data follows keywords...
+(car :brand 'honda :engine "4cyl" accord)
+\end{verbatim}
 \end{frame}
-
-
 
 \section{Discussion}
 
@@ -307,10 +339,20 @@
   \item matlisp/LispLab : LAPACK-based numerical linear algebra packages
   \item GSLL : GNU Scientific Library, Lisp interface.
   \end{itemize}
-  Finally: support for a new statistical programming environment
-  modality (subject for another talk).
 \end{frame}
 
+\begin{frame}{Followup}
+  I'd be happy to talk with anyone on the following topics:
+  \begin{itemize}
+  \item Introduction to Common Lisp
+  \item support for new statistical programming environment modalities
+    (subject for another talk).
+  \item computable and executable statistics (code that explains
+    itself and can be parsed to generate knowledge about its claims;
+    ``XML's promise'')
+  \end{itemize}
+  and if you are interested in getting involved, or trying it out.
+\end{frame}
 
 \end{document}
 
