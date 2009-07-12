@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-11 14:17:46 tony>
+;;; Time-stamp: <2009-07-12 07:56:44 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -321,6 +321,7 @@
     set of objects required.")
   (:nicknames :cls :common-lisp-statistics :lisp-stat)
   (:use :common-lisp
+	:lisp-stat-config
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
 	:lisp-stat-probability
@@ -353,6 +354,10 @@
 	ffloor fceiling	ftruncate fround
 	signum cis)
   (:export
+   ;; lisp-stat-config:
+   *default-path* *lsos-files* *basic-files* *ls-files*
+   *lispstat-home-dir* *lispstat-data-dir* *lispstat-examples-dir*  
+
    ;; lsobjects :
    defproto defproto2
    defmeth send 
