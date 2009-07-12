@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-06-15 08:15:54 tony>
+;;; Time-stamp: <2009-07-12 17:45:28 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -142,6 +142,13 @@
 (defparameter *mat-1*
   (make-matrix 3 3
 	       :initial-contents #2A((2d0 3d0 4d0) (3d0 2d0 4d0) (4d0 4d0 5d0))))
+
+(defparameter *mat-1*
+  (make-matrix 3 3
+     :initial-contents #2A((2d0 3d0 -4d0)
+                           (3d0 2d0 -4d0)
+                           (4d0 4d0 -5d0))))
+(mref *mat-1* 2 0)
 
 (defparameter *mat-2*
   (let ((m (rand 3 3)))
@@ -611,7 +618,7 @@ iron
 ;; rclg-init::*r-started*
 (rclg-init::check-stack)
 (r "Cstack_info")
-(defparameter *x* (r seq 1 11))
+(defparameter *x* (r seq 1 10))
 (defparameter *y* (r rnorm 10))
 *y*
 (r plot *x* *y*)
