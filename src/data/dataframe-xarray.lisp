@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-12 08:05:27 tony>
+;;; Time-stamp: <2009-07-13 14:32:21 tony>
 ;;; Creation:   <2009-06-22 17:09:47 tony>
 ;;; File:       dataframe-xarray.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -20,6 +20,7 @@
 
 (defmethod xref ((obj data-frame-like)  &rest indices) 
   (apply #'dfref obj indices))
+;; better might be:  (xref (dataset obj) indices)
 
 (defmethod (setf xref) (value (object array) &rest subscripts)
   (setf (apply #'dfref object subscripts) value))
