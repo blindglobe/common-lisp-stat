@@ -1,5 +1,8 @@
 -*- mode: text -*-
 
+MOSTLY WRONG, NEEDS UPDATE.
+
+
 (comment to save: (gensym) can make an NA entry).
 
 For a fast start: 
@@ -21,7 +24,8 @@ and now you should:
     git submodules init
     git submodules update
 
-to get the whole package.
+to get the whole package.  However, not all submodules are attached
+yet!  Will need to load 
 
 Make the shared library liblispstat with an ANSI C compiler (only gcc
 tested at this point):
