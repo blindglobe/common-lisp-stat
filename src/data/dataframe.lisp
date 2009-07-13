@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-12 08:20:42 tony>
+;;; Time-stamp: <2009-07-13 14:29:34 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -407,7 +407,10 @@ idx1/2 is row/col or case/var."
 		     (position (elt cases i) (case-labels df))
 		     (position (elt vars j) (var-labels df))))))))
 
-;;;;; DATAFRAME-MATRIXLIKE
+;;; DATAFRAME-MATRIXLIKE
+;;; 
+;;; example/implementatin of using lisp-matrix datastructures for
+;;; dataframe storage.
 
 (defclass dataframe-matrixlike (dataframe-like)
   ((store :initform nil
