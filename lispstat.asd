@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-07-12 07:58:55 tony>
+;;; Time-stamp: <2009-07-14 13:20:23 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       lispstat.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -105,9 +105,9 @@
   by AJR in 2005--2009."
   :serial t
   :depends-on (:cffi
+	       :xarray
 	       :lisp-matrix
 	       :lift
-	       :xarray
 	       :rsm-string
 	       ;;    :cl-cairo2  :cl-2d
 	       )
