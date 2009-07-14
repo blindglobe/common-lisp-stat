@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-13 14:29:34 tony>
+;;; Time-stamp: <2009-07-14 14:21:00 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -236,14 +236,20 @@ Examples:
 	  (mapcar #'(lambda (x) (format nil "~A" x)) (gen-seq num))))
 
 (defun ncase-store (store)
+  "Return number of cases (rows) in dataframe storage.  Doesn't test
+that that list is a valid listoflist dataframe structure."
   (etypecase store
     (array (array-dimension store 0))
-    (matrix-like (nrows store))))
+    (matrix-like (nrows store))
+    (list (length store))))
 
 (defun nvars-store (store)
+  "Return number of variables (columns) in dataframe storage.  Doesn't
+test that that list is a valid listoflist dataframe structure."
   (etypecase store
     (array (array-dimension store 1))
-    (matrix-like (ncols store))))
+    (matrix-like (ncols store))
+    (list (length (elt store 0)))))
 
 
 (defun make-dataframe (newdata
@@ -252,7 +258,7 @@ Examples:
 		       (doc "no docs"))
   "Helper function to use instead of make-instance to assure
 construction of proper DF-array."
-  (check-type newdata (or matrix-like array))
+  (check-type newdata (or matrix-like array list))
   (check-type caselabels sequence)
   (check-type varlabels sequence)
   (check-type doc string)
@@ -267,6 +273,14 @@ construction of proper DF-array."
 			    varlabels
 			    (make-labels "V" nvars))))
       (etypecase newdata 
+	(list
+	 (make-instance 'dataframe-listoflist
+			:storage newdata
+			:nrows (length newcaselabels)
+			:ncols (length newvarlabels)
+			:case-labels newcaselabels
+			:var-labels newvarlabels
+			:var-types vartypes))
 	(array
 	 (make-instance 'dataframe-array
 			:storage newdata
@@ -282,7 +296,9 @@ construction of proper DF-array."
 			:ncols (length newvarlabels)
 			:case-labels newcaselabels
 			:var-labels newvarlabels
-			:var-types vartypes))))))
+			:var-types vartypes))
+
+	))))
 
 #| 
  (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
@@ -442,6 +458,45 @@ idx1/2 is row/col or case/var."
   ;; NEED TO CHECK TYPE!
   ;; (check-type val (elt (vartype df) index2))
   (setf (mref (dataset df) index1 index2) val))
+
+
+
+
+;;; DATAFRAME-LISTOFLIST
+;;; 
+;;; example/implementatin of using lisp-matrix datastructures for
+;;; dataframe storage.
+
+(defclass dataframe-listoflist (dataframe-like)
+  ((store :initform nil
+	  :initarg :storage
+	  :type list
+	  :accessor dataset
+	  :documentation "Data storage: typed as matrix-like
+  (numerical only)."))
+  (:documentation "example implementation of dataframe-like using storage
+  based on lisp-matrix structures."))
+
+(defmethod nrows ((df dataframe-listoflist))
+  "specializes on inheritance from listoflist in lisp-matrix."
+  (length (dataset df)))
+
+(defmethod ncols ((df dataframe-listoflist))
+  "specializes on inheritance from matrix-like in lisp-matrix."
+  (length (elt (dataset df) 0)))
+
+(defmethod dfref ((df dataframe-listoflist)
+		  (index1 number) (index2 number))
+  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
+idx1/2 is row/col or case/var."
+  (elt (elt (dataset df) index1) index2)) ;; ??
+
+(defmethod set-dfref ((df dataframe-listoflist)
+		      (index1 number) (index2 number) val)
+  "Sets a value for df-ml."
+  ;; NEED TO CHECK TYPE!
+  ;; (check-type val (elt (vartype df) index2))
+  (setf (elt (elt (dataset df) index2) index1) val))
 
 
 

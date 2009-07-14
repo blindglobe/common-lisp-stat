@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-12 13:01:09 tony>
+;;; Time-stamp: <2009-07-14 14:16:22 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -109,6 +109,7 @@
 
 (defpackage :cls-dataframe
   (:use :common-lisp
+	:xarray
 	:lisp-matrix)
   (:export
    ;; generic container class for data -- if small enough
@@ -118,10 +119,13 @@
    make-dataframe
 
    ;; accessors
-   varlabels caselabels nrows ncols
+   varlabels caselabels  nrows ncols
    dataframe-dimension dataframe-dimensons
+   xref xtype xdims xdim xrank slice take carray
+#|
    dfref dfref-case dfref-var 
    consistent-dataframe-p
+|#
 
    dataset
    list-of-columns ;; list-of-variables
@@ -438,10 +442,7 @@
    dataframe-dimension dataframe-dimensons
    dfref dfref-case dfref-var 
    consistent-dataframe-p
-   dataset
-   list-of-columns list-of-rows
-
-
+   dataset list-of-columns list-of-rows
 
    ;; listoflist
    lists-of-same-size equal-listoflist
