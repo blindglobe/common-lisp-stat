@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-07-12 17:45:28 tony>
+;;; Time-stamp: <2009-07-14 19:01:59 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,8 +17,8 @@
 (in-package :cl-user)
 
 
-;; (asdf:oos 'asdf:compile-op 'lispstat :force t)
-(asdf:oos 'asdf:load-op 'lispstat)
+;; (asdf:oos 'asdf:compile-op 'cls :force t)
+(asdf:oos 'asdf:load-op 'cls)
 
 (in-package :ls-user)
 

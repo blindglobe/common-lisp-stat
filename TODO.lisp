@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-12 07:44:29 tony>
+;;; Time-stamp: <2009-07-14 18:59:31 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,7 +19,7 @@
 (in-package :cl-user)
 
 (defun init-CLS ()
-  (asdf:oos 'asdf:load-op 'lispstat)
+  (asdf:oos 'asdf:load-op 'cls)
   (asdf:oos 'asdf:load-op 'cl-pdf)
   (asdf:oos 'asdf:load-op 'cl-typesetting))
 
@@ -31,8 +31,8 @@
 (init-CLS-graphics)
 
 ;;(asdf:oos 'asdf:load-op 'lisp-matrix)
-;;(asdf:oos 'asdf:compile-op 'lispstat :force t)
-;;(asdf:oos 'asdf:load-op 'lispstat)
+;;(asdf:oos 'asdf:compile-op 'cls :force t)
+;;(asdf:oos 'asdf:load-op 'cls)
 
 
 ;;(asdf:oos 'asdf:load-op 'cl-pdf)

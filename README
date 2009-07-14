@@ -42,8 +42,8 @@ potentially available as submodules if needed)
 
 (on Debian or similar systems: can use CLC (Common Lisp Controller) or
 SBCL approaches, i.e.  ~/.clc/systems or ~/.sbcl/systems should
-contain softlinks to the lispstat, cffi, and lift ASDF files
-(i.e. lispstat.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
+contain softlinks to the cls, cffi, and lift ASDF files
+(i.e. cls.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
 probably a similar incantation for other CL's, need to record that
 here!).
 
@@ -56,7 +56,7 @@ So basically ..
 2. start your lisp
 3. follow the commands in the ls-demo.lisp file, i.e.
  
-   a. (asdf:oos 'asdf:load-op 'lispstat) ;; use ASDF to load lispstat
+   a. (asdf:oos 'asdf:load-op 'cls) ;; use ASDF to load lispstat
    b. (in-package :ls-user)
    c. (normal-rand 20)
    d. (setf mytest (normal-rand 20))
@@ -88,7 +88,7 @@ See Doc/INSTALL for getting this to work and run
 Working on this with git:
 
     git clone git://repo.or.cz/CommonLispStat.git 
-    cd CommonLispStat.git
+    cd CommonLispStat
     git submodules init
     git submodules update
 

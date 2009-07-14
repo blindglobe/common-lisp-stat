@@ -1,7 +1,7 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-07-14 13:20:23 tony>
+;;; Time-stamp: <2009-07-14 19:01:32 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
-;;; File:       lispstat.asd
+;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
 ;;; License:    BSD, see the top level directory file LICENSE for details.
@@ -17,34 +17,34 @@
   (:use :common-lisp)
   (:export *default-path*
 	   *lsos-files* *basic-files* *ls-files*
-	   *lispstat-home-dir*
-	   *lispstat-data-dir* *lispstat-examples-dir*))
+	   *cls-home-dir*
+	   *cls-data-dir* *cls-examples-dir*))
 
 (in-package :lisp-stat-config)
 
-(defparameter *lispstat-home-dir*
+(defparameter *cls-home-dir*
   (directory-namestring
-   (truename (asdf:system-definition-pathname :lispstat)))
+   (truename (asdf:system-definition-pathname :cls)))
   "Value considered \"home\" for our data")
 
 (macrolet ((ls-dir (root-str)
 	     `(pathname (concatenate 'string
-				     (namestring *lispstat-home-dir*) ,root-str)))
+				     (namestring *cls-home-dir*) ,root-str)))
 
 	   (ls-defdir (target-dir-var  root-str)
 	     `(defvar ,target-dir-var (ls-dir ,root-str))))
 
   ;; reminder of testing
-  ;;(macroexpand '(ls-defdir *lispstat-asdf-dir* "ASDF"))
-  ;;(macroexpand-1 '(ls-defdir *lispstat-asdf-dir* "ASDF"))
+  ;;(macroexpand '(ls-defdir *cls-asdf-dir* "ASDF"))
+  ;;(macroexpand-1 '(ls-defdir *cls-asdf-dir* "ASDF"))
   ;;(macroexpand-1 '(ls-dir "ASDF"))
 
-  (ls-defdir *lispstat-asdf-dir* "ASDF/")
-  (ls-defdir *lispstat-data-dir* "Data/")
-  (ls-defdir *lispstat-external-dir* "external/")
+  (ls-defdir *cls-asdf-dir* "ASDF/")
+  (ls-defdir *cls-data-dir* "Data/")
+  (ls-defdir *cls-external-dir* "external/")
 )
 
-;;(pushnew *lispstat-asdf-dir* asdf:*central-registry*)
+;;(pushnew *cls-asdf-dir* asdf:*central-registry*)
 
 
 ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
@@ -61,10 +61,10 @@
 
 (in-package :cl-user)
 
-(defpackage #:lispstat-system
+(defpackage #:cls-system
     (:use :common-lisp :asdf))
 
-(in-package #:lispstat-system)
+(in-package #:cls-system)
 
 ;;; To avoid renaming everything from *.lsp to *.lisp...
 ;;; borrowed from Cyrus Harmon's work, for example for the ch-util.
@@ -72,7 +72,7 @@
 ;;; the same file system (i.e. PPC and x86 would not be
 ;;; differentiated). 
 
-(defclass lispstat-lsp-source-file (cl-source-file) ())
+(defclass cls-lsp-source-file (cl-source-file) ())
 (defparameter *fasl-directory*
    (make-pathname :directory '(:relative
 			       #+sbcl "sbcl-fasl"
@@ -84,15 +84,15 @@
 
 
 ;;; Handle Luke's *.lsp suffix
-(defmethod source-file-type ((c lispstat-lsp-source-file) (s module)) "lsp")
+(defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
 (defmethod asdf::output-files :around ((operation compile-op)
-				       (c lispstat-lsp-source-file))
+				       (c cls-lsp-source-file))
   (list (merge-pathnames *fasl-directory*
 			 (compile-file-pathname (component-pathname c)))))
 ;;; again, thanks to Cyrus for saving me time...
 
 
-(defsystem "lispstat"
+(defsystem "cls"
   :version #.(with-open-file
                  (vers (merge-pathnames "version.lisp-expr" *load-truename*))
                (read vers))
@@ -137,22 +137,22 @@
 		:serial t
 		:depends-on ("packaging")
 		:components
-		((:lispstat-lsp-source-file "lsobjects")))
+		((:cls-lsp-source-file "lsobjects")))
 
-	       (:module "lispstat-core"
+	       (:module "cls-core"
 			:pathname "src/basics/"
 			:serial t
 			:depends-on ("packaging" "proto-objects")
 			:components
-			(; (:lispstat-lsp-source-file "defsys")
-			 (:lispstat-lsp-source-file "lstypes")
-			 (:lispstat-lsp-source-file "lsfloat")
+			(; (:cls-lsp-source-file "defsys")
+			 (:cls-lsp-source-file "lstypes")
+			 (:cls-lsp-source-file "lsfloat")
 			 
-			 (:lispstat-lsp-source-file "compound")
-			 (:lispstat-lsp-source-file "lsmacros" 
+			 (:cls-lsp-source-file "compound")
+			 (:cls-lsp-source-file "lsmacros" 
 						    :depends-on ("compound"))
 			 
-			 (:lispstat-lsp-source-file "lsmath"
+			 (:cls-lsp-source-file "lsmath"
 						    :depends-on ("compound"
 								 "lsmacros"
 								 "lsfloat"))))
@@ -160,15 +160,15 @@
 	       (:module
 		"numerics-internal"
 		:pathname "src/numerics/"
-		:depends-on ("packaging" "proto-objects" "lispstat-core")
+		:depends-on ("packaging" "proto-objects" "cls-core")
 		:components
-		((:lispstat-lsp-source-file "cffiglue")
-		 (:lispstat-lsp-source-file "dists"
+		((:cls-lsp-source-file "cffiglue")
+		 (:cls-lsp-source-file "dists"
 					    :depends-on ("cffiglue"))
 #|
-		 (:lispstat-lsp-source-file "matrices"
+		 (:cls-lsp-source-file "matrices"
 					    :depends-on ("cffiglue"))
-		 (:lispstat-lsp-source-file "ladata"
+		 (:cls-lsp-source-file "ladata"
 					    :depends-on ("cffiglue"
 							 "matrices"))
 		 (:file "linalg"
@@ -185,7 +185,7 @@
 		:pathname "src/data/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "lispstat-core"
+			     "cls-core"
 			     "numerics-internal")
 		:components
 		((:file "dataframe")
@@ -193,15 +193,15 @@
 		 (:file "listoflist")))
 
 	       (:module
-		"lispstat-basics"
+		"cls-basics"
 		:pathname "src/basics/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "lispstat-core"
+			     "cls-core"
 			     "numerics-internal"
 			     "stat-data")
 		:components
-		((:lispstat-lsp-source-file "lsbasics")))
+		((:cls-lsp-source-file "lsbasics")))
 
 
 	       
@@ -210,17 +210,17 @@
 		:pathname "src/describe/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "lispstat-core"
+			     "cls-core"
 			     "numerics-internal"
 			     "stat-data"
-			     "lispstat-basics")
+			     "cls-basics")
 		:components
-		((:lispstat-lsp-source-file "statistics")))
+		((:cls-lsp-source-file "statistics")))
 #|
 	       (:module
 		"visualize"
 		:pathname "src/visualize/"
-		:depends-on ("lispstat-core")
+		:depends-on ("cls-core")
 		:components
 		((:file "plot")))
 |#
@@ -229,10 +229,10 @@
 		:pathname "src/numerics/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "lispstat-core"
+			     "cls-core"
 			     "numerics-internal"
 			     "stat-data"
-			     "lispstat-basics")
+			     "cls-basics")
 		:components
 		((:file "optimize")))
 		 
@@ -243,16 +243,16 @@
 		:pathname "src/stat-models/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "lispstat-core"
+			     "cls-core"
 			     "numerics-internal"
-			     "lispstat-basics"
+			     "cls-basics"
 			     "descriptives"
 			     "optimization")
 		:components
 		((:file "regression")
-		 ;; (:lispstat-lsp-source-file "nonlin"
+		 ;; (:cls-lsp-source-file "nonlin"
 		 ;;	  :depends-on ("regression"))
-		 ;; (:lispstat-lsp-source-file "bayes"
+		 ;; (:cls-lsp-source-file "bayes"
 		 ;;	  :depends-on ("regression"))
 		 ))
 
@@ -262,35 +262,35 @@
 		:pathname "Data/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "lispstat-core"
+			     "cls-core"
 			     "numerics-internal"
-			     "lispstat-basics"
+			     "cls-basics"
 			     "descriptives"
 			     "optimization")
 		:components
 		((:file "examples")
-		 (:lispstat-lsp-source-file "absorbtion")
-		 (:lispstat-lsp-source-file "diabetes")
-		 (:lispstat-lsp-source-file "leukemia")
-		 (:lispstat-lsp-source-file "randu")
-		 (:lispstat-lsp-source-file "aircraft")
-		 (:lispstat-lsp-source-file "metabolism")
-		 (:lispstat-lsp-source-file "book")
-		 (:lispstat-lsp-source-file "heating")
-		 (:lispstat-lsp-source-file "oxygen")
-		 (:lispstat-lsp-source-file "stackloss") 
-		 (:lispstat-lsp-source-file "car-prices")
-		 (:lispstat-lsp-source-file "iris")
-		 (:lispstat-lsp-source-file "puromycin")
-		 (:lispstat-lsp-source-file "tutorial")))
+		 (:cls-lsp-source-file "absorbtion")
+		 (:cls-lsp-source-file "diabetes")
+		 (:cls-lsp-source-file "leukemia")
+		 (:cls-lsp-source-file "randu")
+		 (:cls-lsp-source-file "aircraft")
+		 (:cls-lsp-source-file "metabolism")
+		 (:cls-lsp-source-file "book")
+		 (:cls-lsp-source-file "heating")
+		 (:cls-lsp-source-file "oxygen")
+		 (:cls-lsp-source-file "stackloss") 
+		 (:cls-lsp-source-file "car-prices")
+		 (:cls-lsp-source-file "iris")
+		 (:cls-lsp-source-file "puromycin")
+		 (:cls-lsp-source-file "tutorial")))
 
 	       (:module
 		 "lisp-stat-unittest"
 		:depends-on  ("packaging" "proto-objects"
-			      "lispstat-core"
+			      "cls-core"
 			      "numerics-internal" 
 			      "stat-data"
-			      "lispstat-basics"
+			      "cls-basics"
 			      "descriptives"
 			      "optimization"
 			      "stat-models"
