@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-06 18:45:27 tony>
+;;; Time-stamp: <2009-07-14 15:09:33 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       plotting-data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -16,9 +16,21 @@
 ;;; version..   Think, "21st Century Schizoid Man".
 
 ;; SETUP FOR PLOT EXAMPLE:
+(in-package :cl-user)
 
 (defpackage :cl-2d-user-x11
-  (:use :cl :cl-cairo2  :cl-2d :cl-numlib :cl-colors :bind :cls))
+  (:use :cl :cl-cairo2  :cl-2d :cl-numlib :cl-colors :bind :cls)
+  (:shadowing-import-from :lisp-stat call-method call-next-method
+			  
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > > ;; complex
+      conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis
+
+      <= float imagpart))
 
 (in-package :cl-2d-user-x11)
 
