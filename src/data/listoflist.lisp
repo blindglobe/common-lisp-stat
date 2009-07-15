@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-05-29 16:32:21 tony>
+;;; Time-stamp: <2009-07-14 19:18:19 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,7 +24,7 @@
 ;;; memory use.
 
 ;; Where should this go?
-(in-package :cls-data-listoflist)
+(in-package :cls-data-listoflist) ;; probably better in cls-data...
 
 ;; Currently, we assume that the list-of-list representation is in
 ;; row-major form, i.e. that lists represent rows and not columns.
