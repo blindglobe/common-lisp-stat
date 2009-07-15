@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 14:16:22 tony>
+;;; Time-stamp: <2009-07-14 19:17:52 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -27,6 +27,9 @@
 	   send call-next-method call-method
 	   defmeth defproto instance-slots proto-name))
 
+;;; -types and -float probably ought to be moved into a -numerics
+;;; package.
+
 (defpackage :lisp-stat-types
   (:documentation "Provides some typeing for LispStat, but is clearly
   a bit incomplete.")
@@ -47,6 +50,8 @@
 	   BASE-COSH BASE-TANH BASE-ASINH BASE-ACOSH BASE-ATANH
 	   BASE-ABS BASE-PHASE BASE-FFLOOR BASE-FCEILING BASE-FTRUNCATE
 	   BASE-FROUND BASE-SIGNUM BASE-CIS))
+
+;;; Probably should move into cls-data package.
 
 (defpackage :lisp-stat-compound-data
   (:use :common-lisp
@@ -105,8 +110,7 @@
 
 ;;; NEW CLOS STRUCTURE
 
-
-
+;;; cls-data... in dataframe, though.
 (defpackage :cls-dataframe
   (:use :common-lisp
 	:xarray
@@ -132,7 +136,7 @@
    list-of-rows ;; list-of-observations
    ))
 
-
+;; move to cls-data -- but in listoflist.lisp
 (defpackage :cls-data-listoflist
   (:use :common-lisp
 	:lisp-matrix
