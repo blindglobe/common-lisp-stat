@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-18 11:50:00 tony>
+;;; Time-stamp: <2009-07-18 12:20:33 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -61,9 +61,6 @@
 (in-package :ls-user)
 
 ;;; Tasks to do and consider: 
-;;;
-;;; * must contemplate data as being separate from object system,
-;;; working out a new package dependency system.
 ;;;
 ;;; * 
 
