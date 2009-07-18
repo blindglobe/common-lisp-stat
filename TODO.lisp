@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 19:22:51 tony>
+;;; Time-stamp: <2009-07-18 11:50:00 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -61,11 +61,6 @@
 (in-package :ls-user)
 
 ;;; Tasks to do and consider: 
-;;; 
-;;; * Need to consider a reorg of data package into a single, with
-;;; files such as data-frame, data-frame-array, data-frame-listoflist,
-;;; data-frame-matrix, listoflist, data-lispstat represending obvious
-;;; structures and tools.
 ;;;
 ;;; * must contemplate data as being separate from object system,
 ;;; working out a new package dependency system.

@@ -1,0 +1,23 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Reorg of data packages needed
+desc: |-
+  Data structure is split up far too much.   Design should be refactored so that we
+  consider how the range of functionality, from data frames (storage) to data integration
+  (merging) to data manipulation (creation and transformation) are separated into activity-centric
+  packages/objects.   This is needed to ensure that we can modulate what it is that we will
+  put back together for appropriate functionality.
+type: :task
+component: Data
+release: "1.0"
+reporter: Tony <blindglobe@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-07-18 09:49:38.899413 Z
+references: []
+
+id: 2b86e852ca33119fe51c8ebb8fbb03913546f17a
+log_events: 
+- - 2009-07-18 09:49:47.902647 Z
+  - Tony <blindglobe@gmail.com>
+  - created
+  - going to work on it soon.
