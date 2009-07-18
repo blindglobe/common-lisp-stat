@@ -30,13 +30,15 @@ Displaces vector V to array with dimensions DIMS"
 	      :displaced-to v
 	      :element-type (array-element-type v)))
 
-(defun check-matrix (a)
-  (if (not (and (arrayp a) (= (array-rank a) 2)))
-      (error "not a matrix - ~s" a)
-    t))
+(defun lisp-array-matrix-p (a)
+  "Verifies that a lisp array could be considered a matrix.  FIXME: Do
+we care whether the entries are numeric or even commonly-numeric?"
+  (check-type a array)
+  (assert (= (array-rank a) 2) (a) "lisp array is not 2-dim: ~A"  a)
+  t)
 
 (defun check-square-matrix (a)
-  (if (and (check-matrix a)
+  (if (and (lisp-array-matrix-p a)
 	   (/= (array-dimension a 0) (array-dimension a 1))
 	   (error "matrix not square - ~s" a))
       t))
@@ -95,19 +97,18 @@ treated as a row vector; if b is a vector it is treated as a column vector."
           (t (coerce (compound-data-seq c) rtype)))))))
 
 (defun identity-matrix (n)
-"Args: (n)
-Returns the identity matrix of rank N."
+  "Return the identity matrix of rank N as a fixnum-valued array."
   (let ((result (make-array (list n n) :initial-element 0)))
     (dotimes (i n result) 
 	     (declare (fixnum i))
 	     (setf (aref result i i) 1))))
 
-;; this thing is not very efficient at this point - too much coercing
 (defun diagonal (x)
-"Args: (x)
-If X is a matrix, returns the diagonal of X. If X is a sequence, returns a
-diagonal matrix of rank (length X) with diagonal elements eq to the elements
-of X."
+  "If X is a square matrix, returns the diagonal of X. If MxN,
+M>N, return the diagonal of the NxN upper-left sub-matrix.  If X is a
+sequence, returns a diagonal matrix of rank (length X) with diagonal
+elements eq to the elements of X.  Return type is a vector.  FIXME:
+could be made more efficient?"
   (cond ((matrixp x)
 	 (let* ((n (min (num-rows x) (num-cols x)))
 		(result (make-array n)))
@@ -122,9 +123,8 @@ of X."
 	(t (error "argument must be a matrix or a sequence"))))
 	   		  
 (defun row-list (x)
-"Args: (m)
-Returns a list of the rows of M as vectors"
-  (check-matrix x)
+  "Returns a list of the rows of X as vectors"
+  (lisp-array-matrix-p x)
   (let ((m (num-rows x))
         (n (num-cols x))
         (result nil))
@@ -142,7 +142,7 @@ Returns a list of the rows of M as vectors"
 (defun column-list (x)
 "Args: (m)
 Returns a list of vectors, each vector represents a column of M."
-  (check-matrix x)
+  (lisp-array-matrix-p x)
   (let ((m (num-rows x))
         (n (num-cols x))
         (result nil))
@@ -160,14 +160,16 @@ Returns a list of vectors, each vector represents a column of M."
 (defun inner-product (x y)
 "Args: (x y)
 Returns inner product of sequences X and Y."
-  (check-sequence x)
-  (check-sequence y)
+  (check-type x sequence)
+  (check-type y sequence)
+  (assert (= (length x) (length y))
+	  (x y)
+	  "INNER-PRODUCT: sequences of different length")
   (let ((n (length x))
         (cx (make-next-element x))
         (cy (make-next-element y))
         (result 0))
     (declare (fixnum n))
-    (if (/= n (length y)) (error "sequence lengths do not match"))
     (dotimes (i n result) 
       (declare (fixnum i))
       (setf result 
@@ -191,10 +193,10 @@ result is computed as (apply fcn (aref x i) (aref y j))."
         (setf (aref a i j) (funcall f (aref x i) (aref y j)))))))
 
 (defun cross-product (x)
-"Args: (x)
+  "Args: (x)
 If X is a matrix returns (matmult (transpose X) X). If X is a vector returns
-(inner-product X X).  This function works with raw LISP ARRAYS."
-  (check-matrix x)
+ (inner-product X X).  This function works with raw LISP ARRAYS."
+  (lisp-array-matrix-p x)
   (let* ((n (num-rows x))
          (p (num-cols x))
          (c (make-array (list p p))))
@@ -230,7 +232,7 @@ Returns the transpose of the matrix M."
   (cond
    ((consp x) (transpose-list x))
    (t
-    (check-matrix x)
+    (lisp-array-matrix-p x)
     (let* ((m (num-rows x))
            (n (num-cols x))
            (tx (make-array (list n m))))
@@ -264,7 +266,7 @@ Example: (bind-columns #2a((1 2)(3 4)) #(5 6)) returns #2a((1 2 5)(3 4 6))"
             (x (first args) (first args)))
            ((null args) result)
         (cond
-         ((sequencep x)
+         ((typep x 'sequence)
           (let ((cx (make-next-element x)))
             (dotimes (i m)
               (setf (aref result i firstcol) (get-next-element cx i)))))

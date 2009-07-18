@@ -364,25 +364,24 @@ Returns a list of the indices where elements of sequence X are not NIL."
            (setf (first x) (rest seq)))
           (t (setf (aref seq i) v)))))
 
-(defun make-next-element (x) (list x))
-
+(defun make-next-element (x)
+  "Encapsulates X as a list."
+  (list x))
 
 ;;;                         Sequence Functions
-
-
-;;; to prevent breakage. we comment this out and use the right
-;;; paradigm (typep).
-;;(defmacro sequencep (x) 
-;;  (typep x 'sequence))
+;;
+;; Typing: use the right paradigm (typep), instead of many macros:
+;;
+;; (defmacro sequencep (x) 
+;;   (typep x 'sequence))
 
 (defun iseq (a &optional b)
-"Args: (n &optional m)
-Generate a sequence of consecutive integers from a to b.
+  "Generate a sequence of consecutive integers from A to B.
 With one argumant returns a list of consecutive integers from 0 to N - 1.
-With two returns a list of consecutive integers from N to M.
-Examples: (iseq 4) returns (0 1 2 3)
-          (iseq 3 7)  returns (3 4 5 6 7)
-          (iseq 3 -3) returns (3 2 1 0 -1 -2 -3)"
+With two returns a list of consecutive integers from A to B inclusive.
+Example: (iseq 4) returns (0 1 2 3)
+         (iseq 3 7)  returns (3 4 5 6 7)
+         (iseq 3 -3) returns (3 2 1 0 -1 -2 -3)"
   (if b
       (let ((n (+ 1 (abs (- b a))))
 	    (x nil))
@@ -419,15 +418,12 @@ in the original array."
       (setf face (/ face (aref dim i)))
       (setf oldface (/ oldface (aref olddim i)))
       (incf oldindex
-	    (* oldface (aref (aref indices i) (floor (/ index face))))) ;;*** is this floor really needed???
+	    ;;*** is this floor below really needed???
+	    (* oldface (aref (aref indices i) (floor (/ index face)))))
       (setf index (rem index face)))
     oldindex))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;
-;;;;               Subset Selection and Mutation Functions
-;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;               Subset Selection and Mutation Functions
 
 (defun subarray-select (a indexlist &optional (values nil set_values))
   "extract or set subarray for the indices from a displaced array a.
