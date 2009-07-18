@@ -66,7 +66,9 @@ FIXME: Why is this so complex?  When figure out, put into generic."
       mean)))
 
 
-;; We do the variance, since the SD is simply the root.
+;; We do the variance, since the STANDARD-DEVIATION is simply the root
+;; (for interesting definitions of "simply"), and VARIANCE is a bit
+;; more general.
 (defgeneric variance (x)
   (:documentation "compute the variance of the entity X, i.e. if a
   scalar, vector, or (covariance) matrix.")
@@ -122,25 +124,31 @@ defer to that structure for computation."
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
-(defgeneric quantile (x p &optional return-type)
-  (:documentation "Returns the P-th quantile(s) of sequence X.")
-  (:method ((x sequence) (p real) &optional (return-type  symbol))
+(defgeneric quantile (x p)
+  (:documentation "Returns the P-th quantile(s) of sequence X as a
+  native lisp list (which could be fed into a vector-like or similar
+  for the final format).") 
+  (:method ((x sequence) (p real))
     (let ((np (* p (- (length x) 1))))
       (mean (list (aref x (floor np))
 		  (aref x (ceiling np)))))) ;; aref work in general for lists too, or use nth?
-  (:method ((x vector-like) (p real) &optional (return-type symbol))  ;; average of sorted elements.  Could store compile
+  (:method ((x vector-like) (p real))  ;; average of sorted elements.  Could store compile
     (let ((np (* p (- (nelts x) 1))))
       (mean (list (vref (sort x) (floor np))
 		  (vref (sort x) (ceiling np))))))
-  (:method ((x sequence) (p sequence) &optional return-type)
+  (:method ((x sequence) (p sequence))
     (error "FIXME: generalize.   Basically, do mapcar or similar across a vector."))
-  (:method ((x vector-like) (p sequence) &optional return-type)
+  (:method ((x vector-like) (p sequence))
     (error "FIXME: generalize."))
-  (:method ((x vector-like) (p vector-like) &optional return-type)
+  (:method ((x vector-like) (p vector-like))
     (error "FIXME: generalize.")))
 
-;;; things to build on top of quantiles...!
-;; need to incorporate a return-type if possible.
+;;; things to build on top of quantile.
+;;
+;; Do as generics if possible, keeping in mind that quantile returns a
+;; raw lisp list.  Nearly all of these use native lisp structures for speed,
+;; such as raw lists for single and vector values, and arrays
+;; (simple?) for matrix-values  and array-valued results.
 
 (defun median (x) 
   "Return median of X, using whatever the quantile generic function supports."
@@ -160,13 +168,15 @@ max) of the elements X."
 (defgeneric sample (x n &optional replace weights)
   (:documentation "Draw a sample of size n from sequence x, with/out
   replacement, with weights per element of x as described as a
-  probability mass distribution vector.")
+  probability mass distribution vector.  Length of weights should
+  match length of X.  Unclear if (= X (uniq X))? (possible issue).
+  Return value shoud match the input values.")
   (:method ((x sequence) (n fixnum)
-	    &optional (replace sequence) (weights sequence))
+	    &optional replace weights)
     (sample-fn x n replace))
   (:method ((x vector-like) (n fixnum)
-	    &optional (replace vector-like) (weights vector-like))
-    (sample-fn x n replace)))
+	    &optional replace weights)
+    (error "SAMPLE for vector-likes not implemented yet.")))
 
 (defun sample-fn (x ssize &optional replace)
 "Args: (x n &optional (replace nil))
