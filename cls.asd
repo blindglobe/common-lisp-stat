@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-07-14 19:01:32 tony>
+;;; Time-stamp: <2009-07-18 12:18:47 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -75,10 +75,11 @@
 (defclass cls-lsp-source-file (cl-source-file) ())
 (defparameter *fasl-directory*
    (make-pathname :directory '(:relative
-			       #+sbcl "sbcl-fasl"
-			       #+openmcl "openmcl-fasl"
-			       #+cmu "cmucl-fasl"
-			       #+clisp "clisp-fasl"
+			       #+sbcl "fasl-sbcl"
+			       #+openmcl "fasl-ccl"
+			       #+openmcl "fasl-ccl"
+			       #+cmu "fasl-cmucl"
+			       #+clisp "fasl-clisp"
 			       #-(or sbcl openmcl clisp cmucl) "fasl"
 			       )))
 
