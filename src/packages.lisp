@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 19:17:52 tony>
+;;; Time-stamp: <2009-07-18 12:58:33 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -107,6 +107,19 @@
   (:use :common-lisp
 	:lisp-stat-compound-data)
   (:export make-rv-function make-rv-function-1))
+
+
+(defpackage :cls-matrix
+  (:documentation "basic utilities for using lisp arrays as numerical
+  matrices.  Not optimized, and must consider this slow.  Routines
+  should be optimized, it is only that we need them first, optimize
+  them later.")
+  (:use :common-lisp)
+  (:export matrixp num-rows num-cols matmult identity-matrix diagonal
+	   row-list column-list inner-product outer-product
+	   cross-product transpose bind-columns bind-rows
+	   array-data-vector vector-to-array))
+
 
 ;;; NEW CLOS STRUCTURE
 
@@ -288,10 +301,10 @@
 
 (defpackage :lisp-stat-descriptive-statistics
  (:use :common-lisp
+       :lisp-matrix
        :lisp-stat-data
        :lisp-stat-math
        :lisp-stat-compound-data
-       :lisp-matrix
        :lisp-stat-basics)
    (:shadowing-import-from :lisp-stat-math ;; life is a vector!
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
@@ -301,10 +314,9 @@
       conjugate realpart imagpart phase
       min max logand logior logxor lognot ffloor fceiling
       ftruncate fround signum cis)
-   (:export standard-deviation 
+   (:export mean standard-deviation variance
 	    quantile median interquartile-range
 	    fivnum sample))
-
 
 (defpackage :lisp-stat-regression-linear
   (:use :common-lisp

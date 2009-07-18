@@ -1,53 +1,13 @@
 ;;; -*- mode: lisp -*-
 ;;;
-;;; Copyright (c) 2007, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2007--, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
-
-;;;; matrices for statistics.  Extends CLEM 
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-
-;;;;
-;;;; Package Setup
-;;;;
-
-(defpackage :lisp-stat-matrix
-  (:use :common-lisp
-	:clem)
-  (:export matrixp num-rows num-cols matmult identity-matrix diagonal
-	   row-list column-list inner-product outer-product
-	   cross-product transpose bind-columns bind-rows
-	   array-data-vector vector-to-array))
-
-(in-package :lisp-stat-matrix)
-
-;; Using CLEM:
-
-CL-USER> (defparameter tr1 (make-instance 'number-matrix))
-TR1
-CL-USER> tr1
-#<NUMBER-MATRIX of dimensions (1)>
-CL-USER> (defparameter tr2 (make-instance 'number-matrix :rows 4 :cols 3))
-TR2
-CL-USER> tr2
-#<NUMBER-MATRIX [.000000000 .000000000 .000000000; 
- .000000000 .000000000 .000000000; 
- .000000000 .000000000 .000000000; 
- .000000000 .000000000 .000000000]>
-CL-USER> (transpose tr2)
-
-
-
-
-
-tr2
-
-(defparameter tr3 (make-instance 'clem::base-vector :length 4))
-
-
+(in-package :cls-matrix)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -69,8 +29,6 @@ Displaces vector V to array with dimensions DIMS"
   (make-array dims
 	      :displaced-to v
 	      :element-type (array-element-type v)))
-
-;;;;
 
 (defun check-matrix (a)
   (if (not (and (arrayp a) (= (array-rank a) 2)))
@@ -235,7 +193,7 @@ result is computed as (apply fcn (aref x i) (aref y j))."
 (defun cross-product (x)
 "Args: (x)
 If X is a matrix returns (matmult (transpose X) X). If X is a vector returns
-(inner-product X X)."
+(inner-product X X).  This function works with raw LISP ARRAYS."
   (check-matrix x)
   (let* ((n (num-rows x))
          (p (num-cols x))
