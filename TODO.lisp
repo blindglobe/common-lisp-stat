@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-18 12:20:33 tony>
+;;; Time-stamp: <2009-07-18 12:33:43 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -60,63 +60,19 @@
 
 (in-package :ls-user)
 
-;;; Tasks to do and consider: 
-;;;
-;;; * 
-
-#+nil(progn
-  ;; REVIEW: general Lisp use guidance
-
-  (fdefinition 'make-matrix)
-  (documentation 'make-matrix 'function)
-
-#| Examples from CLHS, a bit of guidance.
-
-  ;; This function assumes its callers have checked the types of the
-  ;; arguments, and authorizes the compiler to build in that assumption.
-  (defun discriminant (a b c)
-   (declare (number a b c))
-   "Compute the discriminant for a quadratic equation."
-   (- (* b b) (* 4 a c))) =>  DISCRIMINANT
-  (discriminant 1 2/3 -2) =>  76/9
-
-  ;; This function assumes its callers have not checked the types of the
-  ;; arguments, and performs explicit type checks before making any assumptions. 
-  (defun careful-discriminant (a b c)
-    "Compute the discriminant for a quadratic equation."
-    (check-type a number)
-    (check-type b number)
-    (check-type c number)
-    (locally (declare (number a b c))
-      (- (* b b) (* 4 a c)))) =>  CAREFUL-DISCRIMINANT
-  (careful-discriminant 1 2/3 -2) =>  76/9
-|#
-  )
-
+;;; Tasks working on...
 
 #+nil
 (progn
+  ;; use of extension packages supporting versioning and validation of
+  ;; CLOS objects?
   (asdf:oos 'asdf:load-op 'versioned-objects)
   (asdf:oos 'asdf:load-op 'validations))
 
-
-
-
-#|
+#+nil
+(progn
+  ;; Syntax examples using lexical scope, closures, and bindings to
+  ;; ensure a clean communication of results
   (with-data dataset ((dsvarname1 [usevarname1])
                       (dsvarname2 [usevarname2]))
-      @body)
-|#
-
-
-
-#|
- (defun testme (&key (a 3) (b (+ a 3)))
-   b)
- 
- (testme)
- (testme :a 2)
- (testme :b 4)
- (testme :a 2 :b (* a 5))
-|#
-
+      @body))
