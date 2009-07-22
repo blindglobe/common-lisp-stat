@@ -1,0 +1,28 @@
+  -*- mode: org -*-
+
+* Introduction
+
+  Dataframes are a central object within the S language.  They are
+  extensions of matrices, which are a specialization of arrays, and so
+  could be considered a specialization of arrays.  Dataframes,
+  however, provide a link between statistical data and the
+  corresponding numerical data which, for the resulting statistical
+  procedures, is manipulated through numerical linear algebra.
+
+  We have a virtual dataframe class, which inherits from the
+  MATRIX-LIKE class in LISP-MATRIX.  LISP-MATRIX constructs a
+  framework for numerical linear algebra using a range of "storage
+  back-ends", currently lisp-arrays (using Tamas Papp's
+  Foriegn-Friendly-Array (FFA) package) and foriegn arrays (using Rif
+  Rifkin's foreign-numerical-value (FNV) package).
+
+  Future plans currently include implementing a listoflist backend for
+  both matrices and dataframes, as well as GSLL backend for matrices
+  (not clear if usable for dataframes).
+
+* Dataframe implementation
+
+  The DATAFRAME-LIKE class directly generalizes the MATRIX-LIKE class
+  by adding statistically-relevant typing to columns, along with case
+  ids (row names) and column ids (variable names).  We need to
+  construct a common nomenclature for this.
