@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-07-14 19:02:34 tony>
+;;; Time-stamp: <2009-08-18 08:07:35 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -771,7 +771,7 @@ my.lib
 		       :case-labels (list "x" "y")
 		       :var-labels (list "a" "b" "c" "d" "e")))
 
-  (setf (dfref *my-df-1* 0 0) -1d0)
+  (setf (xref *my-df-1* 0 0) -1d0)
 
   
 

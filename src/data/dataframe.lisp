@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 14:21:00 tony>
+;;; Time-stamp: <2009-08-18 08:07:01 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -169,18 +169,6 @@ Examples:
   (:method ((df dataframe-like) index)
     (elt (dataframe-dimensions df) index)))
 
-(defgeneric dfref (df index1 index2)
-  (:documentation "Scalar access to entries in dataframe.")
-  (:method ((df dataframe-like) index1 index2)
-    (error "Dispatch on virtual class, Method needed for DFREF with
-  class ~A." (find-class df))))
-
-(defgeneric (setf dfref) (df index1 index2 val)
-  (:documentation "setter for dfref")
-  (:method ((df dataframe-like) index1 index2 val)
-    (error "Dispatch on virtual class, Method needed for SET-DFREF
-  with class ~A." (find-class df))))
-
 (defgeneric dfselect (df &optional cases vars indices)
   (:documentation "access to sub-dataframes. Always returns a dataframe.")
   (:method ((df dataframe-like) &optional cases vars indices)
@@ -216,10 +204,10 @@ Examples:
      (progn
        (dotimes (i (nrows df))
 	 (dotimes (j (ncols df))
-	   ;; dfref bombs if not a df-like subclass so we don't worry
+	   ;; xref bombs if not a df-like subclass so we don't worry
 	   ;; about specialization.
 	   ;; (check-type  (aref dt i j) (elt lot j)))))) ???
-	   (typep (dfref df i j) (nth j (var-types df))))) 
+	   (typep (xref df i j) (nth j (var-types df))))) 
        t))))
 
 
@@ -303,8 +291,8 @@ construction of proper DF-array."
 #| 
  (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
  (make-dataframe #2A(('a 1) ('b 2)))
- (dfref (make-dataframe #2A(('a 1) ('b 2))) 0 1)
- (dfref (make-dataframe #2A(('a 1) ('b 2))) 1 0)
+ (xref (make-dataframe #2A(('a 1) ('b 2))) 0 1)
+ (xref (make-dataframe #2A(('a 1) ('b 2))) 1 0)
  (make-dataframe 4) ; ERROR, should we allow?
  (make-dataframe #2A((4)))
  (make-dataframe (rand 10 5)) ;; ERROR, but should work!
@@ -389,13 +377,13 @@ construction of proper DF-array."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (array-dimension (dataset df) 1))
 
-(defmethod dfref ((df dataframe-array)
+(defmethod xref ((df dataframe-array)
 		  (index1 number) (index2 number))
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
   (aref (dataset df) index1 index2))
 
-(defmethod set-dfref ((df dataframe-array) (index1 number) (index2 number) val)
+(defmethod (setf xref) ((df dataframe-array) (index1 number) (index2 number) val)
   "set value for df-ar."
   ;; (check-type val (elt (var-type df) index2))
   (setf (aref (dataset df) index1 index2) val))
@@ -418,9 +406,10 @@ idx1/2 is row/col or case/var."
 		)))
     (dotimes (i (length cases))
       (dotimes (j (length vars))
-	(setf (dfref newdf i j)
-	      (dfref df
-		     (position (elt cases i) (case-labels df))
+	(setf (xref newdf i j)
+	      (xref df
+	
+	     (position (elt cases i) (case-labels df))
 		     (position (elt vars j) (var-labels df))))))))
 
 ;;; DATAFRAME-MATRIXLIKE
@@ -446,14 +435,14 @@ idx1/2 is row/col or case/var."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (matrix-dimension (dataset df) 1))
 
-(defmethod dfref ((df dataframe-matrixlike)
-		  (index1 number) (index2 number))
+(defmethod xref ((df dataframe-matrixlike)
+		 (index1 number) (index2 number))
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
   (mref (dataset df) index1 index2))
 
-(defmethod set-dfref ((df dataframe-matrixlike)
-		      (index1 number) (index2 number) val)
+(defmethod (setf xref) ((df dataframe-matrixlike)
+			(index1 number) (index2 number) val)
   "Sets a value for df-ml."
   ;; NEED TO CHECK TYPE!
   ;; (check-type val (elt (vartype df) index2))
@@ -485,13 +474,13 @@ idx1/2 is row/col or case/var."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (length (elt (dataset df) 0)))
 
-(defmethod dfref ((df dataframe-listoflist)
+(defmethod xref ((df dataframe-listoflist)
 		  (index1 number) (index2 number))
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
   (elt (elt (dataset df) index1) index2)) ;; ??
 
-(defmethod set-dfref ((df dataframe-listoflist)
+(defmethod (setf xref) ((df dataframe-listoflist)
 		      (index1 number) (index2 number) val)
   "Sets a value for df-ml."
   ;; NEED TO CHECK TYPE!
@@ -501,28 +490,28 @@ idx1/2 is row/col or case/var."
 
 
 ;;;;;; IMPLEMENTATION INDEPENDENT FUNCTIONS AND METHODS
-;;;;;; (use only dfref, nrows, ncols and similar dataframe-like
+;;;;;; (use only xref, nrows, ncols and similar dataframe-like
 ;;;;;; components as core).
 
-(defun dfref-var (df index return-type)
+(defun xref-var (df index return-type)
   "Returns the data in a single variable as type.
 type = sequence, vector, vector-like (if valid numeric type) or dataframe."
   (ecase return-type
     (('list)
      (map 'list
-	  #'(lambda (x) (dfref df index x))
+	  #'(lambda (x) (xref df index x))
 	  (gen-seq (nth 2 (array-dimensions (dataset df))))))
     (('vector) t)
     (:vector-like t)
     (:matrix-like t)
     (:dataframe t)))
 
-(defun dfref-case (df index return-type)
+(defun xref-case (df index return-type)
   "Returns row as sequence."
   (ecase return-type
     (:list 
      (map 'list
-	  #'(lambda (x) (dfref df x index))
+	  #'(lambda (x) (xref df x index))
 	  (gen-seq (nth 1 (array-dimensions (dataset df))))))
     (:vector t)
     (:vector-like t)
@@ -530,14 +519,14 @@ type = sequence, vector, vector-like (if valid numeric type) or dataframe."
     (:dataframe t)))
 
 ;; FIXME
-(defun dfref-2indexlist (df indexlist1 indexlist2 &key (return-type :array))
+(defun xref-2indexlist (df indexlist1 indexlist2 &key (return-type :array))
   "return an array, row X col dims.  FIXME TESTME"
   (case return-type
     (:array 
      (let ((my-pre-array (list)))
        (dolist (x indexlist1)
 	 (dolist (y indexlist2)
-	   (append my-pre-array (dfref df x y))))
+	   (append my-pre-array (xref df x y))))
        (make-array (list (length indexlist1)
 			 (length indexlist2))
 		   :initial-contents my-pre-array)))
@@ -571,8 +560,8 @@ type = sequence, vector, vector-like (if valid numeric type) or dataframe."
       (format stream "~A:~T" (nth i (case-labels object)))
       (dotimes (j (ncols object))
         (write-char #\tab stream) ; (write-char #\space stream)
-        ;; (write (dfref object i j) :stream stream)
-        (format stream "~7,3E" (dfref object i j)) ; if works, need to include a general output mechanism control
+        ;; (write (xref object i j) :stream stream)
+        (format stream "~7,3E" (xref object i j)) ; if works, need to include a general output mechanism control
 	))))
 
 #|
@@ -587,7 +576,7 @@ structure."
 	(dolist (i (case-labels currentRelationSet))
 	  (print-as-row
 	   (append (list i)
-		   (dfref-obsn (dataset currentRelationSet)
+		   (xref-obsn (dataset currentRelationSet)
                                (incf j)))))))))
 
  (defun testecase (s)
