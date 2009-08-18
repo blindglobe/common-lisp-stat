@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-08-18 08:07:01 tony>
+;;; Time-stamp: <2009-08-18 18:12:59 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -377,16 +377,20 @@ construction of proper DF-array."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (array-dimension (dataset df) 1))
 
-(defmethod xref ((df dataframe-array)
-		  (index1 number) (index2 number))
+(defmethod xref ((df dataframe-array) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
-  (aref (dataset df) index1 index2))
+  (assert (>= 2 (length subscripts)))
+#| ;; needed?
+  (assert (typep (elt subscripts 0) integer))
+  (assert (typep (elt subscripts 1) integer))
+|#
+  (aref (dataset df) (elt subscripts 0) (elt subscripts 1)))
 
-(defmethod (setf xref) ((df dataframe-array) (index1 number) (index2 number) val)
+(defmethod (setf xref) (value (df dataframe-array) &rest subscripts)
   "set value for df-ar."
   ;; (check-type val (elt (var-type df) index2))
-  (setf (aref (dataset df) index1 index2) val))
+  (setf (aref (dataset df) (elt subscripts 0) (elt subscripts 1)) value))
 
 (defparameter *default-dataframe-class* 'dataframe-array)
 
@@ -408,9 +412,8 @@ idx1/2 is row/col or case/var."
       (dotimes (j (length vars))
 	(setf (xref newdf i j)
 	      (xref df
-	
-	     (position (elt cases i) (case-labels df))
-		     (position (elt vars j) (var-labels df))))))))
+		    (position (elt cases i) (case-labels df))
+		    (position (elt vars j) (var-labels df))))))))
 
 ;;; DATAFRAME-MATRIXLIKE
 ;;; 
@@ -435,18 +438,19 @@ idx1/2 is row/col or case/var."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (matrix-dimension (dataset df) 1))
 
-(defmethod xref ((df dataframe-matrixlike)
-		 (index1 number) (index2 number))
+;;; *** FIXME: change mref to xref when we establish lisp-matrix
+;;; change to use xarray access facility.  Need to dummy-proof the
+;;; following. 
+(defmethod xref ((df dataframe-matrixlike) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
-  (mref (dataset df) index1 index2))
+  (mref (dataset df) (elt subscripts 0) (elt subscripts 1)))
 
-(defmethod (setf xref) ((df dataframe-matrixlike)
-			(index1 number) (index2 number) val)
+(defmethod (setf xref) (value (df dataframe-matrixlike) &rest subscripts)
   "Sets a value for df-ml."
   ;; NEED TO CHECK TYPE!
   ;; (check-type val (elt (vartype df) index2))
-  (setf (mref (dataset df) index1 index2) val))
+  (setf (mref (dataset df) (elt subscripts 0) (elt subscripts 1)) value))
 
 
 
@@ -474,20 +478,16 @@ idx1/2 is row/col or case/var."
   "specializes on inheritance from matrix-like in lisp-matrix."
   (length (elt (dataset df) 0)))
 
-(defmethod xref ((df dataframe-listoflist)
-		  (index1 number) (index2 number))
+(defmethod xref ((df dataframe-listoflist) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
 idx1/2 is row/col or case/var."
-  (elt (elt (dataset df) index1) index2)) ;; ??
+  (elt (elt (dataset df) (elt subscripts 0)) (elt subscripts 1))) ;; ??
 
-(defmethod (setf xref) ((df dataframe-listoflist)
-		      (index1 number) (index2 number) val)
+(defmethod (setf xref) (value (df dataframe-listoflist) &rest subscripts)
   "Sets a value for df-ml."
   ;; NEED TO CHECK TYPE!
   ;; (check-type val (elt (vartype df) index2))
-  (setf (elt (elt (dataset df) index2) index1) val))
-
-
+  (setf (elt (elt (dataset df) (elt subscripts 1)) (elt subscripts 0)) value))
 
 ;;;;;; IMPLEMENTATION INDEPENDENT FUNCTIONS AND METHODS
 ;;;;;; (use only xref, nrows, ncols and similar dataframe-like
