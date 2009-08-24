@@ -5,7 +5,7 @@
 ;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    unittests for the dataframe package
-;;; Time-stamp: <2009-04-20 18:59:02 tony>
+;;; Time-stamp: <2009-08-20 07:46:30 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
 
 
@@ -17,14 +17,14 @@
 (in-package :lisp-stat-unittests)
 
 (deftestsuite lisp-stat-ut-dataframe (lisp-stat-ut)
-  ((my-df-1
+  ((my-df-1-good
     (make-instance 'dataframe-array
 		   :storage #2A((1 2 3 4 5)
 				(10 20 30 40 50))
 		   :doc "This is an interesting legal dataframe-array"
 		   :case-labels (list "x" "y")
 		   :var-labels  (list "a" "b" "c" "d" "e")))
-   (my-df-0
+   (my-df-1-bad
     (make-instance 'dataframe-array
 		   :storage #2A((1 2 3 4 5)
 				(10 20 30 40 50))

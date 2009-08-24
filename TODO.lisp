@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-27 08:38:00 tony>
+;;; Time-stamp: <2009-08-20 07:53:48 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -74,3 +74,23 @@
   (with-data dataset ((dsvarname1 [usevarname1])
                       (dsvarname2 [usevarname2]))
       @body))
+
+
+(defparameter *df-test*
+  (make-instance 'dataframe-array
+		 :storage #2A (('a "test0" 0)
+			       ('b "test1" 1)
+			       ('c "test2" 2)
+			       ('d "test3" 3))
+		 :doc "test reality"
+		 :case-labels (list "0" "1" "2" "3")
+		 :var-labels (list "symbol" "string" "integer")))
+
+*df-test* ; but with SBCL, ints become floats? 
+
+(xref *df-test* 1 2)
+(xref *df-test* 2 1)
+(xref *df-test* 0 0)
+(xref *df-test* 1 0)
+
+(xref *df-test* 1 '*)
