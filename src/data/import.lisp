@@ -3,24 +3,18 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-04-20 19:07:46 tony> 
+;;; Time-stamp: <2009-08-26 13:50:28 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2007, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
+;;; Copyright:  (c)2007--2009, AJ Rossini.  GPLv2
 ;;; Purpose:    base structures for importing data into CLS
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(in-package :cls-dataimport)
-
-
-
-
-
+(in-package :lisp-stat-data)
 
 ;;; Data I/O
 
@@ -98,7 +92,7 @@ Returns the number of lisp items on the first nonblank line of file FNAME."
   (defun open-file-dialog () ;; why? (&optional set)
     (error "You must provide a file name explicitly")))
 
-(defun read-data-file (&optional (file (open-file-dialog t)))
+(defun read-data-file (&optional (file (open-file-dialog)))
 "Args:  (file)
 Returns a list of all lisp objects in FILE. FILE can be a string or a symbol,
 in which case the symbol'f print name is used."
@@ -113,14 +107,15 @@ in which case the symbol'f print name is used."
 		   (setf (cdr tail) (list r))))))))
 
 ;;; New definition to avoid stack size limit in apply
-(defun read-data-columns (&optional (file (open-file-dialog t))
+#|
+ (defun read-data-columns (&optional (file (open-file-dialog))
                                     (cols (if file 
                                               (count-file-columns file))))
 "Args: (&optional file cols)
 Reads the data in FILE as COLS columns and returns a list of lists representing the columns."
   (if (and file cols)
       (transpose (split-list (read-data-file file) cols))))
-
+|#
 
 ;;; FIXME:AJR:  ALL THE FOLLOWING NEED TO BE SOLVED BY PLATFORM-INDEP PATHNAME WORK! 
 ;;; FIXME:AJR: use either string or pathname.
@@ -190,8 +185,9 @@ Thsees are used to specify source formats that might be supported for
 input.  CSV and TSV are standard, LISP refers to forms, and SPECIAL
 refers to a FUNCTION which parses as appropriately.")
 
+#|
 ;;; WRONG LOGIC.
-(defmethod importData ((fileHandle pathname)
+ (defmethod importData ((fileHandle pathname)
 		       (fmt list)) ;sourceTypes))
   "File-based input for data.
 Usually used by:
@@ -208,15 +204,17 @@ Usually used by:
       ('lisp ( ))
       ('special (let ((parserFcn (getf fmt :special-parser)))))
       (:default (error "no standard default importData format")))))
+|#
 
 (defmethod importData ((ds array) (fmt list))
   "mapping arrays into CLS data.")
 
-(defmethod importData ((dsSpec DBMSandSQLextract)
+#|
+ (defmethod importData ((dsSpec DBMSandSQLextract)
 		       (fmt mappingTypes))
   "mapping DBMS into CLS data.")
 
-
+|#
 
 ;;(defmacro with-dataframe (env &rest progn) 
 ;;  "Compute using variable names with with.data.frame type semantics.")
