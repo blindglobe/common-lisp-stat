@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-22 19:17:55 tony>
+;;; Time-stamp: <2009-08-27 08:40:10 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -150,9 +150,9 @@
    list-of-rows ;; list-of-observations
    ))
 
-;; move to cls-data -- but in listoflist.lisp
-(defpackage :cls-data-listoflist
+(defpackage :cls-data
   (:use :common-lisp
+	:xarray
 	:lisp-matrix
 	:cls-dataframe) ; for dataframe
   (:shadowing-import-from :xarray slice)
@@ -169,7 +169,7 @@
   (:use :common-lisp
 	:lisp-stat-object-system
 	:cls-dataframe
-	:cls-data-listoflist
+	:cls-data
 	:rsm.string)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
@@ -340,11 +340,14 @@
 
 (defpackage :common-lisp-statistics
   (:documentation "Experimentation package for LispStat.  Serious work
-    should be packaged up elsewhere for reproducibility.  By this I
-    mean, creating a data/analytics/analysis package with the minimal
-    set of objects required.")
+    should be packaged up as a separate but similar package to help
+    drive reproducibility.  By this I mean, creating a
+    data/analytics/analysis package with the minimal set of
+    objects/packages required.")
   (:nicknames :cls :common-lisp-statistics :lisp-stat)
   (:use :common-lisp
+	:xarray
+	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-config
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
@@ -354,14 +357,12 @@
 	:lisp-stat-basics
 	:lisp-stat-data
 	:cls-dataframe
-	:cls-data-listoflist
+	:cls-data
         :lisp-stat-math
-	:xarray
-	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-descriptive-statistics
 	:lisp-stat-regression-linear
-	;; :cybertiggyr-dsv
 	:cls-visualize
+	;; :cybertiggyr-dsv
 	;; :cls-visualize-plplot
 	)
   (:shadowing-import-from :xarray slice)
