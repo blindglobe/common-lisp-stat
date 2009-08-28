@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-08-18 18:12:59 tony>
+;;; Time-stamp: <2009-08-27 08:16:33 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,14 +24,14 @@
 ;;; integral to the analysis.  Tables are related and matched vectors,
 ;;; for example.  "column" vectors are related observations (by
 ;;; measure/recording) while "row" vectors are related readings (by
-;;; case, independence).   This does mean that we are placing
+;;; case, independence).  This does mean that we are placing
 ;;; statistical semantics into the computational data object -- and
 ;;; that it is a violation of use to consider rows which are not at
 ;;; the least conditionally independent (though the conditioning
 ;;; should be outside the data set, not internally specified).
 
 ;;; So we want a verb-driven API for data collection construction.  We
-;;; should encode independence or lack of, as possible.
+;;; should encode independence or lack of, as a computable status.
 
 ;;; Need to figure out statistically-typed vectors.  We then map a
 ;;; series of typed vectors over to tables where columns are equal
@@ -61,39 +61,37 @@
 ;;; - check consistency of resulting data with metadata and related
 ;;;           data information.
 
-
 ;;; Misc Functions (to move into a lisp data manipulation support package)
 
 ;; the next two should be merged into a general replicator pattern.
 (defun gen-seq (n &optional (start 1))
   "Generates an integer sequence of length N starting at START. Used
-for indexing."
+ for indexing."
   (if (>= n start)
       (append (gen-seq (- n 1) start) (list n))))
 
 (defun repeat-seq (n item)
   "FIXME: There has to be a better way -- I'm sure of it!   
- (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
- (repeat-seq 3 'd) ; => ('d 'd 'd)
- (repeat-seq 3 (list 1 2))"
+  (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
+  (repeat-seq 3 'd) ; => ('d 'd 'd)
+  (repeat-seq 3 (list 1 2))"
   (if (>= n 1)
       (append (repeat-seq (1- n)  item) (list item))))
 
 
 (defun strsym->indexnum (df strsym)
-  "Returns a number indicating the DF column labelled by STRSYM.  
+  "Returns a number indicating the DF column labelled by STRSYM.
 Probably should be a method dispatching on DATAFRAME-LIKE type."
   (position strsym (varlabels df)))
 
 (defun string->number (str)
-  "Convert a string <str> representing a number to a number. A second value is
-returned indicating the success of the conversion.
-Examples:
-  (string->number \"123\") ; =>  123 t
-  (string->number \"1.23\") ; =>  1.23 t"
-  (let ((*read-eval* nil))
-    (let ((num (read-from-string str)))
-      (values num (numberp num)))))
+  "Convert a string <str> representing a number to a number. A second
+value is returned indicating the success of the conversion.  Examples:
+   (string->number \"123\") ; =>  123 t
+   (string->number \"1.23\") ; =>  1.23 t"
+   (let ((*read-eval* nil))
+     (let ((num (read-from-string str)))
+       (values num (numberp num)))))
 
 #|
   (equal 'testme 'testme)
@@ -111,7 +109,7 @@ Examples:
 		:type list
 		:accessor case-labels
 		:documentation "labels used for describing cases (doc
-                                metadata), possibly used for merging.")
+		  metadata), possibly used for merging.")
    (var-labels :initform nil
 	       :initarg :var-labels
 	       :type list
@@ -121,61 +119,37 @@ Examples:
 	      :initarg :var-types
 	      :type list
 	      :accessor var-types
-	      :documentation "variable types to ensure fit")
+	      :documentation "variable types to ensure fit.  Must be
+	        list of symbols of valid types for check-type.")
    (doc-string :initform nil
 	       :initarg :doc
 	       :accessor doc-string
 	       :documentation "additional information, potentially
-                               uncomputable, possibly metadata, about
-                               dataframe-like instance."))
+	         uncomputable, possibly metadata, about dataframe-like
+	         instance."))
   (:documentation "Abstract class for standard statistical analysis
-                   dataset for independent data.  Rows are considered
-                   to be independent, matching observations.  Columns
-                   are considered to be type-consistent, match a
-                   variable with distribution.  inherits from
-                   lisp-matrix base MATRIX-LIKE class.
-                   MATRIX-LIKE (from lisp-matrix) is basically a
-                   rectangular table without storage.  We emulate
-                   that, and add storage, row/column labels, and
-                   within-column-typing.
+     dataset for independent data.  Rows are considered to be
+     independent, matching observations.  Columns are considered to be
+     type-consistent, match a variable with distribution.  inherits
+     from lisp-matrix base MATRIX-LIKE class.  MATRIX-LIKE (from
+     lisp-matrix) is basically a rectangular table without storage.
+     We emulate that, and add storage, row/column labels, and
+     within-column-typing.
 
-                   DATAFRAME-LIKE is the basic cases by variables
-                   framework.  Need to embed this within other
-                   structures which allow for generalized relations.
-                   Goal is to ensure that relations imply and drive
-                   the potential for statistical relativeness such as
-                   correlation, interference, and similar concepts.
+		    DATAFRAME-LIKE is the basic cases by variables
+		    framework.  Need to embed this within other
+		    structures which allow for generalized relations.
+		    Goal is to ensure that relations imply and drive
+		    the potential for statistical relativeness such as
+		    correlation, interference, and similar concepts.
 
-                   STORE is the storage component.  We ignore this in
-                   the DATAFRAME-LIKE class, as it is the primary
-                   differentiator, spec'ing the structure used for
-                   storing the actual data.  We create methods which
-                   depend on STORE for access.  See DATAFRAME-ARRAY
-                   and DATAFRAME-MATRIXLIKE for examples.  The rest of
-                   this is metadata."))
-
-;;; Generics specialized above matrix-like, particularly for
-;;; dataframe-like objects.  Need implementation of methods which
-;;; depend on storage form.
-
-(defgeneric dataframe-dimensions (df)
-  (:documentation "")
-  (:method ((df dataframe-like))
-    (error "Dispatch on virtual class, Method needed for
-  DATAFRAME-DIMENSIONS with class ~A." (find-class df))))
-
-(defgeneric dataframe-dimension (df index)
-  (:documentation "")
-  (:method ((df dataframe-like) index)
-    (elt (dataframe-dimensions df) index)))
-
-(defgeneric dfselect (df &optional cases vars indices)
-  (:documentation "access to sub-dataframes. Always returns a dataframe.")
-  (:method ((df dataframe-like) &optional cases vars indices)
-    (declare (ignorable cases vars))
-    (if indices (error "Indicies not used yet"))
-    (error "Dispatch on virtual class, Method needed for DFSELECT with
-  class ~A." (find-class df))))
+		    STORE is the storage component.  We ignore this in
+		    the DATAFRAME-LIKE class, as it is the primary
+		    differentiator, spec'ing the structure used for
+		    storing the actual data.  We create methods which
+		    depend on STORE for access.  See DATAFRAME-ARRAY
+		    and DATAFRAME-MATRIXLIKE for examples.  The rest of
+		    this is metadata."))
 
 ;;; Specializing on superclasses...
 ;;;
@@ -183,13 +157,15 @@ Examples:
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
 
-(defmethod nrows ((df dataframe-like))
-  "specializes on inheritance from matrix-like in lisp-matrix."
-  (error "Need implementation; can't dispatch on virtual class DATAFRAME-LIKE."))
+(defgeneric nvars (df)
+  (:documentation "number of variables represented in storage type.")
+  (:method ((df dataframe-like))
+    (xdim (store df) 0)))
 
-(defmethod ncols ((df dataframe-like))
-  "specializes on inheritance from matrix-like in lisp-matrix."
-  (error "Need implementation; can't dispatch on virtual class DATAFRAME-LIKE."))
+(defgeneric ncases (df)
+  (:documentation "number of cases (indep observantions) represented by storage.")
+  (:method ((df dataframe-like))
+    (xdim (store df) 1)))
 
 ;; Testing consistency/coherency.
 
@@ -611,3 +587,44 @@ structure."
 
 ;;; Need to consider read-only variants, leveraging the xref
 ;;; strategy.
+
+
+
+
+
+;;;;;;;; from dataframe-xarray experiment
+
+#| 
+ (defmethod xref ((obj dataframe-like)  &rest subscripts)
+  "For data-frame-like, dispatch on storage object."
+  (xref (dataset obj) subscripts))
+
+ (defmethod (setf xref) (value (obj dataframe-like) &rest subscripts)
+  (setf (xref (dataset obj) subscripts) value))
+  
+ (defmethod xref ((obj matrix-like) &rest indices))
+  
+ (defmethod xtype ((obj dataframe-like))
+  "Unlike the standard xtype, here we need to return a vector of the
+  types.  Vectors can have single types, but arrays have single type.
+  Dataframe-like have multiple types, variable-like single type,
+  case-like has multiple types, and matrix-like has single type.")
+
+ (defmethod xdims ((obj dataframe-like))
+  (dataframe-dimensions obj))
+
+ ;; use default methods at this point, except for potentially weird DFs
+ (defmethod xdims* ())
+
+ (defmethod xdim ((obj dataframe-like) index)
+  (dataframe-dimension index))
+
+
+ (defmethod xrank ())
+
+ (defmethod slice ())
+  
+ (defmethod take ())
+
+ (defmethod carray ())
+|#
