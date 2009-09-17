@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-08-18 08:07:56 tony>
+;;; Time-stamp: <2009-09-04 18:00:16 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,7 +24,7 @@
 
 ;; a bit of infrastructure for beginners
 (defparameter *my-cls-homedir*
-  "/media/disk/Desktop/sandbox/CLS.git/")
+  "/media/disk/Desktop/sandbox/CLS.git/") ;; CHANGE THIS TO LOCALIZE!!
 (concatenate 'string *my-cls-homedir* "Data/example.csv")
 ;; implies
 (defun localized-pathto (x)
@@ -137,6 +137,7 @@
 		    (localized-pathto "Data/R-swiss.csv"))))
 		 :doc "This is an interesting dataframe-array that currently fails"))
 ;; *my-df-5*
+
 
 
 (defparameter *mat-1*
@@ -1304,3 +1305,40 @@ my.lib
 
   (typep (rand 10 20) 'array)
 |#
+
+;;;;;;;;;;;;;;;;; ===========
+
+(defparameter *my-df-trees*
+  (make-instance 'dataframe-array
+		 :storage
+		 (listoflist->array
+		  (transpose-listoflist 
+		   (rsm.string:file->number-table
+		    (localized-pathto "Data/trees.csv"))))
+		 :doc "This is an interesting dataframe-array that currently fails"))
+
+;; *my-df-trees*
+
+(defparameter *my-df-trees2*
+  (make-instance 'dataframe-array
+		 :storage
+		 (listoflist->array
+		  (transpose-listoflist 
+		   (rsm.string:file->number-table
+		    (localized-pathto "Data/trees.csv")
+		    :delims ",")))
+		 :doc "This is an interesting dataframe-array that currently fails"))
+;; *my-df-trees2*
+;; (dataset *my-df-trees2*)
+
+(defparameter *my-df-trees2a*
+  (make-instance 'dataframe-array
+		 :storage
+		 (listoflist->array
+		   (rsm.string:file->number-table
+		    (localized-pathto "Data/trees.csv")
+		    :delims ","))
+		 :doc "This is an interesting dataframe-array that currently fails"))
+
+;; *my-df-trees2a*
+;; (dataset *my-df-trees2a*)
