@@ -32,7 +32,288 @@
   \titlepage
 \end{frame}
 
-\section{What Works?}
+\begin{frame}[fragile]{Intro to Lisp notation}
+\begin{verbatim}
+;; This is a comment
+#|
+    and so is this
+|#
+'(a list of things to become data)
+(list a list of things to become data)
+(what-I-execute with-one-thing with-two-thing)
+;; that is:
+(my-fcn-name input1 
+             input2) ; and to auto-gen input1:
+(my-fcn-name (my-fcn-name input3 input4)
+             input2)
+\end{verbatim}
+\end{frame}  
+
+
+\begin{frame}{What do you do?}
+When you begin to work on an activity (methodological, theoretical,
+application/substantive), and go to the keyboard to work on a
+computer, {\textbf what do you do?}
+\end{frame}
+
+
+\section{Computable Statistics}
+
+\begin{frame}{Can we compute with them?}
+  3 Toy Examples:
+  \begin{itemize}
+  \item Statistical Research (``Annals work'')
+  \item Consulting, Applied Statistics, Scientific Honesty.
+  \item Reimplementation.
+  \end{itemize}
+  Can ``compute'' with the information given?  (that is:
+  \begin{itemize}
+  \item do we have sufficient information to communicate enough for
+    the right person to understand or recreate the effort?
+  \item have we sufficient clarity to prevent misunderstandings about
+    intentions and claims?
+  \end{itemize}
+  )
+\end{frame}
+
+\begin{frame}[fragile]{Example 1: Theory\ldots}
+  \label{example1}
+  Let $f(x;\theta)$ describe the likelihood of XX under the following
+  assumptions.  
+  \begin{enumerate}
+  \item assumption-1
+  \item assumption-2
+  \end{enumerate}
+  Then if we use the following algorithm:
+  \begin{enumerate}
+  \item step-1
+  \item step-2
+  \end{enumerate}
+  then $\hat{\theta}$ should be $N(0,\hat\sigma^2)$ with the following
+  characteristics\ldots
+\end{frame}
+
+\begin{frame}
+  \frametitle{Can we compute, using this description?}
+  Given the information at hand:
+  \begin{itemize}
+  \item we ought to have a framework for initial coding for the
+    actual simulations (test-first!)
+  \item the implementation is somewhat clear
+  \item We should ask: what theorems have similar assumptions?
+  \item We should ask: what theorems have similar conclusions but
+    different assumptions?
+  \end{itemize}
+\end{frame}
+\begin{frame}[fragile]{Realizing Theory}
+\small{
+\begin{verbatim}  
+(define-theorem my-proposed-theorem
+  (:theorem-type '(distribution-properties
+                   frequentist likelihood))
+  (:assumes '(assumption-1 assumption-2))
+  (:likelihood-form
+     (defun likelihood (data theta gamma)
+       (exponential-family theta gamma)))
+  (:compute-by
+   '(progn
+      (compute-start-values thetahat gammahat)
+        (until (convergence)
+          (setf convergence
+                (or (step-1 thetahat)
+                    (step-2 gammahat))))))
+  (:claim (equal-distr '(thetahat gammahat) 'normal))))
+\end{verbatim}
+}
+\end{frame}
+
+\begin{frame}[fragile]{It would be nice to have}
+\begin{verbatim}
+   (theorem-veracity 'my-proposed-theorem)
+\end{verbatim}
+returning some indication of how well it met given computable claims,
+modulo what proportion of computable claims could be tested.
+\begin{itemize}
+\item and have it run some illustrative simulations which suggest
+  which might be problematic in real situations, and real situations
+  for which there are no problems.
+\item and work through some of the logic based on related claims using
+  identical assumptions to confirm some of the results
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{and why not...?}
+\begin{verbatim}
+   (when (> (theorem-veracity
+              'my-proposed-theorem)
+            0.8)
+      (make-draft-paper 'my-proposed-theorem
+                        :style :JASA
+                        :output-formats
+                           '(LaTeX MSWord)))
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Comments}
+  \begin{itemize}
+  \item Of course the general problem is very difficult, but one must
+    start somewhere.
+  \item I'm working on some basic statistical proof of concepts (not
+    finished): T-Test, linear regression (LS-based, Normal-Normal Bayesian)
+  \item Areas targetted for medium-term future: resampling methods and
+    similar algorithms.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example 2: Practice\ldots} 
+  \label{example2}
+  The dataset comes from a series of clinical trials, some with active
+  control and others using placebo control.  We model the primary
+  endpoint, ``relief'', as a binary random variable.  There is a
+  random trial effect on relief as well as severity due to differences
+  in recruitment and inclusion/exclusion criteria from 2 different
+  trial networks.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Can we compute, using this description?}
+  \begin{itemize}
+  \item With a real such description, it is clear what some of the
+    potential models might be for this dataset
+  \item It should be clear how to start thinking of a data dictionary
+    for this problem.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Can we compute?}
+\begin{verbatim}
+(dataset-metadata paper-1
+  :context 'clinical-trial 'randomized 
+     'active-ctrl 'placebo-ctrl 'metaanalysis
+  :variables '((relief :model-type dependent
+                       :distr binary)
+               (trial :model-type independent
+                      :distr categorical)
+               (disease-severity))
+  :metadata '(incl-crit-net1 excl-crit-net1
+              incl-crit-net1 excl-crit-net2
+              recr-rate-net1 recr-rate-net2))
+  (propose-analysis paper-1)
+    ; => (list 'tables '(logistic-regression))
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Example 3: The Round-trip\ldots} 
+  \label{example3}
+  The first examples describe ``ideas $\rightarrow$ code''
+
+  Consider the last time you read someone else's implementation of a
+  statistical procedure (i.e. R package code).  When you read the
+  code, could you see:
+  \begin{itemize}
+  \item the assumptions used?
+  \item the algorithm implemented?
+  \item practical guidance for when you might select the algorithm
+    over others? 
+  \item practical guidance for when you might select the
+    implementation over others? 
+  \end{itemize}
+  These are usually components of any reasonable journal article.
+  \textit{(Q: have you actually read an R package that wasn't yours?)}
+\end{frame}
+
+\begin{frame}{Exercise left to the reader!}
+
+%   (aside: I have been looking at the \textbf{stats} and \textbf{lme4}
+%   packages recently -- \textit{for me}, very clear numerically, much
+%   less so statistically)
+\end{frame}
+
+\section{Context}
+
+\begin{frame}{Point of Examples}
+  \begin{itemize}
+  \item Few statistical concepts are ``computable'' with existing systems.
+
+  \item Some of this work is computable, let the computer do it.
+
+  \item There is little point in having people re-do basics
+
+  \item Computing environments for statistical work have been stable
+    for far too long, and limit the development and implementation of
+    better, more efficient, and more appropriate methods by allowing
+    people to be lazy (i.e. classic example of people publishing
+    papers on changes which are very minimal from a
+    methodological/theoretical view, but very difficult from an
+    implementation/practical view).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Current State}
+
+  The current approaches to how statisticians interface with computers
+  to perform data analysis can be put into 2 camps
+  \begin{enumerate}
+  \item GUI with a spreadsheet (Excel/Minitab/Rcmdr without the
+    script)
+  \item applications programming (with
+  \end{enumerate}
+  There are different levels of sophistication, and some merging.
+\end{frame}
+
+\begin{frame}{Issues which arise when computing...}
+  \begin{enumerate}
+  \item relevant substantive issues (causality, variable independence,
+    design issues such as sampling strategies) not incorporated.
+  \item irrelevant substantive issues (coding, wide vs. long
+    collection, other non-statistical data management issues) become
+    statistically-relevant.
+  \item little support for encoding theoretical considerations (``expert
+    systems'' for guidance).  Must be hard-coded in and hard-coded
+    away (``stars for p-values as evil'').   Nearly impossible to
+    construct and apply philosophical opinions to ensure appropriate
+    use (and training through use) of singular or personalized
+    mixtures of statistical philosophies when doing data analysis (or
+    methodological development, or theoretical development).
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Problem Statement}
+
+  How can statistical computing environments support appropriate use
+  of statistical concepts (algorithmic, knowledge-centric,
+  knowledge-managing, philosophical discipline), so that the computing
+  structure doesn't rely on data-munging or numerical skill?
+
+\end{frame}
+
+
+\begin{frame}{Goals for this Talk}{(define, strategic approach,
+    justify)}
+
+  \begin{itemize}
+  \item To describe the concept of \alert{computable statistics},
+    placing it in a historical context.
+
+  \item To demonstrate that \alert{a research program}
+    implemented through  simple steps can increase the efficiency  of
+    statistical computing approaches by  clearly describing both:
+    \begin{itemize}
+    \item numerical characteristics of procedures,
+    \item statistical concepts driving them.
+    \end{itemize}
+
+  \item To justify that the \alert{approach is worthwhile} and
+    represents a staged effort towards \alert{increased use of best
+      practices} and efficient tech transfer of modern statistical
+    theory (i.e. why must we wait 10 years for Robins' estimation
+    approaches?)
+  \end{itemize}
+  (unfortunately, the last is still incomplete)
+\end{frame}
+
+\section{CLS Works?}
 \label{sec:work}
 
 \begin{frame}{Is it Vaporware? Not quite}
@@ -47,7 +328,7 @@
 \label{sec:work:graphics}
 
 \begin{frame}{Silly Visualization Example}
-\includegraphics[width=3in,height=3in]{/home/tony/test1.png}
+  \includegraphics[width=3in,height=3in]{./test1.png}
 \end{frame}
 
 \begin{frame}[fragile]{How?}
@@ -56,9 +337,9 @@
    (as-frame (create-xlib-image-context 200 200)
    	    :background-color +white+))
 (bind ((#2A((f1 f2) (f3 f4))
-        (split-frame *frame2*
-                     (percent 50)
-                     (percent 50))))
+       (split-frame *frame2*
+                    (percent 50)
+                    (percent 50))))
   (defparameter *f1* f1) ; lower left   
   (defparameter *f2* f2) ; lower right  f3  f4
   (defparameter *f3* f3) ; top left     f1  f2
@@ -187,24 +468,16 @@
 \end{verbatim}
 \end{frame}
 
-\begin{frame}{Outline}
-  \tableofcontents
-\end{frame}
-
 \section{Common Lisp Statistics}
 \label{sec:CLS}
 
 \begin{frame}{Why CLS?}
   \begin{itemize}
-  \item a component-based structure for statistical computing
-  \item Common Lisp provides a simple, \emph{primitive}, syntax
-  \item Common Lisp provides an amazing number of advanced features
-    that keep getting reinvented in other languages.
-  \item Common Lisp has linkages to many amazing features developed in
-    other languages.
-  \item ability to leverage non-statisticians interested in computing
-    technologies (compilers, protocols, interfaces, libraries,
-    functionality which can be reused for statistical purposes)
+  \item a component-based structure for statistical computing,
+    allowing for small and specific specification.
+  \item a means to drive philosophically customized data analysis, and
+    enforce a structure to allow simple comparisons between
+    methodologies.
   \item This is a ``customization'' through packages to support
     statistical computing, not a independent language.  ``Ala Carte'',
     not ``Menu''.
@@ -217,8 +490,8 @@
 
 \begin{frame}{Current Functionality}
   \begin{itemize}
-  \item basic dataframes (similar to R); indexing/slicing API under
-    development. 
+  \item basic dataframes (similar to R); subsetting API under
+    development.
   \item Basic regression (similar to XLispStat)
   \item matrix storage both in foreign and lisp-centric areas.
   \item LAPACK (small percentage, increasing), working with both
@@ -232,13 +505,11 @@
 
 \begin{frame}[fragile]{Computational Environment Supported}
   \begin{itemize}
-  \item Should  work on Linux, with recent SBCL versions
+  \item works on Linux, with recent SBCL versions
   \item Definitely works on bleeding edge Debian (unstable).
   \item Has worked for weak definitions of ``work'' on 4 different
-    people's environments (not quite, but sort of requires a
+    people's computers (not quite, but sort of requires a
     \verb+/home/tony/+ !)
-  \item Threaded support on threaded lisps (SBCL/CCL, soon CLISP).
-    But not yet integrated.
   \end{itemize}
 \end{frame}
 
@@ -247,68 +518,30 @@
   \begin{itemize}
   \item Better integration of data structures with statistical routines
     (auto-handling with dataframes, rather than manual parsing). 
+  \item dataframe to model-matrix tools (leveraging old XlispStat GEE
+    package)
   \end{itemize}
   Medium/Long Term 
   \begin{itemize}
-  \item Support for CLISP (byte-compiled interpreted lisp) and Clozure
-    Common Lisp (formerly OpenMCL)
-  \item high-level Front-end API to a number of matrix and numerical
-    packages and numerical structures (
-  \item constraint system for interactive GUIs and graphics
-  \item full LispStat compatibility (object system partially works;
-    GUI support coming).
-  \item Integrated threading via Bordeaux threads (portable CL API package).
+  \item Support for other Common Lisps
+  \item Cleaner front-end API to matrices and numerical algorithms
+  \item constraint system for different statistical algorithm
+    development, as well as for interactive GUIs and graphics
+  \item LispStat compatible (object system in-progress, GUI to do)
+  \item Integrated invisible parallelization when more efficient
+    (multicore, threading, and user-space systems)
   \end{itemize}
 \end{frame}
 
-\subsection{Common Lisp}
-\label{sec:CLS:lisp}
 
-\begin{frame}{Common Lisp}
-  \begin{itemize}
-  \item Parens provide clear delineation of a \textbf{Complete
-      Thought} (functional programming with side effects).
-  \item Lisp-2 (symbols can denote both a separate function and a value)
-  \item ANSI standard (built by committee, but the committee was
-    reasonably smart)
-  \item Many implementations
-  \item Most implementations are interactive \textbf{compiled}
-    languages (few are interpreted, and those are usually
-    byte-compiled).
-  \item The Original \emph{Programming with Data} Language
-    (\emph{Programs are Data} and \emph{Data are Executable} also
-    apply).
-  \item advanced, powerful, first-class macros (macros functionally
-    re-write code, allowing for structural clarity and complete
-    destruction of syntax, should that be reasonable)
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Common Lisp Packages}
-  (They are packages and called packages, not libraries.  Some people
-  can rejoice!)
-  \begin{itemize}
-  \item infrastructure enhancement:  infix-notation, data structures,
-    control and flow structures
-  \item numerics, graphics, GUIs, 
-  \item primitive R to CL compiler (which could also be considered an
-    object-code compiler for R); 3 interfaces which embed R within CL.
-  \item Web 2.0 support and reporting facilities (similar to TeX) for PDF.
-  \end{itemize}
-  See \url{http://www.common-lisp.net/} and
-  \url{http://www.cliki.org/}.  CLS sources can be found on
-  \url{http://github.com/blindglobe/}
-\end{frame}
-
-\section{What else about CLS is still Vaporware?}
+\section{Vaporware?}
 
 \begin{frame}[fragile]{What does NOT work?}
   Primarily, the reason that we doing this:
   
   \textbf{Computable and Executable Statistics}
 
-  (which is the subject of another talk, slides in the backup).   But
-  consider XML:
+  but consider XML:
 \begin{verbatim}
 <car brand="honda" engine="4cyl">accord</car>
 \end{verbatim}
@@ -321,15 +554,68 @@ becomes
 
 \section{Discussion}
 
-\begin{frame}{Conclusion}
-  Active but slow development, spanning the range of needs:
+
+
+
+\begin{frame}{Why use Common Lisp?}
   \begin{itemize}
-  \item Numerics: Linear algebra basics done -- full development
-  \item Static graphics: progress being made, have a partial
-    grid-solution, need interactive graphics
-  \item LispStat emulation needs to be finished
-  \item Model specification and unification 
+  \item Parens provide clear delineation of a \textbf{Complete
+      Thought} (functional programming with side effects).
+  \item Lisp-2 (symbols represent a different function and variable)
+  \item ANSI standard (built by committee, but the committee was
+    reasonably smart)
+  \item Many implementations
+  \item Most implementations are interactive \textbf{compiled}
+    languages (few are interpreted, nearly all  byte-compiled).
+  \item The Original \emph{Programming with Data} Language
+    (\emph{Programs are Data} and \emph{Data are Executable} apply).
+  \item advanced, powerful, first-class macros (macros functionally
+    re-write code, allowing for structural clarity and complete
+    destruction of syntax, should that be reasonable)
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Available Common Lisp Packages}
+  (They are packages and called packages, not libraries.  Some people
+  can rejoice!)
+  \begin{itemize}
+  \item infrastructure \emph{enhancements}: infix-notation, data
+    structures, control and flow structures
+  \item numerics, graphics, GUIs, 
+  \item primitive R to CL compiler (which could also be considered an
+    object-code compiler for R); 3 interfaces which embed R within CL.
+  \item Web 2.0 support and TeX-like reporting facilities for PDF
+    output.
+  \end{itemize}
+  See \url{http://www.common-lisp.net/} and
+  \url{http://www.cliki.org/}.  CLS sources can be found on
+  \url{http://github.com/blindglobe/}
+\end{frame}
+
+\begin{frame}{Why not use R?}
+  \begin{itemize}
+  \item the R programming language is incomplete and under constant
+    redefinition.  Common Lisp is standardized (for many years), with
+    many implementations
+  \item R isn't compiled and appliction delivery can be tough (package
+    delivery is mostly solved)
+  \item Without parens, Common Lisp could be R (interactive, or batch,
+    or through ``compiled applications'').
+  \item R is the Microsoft of statistical computing.
+  \item many ``warts'' that R has, can't be fixed due to sizeable user
+    populations or heavy-weight vested interests.
+  \item Evolutionary development requires strawmen upon which to use
+    for development.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Conclusion}
+
+  This slowly developing research program aims to a statistical
+  computing system which enables sophisticated statistical research
+  which can be readily transfer to applications, is supportable.
+
   Related numerical/statistical projects:
   \begin{itemize}
   \item Incanter : R/LispStat/Omegahat-like system for Clojure (Lisp
@@ -338,20 +624,24 @@ becomes
     using Lisp
   \item matlisp/LispLab : LAPACK-based numerical linear algebra packages
   \item GSLL : GNU Scientific Library, Lisp interface.
+  \item RCL, RCLG, CLSR (embedding R within Common Lisp)
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Followup}
-  I'd be happy to talk with anyone on the following topics:
+\begin{frame}{What can you do to follow up?}
+
   \begin{itemize}
-  \item Introduction to Common Lisp
-  \item support for new statistical programming environment modalities
-    (subject for another talk).
-  \item computable and executable statistics (code that explains
-    itself and can be parsed to generate knowledge about its claims;
-    ``XML's promise'')
+  \item Read:  Introduction to Common Lisp: Paul Graham's ANSI Common Lisp,
+    enjoyable book with boring title, best intro to S4 classes
+    around.  Practical Common Lisp, by Peter Seibel
+  \item Consider:  how a computing environment could better support
+    features in the research you do (event-time data, design,
+    longitudinal data modeling, missing and coarsened data, multiple
+    comparisons, feature selection). 
   \end{itemize}
-  and if you are interested in getting involved, or trying it out.
+  The next stage of reproducible research will require computable
+  statistics (code that explains itself and can be parsed to generate
+  knowledge about its claims; ``XML's promise'').
 \end{frame}
 
 \end{document}
@@ -378,198 +668,6 @@ becomes
 \end{verbatim}
    \item This
   \end{itemize}
-\end{frame}
-
-\section{Computable Statistics}
-
-\begin{frame}{Can we compute with them?}
-  3 Examples, of which we only present the first
-  \begin{itemize}
-  \item Research.
-  \item Consulting, Applied Statistics, Scientific Honesty.
-  \item Reimplementation.
-  \end{itemize}
-  Consider whether one can ``compute'' with the information given?
-  (that is:
-  \begin{itemize}
-  \item do we have sufficient information to communicate enough
-    for the right person to recreate the analysis?
-  \item have we sufficient clarity to prevent misunderstandings about
-    intentions and claims?
-  \end{itemize}
-  )
-\end{frame}
-
-\begin{frame}[fragile]{Example 1: Theory\ldots}
-  \label{example1}
-  Let $f(x;\theta)$ describe the likelihood of XX under the following
-  assumptions.  
-  \begin{enumerate}
-  \item assumption-1
-  \item assumption-2
-  \end{enumerate}
-  Then if we use the following algorithm:
-  \begin{enumerate}
-  \item step-1
-  \item step-2
-  \end{enumerate}
-  then $\hat{\theta}$ should be $N(0,\hat\sigma^2)$ with the following
-  characteristics\ldots
-\end{frame}
-
-\begin{frame}
-  \frametitle{Can we compute, using this description?}
-  Given the information at hand:
-  \begin{itemize}
-  \item we ought to have a framework for initial coding for the
-    actual simulations (test-first!)
-  \item the implementation is somewhat clear
-  \item We should ask: what theorems have similar assumptions?
-  \item We should ask: what theorems have similar conclusions but
-    different assumptions?
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Realizing Theory}
-\small{
-\begin{verbatim}  
-(define-theorem my-proposed-theorem
-   (:theorem-type '(distribution-properties
-                    frequentist
-                    likelihood))
-   (:assumes '(assumption-1 assumption-2))
-   (:likelihood-form
-      (defun likelihood (data theta gamma)
-        (exponential-family theta gamma)))
-   (:compute-by
-      '(progn
-         (compute-starting-values thetahat gammahat)
-         (until (convergence)
-           (setf convergence
-                 (or (step-1 thetahat)
-                     (step-2 gammahat))))))
-   (:claim (assert 
-             (and (equal-distribution thetahat 'normal)
-                  (equal-distribution gammahat 'normal)))))
-\end{verbatim}
-}
-\end{frame}
-
-\begin{frame}[fragile]{It would be nice to have}
-\begin{verbatim}
-   (theorem-veracity 'my-proposed-theorem)
-\end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]{and why not...?}
-\begin{verbatim}
-   (when (theorem-veracity
-              'my-proposed-theorem)
-      (write-paper 'my-proposed-theorem
-                   :style :JASA
-                   :output-format
-                         '(LaTeX MSWord)))
-\end{verbatim}
-\end{frame}
-
-\begin{frame}{Comments}
-  \begin{itemize}
-  \item The general problem is very difficult
-  \item I'm working on some basic statistical proof of concepts (not
-    finished): linear regression (LS-based, Normal-bayesian) and the
-    T-test.
-  \item Areas targetted for medium-term future: resampling methods and
-    similar algorithms.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Example 2: Practice\ldots} 
-  \label{example2}
-  The dataset comes from a series of clinical trials.  We model the
-  primary endpoint, ``relief'', as a binary random variable.  There is
-  a random trial effect on relief as well as severity due to
-  differences in recruitment and inclusion/exclusion criteria.
-\end{frame}
-
-\begin{frame}
-  \frametitle{Can we compute, using this description?}
-  \begin{itemize}
-  \item With a real such description, it is clear what some of the
-    potential models might be for this dataset
-  \item It should be clear how to start thinking of a data dictionary
-    for this problem.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Can we compute?}
-\begin{verbatim}
-  (dataset-metadata paper-1
-    :context 'clinical-trials
-    :variables '((relief :model-type dependent
-                         :distribution binary)
-                 (trial  :model-type independent
-                         :distribution categorical)
-                 (disease-severity))
-    :metadata '(inclusion-criteria
-                exclusion-criteria
-                recruitment-rate))
-  (propose-analysis paper-1)
-     ; => '(tables
-     ;      (logistic regression))
-\end{verbatim}
-\end{frame}
-
-\begin{frame}{Example 3: The Round-trip\ldots} 
-  \label{example3}
-  The first examples describe ``ideas $\rightarrow$ code''
-
-  Consider the last time you read someone else's implementation of a
-  statistical procedure (i.e. R package code).  When you read the
-  code, could you see:
-  \begin{itemize}
-  \item the assumptions used?
-  \item the algorithm implemented?
-  \item practical guidance for when you might select the algorithm
-    over others? 
-  \item practical guidance for when you might select the
-    implementation over others? 
-  \end{itemize}
-  These are usually components of any reasonable journal article.
-  \textit{(Q: have you actually read an R package that wasn't yours?)}
-\end{frame}
-
-\begin{frame}{Exercise left to the reader!}
-
-%   (aside: I have been looking at the \textbf{stats} and \textbf{lme4}
-%   packages recently -- \textit{for me}, very clear numerically, much
-%   less so statistically)
-\end{frame}
-
-
-
-\section{Context}
-
-\begin{frame}{Goals for this Talk}{(define, strategic approach,
-    justify)}
-
-  \begin{itemize}
-  \item To describe the concept of \alert{computable and executable
-      statistics}, placing it in a historical context.
-
-  \item To demonstrate that \alert{a research program}
-    implemented through  simple steps can increase the efficiency  of
-    statistical computing approaches by  clearly describing both:
-    \begin{itemize}
-    \item numerical characteristics of procedures,
-    \item statistical concepts driving them.
-    \end{itemize}
-
-  \item To justify that the \alert{approach is worthwhile} and
-    represents a staged effort towards \alert{increased use of best
-      practices}.
-  \end{itemize}
-  (unfortunately, the last is still incomplete)
 \end{frame}
 
 
