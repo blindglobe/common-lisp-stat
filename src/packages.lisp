@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-08-27 08:40:10 tony>
+;;; Time-stamp: <2009-09-02 08:00:25 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -156,13 +156,14 @@
 	:lisp-matrix
 	:cls-dataframe) ; for dataframe
   (:shadowing-import-from :xarray slice)
-  (:export lists-of-same-size
-	   equal-listoflist
-	   transpose-listoflist
-	   listoflist->dataframe
+  (:export listoflist->dataframe
 	   listoflist->array
 	   listoflist->matrix-like))
-
+#|
+           lists-of-same-size
+	   equal-listoflist
+	   transpose-listoflist
+|#
 
 (defpackage :cls-dataimport
   (:documentation "Data I/O and similar import technologies.")
@@ -346,7 +347,7 @@
     objects/packages required.")
   (:nicknames :cls :common-lisp-statistics :lisp-stat)
   (:use :common-lisp
-	:xarray
+	:xarray ;; generic reference -- internally supporting array, lol structs
 	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-config
 	:lisp-stat-object-system
@@ -453,6 +454,7 @@
 
    ;; xarray
    xref xtype xdims xdim xdims* 
+   lists-of-same-size equal-listoflist transpose-listoflist
 
    ;; data
    open-file-dialog read-data-file read-data-columns load-data
@@ -468,8 +470,6 @@
    dataset list-of-columns list-of-rows
 
    ;; listoflist
-   lists-of-same-size equal-listoflist
-   transpose-listoflist
    listoflist->dataframe listoflist->array listoflist->matrix-like
 
    ;; statistics.lsp  (descriptions, should probably be moved
