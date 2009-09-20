@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-09-04 18:00:16 tony>
+;;; Time-stamp: <2009-09-17 22:19:31 tony>
 ;;; Creation:   sometime in 2006...
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,7 +15,6 @@
 ;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
-
 
 ;; (asdf:oos 'asdf:compile-op 'cls :force t)
 (asdf:oos 'asdf:load-op 'cls)
@@ -31,7 +30,8 @@
   (check-type x string)
   (concatenate 'string *my-cls-homedir* x))
 
-;;; == READ DATA
+
+;;; DataFrames
 
 (defparameter *my-df-1*
   (make-instance 'dataframe-array
@@ -49,8 +49,6 @@
 		     (10 20 30 40 50)))
 
 (make-dataframe (rand 4 3))
-
-
 
 
 (defparameter *my-df-2*
@@ -76,6 +74,7 @@
 
 
 ;;; HERE#1
+;;; == READ DATA
 
 ;;; read in a CSV dataframe...
 
@@ -126,6 +125,8 @@
 		    :delims ","))
 		 :doc "This is an interesting dataframe-array that currently fails"))
 ;; *my-df-4*
+
+(aref  (dataset *my-df-4*) 0 1)
 
 
 (defparameter *my-df-5*
