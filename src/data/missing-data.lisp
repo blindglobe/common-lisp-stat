@@ -1,8 +1,8 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-04 17:49:46 tony>
+;;; Time-stamp: <2009-09-17 17:08:47 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
-;;; File:       template.lisp
+;;; File:       missing-data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2009--, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
@@ -23,7 +23,10 @@
 ;;; ordinal, nominal, etc.   Also have metadata to describe where this
 ;;; came from.
 ;;; 
-;;; Then we can gensym a value per-dataset per-missing type.  
+;;; Then we can gensym a value per-dataset per-missing type.  This
+;;; strategy (using gensyms to represent a particular
+;;; missing-data-type instance could be useful if we do not have to
+;;; maintain equality across CL execution runs.
 ;;;
 ;;; Different types of missing:
 ;;; * censored data
