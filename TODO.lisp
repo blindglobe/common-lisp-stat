@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-15 06:51:08 tony>
+;;; Time-stamp: <2009-09-19 23:08:58 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -38,7 +38,7 @@
 
 (in-package :lisp-stat-unittests)
 
-;; tests = 80, failures = 8, errors = 20
+;; tests = 80, failures = 7, errors = 21
 (run-tests :suite 'lisp-stat-ut)
 (describe (run-tests :suite 'lisp-stat-ut))
 
@@ -114,5 +114,36 @@
 (xref *df-test* 2 1)
 (xref *df-test* 0 0)
 (xref *df-test* 1 0)
-
 (xref *df-test* 1 '*)
+
+;;; Experiments with cl-variates
+
+(asdf:oos 'asdf:compile-op 'cl-variates :force t)
+(asdf:oos 'asdf:compile-op 'cl-variates-test :force t)
+
+(asdf:oos 'asdf:load-op 'lift)
+
+(asdf:oos 'asdf:load-op 'cl-variates)
+(asdf:oos 'asdf:load-op 'cl-variates-test)
+
+(in-package :cl-variates-test)
+(run-tests :suite 'cl-variates-test)
+(describe (run-tests :suite 'cl-variates-test))
+
+(in-package :cl-variates-user)
+
+(defparameter state (make-random-number-generator))
+(setf (random-seed state) 44)
+(random-seed state)
+(loop for i from 1 to 10 collect
+                  (random-range state 0 10))
+
+
+
+
+;;; experiments with LLA
+(in-package :cl-user)
+(asdf:oos 'asdf:load-op 'lla)
+
+
+
