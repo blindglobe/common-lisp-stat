@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 15:09:33 tony>
+;;; Time-stamp: <2009-09-21 19:32:22 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       plotting-data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -95,7 +95,7 @@
 
 
 ;;; EXAMPLE FOR DSC2009
-  (defparameter *frame2* (as-frame (create-xlib-image-context 400 400)
+  (defparameter *frame2* (as-frame (create-xlib-image-context 300 300)
 				  :background-color +white+))
 
   (bind ((#2A((f1 f2) (f3 f4))
