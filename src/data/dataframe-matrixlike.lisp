@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-19 23:21:30 tony>
+;;; Time-stamp: <2009-09-21 17:03:20 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-matrixlike.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -16,10 +16,14 @@
 
 ;;; This organization and structure is new to the 21st Century
 ;;; version..   Think, "21st Century Schizoid Man".
+
+(in-package :cls-dataframe)
+
 ;;; DATAFRAME-MATRIXLIKE
 ;;; 
 ;;; example/implementatin of using lisp-matrix datastructures for
 ;;; dataframe storage.
+
 
 (defclass dataframe-matrixlike (dataframe-like)
   ((store :initform nil
