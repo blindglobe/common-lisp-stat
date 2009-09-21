@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-21 19:51:17 tony>
+;;; Time-stamp: <2009-09-21 22:53:53 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -118,39 +118,46 @@
 
 ;;; Experiments with cl-variates
 
-(asdf:oos 'asdf:compile-op 'cl-variates :force t)
-(asdf:oos 'asdf:compile-op 'cl-variates-test :force t)
-
-(asdf:oos 'asdf:load-op 'lift)
-
-(asdf:oos 'asdf:load-op 'cl-variates)
+;; (asdf:oos 'asdf:compile-op 'cl-variates :force t)
+;; (asdf:oos 'asdf:compile-op 'cl-variates-test :force t)
+;; (asdf:oos 'asdf:load-op 'lift)
+;; (asdf:oos 'asdf:load-op 'cl-variates)
 (asdf:oos 'asdf:load-op 'cl-variates-test)
 
 (in-package :cl-variates-test)
+;; check tests
 (run-tests :suite 'cl-variates-test)
 (describe (run-tests :suite 'cl-variates-test))
 
 (in-package :cl-variates-user)
-
+;; example usage
 (defparameter state (make-random-number-generator))
 (setf (random-seed state) 44)
 (random-seed state)
 (loop for i from 1 to 10 collect
                   (random-range state 0 10))
+;; => (1 5 1 0 7 1 2 2 8 10)
 (setf (random-seed state) 44)
 (loop for i from 1 to 10 collect
                   (random-range state 0 10))
-
+;; => (1 5 1 0 7 1 2 2 8 10)
 
 (setf (random-seed state) 44)
 (random-seed state)
 (loop for i from 1 to 10 collect
                   (normal-random state 0 1))
+;; => 
+;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
+;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
+;;  0.20750134211656893 -0.14501914108452274)
+
 (setf (random-seed state) 44)
 (loop for i from 1 to 10 collect
                   (normal-random state 0 1))
-
-
+;; => 
+;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
+;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
+;;  0.20750134211656893 -0.14501914108452274)
 
 
 ;;; experiments with LLA
