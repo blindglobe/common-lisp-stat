@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-19 23:08:58 tony>
+;;; Time-stamp: <2009-09-21 19:51:17 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -137,6 +137,18 @@
 (random-seed state)
 (loop for i from 1 to 10 collect
                   (random-range state 0 10))
+(setf (random-seed state) 44)
+(loop for i from 1 to 10 collect
+                  (random-range state 0 10))
+
+
+(setf (random-seed state) 44)
+(random-seed state)
+(loop for i from 1 to 10 collect
+                  (normal-random state 0 1))
+(setf (random-seed state) 44)
+(loop for i from 1 to 10 collect
+                  (normal-random state 0 1))
 
 
 
@@ -144,6 +156,3 @@
 ;;; experiments with LLA
 (in-package :cl-user)
 (asdf:oos 'asdf:load-op 'lla)
-
-
-
