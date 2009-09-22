@@ -3,75 +3,75 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-09-17 22:19:31 tony>
-;;; Creation:   sometime in 2006...
+;;; Time-stamp: <2009-09-22 16:23:30 tony>
+;;; Creation:   <2009-09-17 22:19:31 tony> (sometime earlier, but serious now)
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2007, AJ Rossini.  BSD.
-;;; Purpose:    demonstrations of how one might use CLSv2.
+;;; Purpose:    demonstrations of how one might use CLS.
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
+
+;; Start in the usual user-package for loading
 (in-package :cl-user)
 
-;; (asdf:oos 'asdf:compile-op 'cls :force t)
+;; You've configured CLS, right?
 (asdf:oos 'asdf:load-op 'cls)
 
+;; Go somewhere so that you have the functions available.
 (in-package :ls-user)
 
-;; a bit of infrastructure for beginners
-(defparameter *my-cls-homedir*
-  "/media/disk/Desktop/sandbox/CLS.git/") ;; CHANGE THIS TO LOCALIZE!!
+;; we'll be loading from directories in the CLS homedir, so we want to
+;; make it easier to reach.  
+(defparameter *my-cls-homedir* 
+  "/media/disk/Desktop/sandbox/CLS.git/"    ; <- value with trailing
+					    ;    directory separator
+  "documentation: change this to localize") ; <- doc
+;; so
 (concatenate 'string *my-cls-homedir* "Data/example.csv")
 ;; implies
 (defun localized-pathto (x)
+  "return a string denoting the complete path.
+FIXME: UNIX-centric (though might work on Mac OSX).  Might want to
+return a pathspec, not a string/namespec"
   (check-type x string)
   (concatenate 'string *my-cls-homedir* x))
 
 
 ;;; DataFrames
 
-(defparameter *my-df-1*
+(defparameter *df-test*
   (make-instance 'dataframe-array
-		 :storage #2A((1 2 3 4 5)
-			      (10 20 30 40 50))
-		 :doc "This is an un-interesting dataframe-array"
-		 :case-labels (list "x" "y")
-		 :var-labels (list "a" "b" "c" "d" "e")))
+		 :storage #2A (('a "test0" 0 0d0)
+			       ('b "test1" 1 1d0)
+			       ('c "test2" 2 2d0)
+			       ('d "test3" 3 3d0)
+			       ('e "test4" 4 4d0))
+		 :doc "test reality"
+		 :case-labels (list "0" "1" "2" "3" "4")
+		 :var-labels (list "symb-var" "strng-var" "int-var" "dfloat-var")
+		 :var-types (list 'symbol 'string 'integer 'double-float)))
 
-(setf (xref *my-df-1* 0 0) -1d0)
-;; *my-df-1*
+*df-test* ; but with SBCL, ints become floats? 
+(caselabels *df-test*)
+(varlabels *df-test*)
+(vartypes *df-test*)
 
+(setf (xref *df-test* 0 0) -1d0) ; for dataframes, we might want to do
+				 ; some type checking to prevent what
+				 ; I just did!
 
+(setf (xref *df-test* 0 0) (quote 'a)) ; so that we can restore the
+				       ; quoted value.
+*df-test*
+
+;; Making from arrays and matrix-likes
 (make-dataframe  #2A((1 2 3 4 5)
 		     (10 20 30 40 50)))
-
 (make-dataframe (rand 4 3))
-
-
-(defparameter *my-df-2*
-  (make-dataframe  #2A((1 2 3 4 5)
-		       (10 20 30 40 50))
-		   :caselabels (list "x" "y")
-		   :varlabels (list "a" "b" "c" "d" "e")	
-		   :doc "This is another boring dataframe-array"))
-
-(caselabels *my-df-1*)
-(varlabels *my-df-1*)
-
-
-
-(defparameter *my-df-2*
-  (make-dataframe  #2A((a 2    T  4  5)
-		       (b 20 nil 40 50))
-		   :caselabels (list "x" "y")
-		   :varlabels (list "a" "b" "c" "d" "e")	
-		   :doc "This is another boring dataframe-array"))
-
-;; *my-df-2*
-
 
 ;;; HERE#1
 ;;; == READ DATA
