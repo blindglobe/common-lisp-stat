@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-09-22 16:23:30 tony>
+;;; Time-stamp: <2009-09-22 23:42:06 tony>
 ;;; Creation:   <2009-09-17 22:19:31 tony> (sometime earlier, but serious now)
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -78,16 +78,21 @@ return a pathspec, not a string/namespec"
 
 ;;; read in a CSV dataframe...
 
-
 ;; a better approach is:
 (asdf:oos 'asdf:load-op 'rsm-string)
-(rsm.string:file->string-table
- (localized-pathto "Data/example-mixed.csv")
- :delims ",")
+(listoflist->array
+ (rsm.string:file->string-table
+  (localized-pathto "Data/example-mixed.csv")
+  :delims ","))
 
 (rsm.string:file->number-table
  (localized-pathto "Data/example-numeric.csv")
  :delims ",")
+
+
+
+
+
 
 (rsm.string:file->number-table
  (localized-pathto "Data/R-chickwts.csv")
