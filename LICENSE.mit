@@ -1,7 +1,7 @@
-CommonLisp Stat, a set of packages supporting Statistically oriented
-Data Analyis in Lisp.
+Common Lisp Statistics, a set of packages supporting statistically
+oriented data analyis using Common Lisp.
 
-Copyright (c) 2007--2008 AJ Rossini, <blindglobe@gmail.com>
+Copyright (c) 2007--2009 AJ Rossini, <blindglobe@gmail.com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
