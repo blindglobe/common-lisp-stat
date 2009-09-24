@@ -2,17 +2,16 @@
 
 ;;; File:       unittests-dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
+;;; Copyright:  (c)2008--, AJ Rossini.  Currently licensed under MIT
+;;;             license.  See file LICENSE.mit in top-level directory
+;;;             for information.
 ;;; Purpose:    unittests for the dataframe package
-;;; Time-stamp: <2009-08-20 07:46:30 tony>
+;;; Time-stamp: <2009-09-24 10:30:20 tony>
 ;;; Creation:   <2008-05-09 14:18:19 tony>
-
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
 
 (in-package :lisp-stat-unittests)
 
