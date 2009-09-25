@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-19 23:17:32 tony>
+;;; Time-stamp: <2009-09-24 10:49:17 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -61,6 +61,11 @@
 ;;; - check consistency of resulting data with metadata and related
 ;;;           data information.
 
+;;; Is there any need for an N-way dataframe (N>2) ?   Am currently
+;;; assuming not, that this is specializing only the
+;;; "independent cases"-by-variables format and that there would be
+;;; other tools for other structures.
+
 ;;; Misc Functions (to move into a lisp data manipulation support package)
 
 ;; the next two should be merged into a general replicator pattern.
@@ -77,7 +82,6 @@
   (repeat-seq 3 (list 1 2))"
   (if (>= n 1)
       (append (repeat-seq (1- n)  item) (list item))))
-
 
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.
@@ -136,20 +140,20 @@ value is returned indicating the success of the conversion.  Examples:
      We emulate that, and add storage, row/column labels, and
      within-column-typing.
 
-		    DATAFRAME-LIKE is the basic cases by variables
-		    framework.  Need to embed this within other
-		    structures which allow for generalized relations.
-		    Goal is to ensure that relations imply and drive
-		    the potential for statistical relativeness such as
-		    correlation, interference, and similar concepts.
+     DATAFRAME-LIKE is the basic cases by variables framework.  Need
+     to embed this within other structures which allow for generalized
+     relations.  Goal is to ensure that relations imply and drive the
+     potential for statistical relativeness such as correlation,
+     interference, and similar concepts.
 
-		    STORE is the storage component.  We ignore this in
-		    the DATAFRAME-LIKE class, as it is the primary
-		    differentiator, spec'ing the structure used for
-		    storing the actual data.  We create methods which
-		    depend on STORE for access.  See DATAFRAME-ARRAY
-		    and DATAFRAME-MATRIXLIKE for examples.  The rest of
-		    this is metadata."))
+     STORE is the storage component.  We ignore this in the
+     DATAFRAME-LIKE class, as it is the primary differentiator,
+     spec'ing the structure used for storing the actual data.  We
+     create methods which depend on STORE for access.  The only
+     critical component is that STORE be a class which is
+     xarray-compliant.  Examples of such mixins are DATAFRAME-ARRAY
+     and DATAFRAME-MATRIXLIKE.  The rest of this structure is
+     metadata."))
 
 ;;; Specializing on superclasses...
 ;;;
@@ -170,13 +174,18 @@ value is returned indicating the success of the conversion.  Examples:
 ;; Testing consistency/coherency.
 
 (defgeneric consistent-dataframe-p (df)
-  (:documentation "methods to check for consistency.")
-  (:method ((df dataframe-like))
+  (:documentation "methods to check for consistency.  Mostly of
+  internal interest, since ideally we'd have to use standard
+  constructs to ensure that we do not get the dataframe structure
+  misaligned.")
+  (:method (object) "General objects are not consistent dataframes!" nil)
+  (:method ((df dataframe-like)) 
+    "At minimum, must dispatch on virtual-class."
     (and
      ;; ensure dimensionality
      (= (length (var-labels df)) (ncols df)) ; array-dimensions (dataset df))
      (= (length (case-labels df)) (nrows df))
-     ;; when dims sane, check-type for each variable
+     ;; when dims are sane, ensure variable-typing is consistent
      (progn
        (dotimes (i (nrows df))
 	 (dotimes (j (ncols df))
