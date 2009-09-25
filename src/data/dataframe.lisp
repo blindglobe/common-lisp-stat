@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-24 10:49:17 tony>
+;;; Time-stamp: <2009-09-25 08:01:46 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -411,11 +411,28 @@ structure."
 ;;; Need to implement views, i.e. dataframe-view-like,
 ;;; observation-view-like, variable-view-like.  
 
+
+
 ;;; Need to consider read-only variants, leveraging the xref
 ;;; strategy.
 
 
 
+;;; Dataframe <-> Listoflist support
+;; the following will be handy to help out folks adjust.  It should
+;; provide a means to write code faster and better.
+;; 
+;; leverages listoflist support in our version of xarray
+(defun listoflist->dataframe (lol) ; &key (type :row-major))
+  "Create a cases-by-variables data frame consisting of numeric data,
+from a ROW-MAJOR list-of-lists representation.  A COLUMN-MAJOR
+representation should be handled using the transpose-listoflists
+function."
+  (check-type lol list) ; imperfect -- must verify all list elements are also lists.
+  (if (lists-of-same-size lol)
+      (make-dataframe  (listoflist->array lol))
+      (error "make-data-set-from-lists: no combining different length lists"))
+  (error "make-data-set-from-lists: proposed name exists"))
 
 
 ;;;;;;;; from dataframe-xarray experiment
@@ -454,3 +471,4 @@ structure."
 
  (defmethod carray ())
 |#
+
