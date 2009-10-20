@@ -14,10 +14,9 @@ external/*
 run-emacs.sh
 BrentWork
 .ditz-config
-Doc/Rossini-RiceU-2009Mar.*
-Doc/*.pdf
 Doc/*/*.pdf
 Doc/*/*.aux
+Doc/*/*.dvi
 Doc/*/*.nav
 Doc/*/*.out
 Doc/*/*.snm
