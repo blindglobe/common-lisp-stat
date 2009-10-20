@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-10-09 12:02:09 tony>
+;;; Time-stamp: <2009-10-09 12:17:47 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       procedures.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -44,11 +44,20 @@
 ;;; knowledge-base whose leaves are described by the path to them.
 
 (defvar *statistical-procedure-components*
-  '(wald-test
-    t-test
-    likelihood-ratio-test
-    score-test
+  '((interval-estimation
 
+     (hypothesis-testing ; coarsened interval
+      (frequentist
+       (fisherian
+	(neyman-pearson
+	 (wald-test
+	  t-test
+	  likelihood-ratio-test
+	  score-test))))))
+    (point-estimation
+     maximum-likelihood-estimation)
+
+    ()
     optimization
     root-finding
 
@@ -57,8 +66,15 @@
     mathematical-forms
     ))
 
+(defclass statistical-ontology-class ()
+  ()
+  (:documentation "container class for manipulation of structural components."))
 
 (defclass statistical-decision ()
+  ((ontology-classification :initform nil
+			    :initarg :ontology-classification
+			    :type statistical-ontology-class
+			    ))
   (:documentation "instance describing the end result, if it is an
   interval/range/region, or point estimate, or a conclusion from a
   test (i.e. hypothesis(es) selected, strength of conclusion)"))
