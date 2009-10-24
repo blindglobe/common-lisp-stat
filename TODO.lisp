@@ -25,7 +25,7 @@
     ;;(asdf:oos 'asdf:load-op 'lisp-matrix)
     ;;(asdf:oos 'asdf:compile-op 'cls :force t)
     (asdf:oos 'asdf:load-op 'cls)
-    
+
     ;; visualization
     (asdf:oos 'asdf:load-op 'cl-cairo2-x11)
     (asdf:oos 'asdf:load-op 'cl-2d)
@@ -33,6 +33,8 @@
     ;; doc reporting
     (asdf:oos 'asdf:load-op 'cl-pdf)
     (asdf:oos 'asdf:load-op 'cl-typesetting))
+
+  ;;(asdf:oos 'asdf:load-op 'xarray)
 
   (init-CLS))
 
@@ -74,7 +76,6 @@
   (with-data dataset ((dsvarname1 [usevarname1])
                       (dsvarname2 [usevarname2]))
       @body))
-
 
 (defparameter *df-test*
   (make-instance 'dataframe-array
@@ -163,3 +164,5 @@
 ;;; experiments with LLA
 (in-package :cl-user)
 (asdf:oos 'asdf:load-op 'lla)
+(in-package :lla-user)
+
