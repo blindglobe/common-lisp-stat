@@ -1,0 +1,10 @@
+ 0  ~/sandbox/xarray.git
+ 1  ~/sandbox/foreign-numeric-vector.git
+ 2  ~/sandbox/trivial-features.git
+ 3  ~/sandbox/alexandria.git
+ 4  ~/sandbox/babel.git
+ 5  ~/sandbox/cffi.git
+ 6  ~/sandbox/cl-utilities
+ 7  ~/sandbox/metabang-bind.git
+ 8  ~/sandbox/iterate.git
+ 9  ~/sandbox/array-operations.git
