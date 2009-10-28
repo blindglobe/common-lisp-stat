@@ -16,39 +16,46 @@
 
 (in-package :lisp-stat-data)
 
-;;; consider that data has 3 genotypic characteristics.  The first
-;;; is storage form -- scalar, vector, array.  second would be datarep
-;;; ("computer science simplistic data" type.  in particular integer,
-;;; real, string, symbol.  The last would be statistical type
-;;; ("usually handled by computer science approaches via metadata").
-;;; augmenting datarep type with use in a statistical context,
-;;; i.e. that would include nominal, ordinal, integer, continous,
-;;; interval (orderable subtypes).  Clearly, the statistical type can
-;;; be inherited, likewise the numerical type as well.  The form can
-;;; be pushed up or simplified as necessary, but this can be
-;;; challenging.
-
-;;; The first approach considered is for CLS to handle this as
-;;; lisp-only structures.  When we realize an "abstract" model, the
-;;; data should be pushed into an appropriate form (either "en masse",
-;;; or "on-demand") into a linear algebra framework.
-
-;;; There is some excellent material on this by John Chambers in one
-;;; of his earlier books.  Reference is being ignored to encourage
-;;; people to read them all.  With all due respect to John, they've
-;;; lasted quite well, but need to be updated.
-
 ;;; The purpose of this package is to manage data which will be
 ;;; processed by LispStat.  In particular, it will be important to
 ;;; register variables, datasets, relational structures, and other
 ;;; objects which could be the target for statistical modeling and
 ;;; inference.
 
-(defvar *lisp-stat-data-table* (make-hash-table)
-  "Marks up the data the could be used by.")
+;;; data management, in the context of this system, needs to consider
+;;; the following: 
+;;; # multiscale metadata: describing at the variable, observation,
+;;;   dataset, and collection-of-datasets scales
+;;; # data import: push-based (ETL-functionality (extract, t###,
+;;;   load) externally driven); and pull-based (std data import
+;;;   functionality) 
+;;; # triggers or conditions, for automating situational events
+;;; # data export functionality
 
-(defvar *lisp-stat-data-count* 0
-  "number of items currently recorded.")
+;;; consider that data has 3 genotypic characteristics.
+;;; #1: storage form -- scalar, vector, array.  
+;;; #2: datarep ("computer science simplistic data") type, such as
+;;;     integer, real, string, symbol.
+;;; #3: statrep (statistical type), "usually handled by computer
+;;;     science approaches via metadata", augmenting datarep type with
+;;;     use in a statistical context, i.e. that would include nominal,
+;;;     ordinal, integer, continous, interval (orderable subtypes).
+;;;
+;;; Clearly, the statistical type can be inherited, likewise the
+;;; numerical type as well.  The form can be pushed up or simplified
+;;; as necessary, but this can be challenging.
+
+;;; The first approach considered is for CLS to handle this as
+;;; lisp-only structures.  When we realize an "abstract" model, the
+;;; data should be able to be pushed by appropriate triggers (either
+;;; "en masse", or "on-demand") into an appropriate linear algebra
+;;; framework.
+
+;;; There is some excellent material on this by John Chambers in one
+;;; of his earlier books.  Reference is being ignored to encourage
+;;; people to read them all.  With all due respect to John, they've
+;;; lasted quite well, but need to be updated.
+
 
 ;;; Data (storage) Types, dt-{.*}
 ;;;
@@ -63,8 +70,8 @@
 ;;; This is completely subject to change, AND HAS.  We use a class
 ;;; heirarchy to generate the types, deriving from the virtual
 ;;; dataframe-like and matrix-like classes to construct what we think
-;;; we might need.
-
+;;; we might need, in terms of variables, observations, datasets, and
+;;; collections-of-datasets.
 
 ;;; Statistical Variable Types, sv-{.*} or statistical-variable-{.*}
 ;;; 
@@ -77,74 +84,101 @@
 ;;; originally, these were considered to be types, but now, we
 ;;; consider this in terms of abstract classes and mix-ins.
 
-(defclass nominal-statistical-variable ()
-  ((data :initform nil
-	 :accessor data
-	 :type sequence)
-   (levels :initform nil
-	   :accessor levels
-	   :type sequence)))
+;;; STATISTICAL VARIABLES SHOULD BE XARRAY'd
 
-(defclass ordinal-statistical-variable (nominal-statistical-variable)
+;; Need to distinguish between empirical and model-based realizations
+;; of variables.   Do we balance by API design, or should we ensure that
+;; one or the other is more critical (via naming convention of adding
+;; description to class name)?
+
+
+(defclass empirical-statistical-variable
+    ()
+  ((number-of-observations :initform 0
+			   :initarg :nobs
+			   :accessor nobs
+			   ;; :type generalized-sequence ; sequence or
+			   ;; array
+			   :documentation "number of statistically
+    independent observations in the current context (assuming design,
+    marginalization, and conditioning to create the current dataset
+    from which this variable came from)."))
+  (:documentation "basic class indicating that we are working with a
+    statistical variable (arising from a actual set of observation or
+    a virtual / hypothesized set)."))
+
+(defclass modelbased-statistical-variable
+    ()
+  ((density/mass-function :initform nil
+			  :initarg :pdmf
+			  :accessor pdmf
+			  :type function
+			  :documentation "core function indicating
+    probability of a set of observations")
+   (draw-function :initform nil
+		  :initarg :drawf
+		  :accessor draw  ; must match cl-random API
+		  :type function
+		  :documentation "function for drawing an observation,
+    should take an optional RV arg for selecting the stream to draw
+    from."))
+  (:documentation "model-based statistical variables have observations
+    which come from a model.  Core information is simply how to
+    compute probabilities, and how to draw a new realization.  All
+    else should be deriveable from these two.  Possibly we need
+    additional metadata for working with these?"))
+
+(defclass categorical-statistical-variable
+    (statistical-variable)
+  ((factor-levels :initform nil
+		  :initarg :factor-levels
+		  :accessor factor-levels
+		  :type sequence
+		  :documentation "the possible levels which the
+    variable may take.  These should be a (possibly proper) superset
+    of the actual current levels observed in the variable.")))
+
+(defclass nominal-statistical-variable
+    (categorical-statistical-variable)
+  ()
+  (:documentation "currently identical to categorical variable, no
+    true difference from the most general state."))
+
+(defclass ordinal-statistical-variable
+    (nominal-statistical-variable)
   ((ordering :initform nil
+	     :initarg :ordering
 	     :accessor ordering
-	     :type sequence)))
+	     :type sequence
+	     :documentation "levels are completely ordered, and this
+    should be an ordered sequence (prefer array/vector?) of unique
+    levels. (do we need a partially ordered variant?)"))
+  (:documentation "categorical variable whose levels are completely ordered."))
 
-;;;;
-;;;; Listing and Saving Variables and Functions
-;;;;
+(defclass continuous-statistical-variable
+    (statistical-variable)
+  ((support :initform nil
+	    :accessor support
+	    :type sequence
+	    :documentation "Support is used in the sense of
+    probability support, and should be a range, list of ranges, t
+    (indicating whole space), or nil (indicating measure-0 space)."))
+  (:documentation "empirical characteristics for a continuous
+    statistical variable"))
 
-(defvar *variables* nil)
-(defvar *ask-on-redefine* nil)
 
-(defmacro def (symbol value)
-  "Syntax: (def var form)
-VAR is not evaluated and must be a symbol.  Assigns the value of FORM to
-VAR and adds VAR to the list *VARIABLES* of def'ed variables. Returns VAR.
-If VAR is already bound and the global variable *ASK-ON-REDEFINE*
-is not nil then you are asked if you want to redefine the variable."
-  `(progn
-     (unless (and *ask-on-redefine*
-		  (boundp ',symbol)
-		  (not (y-or-n-p "Variable has a value. Redefine?")))
-       (defparameter ,symbol ,value))
-     (pushnew ',symbol *variables*)
-     ',symbol))
-  
-(defun variables-list () 
-  "Return list of variables as a lisp list of strings."
-  (mapcar #'intern (sort-data (mapcar #'string *variables*))))
+(defmethod print-object ((object statistical-variable) stream)
+  "Need to work through how to print various objects.  Statvars don't
+necessarily have data yet!"
+  (print-unreadable-object (object stream :type t)
+    (format stream "nobs=~d" (nobs object))))
 
-(defun variables ()
-  "Args:()
-Returns a list of the names of all def'ed variables to STREAM"
-  (if *variables*
-      (mapcar #'intern (sort-data (mapcar #'string *variables*)))))
-  
-(defun savevar (vars file)
-"Args: (vars file-name-root)
-VARS is a symbol or a list of symbols. FILE-NAME-ROOT is a string (or a symbol
-whose print name is used) not endinf in .lsp. The VARS and their current values
-are written to the file FILE-NAME-ROOT.lsp in a form suitable for use with the
-load command."
-  (with-open-file (f (concatenate 'string (namestring file) ".lsp")
-		     :direction :output)
-    (let ((vars (if (consp vars) vars (list vars))))
-      (flet ((save-one (x)
-	       (let ((v (symbol-value x)))
-		 (if (objectp v) 
-		     (format f "(def ~s ~s)~%" x (send v :save))
-		   (format f "(def ~s '~s)~%" x v)))))
-	    (mapcar #'save-one vars))
-      vars)))
-
-(defun undef (v)
-"Args: (v)
-If V is the symbol of a defined variable the variable it is unbound and
-removed from the list of defined variables. If V is a list of variable
-names each is unbound and removed. Returns V."
-  (dolist (s (if (listp v) v (list v)))
-          (when (member s *variables*)
-                (setq *variables* (delete s *variables*))
-                (makunbound s)))
-  v)
+(defmethod print-object ((object categorical-statistical-variable) stream)
+  "Need to work through how to print various objects.  Statvars don't
+necessarily have data yet!  Here, we should print out the stat-var
+information, (pass to superclass) and then print out factor levels if
+short enough (exact class).  Useful to review methods-mixing for
+this."
+  (print-unreadable-object (object stream :type t)
+    (format stream "nobs=~d" (nobs object))
+    (format stream "levels=~A" (factor-levels object))))
