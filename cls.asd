@@ -194,6 +194,7 @@
 		 (:file "dataframe-matrixlike")
 		 (:file "dataframe-listoflist")
 		 (:file "data")
+		 (:file "data-xls-compat")
 		 (:file "import")
 		 ;;(:file "listoflist")
 		 ))
