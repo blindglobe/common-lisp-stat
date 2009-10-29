@@ -45,6 +45,87 @@ This forms an \textit{abstract class} of a procedure, which can be
 represented by a real class, which can then be instantiated through
 the application of data.
 
+\subsection{Decision}
+\label{sec:components:decision}
+
+By example, consider the t-test as an instance of a procedure,
+representing the general class of testing hypotheses surrounding 2
+means.  Related would be formal likelihood tests with distributions,
+the superspace/classes from regression and ANOVA.
+Questions could be:
+\begin{itemize}
+\item are the 2 means the same?
+\item what is the difference?
+\item what is the strength of the difference?
+\end{itemize}
+
+\subsection{Core Assessment}
+\label{sec:components:assessment}
+
+This is the construction of the model and parameters that would be
+used to form the term used to make the assessment.  Here, we could
+consider 
+\begin{equation}
+  \label{eq:assess:ex:1}
+  \hat{E}[Y|G=1] - \hat{E}[Y|G=0]
+\end{equation}
+as the fundamental quantity to compare.    This can arise from many
+sources such as regression models
+\begin{equation}
+  \label{eq:assess:ex:2}
+  Y = \mu + \beta G + \epsilon \\
+  E[\epsilon] = 0
+\end{equation}
+or 
+\begin{equation}
+  \label{eq:assess:ex:2}
+  E[Y|G] = \mu + \beta G 
+\end{equation}
+
+\subsection{Normalized Behavior}
+\label{sec:components:normbeh}
+Let $X=(Y,G)$ from above, the whole data.
+
+empirical adjustment:
+\begin{equation}
+  \label{eq:norm:ex:1}
+  \frac{ \hat\mu_1 - \hat\mu_0}%
+  {\hat{SE}(\hat\mu_1 - \hat\mu_0)}
+\end{equation}
+or regression-model-based:
+\begin{equation}
+  \label{eq:norm:ex:2}
+  \frac{ \hat\beta}%
+  {\hat{SE}(\hat\beta)}
+\end{equation}
+or likelihood-model-based: (FIXME!)
+\begin{equation}
+  \label{eq:norm:ex:3}
+  -2 \log \frac{ L(\hat\beta|X)}%
+  {L(0|X)}
+\end{equation}
+or score-model-based:
+\begin{equation}
+  \label{eq:norm:ex:4}
+  \cal{I}^{-1}(\beta=0,X) S(\beta=0,X) 
+\end{equation}
+
+\subsection{Conclusion Desired}
+\label{sec:component:conclusion}
+
+Value or Range on the Target Scale (existing parameter describing
+data-oriented substantive model)
+
+Translation of Value/Range on the Decision Scale (what to do, what to
+decide about the problem, i.e. in a testing framework).
+
+\section{Class Implementation}
+\label{sec:class}
+
+
+\section{Discussion}
+\label{sec:disc}
+
 
 
 \end{document}
