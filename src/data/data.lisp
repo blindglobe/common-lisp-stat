@@ -166,7 +166,6 @@
   (:documentation "empirical characteristics for a continuous
     statistical variable"))
 
-
 (defmethod print-object ((object statistical-variable) stream)
   "Need to work through how to print various objects.  Statvars don't
 necessarily have data yet!"
@@ -178,7 +177,54 @@ necessarily have data yet!"
 necessarily have data yet!  Here, we should print out the stat-var
 information, (pass to superclass) and then print out factor levels if
 short enough (exact class).  Useful to review methods-mixing for
-this."
+this, first bit should be indentical to stat-var."
   (print-unreadable-object (object stream :type t)
     (format stream "nobs=~d" (nobs object))
     (format stream "levels=~A" (factor-levels object))))
+
+;;; Observations
+;;;
+
+(defclass statistical-observation ()
+  ((measurement-types :initform nil
+		      :initarg measurement-types
+		      :accessor measurement-types
+		      :type sequence
+		      :documentation "sequence of types corresponding
+  to the classes of entries which have been measured/recorded to form
+  the observation.")
+   (record :initform nil
+	   :initarg record
+	   :accessor record
+	   :type sequence
+	   :documentation "the sequence of data which is a realization
+  of the corresponding measurement type"))
+  (:documentation "denotes a vector of measurements, not necesarily
+  simple (i.e. entries could be scalar, array, network) which can be
+  assumed to be independent or at least conditionally independent
+  given measurements external to the collected dataset.  Failure of
+  this condition implies a single observation, not multiple
+  observations."))
+
+;;; At this point, from a dataframe, which is just a simple holding
+;;; structure, we should be able to extract variables and
+;;; observations, which ought to be coherent, atomic, complex objects.
+;;; (to create a wonderful contradiction: consider the time-series
+;;; from the Dow Jones Industrial Average -- in this case, we need
+;;; would have a dataset consisting of 1 observation and 1 variable --
+;;; which would be the singular time series (at whatever temporal
+;;; resolution was desired).
+
+;;; For now, we need to have a means of extracting components of the
+;;; dataframe into corresponding variables and observations as
+;;; needed.   We don't build up the dataframe directly from variables
+;;; (yet -- this could change as we consider the workflow/API
+;;; approach) but rather we tear-down the dataframe through
+;;; consideration of variables and observations.
+
+;;; this naturally means that this is metadata on top of the
+;;; dataframe, rather than building the dataframe on top of metadata.
+;;; For pragmatic reasons, it isn't always clear that the dataframe
+;;; MUST correspond to the particular instance of the practical
+;;; statistical philosophy espoused in this system.  But at some more
+;;; mature point, it should be.
