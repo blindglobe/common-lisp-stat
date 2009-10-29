@@ -34,7 +34,9 @@
     (asdf:oos 'asdf:load-op 'cl-pdf)
     (asdf:oos 'asdf:load-op 'cl-typesetting))
 
-  ;;(asdf:oos 'asdf:load-op 'xarray)
+  ;; (asdf:oos 'asdf:load-op 'xarray)
+  ;; (asdf:oos 'asdf:load-op 'cl-opengl)
+  ;; (asdf:oos 'asdf:load-op 'tinaa)
 
   (init-CLS))
 
