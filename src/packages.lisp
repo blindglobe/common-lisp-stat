@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-24 11:41:52 tony>
+;;; Time-stamp: <2009-10-30 08:17:46 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -313,7 +313,24 @@
 	:lisp-stat-compound-data)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
-  (:export open-file-dialog read-data-file read-data-columns load-data
+  (:export
+   ;; generic structures
+   ;; Variables
+   empirical-statistical-variable
+   modelbased-statistical-variable
+   categorical-statistical-variable
+   nominal-statistical-variable
+   ordinal-statistical-variable
+   continuous-statistical-variable
+   
+   ordering factor-levels nobs support pdmf draw
+   print-object
+
+   ;; Observations
+   statistical-observation
+   measurement-types record
+   ;; XLS compat tools
+   open-file-dialog read-data-file read-data-columns load-data
 	   load-example *variables* *ask-on-redefine*
 	   def variables savevar undef))
 
@@ -470,10 +487,18 @@
    lists-of-same-size equal-listoflist transpose-listoflist
 
    ;; data
+   ;; need to take this list and make it strings...  specs could mean
+   ;; that we process the strings in different ways?
+#|
+   (let ((lst ()))
+     (unlist
+       (mapc #'symbol-for-symbol-to-string-or-symbol
+	 (do-external-symbols (s (find-package 'lisp-stat-data) lst) (push s lst))))
+     lst)
+|#
    open-file-dialog read-data-file read-data-columns load-data
    load-example *variables* *ask-on-redefine*
    def variables savevar undef
-
    ;; dataframe
    dataframe-like dataframe-array make-dataframe
    varlabels caselabels nrows ncols
