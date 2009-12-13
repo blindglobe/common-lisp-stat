@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-23 07:14:56 tony>
+;;; Time-stamp: <2009-12-08 07:54:05 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,8 +13,28 @@
 ;;; designers and quality assurance people in its wake.
 
 
+;; start within the common-lisp-stat-user 
+(in-package :ls-user)
 
-(progn ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
+;; we'll be loading from directories in the CLS homedir, so we want to
+;; make it easier to reach.  
+(defparameter *my-cls-homedir* 
+  "/home/tony/sandbox/CLS.git/" ; <- value with trailing directory separator
+  "documentation: change this to localize") ; <- doc
+;; so
+(concatenate 'string *my-cls-homedir* "Data/example.csv")
+;; implies
+(defun localized-pathto (x)
+  "return a string denoting the complete path.
+FIXME: UNIX-centric (though might work on Mac OSX).  Might want to
+return a pathspec, not a string/namespec"
+  (check-type x string)
+  (concatenate 'string *my-cls-homedir* x))
+
+
+
+(progn
+  ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
   ;; The following breaks because we should use a package to hold
   ;; configuration details, and this would be the only package outside
   ;; of packages.lisp, as it holds the overall defsystem structure.
@@ -25,26 +45,15 @@
 
 
 
-(progn ;; Importing data from DSV text files.
+(progn
+  ;; Importing data from DSV text files.
 
-  (defparameter *my-df-2*
-	(make-instance 'dataframe-array
-		       :storage
-		       (listoflist->array
-			(cybertiggyr-dsv::load-escaped
-			 "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv"))
-		       :doc "This is an interesting dataframe-array"))
-#|		       :case-labels (list "x" "y")
-		       :var-labels (list "a" "b" "c" "d" "e")
-|#  
-
-  ;; a better approach is:
   (asdf:oos 'asdf:load-op 'rsm-string)
   (rsm.string:file->string-table
-   "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")
+   (localized-pathto "Data/example-mixed.csv"))
 
   (rsm.string:file->number-table
-   "/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv")
+   (localized-pathto "Data/example-numeric.csv"))
 
   (defparameter *my-df-2*
 	(make-instance 'dataframe-array
@@ -52,7 +61,7 @@
 		       (listoflist->array
 			(transpose-listoflist 
 			 (rsm.string:file->string-table
-			  "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
+			  (localized-pathto "Data/example-mixed.csv"))))
 		       :doc "This is an interesting dataframe-array"))
   *my-df-2*
 
@@ -62,7 +71,7 @@
 		       (listoflist->array
 			(transpose-listoflist 
 			 (rsm.string:file->number-table
-			  "/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv")))
+			  (localized-pathto "Data/example-numeric.csv"))))
 		       :doc "This is an interesting dataframe-array"))
   *my-df-3*
 
