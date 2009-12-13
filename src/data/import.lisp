@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-08-26 13:50:28 tony> 
+;;; Time-stamp: <2009-12-06 10:08:34 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -126,16 +126,16 @@ Reads the data in FILE as COLS columns and returns a list of lists representing 
 (defun load-data (file)
 "Args: (file) as string
 Read in data file from the data examples library."
-  (if (load (path-string-to-path *lispstat-data-dir* file))
+  (if (load (path-string-to-path *cls-data-dir* file))
       t
-      (load (path-string-to-path *lispstat-data-dir* file))))
+      (load (path-string-to-path *cls-data-dir* file))))
 
 (defun load-example (file)
   "Args: (file) as string
 Read in lisp example file from the examples library."
-  (if (load (path-string-to-path *lispstat-examples-dir* file))
+  (if (load (path-string-to-path *cls-examples-dir* file))
       t
-      (load (path-string-to-path *lispstat-examples-dir* file))))
+      (load (path-string-to-path *cls-examples-dir* file))))
 
 ;;;
 ;;; Saving Variables and Functions

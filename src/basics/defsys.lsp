@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-08-26 13:49:09 tony>
+;;; Time-stamp: <2009-12-03 17:18:04 tony>
 ;;; Creation:   <2009-08-26 13:48:13 tony>
 ;;; File:       defsys.lsp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -32,7 +32,7 @@
 (setf *lispstat-home-dir*
       ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
       ;; #p"/home/tony/sandbox/CommonLispStat.git/"
-      #p"/media/disk/Desktop/sandbox/CLS.git/")
+      #p"/home/tony/sandbox/CLS.git/")
   
 (defmacro ls-dir (root-str)
   `(pathname (concatenate 'string (namestring *lispstat-home-dir*) ,root-str)))

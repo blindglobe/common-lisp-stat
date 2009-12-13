@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-10-02 09:00:12 tony>
+;;; Time-stamp: <2009-12-13 17:51:37 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,8 +17,7 @@
   (:use :common-lisp)
   (:export *default-path*
 	   *lsos-files* *basic-files* *ls-files*
-	   *cls-home-dir*
-	   *cls-data-dir* *cls-examples-dir*))
+	   *cls-home-dir* *cls-data-dir* *cls-examples-dir*))
 
 (in-package :lisp-stat-config)
 
@@ -41,23 +40,11 @@
 
   (ls-defdir *cls-asdf-dir* "ASDF/")
   (ls-defdir *cls-data-dir* "Data/")
-  (ls-defdir *cls-external-dir* "external/")
-)
+  (ls-defdir *cls-external-dir* "external/"))
 
 ;;(pushnew *cls-asdf-dir* asdf:*central-registry*)
 
-
 ;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
-
-;;; back to our regularly scheduled work...
-;;; We should not need these, I think, but?
-;; (asdf:oos 'asdf:compile-op :cffi)            ;; FFI
-;; (asdf:oos 'asdf:compile-op :lift)            ;; Unit Testing 
-;; (asdf:oos 'asdf:load-op :cffi)            ;; FFI
-;; (asdf:oos 'asdf:load-op :lift)            ;; Unit Testing 
-
-;;; MAJOR HACK, FIXME!
-;;(load "/media/disk/Desktop/sandbox/matlisp.git/start.lisp")
 
 (in-package :cl-user)
 
@@ -100,14 +87,15 @@
   :author "A.J. Rossini <blindglobe@gmail.com>"
   :license "BSD"
   :description "Common Lisp Statistics (CLS): A System for Statistical
-  Computing with Common Lisp; based on CLS alpha1 by Luke Tierney
-  <luke@stat.uiowa.edu> (apparently originally written when Luke was
-  at CMU, on leave at Bell Labs?).  Last touched by him in 1991, then
-  by AJR in 2005--2009."
+  Computing with Common Lisp; based on Common LispStat (CLS alpha1) by
+  Luke Tierney <luke@stat.uiowa.edu> (apparently originally written
+  when Luke was at CMU, on leave at Bell Labs?).  Last touched by him
+  in 1991, then by AJR starting in 2005."
   :serial t
   :depends-on (:cffi
 	       :xarray
-	       :lisp-matrix
+	       :lisp-matrix ; on fnv, cl-blapack, ffa
+	       :listoflist
 	       :lift
 	       :rsm-string
 	       ;;    :cl-cairo2  :cl-2d
@@ -116,19 +104,9 @@
 	       (:static-file "LICENSE")
 	       (:static-file "README")
 
-	       ;; reading in DSV files for data access
-#|
-	       (:module 
-		"csv-data"
-		:pathname "src/data/"
-		:components
-		((:file "test-cybertiggyr")
-		 (:file "dsv-cybertiggyr" :depends-on ( "test-cybertiggyr"))))
-|#	       
 	       (:module
 		"packaging"
 		:pathname #p"src/"
-		;; :depends-on ("csv-data")
 		:components
 		((:file "packages")))
 
@@ -145,7 +123,7 @@
 			:serial t
 			:depends-on ("packaging" "proto-objects")
 			:components
-			(; (:cls-lsp-source-file "defsys")
+			(;(:cls-lsp-source-file "defsys") ; XLS compat?
 			 (:cls-lsp-source-file "lstypes")
 			 (:cls-lsp-source-file "lsfloat")
 			 
