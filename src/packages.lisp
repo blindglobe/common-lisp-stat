@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-06 10:05:51 tony>
+;;; Time-stamp: <2009-12-13 18:04:07 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -35,7 +35,6 @@
   (:use :common-lisp)
   (:export *common-lisp-stat-version*
 	   *default-path* *lsos-files* *basic-files* *ls-files*
-	   ;; *lispstat-home-dir* *lispstat-data-dir* *lispstat-examples-dir*
 
 	   *cls-data-dir* *cls-home-dir* *cls-examples-dir*))
 
@@ -423,7 +422,7 @@
   (:export
    ;; lisp-stat-config:
    *default-path* *lsos-files* *basic-files* *ls-files*
-   *lispstat-home-dir* *lispstat-data-dir* *lispstat-examples-dir*  
+l   *cls-home-dir* *cls-data-dir* *cls-examples-dir*  
 
    ;; lsobjects :
    defproto defproto2

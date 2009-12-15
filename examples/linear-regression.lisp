@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-12 13:20:41 tony>
+;;; Time-stamp: <2009-12-13 18:02:13 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       linear-regression.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -65,7 +65,7 @@
 (defparameter *my-df*
   (make-dataframe
    (rsm.string::file->string-table
-    (concatenate 'string *lispstat-data-dir*  "file.dsv"))
+    (concatenate 'string *cls-data-dir*  "file.dsv"))
   "Initial read-in of data."))
 
 (defparameter *my-resp-var* (slice *my-df* ))
