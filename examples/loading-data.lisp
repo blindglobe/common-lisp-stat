@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-08 07:54:05 tony>
+;;; Time-stamp: <2009-12-17 17:31:29 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -58,20 +58,18 @@ return a pathspec, not a string/namespec"
   (defparameter *my-df-2*
 	(make-instance 'dataframe-array
 		       :storage
-		       (listoflist->array
-			(transpose-listoflist 
+		       (listoflist:listoflist->array
 			 (rsm.string:file->string-table
-			  (localized-pathto "Data/example-mixed.csv"))))
+			  (localized-pathto "Data/example-mixed.csv")))
 		       :doc "This is an interesting dataframe-array"))
   *my-df-2*
 
   (defparameter *my-df-3*
 	(make-instance 'dataframe-array
 		       :storage
-		       (listoflist->array
-			(transpose-listoflist 
+		       (listoflist:listoflist->array
 			 (rsm.string:file->number-table
-			  (localized-pathto "Data/example-numeric.csv"))))
+			  (localized-pathto "Data/example-numeric.csv")))
 		       :doc "This is an interesting dataframe-array"))
   *my-df-3*
 
