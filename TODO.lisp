@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-17 17:19:03 tony>
+;;; Time-stamp: <2009-12-19 00:10:59 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -34,14 +34,21 @@
     (asdf:oos 'asdf:load-op 'cl-pdf)
     (asdf:oos 'asdf:load-op 'cl-typesetting))
 
+  ;;INFRA
   ;; (asdf:oos 'asdf:compile-op 'asdf-system-connections :force t)
-
+  ;; (asdf:oos 'asdf:compile-op 'lisp-matrix)
   ;; (asdf:oos 'asdf:load-op 'xarray)
 
+  ;;DOCS
   ;; (asdf:oos 'asdf:compile-op 'metatilities-base :force t)
+  ;; (asdf:oos 'asdf:load-op 'metatilities-base)
   ;; (asdf:oos 'asdf:load-op 'anaphora)
   ;; (asdf:oos 'asdf:load-op 'tinaa)
+  ;; (asdf:oos 'asdf:load-op 'cl-ppcre)
+  ;; (asdf:oos 'asdf:load-op 'cl-markdown)
 
+  ;;VIZ
+  ;; (asdf:oos 'asdf:compile-op 'cffi :force t)
   ;; (asdf:oos 'asdf:load-op 'cl-opengl)
   ;; (asdf:oos 'asdf:load-op 'cl-glu)
   ;; (asdf:oos 'asdf:load-op 'cl-glut)
