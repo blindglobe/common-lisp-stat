@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-15 08:53:25 tony>
+;;; Time-stamp: <2009-12-20 22:30:02 tony>
 ;;; Creation:   <2009-04-15 08:43:02 tony>
 ;;; File:       unittests-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -29,20 +29,6 @@
    (my-lol-1 '((0d0  1d0  2d0  3d0)
 	       (10d0 11d0 12d0 13d0)))))
 
-
-;;; Listoflist tests
-
-(addtest (lisp-stat-ut-listoflist) lol-equalp
-	 (ensure
-	  (equalp (dataset (make-instance 'dataframe-array
-					  :storage #2A(('a 'b)
-						       ('c 'd))))
-		  #2A(('a 'b)
-		      ('c 'd)))))
-
-(addtest (lisp-stat-ut-listoflist) lol-consdata
-	 (ensure 
-	  (consistent-dataframe-p my-df-1)))
 
 
 ;;;
