@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-12-06 10:08:34 tony> 
+;;; Time-stamp: <2009-12-20 22:27:42 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -31,7 +31,8 @@
 ;;; package.  The latter seems to actually work a bit at what we need
 ;;; to acccomplish, but the former is a challenge to get right when we
 ;;; need to think abut what it is that we need to get done.  The
-;;; latter is also better licensed. i.e. BSD-style.
+;;; latter is also better licensed. i.e. BSD-style.  The latter is
+;;; implemented through filename->dataframe 
 
 
 (defparameter *lisp-stat-data-external-source-formats*
@@ -216,7 +217,22 @@ Usually used by:
 
 |#
 
-;;(defmacro with-dataframe (env &rest progn) 
-;;  "Compute using variable names with with.data.frame type semantics.")
-
-
+(defun filename.dsv->dataframe (filename &optional
+				(delimchar ",")
+				(varnameheader 't)
+				(docstring "This is an amusing dataframe array")
+				(arraystorage-object 'dataframe-array))
+  "Reads the DSV file FILENAME and returns a dataframe-array object.
+By default, the delimiter is a ',' which can be changed.  
+FIXME: could read first 2 lines, and logically guess if the first is variable name or not."
+  (let ((csv-file-data (rsm.string:file->number-table
+			filename 
+			:delims delimchar)))
+    (let ((var-name-list (if varnameheader
+			     (car csv-file-data)
+			     (make-labels "V"  (length (car csv-file-data)))))
+	  (data-list (listoflist:listoflist->array (cdr csv-file-data))))
+      (make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
+		 :storage data-list
+		 :var-labels var-name-list
+		 :doc docstring))))

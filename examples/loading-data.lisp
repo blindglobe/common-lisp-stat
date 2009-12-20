@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-20 12:34:10 tony>
+;;; Time-stamp: <2009-12-20 22:31:25 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -102,24 +102,6 @@ return a pathspec, not a string/namespec"
 
   *test-df*
 
-  (defun filename->dataframe (filename &optional
-			      (delimchar ",")
-			      (varnameheader 't)
-			      (docstring "This is an amusing dataframe array")
-			      (arraystorage-object 'dataframe-array))
-    "Reads the DSV file FILENAME and returns a dataframe-array object.
-  By default, the delimiter is a ',' which can be changed.  Need to be able"
-    (let ((csv-file-data (rsm.string:file->number-table
-			  filename 
-			  :delims delimchar)))
-      (let ((var-name-list (if varnameheader
-			       (car csv-file-data)
-			       (make-labels "V"  (length (car csv-file-data)))))))
-	    (data-list (listoflist:listoflist->array (cdr csv-file-data))))
-	(make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
-		       :storage data-list
-		       :var-labels var-name-list
-		       :doc docstring))))
 
   (defparameter *testdf-2*  (filename->dataframe (localized-pathto "Data/R-chickwts.csv")))
   ;; *testdf-2*
