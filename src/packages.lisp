@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-20 22:09:08 tony>
+;;; Time-stamp: <2009-12-20 22:13:48 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -175,7 +175,7 @@
 (defpackage :cls-data
   (:use :common-lisp
 	:xarray
-	:listsoflists
+	:listoflist
 	:lisp-matrix
 	:cls-dataframe) ; for dataframe
   (:shadowing-import-from :xarray slice)
