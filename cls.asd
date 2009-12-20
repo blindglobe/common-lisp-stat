@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-12-13 17:51:37 tony>
+;;; Time-stamp: <2009-12-20 22:30:50 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -173,9 +173,7 @@
 		 (:file "dataframe-listoflist")
 		 (:file "data")
 		 (:file "data-xls-compat")
-		 (:file "import")
-		 ;;(:file "listoflist")
-		 ))
+		 (:file "import")))
 
 	       (:module
 		"cls-basics"
