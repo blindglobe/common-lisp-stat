@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-20 12:42:50 tony>
+;;; Time-stamp: <2009-12-20 22:09:08 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -175,17 +175,13 @@
 (defpackage :cls-data
   (:use :common-lisp
 	:xarray
+	:listsoflists
 	:lisp-matrix
 	:cls-dataframe) ; for dataframe
   (:shadowing-import-from :xarray slice)
   (:export listoflist->dataframe
 	   listoflist->array
 	   listoflist->matrix-like))
-#|
-           lists-of-same-size
-	   equal-listoflist
-	   transpose-listoflist
-|#
 
 (defpackage :cls-dataimport
   (:documentation "Data I/O and similar import technologies.")
@@ -387,6 +383,7 @@
   (:nicknames :cls :common-lisp-statistics :lisp-stat)
   (:use :common-lisp
 	:xarray ;; generic reference -- internally supporting array, lol structs
+	:listoflist
 	:lisp-matrix ;; conversion to a more robust linalg approach
 	:lisp-stat-config
 	:lisp-stat-object-system
@@ -493,7 +490,9 @@ l   *cls-home-dir* *cls-data-dir* *cls-examples-dir*
 
    ;; xarray
    xref xtype xdims xdim xdims* 
-   lists-of-same-size equal-listoflist transpose-listoflist
+
+   ;; listoflist
+   sublists-of-same-size-p equal-listoflist transpose-listoflist
 
    ;; data
    ;; need to take this list and make it strings...  specs could mean

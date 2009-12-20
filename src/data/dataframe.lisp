@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-20 12:45:04 tony>
+;;; Time-stamp: <2009-12-20 22:10:50 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -432,7 +432,7 @@ from a ROW-MAJOR list-of-lists representation.  A COLUMN-MAJOR
 representation should be handled using the transpose-listoflists
 function."
   (check-type lol list) ; imperfect -- must verify all list elements are also lists.
-  (if (lists-of-same-size lol)
+  (if (sublists-of-same-size-p lol)
       (make-dataframe  (listoflist->array lol))
       (error "make-data-set-from-lists: no combining different length lists"))
   (error "make-data-set-from-lists: proposed name exists"))
