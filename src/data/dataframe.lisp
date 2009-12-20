@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-20 22:10:50 tony>
+;;; Time-stamp: <2009-12-20 22:27:05 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -473,5 +473,9 @@ function."
  (defmethod take ())
 
  (defmethod carray ())
+
+(defmacro with-dataframe (env &rest progn) 
+  "Compute using variable names with with.data.frame type semantics.")
+
 |#
 
