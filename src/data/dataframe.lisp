@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-25 08:01:46 tony>
+;;; Time-stamp: <2009-12-20 12:45:04 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -85,7 +85,7 @@
 
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.
-Probably should be a method dispatching on DATAFRAME-LIKE type."
+Probably should be generic/methods dispatching on DATAFRAME-LIKE type."
   (position strsym (varlabels df)))
 
 (defun string->number (str)
@@ -108,7 +108,10 @@ value is returned indicating the success of the conversion.  Examples:
 ;;; abstract dataframe class
 
 (defclass dataframe-like (matrix-like)
-  ((case-labels :initform nil
+  ((store :initform nil
+	  :accessor store
+	  :documentation "not useful in the -like virtual class case.")
+   (case-labels :initform nil
 		:initarg :case-labels
 		:type list
 		:accessor case-labels
