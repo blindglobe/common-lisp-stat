@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-12-20 22:27:42 tony> 
+;;; Time-stamp: <2009-12-21 12:58:29 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -14,7 +14,7 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(in-package :lisp-stat-data)
+(in-package :cls-data)
 
 ;;; Data I/O
 
@@ -28,15 +28,13 @@
 ;;; Reading from DSV files:
 
 ;;; consider either the cybertyggyr-dsv package, or the rsm.string
-;;; package.  The latter seems to actually work a bit at what we need
-;;; to acccomplish, but the former is a challenge to get right when we
-;;; need to think abut what it is that we need to get done.  The
-;;; latter is also better licensed. i.e. BSD-style.  The latter is
-;;; implemented through filename->dataframe 
-
+;;; package.  Decision:  RSM.STRING
+;;; The latter seems to actually work a bit at what we need to
+;;; acccomplish, is better licensed (i.e. BSD-style) and is now
+;;; implemented through filename.dsv->dataframe
 
 (defparameter *lisp-stat-data-external-source-formats*
-  '(csv tsv xml ;; ex of text-based (UTF, ASCII, or similar) formats
+  '(dsv xml ;; ex of text-based (UTF, ASCII, or similar) formats
     sql ;; ex of RDBMS call
     fcs affy))  ;; ex of binary formats
 
@@ -57,24 +55,12 @@
                    function which can be evaluated to generate
                    either."))
 
-
-
-
-;;; Potentially useful functions 
-
-;; the following belongs here if we are working externally, but might
-;; belong with data if we are working internlly
-
-;; (defmacro with-data (body)
-;;   "Stream-handling, maintaining I/O through object typing.")
-
-
 ;;;
 ;;; Related to data file reading 
 ;;;
 
 (defun count-file-columns (fname)
-"Args: (fname)
+  "Args: (fname)
 Returns the number of lisp items on the first nonblank line of file FNAME."
   (with-open-file (f fname)
     (if f
@@ -93,73 +79,6 @@ Returns the number of lisp items on the first nonblank line of file FNAME."
   (defun open-file-dialog () ;; why? (&optional set)
     (error "You must provide a file name explicitly")))
 
-(defun read-data-file (&optional (file (open-file-dialog)))
-"Args:  (file)
-Returns a list of all lisp objects in FILE. FILE can be a string or a symbol,
-in which case the symbol'f print name is used."
-  (if file
-      (let ((eof (gensym)))
-        (with-open-file (f file)
-          (if f
-	      (do* ((r (read f nil eof) (read f nil eof))
-		    (x (list nil))
-		    (tail x (cdr tail)))
-		   ((eq r eof) (cdr x))
-		   (setf (cdr tail) (list r))))))))
-
-;;; New definition to avoid stack size limit in apply
-#|
- (defun read-data-columns (&optional (file (open-file-dialog))
-                                    (cols (if file 
-                                              (count-file-columns file))))
-"Args: (&optional file cols)
-Reads the data in FILE as COLS columns and returns a list of lists representing the columns."
-  (if (and file cols)
-      (transpose (split-list (read-data-file file) cols))))
-|#
-
-;;; FIXME:AJR:  ALL THE FOLLOWING NEED TO BE SOLVED BY PLATFORM-INDEP PATHNAME WORK! 
-;;; FIXME:AJR: use either string or pathname.
-
-(defun path-string-to-path (p s) 
-    (pathname (concatenate 'string (namestring p) s)))
-
-(defun load-data (file)
-"Args: (file) as string
-Read in data file from the data examples library."
-  (if (load (path-string-to-path *cls-data-dir* file))
-      t
-      (load (path-string-to-path *cls-data-dir* file))))
-
-(defun load-example (file)
-  "Args: (file) as string
-Read in lisp example file from the examples library."
-  (if (load (path-string-to-path *cls-examples-dir* file))
-      t
-      (load (path-string-to-path *cls-examples-dir* file))))
-
-;;;
-;;; Saving Variables and Functions
-;;;
-  
-(defun savevar (vars file)
-"Args: (vars file-name-root)
-VARS is a symbol or a list of symbols. FILE-NAME-ROOT is a string (or a symbol
-whose print name is used) not endinf in .lsp. The VARS and their current values
-are written to the file FILE-NAME-ROOT.lsp in a form suitable for use with the
-load command."
-  (with-open-file (f (concatenate 'string (namestring file) ".lsp")
-		     :direction :output)
-    (let ((vars (if (consp vars) vars (list vars))))
-      (flet ((save-one (x)
-	       (let ((v (symbol-value x)))
-		 (if (objectp v) 
-		     (format f "(def ~s ~s)~%" x (send v :save))
-		   (format f "(def ~s '~s)~%" x v)))))
-	    (mapcar #'save-one vars))
-      vars)))
-
-        
 
 ;;; General modification approaches.
 
@@ -216,6 +135,8 @@ Usually used by:
   "mapping DBMS into CLS data.")
 
 |#
+
+;; Support functions
 
 (defun filename.dsv->dataframe (filename &optional
 				(delimchar ",")
