@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-20 22:31:25 tony>
+;;; Time-stamp: <2009-12-21 12:29:49 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -103,7 +103,7 @@ return a pathspec, not a string/namespec"
   *test-df*
 
 
-  (defparameter *testdf-2*  (filename->dataframe (localized-pathto "Data/R-chickwts.csv")))
+  (defparameter *testdf-2*  (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv")))
   ;; *testdf-2*
 
   )
