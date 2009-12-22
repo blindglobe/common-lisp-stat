@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-19 00:10:59 tony>
+;;; Time-stamp: <2009-12-21 13:13:55 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -53,6 +53,10 @@
   ;; (asdf:oos 'asdf:load-op 'cl-glu)
   ;; (asdf:oos 'asdf:load-op 'cl-glut)
   ;; (asdf:oos 'asdf:load-op 'cl-glut-examples)
+
+  ;; (asdf:oos 'asdf:load-op 'cells)
+  ;; (asdf:oos 'asdf:load-op 'bordeaux-threads)
+  ;; (asdf:oos 'asdf:load-op 'cells-gtk)
 
   (init-CLS))
 
