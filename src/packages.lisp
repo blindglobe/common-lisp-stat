@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-21 12:41:03 tony>
+;;; Time-stamp: <2009-12-22 22:38:17 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -144,12 +144,24 @@
 
 ;;; NEW CLOS STRUCTURE
 
+;; CLS-DATA contains the basic variable structure, classes, support/indexing, and mixins.
+;; CLS-DATAFRAME leverages CLS-DATA, XARRAY, and LISP-MATRIX 
+;; CLS-DATAIO stores/saves structures
+;; CLS-DATATRANS converts between structures, and from DATAFRAMES to MODEL-MATRIXES
+
+(defpackage :cls-data
+  (:use :common-lisp)
+  (:shadowing-import-from :xarray slice)
+  (:export
+
+   ))
+
 ;;; cls-data... in dataframe, though.
 (defpackage :cls-dataframe
   (:use :common-lisp
+	:cls-data
 	:xarray
-	:lisp-matrix
-	:listoflist)
+	:lisp-matrix)
   (:shadowing-import-from :xarray slice)
   (:export
    ;; generic container class for data -- if small enough
@@ -158,43 +170,46 @@
    dataframe-array
    make-dataframe
 
+   dataset
+   list-of-columns ;; list-of-variables
+   list-of-rows ;; list-of-observations
+
    ;; accessors
    varlabels caselabels  nrows ncols
    dataframe-dimension dataframe-dimensons
    xref xtype xdims xdim xrank slice take carray
-#|
-   dfref dfref-case dfref-var 
-   consistent-dataframe-p
-|#
 
-   dataset
-   list-of-columns ;; list-of-variables
-   list-of-rows ;; list-of-observations
-   ))
 
-(defpackage :cls-data
-  (:use :common-lisp
-	:xarray
-	:listoflist
-	:lisp-matrix
-	:cls-dataframe) ; for dataframe
-  (:shadowing-import-from :xarray slice)
-  (:export listoflist->dataframe
-	   listoflist->array
-	   listoflist->matrix-like
-	   filename.dsv->dataframe))
+ ))
 
-(defpackage :cls-dataimport
+(defpackage :cls-dataio
   (:documentation "Data I/O and similar import technologies.")
   (:use :common-lisp
 	:lisp-stat-object-system
-	:cls-dataframe
 	:cls-data
+	:cls-dataframe
 	:rsm.string)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
   (:export dsvstream->dataframe dsvstream->matrix dsvstream->listoflist))
 
+(defpackage :cls-datatrans
+  (:documentation "Data I/O and similar import technologies.")
+  (:use :common-lisp
+	:lisp-stat-object-system
+	:cls-data
+	:cls-dataframe
+	:rsm.string)
+  (:shadowing-import-from :lisp-stat-object-system
+			  call-method call-next-method)
+  (:export dsvstream->dataframe dsvstream->matrix dsvstream->listoflist
+
+	   listoflist->dataframe
+	   listoflist->array
+	   listoflist->matrix-like
+	   filename.dsv->dataframe   ))
+
+;;;; MODELING
 
 (defpackage :lisp-stat-model
   (:documentation "Model management for data analysis.")

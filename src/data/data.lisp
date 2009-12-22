@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-08-31 17:52:26 tony> 
+;;; Time-stamp: <2009-12-22 22:13:48 tony> 
 ;;; Creation:   <2005-08-xx 21:34:07 rossini> 
 ;;; File:       data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -14,7 +14,7 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version.
 
-(in-package :lisp-stat-data)
+(in-package :cls-data)
 
 ;;; The purpose of this package is to manage data which will be
 ;;; processed by LispStat.  In particular, it will be important to
