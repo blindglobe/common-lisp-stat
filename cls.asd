@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-12-20 22:30:50 tony>
+;;; Time-stamp: <2009-12-23 08:40:18 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -11,20 +11,44 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
+;; Load ASDF if it isn't loaded
+#-asdf(load (pathname (concatenate 'string (namestring *cls-external-dir*) "asdf")))
+
 (in-package :cl-user)
 
+;;; enforce all floating reads as doubles
+;; (setf *read-default-float-format* 'double-float)
+
+;;; optimization settings
+;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
+
 (defpackage :lisp-stat-config
+  (:documentation "holds configuration variables, support functions, and ASDF structure.")
   (:use :common-lisp)
-  (:export *default-path*
+  (:export *common-lisp-stat-version* 
+	   *default-path*
 	   *lsos-files* *basic-files* *ls-files*
 	   *cls-home-dir* *cls-data-dir* *cls-examples-dir*))
 
 (in-package :lisp-stat-config)
 
+
+
+(defvar *common-lisp-stat-version* "1.0 Alpha 1")
+(defvar *default-path* "./")
+
+
 (defparameter *cls-home-dir*
   (directory-namestring
    (truename (asdf:system-definition-pathname :cls)))
   "Value considered \"home\" for our data")
+
+#|
+(setf *cls-home-dir*
+      ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
+      ;; #p"/home/tony/sandbox/CommonLispStat.git/"
+      #p"/home/tony/sandbox/CLS.git/")
+|#
 
 (macrolet ((ls-dir (root-str)
 	     `(pathname (concatenate 'string
@@ -32,21 +56,17 @@
 
 	   (ls-defdir (target-dir-var  root-str)
 	     `(defvar ,target-dir-var (ls-dir ,root-str))))
-
+  (ls-defdir *cls-asdf-dir* "ASDF/")
+  (ls-defdir *cls-data-dir* "Data/")
+  (ls-defdir *cls-external-dir* "external/")
   ;; reminder of testing
   ;;(macroexpand '(ls-defdir *cls-asdf-dir* "ASDF"))
   ;;(macroexpand-1 '(ls-defdir *cls-asdf-dir* "ASDF"))
   ;;(macroexpand-1 '(ls-dir "ASDF"))
-
-  (ls-defdir *cls-asdf-dir* "ASDF/")
-  (ls-defdir *cls-data-dir* "Data/")
-  (ls-defdir *cls-external-dir* "external/"))
+  )
 
 ;;(pushnew *cls-asdf-dir* asdf:*central-registry*)
-
-;; (pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
-
-(in-package :cl-user)
+;;(pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
 
 (defpackage #:cls-system
     (:use :common-lisp :asdf))
@@ -123,8 +143,7 @@
 			:serial t
 			:depends-on ("packaging" "proto-objects")
 			:components
-			(;(:cls-lsp-source-file "defsys") ; XLS compat?
-			 (:cls-lsp-source-file "lstypes")
+			((:cls-lsp-source-file "lstypes")
 			 (:cls-lsp-source-file "lsfloat")
 			 
 			 (:cls-lsp-source-file "compound")
