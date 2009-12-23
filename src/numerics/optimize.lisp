@@ -116,7 +116,8 @@
 
 (defun new-minfo-internals (f x &key scale ((:derivstep h) -1.0))
   (check-sequence x)
-  (check-real x)
+  (check-real x) ;; becomes: 
+  ;; (assert (reduce #'and (map #'(lambda (x) (or (typep x 'real) (typep x 'double)) x))) "x not real seq")
   (check-one-real h)
   (let ((n (length x)))
     (when scale
@@ -181,7 +182,7 @@
   (setf (proto-slot-value 'internals) (apply #'new-minfo-internals args)))
 #-xlisp
 (defmeth minfo-proto :maximize (&rest args)
-  (apply #'minfo-maximize (proto-proto-slot-value 'internals) args))
+  (apply #'minfo-maximize (proto-slot-value 'internals) args))
 
 (defmeth minfo-proto :x () (aref (proto-slot-value 'internals) 3))
 (defmeth minfo-proto :scale () (aref (proto-slot-value 'internals) 4))
