@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-23 14:31:44 tony>
+;;; Time-stamp: <2009-12-23 14:41:54 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -180,29 +180,33 @@
 (defpackage :cls-dataio
   (:documentation "Data I/O and similar import technologies.")
   (:use :common-lisp
+	:rsm.string
 	:lisp-stat-object-system
 	:cls-data
-	:cls-dataframe
-	:rsm.string)
+	:cls-dataframe)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
-  (:export dsvstream->dataframe dsvstream->matrix dsvstream->listoflist))
+  (:export dsvstream->dataframe
+	   dsvstream->matrix
+	   dsvstream->listoflist
+
+	   filename.dsv->dataframe
+	   ))
 
 (defpackage :cls-datatrans
   (:documentation "Data I/O and similar import technologies.")
   (:use :common-lisp
+	:listoflist
 	:lisp-stat-object-system
 	:cls-data
-	:cls-dataframe
-	:rsm.string)
+	:cls-dataframe)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
-  (:export dsvstream->dataframe dsvstream->matrix dsvstream->listoflist
+  (:export listoflist->dataframe   dataframe->listoflist
+	   listoflist->array	   array->listoflist
+	   listoflist->matrix-like matrix-like->listoflist
 
-	   listoflist->dataframe
-	   listoflist->array
-	   listoflist->matrix-like
-	   filename.dsv->dataframe   ))
+	   ))
 
 ;;;; MODELING
 
