@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-12-23 08:40:18 tony>
+;;; Time-stamp: <2009-12-23 14:18:34 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,6 +24,7 @@
 
 (defpackage :lisp-stat-config
   (:documentation "holds configuration variables, support functions, and ASDF structure.")
+  (:nicknames :cls-config)
   (:use :common-lisp)
   (:export *common-lisp-stat-version* 
 	   *default-path*
