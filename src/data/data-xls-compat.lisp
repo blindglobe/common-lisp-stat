@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-21 12:46:46 tony>
+;;; Time-stamp: <2009-12-23 14:18:47 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -104,9 +104,9 @@ Read in data file from the System DATA library."
 (defun load-example (file)
   "Args: (file) as string
 Read in lisp example file from the System EXAMPLES library."
-  (if (load (path-string-to-path *cls-examples-dir* file))
+  (if (load (path-string-to-path cls-config:*cls-examples-dir* file))
       t
-      (load (path-string-to-path *cls-examples-dir* file))))
+      (load (path-string-to-path cls-config:*cls-examples-dir* file))))
 
 ;;;
 ;;; Saving Variables and Functions
