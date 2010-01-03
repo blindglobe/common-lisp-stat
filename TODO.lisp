@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-21 13:13:55 tony>
+;;; Time-stamp: <2010-01-03 16:29:24 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -62,7 +62,7 @@
 
 (in-package :lisp-stat-unittests)
 
-;; tests = 80, failures = 7, errors = 21
+;; tests = 78, failures = 7, errors = 20
 (run-tests :suite 'lisp-stat-ut)
 (describe (run-tests :suite 'lisp-stat-ut))
 
