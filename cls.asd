@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2009-12-23 14:18:34 tony>
+;;; Time-stamp: <2010-01-03 16:32:56 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -308,3 +308,12 @@
 			      (:file "unittests-listoflist" :depends-on ("unittests"))
 			      (:file "unittests-arrays" :depends-on ("unittests"))
 			      (:file "unittests-dataframe" :depends-on ("unittests"))))))
+
+
+#|
+ (defmethod perform ((o test-op) (c (eql (find-system :cls))))
+  (flet ((run-tests (&rest args)
+           (apply (intern (string '#:run-tests) '#:cffi-tests) args)))
+    (run-tests :compiled nil)
+    (run-tests :compiled t)))
+|#
