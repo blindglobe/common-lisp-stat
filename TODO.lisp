@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-03 16:29:24 tony>
+;;; Time-stamp: <2010-01-03 17:12:16 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -47,6 +47,13 @@
   ;; (asdf:oos 'asdf:load-op 'cl-ppcre)
   ;; (asdf:oos 'asdf:load-op 'cl-markdown)
 
+  ;;use of extension packages supporting versioning and validation of
+  ;;CLOS objects?
+  ;; (asdf:oos 'asdf:compile-op 'versioned-objects :force t)
+  ;; (asdf:oos 'asdf:load-op 'versioned-objects)
+  ;; (asdf:oos 'asdf:compile-op 'validations :force t)
+  ;; (asdf:oos 'asdf:load-op 'validations)
+
   ;;VIZ
   ;; (asdf:oos 'asdf:compile-op 'cffi :force t)
   ;; (asdf:oos 'asdf:load-op 'cl-opengl)
@@ -64,7 +71,9 @@
 
 ;; tests = 78, failures = 7, errors = 20
 (run-tests :suite 'lisp-stat-ut)
-(describe (run-tests :suite 'lisp-stat-ut))
+
+(asdf:oos 'asdf:test-op 'cls)
+;; which runs (describe (run-tests :suite 'lisp-stat-ut))
 
 (describe 'lisp-stat-ut)
 (documentation 'lisp-stat-ut 'type)
@@ -86,10 +95,6 @@
 
 #+nil
 (progn
-  ;; use of extension packages supporting versioning and validation of
-  ;; CLOS objects?
-  (asdf:oos 'asdf:load-op 'versioned-objects)
-  (asdf:oos 'asdf:load-op 'validations))
 
 #+nil
 (progn

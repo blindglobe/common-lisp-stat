@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-01-03 16:32:56 tony>
+;;; Time-stamp: <2010-01-03 16:44:39 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -122,7 +122,7 @@
 	       ;;    :cl-cairo2  :cl-2d
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
-	       (:static-file "LICENSE")
+	       (:static-file "LICENSE.mit")
 	       (:static-file "README")
 
 	       (:module
@@ -310,10 +310,5 @@
 			      (:file "unittests-dataframe" :depends-on ("unittests"))))))
 
 
-#|
  (defmethod perform ((o test-op) (c (eql (find-system :cls))))
-  (flet ((run-tests (&rest args)
-           (apply (intern (string '#:run-tests) '#:cffi-tests) args)))
-    (run-tests :compiled nil)
-    (run-tests :compiled t)))
-|#
+    (describe (lift:run-tests :suite 'lisp-stat-unittests::lisp-stat-ut)))
