@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-21 12:29:49 tony>
+;;; Time-stamp: <2010-01-14 07:55:00 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,18 +17,12 @@
 
 ;; we'll be loading from directories in the CLS homedir, so we want to
 ;; make it easier to reach.  
-(defparameter *my-cls-homedir* 
-  "/home/tony/sandbox/CLS.git/" ; <- value with trailing directory separator
-  "documentation: change this to localize") ; <- doc
-;; so
-(concatenate 'string *my-cls-homedir* "Data/example.csv")
-;; implies
 (defun localized-pathto (x)
   "return a string denoting the complete path.
 FIXME: UNIX-centric (though might work on Mac OSX).  Might want to
 return a pathspec, not a string/namespec"
   (check-type x string)
-  (concatenate 'string *my-cls-homedir* x))
+  (concatenate 'string *cls-home-dir* x))
 
 
 
