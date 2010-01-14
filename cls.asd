@@ -1,11 +1,11 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-01-14 08:01:08 tony>
+;;; Time-stamp: <2010-01-14 08:08:39 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c) 2005--2008, by AJ Rossini <blindglobe@gmail.com>
-;;; License:    BSD, see the top level directory file LICENSE for details.
-;;; Purpose:    ASDF packaging for CommonLisp Stat
+;;; Copyright:  (c) 2005--2010, by AJ Rossini <blindglobe@gmail.com>
+;;; License:    MIT, see the file LICENSE.mit in this directory for details.
+;;; Purpose:    ASDF specification for Common Lisp Statistics
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -23,7 +23,7 @@
 ;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
 
 (defpackage :lisp-stat-config
-  (:documentation "holds configuration variables, support functions, and ASDF structure.")
+  (:documentation "holds Common Lisp Statistics configuration/loading variables and related functions.")
   (:nicknames :cls-config)
   (:use :common-lisp)
   (:export *common-lisp-stat-version* 
@@ -33,16 +33,14 @@
 
 (in-package :lisp-stat-config)
 
-(defvar *common-lisp-stat-version* "1.0 Alpha 1"
+(defvar *common-lisp-stat-version* "1"
   "Version currently loaded and being used.  Need to make into a
-  parseable object for version testing.")
-
-(defvar *default-path* "./")
+  parseable object for version testing. Currently using integers.")
 
 (defparameter *cls-home-dir*
   (directory-namestring
    (truename (asdf:system-definition-pathname :cls)))
-  "Value considered \"home\" for our data")
+  "Value considered \"home\" for the installation")
 
 #|
 (setf *cls-home-dir*
