@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-01-03 16:44:39 tony>
+;;; Time-stamp: <2010-01-14 08:01:08 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -33,11 +33,11 @@
 
 (in-package :lisp-stat-config)
 
+(defvar *common-lisp-stat-version* "1.0 Alpha 1"
+  "Version currently loaded and being used.  Need to make into a
+  parseable object for version testing.")
 
-
-(defvar *common-lisp-stat-version* "1.0 Alpha 1")
 (defvar *default-path* "./")
-
 
 (defparameter *cls-home-dir*
   (directory-namestring
@@ -309,6 +309,7 @@
 			      (:file "unittests-arrays" :depends-on ("unittests"))
 			      (:file "unittests-dataframe" :depends-on ("unittests"))))))
 
-
+#|
  (defmethod perform ((o test-op) (c (eql (find-system :cls))))
     (describe (lift:run-tests :suite 'lisp-stat-unittests::lisp-stat-ut)))
+|#
