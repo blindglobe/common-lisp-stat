@@ -1,17 +1,18 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-23 08:46:35 tony>
+;;; Time-stamp: <2010-01-15 08:18:48 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2008, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
+;;; Copyright:  (c)2008--2010, AJ Rossini.  See LICENSE.mit in
+;;;             toplevel directory for conditions.  
 
-;;; Purpose:    Data packaging and access for Common Lisp Statistics.
+;;; Purpose:    Data packaging and access for Common Lisp Statistics,
+;;;             using a DATAFRAME-LIKE virtual structure.
 ;;;             This redoes dataframe structures in a CLOS based
 ;;;             framework.   Currently contains the virtual class
 ;;;             DATAFRAME-LIKE as well as the actual classes
-;;;             DATAFRAME-ARRAY and DATAFRAME-MATRIXLIKE
+;;;             DATAFRAME-ARRAY and DATAFRAME-MATRIXLIKE.
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -110,7 +111,11 @@ value is returned indicating the success of the conversion.  Examples:
 (defclass dataframe-like (matrix-like)
   ((store :initform nil
 	  :accessor store
-	  :documentation "not useful in the -like virtual class case.")
+	  :documentation "not useful in the -like virtual class case,
+ 	    contains actual data")
+   (store-class :initform nil
+		:accessor store-class
+		:documentation "Lisp class used for the dataframe storage.")
    (case-labels :initform nil
 		:initarg :case-labels
 		:type list
@@ -121,27 +126,30 @@ value is returned indicating the success of the conversion.  Examples:
 	       :initarg :var-labels
 	       :type list
 	       :accessor var-labels
-	       :documentation "Variable names.")
+	       :documentation "Variable names. List order matches
+	         order in STORE.")
    (var-types :initform nil
 	      :initarg :var-types
 	      :type list
 	      :accessor var-types
-	      :documentation "variable types to ensure fit.  Must be
-	        list of symbols of valid types for check-type.")
+	      :documentation "List of symbols representing classes
+	        which describe the range of contents for a particular
+	        variable. Symbols must be valid types for check-type.
+	        List order matches order in STORE.")
    (doc-string :initform nil
 	       :initarg :doc
 	       :accessor doc-string
 	       :documentation "additional information, potentially
-	         uncomputable, possibly metadata, about dataframe-like
+  	         uncomputable, possibly metadata, about dataframe-like
 	         instance."))
   (:documentation "Abstract class for standard statistical analysis
-     dataset for independent data.  Rows are considered to be
-     independent, matching observations.  Columns are considered to be
-     type-consistent, match a variable with distribution.  inherits
-     from lisp-matrix base MATRIX-LIKE class.  MATRIX-LIKE (from
-     lisp-matrix) is basically a rectangular table without storage.
-     We emulate that, and add storage, row/column labels, and
-     within-column-typing.
+     dataset for (possible conditionally, externally) independent
+     data.  Rows are considered to be independent, matching
+     observations.  Columns are considered to be type-consistent,
+     match a variable with distribution.  inherits from lisp-matrix
+     base MATRIX-LIKE class.  MATRIX-LIKE (from lisp-matrix) is
+     basically a rectangular table without storage.  We emulate that,
+     and add storage, row/column labels, and within-column-typing.
 
      DATAFRAME-LIKE is the basic cases by variables framework.  Need
      to embed this within other structures which allow for generalized
@@ -169,10 +177,31 @@ value is returned indicating the success of the conversion.  Examples:
   (:method ((df dataframe-like))
     (xdim (store df) 0)))
 
+#|
+ (defun nvars-store (store)
+  "Return number of variables (columns) in dataframe storage.  Doesn't
+test that that list is a valid listoflist dataframe structure."
+  (etypecase store
+    (array (array-dimension store 1))
+    (matrix-like (ncols store))
+    (list (length (elt store 0)))))
+|#
+
 (defgeneric ncases (df)
-  (:documentation "number of cases (indep observantions) represented by storage.")
+  (:documentation "number of cases (indep, or indep within context,
+  observantions) within STORE.")
   (:method ((df dataframe-like))
     (xdim (store df) 1)))
+
+#|
+ (defun ncase-store (store)
+  "Return number of cases (rows) in dataframe storage.  Doesn't test
+that that list is a valid listoflist dataframe structure."
+  (etypecase store
+    (array (array-dimension store 0))
+    (matrix-like (nrows store))
+    (list (length store))))
+|#
 
 ;; Testing consistency/coherency.
 
@@ -188,12 +217,14 @@ value is returned indicating the success of the conversion.  Examples:
      ;; ensure dimensionality
      (= (length (var-labels df)) (ncols df)) ; array-dimensions (dataset df))
      (= (length (case-labels df)) (nrows df))
+     ;; ensure claimed STORE-CLASS
      ;; when dims are sane, ensure variable-typing is consistent
      (progn
        (dotimes (i (nrows df))
 	 (dotimes (j (ncols df))
 	   ;; xref bombs if not a df-like subclass so we don't worry
-	   ;; about specialization.
+	   ;; about specialization.  Need to ensure xref throws a
+	   ;; condition we can recover from.
 	   ;; (check-type  (aref dt i j) (elt lot j)))))) ???
 	   (typep (xref df i j) (nth j (var-types df))))) 
        t))))
@@ -211,21 +242,6 @@ value is returned indicating the success of the conversion.  Examples:
 	  (repeat-seq num initstr)
 	  (mapcar #'(lambda (x) (format nil "~A" x)) (gen-seq num))))
 
-(defun ncase-store (store)
-  "Return number of cases (rows) in dataframe storage.  Doesn't test
-that that list is a valid listoflist dataframe structure."
-  (etypecase store
-    (array (array-dimension store 0))
-    (matrix-like (nrows store))
-    (list (length store))))
-
-(defun nvars-store (store)
-  "Return number of variables (columns) in dataframe storage.  Doesn't
-test that that list is a valid listoflist dataframe structure."
-  (etypecase store
-    (array (array-dimension store 1))
-    (matrix-like (ncols store))
-    (list (length (elt store 0)))))
 
 
 (defun make-dataframe (newdata
