@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-14 07:55:00 tony>
+;;; Time-stamp: <2010-01-15 07:56:57 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -27,78 +27,47 @@ return a pathspec, not a string/namespec"
 
 
 (progn
+  ;; LISP-STAT COMPATIBILITY MODE:
+  ;;
   ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
   ;; The following breaks because we should use a package to hold
   ;; configuration details, and this would be the only package outside
   ;; of packages.lisp, as it holds the overall defsystem structure.
   (load-data "iris.lsp")  ;; (the above partially fixed).
-  (variables)
-  diabetes )
+  diabetes
+  (variables))
 
 
 
 
 (progn
+  ;; COMMON LISP STATISTICS
+  ;;
   ;; Importing data from DSV text files.
 
-  (rsm.string:file->string-table
-   (localized-pathto "Data/example-mixed.csv"))
+#|
 
-  (rsm.string:file->number-table
-   (localized-pathto "Data/example-numeric.csv"))
+  We use as an example a simple R datasert, chickwts, which has one
+  nominal categorical variable and one continuous categorical
+  variable.   This dataset can be accessed in R as follows:
 
+> data(chickwts)
+> dim(chickwts)
+[1] 71  2
+> summary(chickwts)
+     weight             feed   
+ Min.   :108.0   casein   :12  
+ 1st Qu.:204.5   horsebean:10  
+ Median :258.0   linseed  :12  
+ Mean   :261.3   meatmeal :11  
+ 3rd Qu.:323.5   soybean  :14  
+ Max.   :423.0   sunflower:12  
+> 
+|#
 
-  (defparameter *my-df-2*
-	(make-instance 'dataframe-array
-		       :storage
-		       (listoflist:listoflist->array
-			 (rsm.string:file->string-table
-			  (localized-pathto "Data/example-mixed.csv")))
-		       :doc "This is an interesting dataframe-array"))
-  *my-df-2*
-
-
-  (defparameter *my-df-3*
-	(make-instance 'dataframe-array
-		       :storage
-		       (listoflist:listoflist->array
-			 (rsm.string:file->number-table
-			  (localized-pathto "Data/example-numeric.csv")))
-		       :doc "This is an interesting dataframe-array"))
-  *my-df-3*
-
-  ;; Need to the this using the make-dataframe example, or write a 
-  ;; dsvfile->dataframe command.
-
-  
-  (defparameter *tmp-csv-filedata* (rsm.string:file->number-table
-				    (localized-pathto "Data/example-numeric.csv")))
-  (defparameter *tmp-csv-filedata* (rsm.string:file->number-table
-				    (localized-pathto "Data/R-chickwts.csv")
-				    :delims ","))
-  (defparameter *tmp-var-name-list* (car *tmp-csv-filedata*))
-  (defparameter *tmp-data-list*  (cdr *tmp-csv-filedata*))
-  (defparameter *tmp-data-array*  (listoflist:listoflist->array  (cdr *tmp-csv-filedata*)))
-  (aref *tmp-data-array* 0 2)
-  (aref *tmp-data-array* 1 1)
-  (aref *tmp-data-array* 4 0)
-
-  (defparameter *test-df* 
-    (let ((csv-file-data (rsm.string:file->number-table
-			  (localized-pathto "Data/R-chickwts.csv")
-			  :delims ",")))
-      (let ((var-name-list (car csv-file-data))
-	    (data-list (listoflist:listoflist->array (cdr csv-file-data))))
-	(make-instance 'dataframe-array
-		       :storage data-list
-		       :var-labels var-name-list
-		       :doc "This is an interesting dataframe-array"))))
-
-  *test-df*
-
-
-  (defparameter *testdf-2*  (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv")))
-  ;; *testdf-2*
-
+  (defparameter *chickwts-df* (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv")))
+  ;; *chickwts-df*
+  (xref *chickwts-df* 1 1) ; => 160
+  (xref *chickwts-df* 40 2) ; => "sunflower"
   )
 
