@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-04-20 08:21:38 tony>
+;;; Time-stamp: <2010-01-20 11:12:24 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,14 +15,11 @@
 
 (in-package :ls-user)
 
-(defparameter *my-df*
-  (make-dataframe
-   (listoflist->array
-    (transpose-listoflist 
-     (rsm.string:file->string-table
-      "/media/disk/Desktop/sandbox/CLS.git/Data/example-mixed.csv")))
-   :doc "This is an interesting dataframe-array")
-  "Initial dataset read-in.")
+
+;; We assume that the "loading-data.lisp" code has been run, and one
+;; now wants to analyze the data loaded into *chickwts-df*
+
+*chickwts*
 
 ;; Summarize is the basic EDA tool -- it accepts symbols or lists of
 ;; symbols, to describe what, when, and how to do it.  The resulting
@@ -31,7 +28,7 @@
 ;; metadata about the results (time / context if provided).
 
 (defparameter *my-df-smry-num*
-  (summarize *my-df* :type 'numerical :io 'listing)
+  (summarize *chickwts* :type 'numerical :io 'listing)
   "First numerical summary of *my-df-smry*")
 
 (defparameter *my-df-smry-num*
