@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-21 17:02:51 tony>
+;;; Time-stamp: <2010-01-22 07:54:51 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,7 +24,10 @@
 	  :initarg :storage
 	  :type (array * *)
 	  :accessor dataset
-	  :documentation "Data storage: typed as array."))
+	  :documentation "Data storage: typed as array.")
+   (store-class :initform 'array
+		:accessor store
+		:documentation "Storage class is ARRAY."))
   (:documentation "example implementation of dataframe-like using storage
   based on lisp arrays.  An obvious alternative could be a
   dataframe-matrix-like which uses the lisp-matrix classes."))

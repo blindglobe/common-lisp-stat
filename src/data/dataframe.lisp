@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-15 08:18:48 tony>
+;;; Time-stamp: <2010-01-22 07:53:16 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -109,13 +109,16 @@ value is returned indicating the success of the conversion.  Examples:
 ;;; abstract dataframe class
 
 (defclass dataframe-like (matrix-like)
-  ((store :initform nil
+  (
+#|
+   (store :initform nil
 	  :accessor store
 	  :documentation "not useful in the -like virtual class case,
  	    contains actual data")
    (store-class :initform nil
 		:accessor store-class
 		:documentation "Lisp class used for the dataframe storage.")
+|#
    (case-labels :initform nil
 		:initarg :case-labels
 		:type list
@@ -189,9 +192,16 @@ test that that list is a valid listoflist dataframe structure."
 
 (defgeneric ncases (df)
   (:documentation "number of cases (indep, or indep within context,
-  observantions) within STORE.")
-  (:method ((df dataframe-like))
-    (xdim (store df) 1)))
+  observantions) within DF storage form.")
+  (:method ((df matrix-like))
+    (nrows df))
+  (:method ((df list))
+    (xdim df)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
+  (:method ((df array))
+    (xdim df)
+
+
+  )
 
 #|
  (defun ncase-store (store)
@@ -254,8 +264,8 @@ construction of proper DF-array."
   (check-type caselabels sequence)
   (check-type varlabels sequence)
   (check-type doc string)
-  (let ((ncases (ncase-store newdata))
-	(nvars (nvars-store newdata)))
+  (let ((ncases (ncases newdata))
+	(nvars (nvars newdata)))
     (if caselabels (assert (= ncases (length caselabels))))
     (if varlabels (assert (= nvars (length varlabels))))
     (let ((newcaselabels (if caselabels
