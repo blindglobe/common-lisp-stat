@@ -1,1 +1,0 @@
-../lispstat.asd
