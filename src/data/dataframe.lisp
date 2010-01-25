@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-22 07:53:16 tony>
+;;; Time-stamp: <2010-01-25 10:54:44 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -198,10 +198,7 @@ test that that list is a valid listoflist dataframe structure."
   (:method ((df list))
     (xdim df)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
   (:method ((df array))
-    (xdim df)
-
-
-  )
+    (xdim df)))
 
 #|
  (defun ncase-store (store)
