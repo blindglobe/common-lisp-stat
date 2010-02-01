@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-12-23 08:49:50 tony> 
+;;; Time-stamp: <2010-01-25 17:15:35 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -144,8 +144,10 @@ Usually used by:
 				(docstring "This is an amusing dataframe array")
 				(arraystorage-object 'dataframe-array))
   "Reads the DSV file FILENAME and returns a dataframe-array object.
-By default, the delimiter is a ',' which can be changed.  
-FIXME: could read first 2 lines, and logically guess if the first is variable name or not."
+By default, the delimiter is a ',' which can be changed.  FIXME: could
+read first 2 lines, and logically guess if the first is variable name
+or not.  If so, we'd probably like to return what was guessed and how
+to use it next time if wanted."
   (let ((csv-file-data (rsm.string:file->number-table
 			filename 
 			:delims delimchar)))
