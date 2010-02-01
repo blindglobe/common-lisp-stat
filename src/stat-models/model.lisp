@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp -*-
 
 ;;; File:       model.lisp
-;;; Time-stamp: <2009-04-12 12:09:16 tony> 
+;;; Time-stamp: <2010-01-25 15:52:30 tony> 
 ;;; Creation:   <2006-05-17 21:34:07 rossini> 
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2007-- , AJ Rossini.  BSD, LLGPL, or GPLv2, depending
@@ -71,7 +71,7 @@
 (defclass result ()
   ((param-values  )
    (param-uncertainity )
-   (param-characterization ))
+   (param-characterization )))
 
 ;; The following are types of models -- in particular, we can consider
 ;; that these models 
@@ -80,12 +80,29 @@
 
 (defclass ode-model (model result ))
 
-(defclass linear-regression-model (statistical-mode))
+(defclass regression-model-linear (statistical-mode))
 
-(defclass generalized-linear-regression-model (statistical-model))
+(defclass regression-model-generalized-linear (statistical-model))
 
-(defclass nonlinear-linear-regression-model (statistical-model))
+(defclass regression-model-nonlinear-linear (statistical-model))
 
+;;;;;;;;;
+
+(defgeneric =model (lhs rhs)
+  (:documentation "returns a class describing the model specified")
+  (:method ((lhs atom) (rhs list))
+	   (if (linear-model rhs)
+	       (make-instance 'regression-model-linear
+			      lhs
+			      rhs)
+	     (make-instance 'general-model))))
+
+;;; Centrality
+(defgeneric =mean (lhs rhs))
+(defgeneric =quantile (lhs rhs quantile))
+
+;;; Variable
+(defgeneric =var (lhs rhs)) ; lhs should spec parameter
 
 
 #| 
