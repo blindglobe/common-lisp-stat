@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-25 09:17:55 tony>
+;;; Time-stamp: <2010-01-27 17:31:07 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -40,12 +40,13 @@
   ;; (asdf:oos 'asdf:load-op 'xarray)
 
   ;;DOCS
-  ;; (asdf:oos 'asdf:compile-op 'metatilities-base :force t)
-  ;; (asdf:oos 'asdf:load-op 'metatilities-base)
-  ;; (asdf:oos 'asdf:load-op 'anaphora)
-  ;; (asdf:oos 'asdf:load-op 'tinaa)
-  ;; (asdf:oos 'asdf:load-op 'cl-ppcre)
-  ;; (asdf:oos 'asdf:load-op 'cl-markdown)
+  ;;; (asdf:oos 'asdf:compile-op 'metatilities-base :force t)
+  ;;; (asdf:oos 'asdf:load-op 'metatilities-base)
+  ;;; (asdf:oos 'asdf:load-op 'anaphora)
+  ;;; (asdf:oos 'asdf:load-op 'tinaa)
+  ;;; (asdf:oos 'asdf:load-op 'cl-ppcre)
+  ;; (asdf:oos 'asdf:load-op 'cl-markdown) ;; just need this and the next...
+  ;; (asdf:oos 'asdf:load-op 'docudown)
 
   ;;use of extension packages supporting versioning and validation of
   ;;CLOS objects?
@@ -94,7 +95,7 @@
 ;;; Tasks working on...
 
 #+nil
-(progn
+(progn )
 
 #+nil
 (progn
@@ -193,3 +194,132 @@
 (asdf:oos 'asdf:load-op 'lla)
 (in-package :lla-user)
 
+ 
+
+(in-package :cls-user)
+;;;; PFIM notes
+
+;; PFIM 3.2 
+
+;; population design eval and opt
+#| 
+issues: 
+- # individuals
+- # sampling times
+- sampling times?
+
+constraints:
+number of samples/cost of lab analysis and collection
+expt constraints
+|#
+
+(defun pfim (&key model ( constraints ( summary-function )
+
+  (list num-subjects num-times list-times))))
+
+#|
+N individuals i
+Each individal has a deisgn psi_i
+   nubmer of samples n_i and sampling times t_{i{1}} t_{i{n_1}}
+   individuals can differ
+
+Model:
+
+individual-level model 
+|#
+
+(=model y_i (+ (f \theta_i \psi_i) epsilion_i ))
+(=var \epsilion_i \sigma_between \sigma_within  )
+
+;; Information Matrix for pop deisgn 
+
+(defparameter IM (sum  (i 1 N) (MF \psi_i \phi_i)))
+
+#|
+For nonlinear structureal models, expand around RE=0
+
+Cramer-Rao : MF^{-1} is lower bound for estimation variance.
+
+Design comparisons: 
+
+- smallest SE, but is a matrix, so
+- criteria for matrix comparison
+-- D-opt, (power (determinant MF) (/ 1 P))
+
+
+find design maxing D opt, (power (determinant MF) (/ 1 P))
+Design varialables 
+ -- contin vars for smapling times within interval or set
+ -- number of groups for cat vars
+
+Stat in Med 2009, expansion around post-hoc RE est, not necessarily zero.
+
+Example binary covariate C
+|#
+
+(if (= i reference-class) 
+    (setf (aref C i) 0)
+    (setf (aref C i) 1))
+
+;; Exponential RE,
+(=model (log \theta) (  ))
+
+;; extensions
+
+;; outputs
+
+#|
+PFIM provides for a given design and values of \beta: 
+ compute extended FIM
+ SE/RSE for \beta of each class of each covar
+ eval influence of design on SE(\beta)
+
+inter-occassion variability (IOV)
+- patients sampled more than once, H occassions
+- RE for IOV
+- additional vars to estimate
+
+|#
+
+;;; comparison criteria
+
+functional of conc/time curve which is used for comparison, i.e. 
+(AUC conc/time-curve)
+(Cmax conc/time-curve)
+(Tmax conc/time-curve)
+
+where 
+
+(defun conc/time-curve (t) 
+  ;; computation
+#| 
+  (let ((conc (exp (* t \beta1))))
+     conc)
+|#
+  )
+
+;;See
+(url-get "www.pfim.biostat.fr")
+
+;;; Thinking of generics...
+(information-matrix model parameters)
+(information-matrix variance-matrix)
+(information-matrix model data)
+(information-matrix list-of-individual-IMs)
+
+
+(defun IM (loglikelihood parameters times)
+  "Does double work.  Sum up the resulting IMs to form a full IM."
+  (let ((IM (make-matrix (length parameters)
+			 (length parameters)
+			 :initial-value 0.0d0)))
+    (dolist (parameterI parameters)
+      (dolist (parameterJ parameters)
+	(setf (aref IM I J)
+	      (differentiate (differentiate loglikelihood parameterI) parameterJ))))))
+
+
+
+;; difference between empirical, fisherian, and ...? information.
+
+;;; Docudown...
