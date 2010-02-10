@@ -1,6 +1,6 @@
-;;; -*- mode: lisp -*-
+;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2010-01-15 07:56:57 tony>
+;;; Time-stamp: <2010-02-09 16:18:07 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -12,8 +12,16 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
+
+(in-package :cl-user)
+(cl:defpackage :cls-examples
+  (:use :common-lisp
+	:cls-user)
+  (:export localized-pathto
+	   *chkwgts-df*))
+
 ;; start within the common-lisp-stat-user 
-(in-package :cls-user)
+(in-package :cls-examples)
 
 ;; we'll be loading from directories in the CLS homedir, so we want to
 ;; make it easier to reach.  

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-20 11:12:24 tony>
+;;; Time-stamp: <2010-02-09 16:15:54 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,11 +13,14 @@
 ;;; designers and quality assurance people in its wake.
 
 
-(in-package :ls-user)
+(in-package :cls-examples)
 
 
 ;; We assume that the "loading-data.lisp" code has been run, and one
 ;; now wants to analyze the data loaded into *chickwts-df*
+
+(load (localized-pathto "loading-data.lisp")
+      :verbose t)
 
 *chickwts*
 
