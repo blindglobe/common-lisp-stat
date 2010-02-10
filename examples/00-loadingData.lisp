@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2010-02-09 16:18:07 tony>
+;;; Time-stamp: <2010-02-10 09:01:38 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -14,13 +14,27 @@
 
 
 (in-package :cl-user)
-(cl:defpackage :cls-examples
+
+(cl:defpackage :cls-examples  ;; similar setup to cls-user, without test data
   (:use :common-lisp
-	:cls-user)
+	:lisp-matrix
+	:common-lisp-statistics)
+  (:shadowing-import-from :lisp-stat
+      call-method call-next-method
+
+      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+      asin acos atan sinh cosh tanh asinh acosh atanh float random
+      truncate floor ceiling round minusp zerop plusp evenp oddp 
+      < <= = /= >= > > ;; complex
+      conjugate realpart imagpart phase
+      min max logand logior logxor lognot ffloor fceiling
+      ftruncate fround signum cis
+
+      <= float imagpart)
   (:export localized-pathto
 	   *chkwgts-df*))
 
-;; start within the common-lisp-stat-user 
+;; start within the cls-examples package, which is similar to cls-user
 (in-package :cls-examples)
 
 ;; we'll be loading from directories in the CLS homedir, so we want to
@@ -45,19 +59,13 @@ return a pathspec, not a string/namespec"
   diabetes
   (variables))
 
-
-
-
 (progn
   ;; COMMON LISP STATISTICS
-  ;;
   ;; Importing data from DSV text files.
 
-#|
-
-  We use as an example a simple R datasert, chickwts, which has one
-  nominal categorical variable and one continuous categorical
-  variable.   This dataset can be accessed in R as follows:
+#| We use as an example a simple R datasert, chickwts, which has one
+   nominal categorical variable and one continuous categorical
+   variable.   This dataset can be accessed in R as follows:
 
 > data(chickwts)
 > dim(chickwts)
@@ -77,5 +85,4 @@ return a pathspec, not a string/namespec"
   ;; *chickwts-df*
   (xref *chickwts-df* 1 1) ; => 160
   (xref *chickwts-df* 40 2) ; => "sunflower"
-  )
-
+  *chickwts-df*)
