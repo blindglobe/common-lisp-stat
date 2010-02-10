@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2010-02-10 09:01:38 tony>
+;;; Time-stamp: <2010-02-10 14:07:45 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -11,7 +11,6 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
 
 (in-package :cl-user)
 
@@ -45,7 +44,6 @@ FIXME: UNIX-centric (though might work on Mac OSX).  Might want to
 return a pathspec, not a string/namespec"
   (check-type x string)
   (concatenate 'string *cls-home-dir* x))
-
 
 
 (progn
