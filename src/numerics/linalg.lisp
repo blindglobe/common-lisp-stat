@@ -65,8 +65,14 @@
 ;;;;
 
 (defun make-smoother-args (x y xvals)
-  (check-sequence x)
-  (check-real x)
+(let ((x (make-array 3 :initial-contents '("a" 2 3 )))
+      (y (make-array 3 :element-type 'double-float))
+      ) ; "a" a b
+  (check-type x (vector integer 3))
+  (check-type y (vector double-float 3))
+  ;  (check-type y (vector integer 3))
+  x)
+(check-type x real)
   (when y
 	(check-sequence y)
 	(check-real y))
