@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-03 16:21:25 tony>
+;;; Time-stamp: <2010-02-08 16:10:40 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -30,6 +30,16 @@
 	      
 
 ;;; Basics
+
+
+(defpackage :lisp-stat-config
+  (:documentation "holds Common Lisp Statistics configuration/loading variables and related functions.")
+  (:nicknames :cls-config)
+  (:use :common-lisp)
+  (:export *common-lisp-stat-version* 
+	   *default-path*
+	   *lsos-files* *basic-files* *ls-files*
+	   *cls-home-dir* *cls-data-dir* *cls-examples-dir*))
 
 (defpackage :lisp-stat-object-system
   (:nicknames :ls-objects :lsos)

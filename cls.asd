@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-01-14 08:08:39 tony>
+;;; Time-stamp: <2010-02-09 08:33:51 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -16,58 +16,10 @@
 
 (in-package :cl-user)
 
-;;; enforce all floating reads as doubles
-;; (setf *read-default-float-format* 'double-float)
-
-;;; optimization settings
-;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
-
-(defpackage :lisp-stat-config
-  (:documentation "holds Common Lisp Statistics configuration/loading variables and related functions.")
-  (:nicknames :cls-config)
-  (:use :common-lisp)
-  (:export *common-lisp-stat-version* 
-	   *default-path*
-	   *lsos-files* *basic-files* *ls-files*
-	   *cls-home-dir* *cls-data-dir* *cls-examples-dir*))
-
-(in-package :lisp-stat-config)
-
-(defvar *common-lisp-stat-version* "1"
-  "Version currently loaded and being used.  Need to make into a
-  parseable object for version testing. Currently using integers.")
-
-(defparameter *cls-home-dir*
-  (directory-namestring
-   (truename (asdf:system-definition-pathname :cls)))
-  "Value considered \"home\" for the installation")
-
-#|
-(setf *cls-home-dir*
-      ;; #p"/cygdrive/c/local/sandbox/Lisp/CommonLispStat/"w
-      ;; #p"/home/tony/sandbox/CommonLispStat.git/"
-      #p"/home/tony/sandbox/CLS.git/")
-|#
-
-(macrolet ((ls-dir (root-str)
-	     `(pathname (concatenate 'string
-				     (namestring *cls-home-dir*) ,root-str)))
-
-	   (ls-defdir (target-dir-var  root-str)
-	     `(defvar ,target-dir-var (ls-dir ,root-str))))
-  (ls-defdir *cls-asdf-dir* "ASDF/")
-  (ls-defdir *cls-data-dir* "Data/")
-  (ls-defdir *cls-external-dir* "external/")
-  ;; reminder of testing
-  ;;(macroexpand '(ls-defdir *cls-asdf-dir* "ASDF"))
-  ;;(macroexpand-1 '(ls-defdir *cls-asdf-dir* "ASDF"))
-  ;;(macroexpand-1 '(ls-dir "ASDF"))
-  )
-
 ;;(pushnew *cls-asdf-dir* asdf:*central-registry*)
 ;;(pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
 
-(defpackage #:cls-system
+(cl:defpackage #:cls-system
     (:use :common-lisp :asdf))
 
 (in-package #:cls-system)
@@ -127,7 +79,8 @@
 		"packaging"
 		:pathname #p"src/"
 		:components
-		((:file "packages")))
+		((:file "packages")
+		 (:file "config")))
 
 	       (:module
 		"proto-objects"
