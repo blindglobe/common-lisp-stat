@@ -3,21 +3,18 @@
 MOSTLY WRONG, NEEDS UPDATE.
 
 
-(comment to save: (gensym) can make an NA entry).
-
 For a fast start: 
 
 You probably did:
 
     git clone git://repo.or.cz/CLS.git
+(or perhaps:
+    git clone http://repo.or.cz/w/CLS.git
+)
 
 or 
 
     git clone git://github.com/blindglobe/common-lisp-stat.git
-
-(or perhaps:
-    git clone http://repo.or.cz/w/CLS.git
-)
 
 and now you should:
 
