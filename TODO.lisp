@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-27 17:31:07 tony>
+;;; Time-stamp: <2010-03-19 08:17:46 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -35,7 +35,7 @@
     (asdf:oos 'asdf:load-op 'cl-typesetting))
 
   ;;INFRA
-  ;; (asdf:oos 'asdf:compile-op 'asdf-system-connections :force t)
+  ;; (asdf:oos 'asdf:compile-op 'asdf-system-connections :force t)
   ;; (asdf:oos 'asdf:compile-op 'lisp-matrix)
   ;; (asdf:oos 'asdf:load-op 'xarray)
 
@@ -63,7 +63,7 @@
   ;; (asdf:oos 'asdf:load-op 'cl-glut-examples)
 
   ;; (asdf:oos 'asdf:load-op 'cells)
-  ;; (asdf:oos 'asdf:load-op 'bordeaux-threads)
+  (asdf:oos 'asdf:load-op 'bordeaux-threads)
   ;; (asdf:oos 'asdf:load-op 'cells-gtk)
 
   (init-CLS))
@@ -113,20 +113,31 @@
 			       ('d "test3" 3 3d0)
 			       ('e "test4" 4 4d0))
 		 :doc "test reality"
-		 :case-labels (list "0" "1" "2" "3" "4")
+		 :case-labels (list "0" "1" 2 "3" "4")
 		 :var-labels (list "symbol" "string" "integer" "double-float")
 		 :var-types (list 'symbol 'string 'integer 'double-float)))
 
 *df-test* ; but with SBCL, ints become floats? 
 
 (defun check-var (df colnum)
-  (let ((nobs (xdim df 0)))
+  (let ((nobs (xdim (dataset df) 0)))
     (dotimes (i nobs)
       (check-type (xref df i colnum) (elt (var-types df) i)))))
 
+(xdim (dataset *df-test*) 1)
+(xdim (dataset *df-test*) 0)
+
 (check-var *df-test* 0)
 
+(check-type (xref *df-test* 1 1) simple-character-string)
 (xref *df-test* 1 2)
+
+(class-of
+  (xref *df-test* 1 1) )
+
+(check-type)
+
+
 
 (integerp (xref *df-test* 1 2))
 (floatp (xref *df-test* 1 2))

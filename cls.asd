@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-02-09 08:33:51 tony>
+;;; Time-stamp: <2010-02-13 15:24:47 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -69,7 +69,8 @@
 	       :listoflist
 	       :lift
 	       :rsm-string
-	       ;;    :cl-cairo2  :cl-2d
+	       ;;      :cl-random ;; or cl-variates, or...?
+	       ;; :cl-cairo2  :cl-2d
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
