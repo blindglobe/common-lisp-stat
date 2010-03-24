@@ -27,16 +27,27 @@ approach dating back to the dawn of the computing era.
 \section{Components of a procedure}
 \label{sec:components}
 
+Statistics consists of a range of procedures that can be applied to
+make decisions.  However, the range of procedures and resulting
+interpretation makes it difficult to actually drive a cook-book style
+approach.  But it remains that there is a color-palette of procedures
+which can be used to support decision making from collected
+datatsets. 
+
 define a statistical procedure as a decision-making approach which
 entails the intertwining of formal and informal structure.   
 
-Components:
+Components, first pass
 \begin{enumerate}
 \item \label{statproc-decision} Decision to make
-\item \label{statproc-assessment} Assessment approach to use
-  (some are inherently different, others just look different)
+\item \label{statproc-assessment} Assessment approach to use (some are
+  inherently different, others just look different): example, T-test
+  is a simplified ANOVA, so look different.  Or ML-based (with a
+  hill-climb) vs. ML with a LS fit (look different) vs. bayesian
+  Linear regression (inherently different).
 \item \label{statproc-normalization} Normalization of the problem for
-  assessment/comparison with other reference behaviours
+  assessment/comparison with other reference behaviours or
+  probabilistic processes.
 \item \label{conclusion} Type of conclusion desired, and instance of
   that conclusion (when data is present)
 \end{enumerate}
@@ -44,6 +55,15 @@ Components:
 This forms an \textit{abstract class} of a procedure, which can be
 represented by a real class, which can then be instantiated through
 the application of data.
+
+Components from Gelman:
+\begin{enumerate}
+\item design or analysis state (0th order)
+\item measurement
+\item comparison
+\item ??normalization??
+\end{enumerate}
+to characterize the application of a statistical procedure.
 
 \subsection{Decision}
 \label{sec:components:decision}
@@ -58,6 +78,10 @@ Questions could be:
 \item what is the difference?
 \item what is the strength of the difference?
 \end{itemize}
+
+One component (from Gelman's dicotomy) -- comparison.  And decision
+could equal ( comparsion, extremeness from expectation ).
+
 
 \subsection{Core Assessment}
 \label{sec:components:assessment}
