@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-25 10:54:44 tony>
+;;; Time-stamp: <2010-03-03 16:23:01 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -69,7 +69,8 @@
 
 ;;; Misc Functions (to move into a lisp data manipulation support package)
 
-;; the next two should be merged into a general replicator pattern.
+;; the next two should be merged into a general replicator or iterator
+;; pattern.
 (defun gen-seq (n &optional (start 1))
   "Generates an integer sequence of length N starting at START. Used
  for indexing."
@@ -112,7 +113,7 @@ value is returned indicating the success of the conversion.  Examples:
   (
 #|
    (store :initform nil
-	  :accessor store
+	  :accessor dataset
 	  :documentation "not useful in the -like virtual class case,
  	    contains actual data")
    (store-class :initform nil
