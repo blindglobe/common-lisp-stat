@@ -1,11 +1,11 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-02-10 14:23:42 tony>
+;;; Time-stamp: <2010-03-03 16:22:26 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2009--, AJ Rossini.  BSD, MIT, LLGPL, or
-;;;             GPLv2+, or GPLv3+ depending on how it arrives.  
+;;; Copyright: (c)2009--, AJ Rossini.  See LICENSE.mit in top level
+;;;            directory for conditions.
 ;;; Purpose:    Example of basic exploratory data analysis in CLS. 
 
 ;;; What is this talk of 'release'? Klingons do not make software
@@ -20,7 +20,7 @@
 (load (localized-pathto "loading-data.lisp")
       :verbose t)
 
-*chickwts*
+*chickwts-df*
 
 ;; Summarize is the basic EDA tool -- it accepts symbols or lists of
 ;; symbols, to describe what, when, and how to do it.  The resulting
@@ -40,8 +40,15 @@
 ;; #3 sampling/temporal component of variables
 ;; 
 
+(defparameter *chkwt-df-depgraph*
+ (let ((g  (make-container 'graph-container )))
+   (loop for v in (var-list *chickwt-df*)
+	(add-vertex g v))
+   (loop for (v1 . v2) in (appropriate-pairs-list *chickwt-df*)
+	(add-edge-between-vertexes g v1 v2))))
+
 (defparameter *my-df-smry-num*
-  (summarize *chickwts* :type 'numerical :io 'listing)
+  (summarize *chickwts-df* :type 'numerical :io 'listing)
   "First numerical summary of *my-df-smry*")
 
 (defparameter *my-df-smry-num*
