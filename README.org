@@ -1,53 +1,57 @@
--*- mode: text -*-
 
-MOSTLY WRONG, NEEDS UPDATE.
+This file will work better with org-mode and David Ito´s
+org-babel-lisp as well as his hypo approach to literate programming
+for gaming, as an org-babel extension. [fn:1]
 
+* Fast Start
 
-For a fast start: 
+  You probably did  (preferred)
 
-You probably did:
+#+begin_src shell
+  git clone git://github.com/blindglobe/common-lisp-stat.git
+#+end_src
 
-    git clone git://repo.or.cz/CLS.git
-(or perhaps:
-    git clone http://repo.or.cz/w/CLS.git
-)
+  or
 
-or 
+#+begin_src shell
+  git clone git://repo.or.cz/CLS.git
+  git clone http://repo.or.cz/w/CLS.git
+#+end_src
 
-    git clone git://github.com/blindglobe/common-lisp-stat.git
+  which might be a few revisions behind, and now you should:
 
-and now you should:
+#+begin_src shell
+  git submodules init
+  git submodules update
+#+end_src
 
-    git submodules init
-    git submodules update
+  to get the whole package.  However, not all submodules are attached
+  yet (need to do this soon).
 
-to get the whole package.  However, not all submodules are attached
-yet!  Will need to load 
+  Make the shared library liblispstat with an ANSI C compiler (only gcc
+  tested at this point):
 
-Make the shared library liblispstat with an ANSI C compiler (only gcc
-tested at this point):
+#+begin_src shell
+  cd lib && make && cd
+#+end_src
 
-       cd lib
-       make
+  run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in the
+  current directory.  Recent versions of CFFI and LIFT can be found in
+  the external/ subdirectory, and should be autoload-able, assuming
+  that you are using a Lisp implementation supporting ASDF.
+  (AJR-FIXME: need to upload my GIT mirrors to repo.or.cz or similar,
+  and have them potentially available as submodules if needed)
 
-run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in the
-current directory.  Recent versions of CFFI and LIFT can be found in
-the external/ subdirectory, and should be autoload-able, assuming that
-you are using a Lisp implementation supporting ASDF.  (AJR-FIXME: need
-to upload my GIT mirrors to repo.or.cz or similar, and have them
-potentially available as submodules if needed)
+  (on Debian or similar systems: can use CLC (Common Lisp Controller)
+  or SBCL approaches, i.e.  ~/.clc/systems or ~/.sbcl/systems should
+  contain softlinks to the cls, cffi, and lift ASDF files
+  (i.e. cls.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
+  probably a similar incantation for other CL's, need to record that
+  here!).
 
-(on Debian or similar systems: can use CLC (Common Lisp Controller) or
-SBCL approaches, i.e.  ~/.clc/systems or ~/.sbcl/systems should
-contain softlinks to the cls, cffi, and lift ASDF files
-(i.e. cls.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
-probably a similar incantation for other CL's, need to record that
-here!).
+  Step through ls-demo.lisp for a range of examples of activities.
 
-Step through ls-demo.lisp for a range of examples of activities.
-    
-
-So basically ..   
+  So basically
   
 1. change directory into the CommonLispStat working directory.
 2. start your lisp
@@ -66,59 +70,74 @@ So basically ..
 4. Tell me ( mailto:blindglobe@gmail.com ) if there is any thing wrong
    (or if anything happens to work.
 
-CMUCL and SBCL seem to work just fine at this stage.
+   CMUCL and SBCL seem to work just fine at this stage.
 
-CLISP is finicky regarding the problems that we have with CFFI
-conversation.  In particular that we can not really do typing that we
-need to take care of.   I think this is my problem, not someone
-elses. 
+   CLISP is finicky regarding the problems that we have with CFFI
+   conversation.  In particular that we can not really do typing that
+   we need to take care of.  I think this is my problem, not someone
+   elses.
 
-Need to test ECL.  Clozure-CL seems to work.
+   Need to test ECL.  Clozure-CL seems to work.
 
-===========
+   ===========
 
-See Doc/README* for history and design considerations
-See Doc/INSTALL for getting this to work and run
+   See Doc/README* for history and design considerations
+   See Doc/INSTALL for getting this to work and run
 
-===========
+   ===========
 
-Working on this with git:
+   Working on this with git:
 
-    git clone git://repo.or.cz/CommonLispStat.git 
-    cd CommonLispStat
-    git submodules init
-    git submodules update
+#+begin_src shell
+   git clone git://repo.or.cz/CommonLispStat.git 
+   cd CommonLispStat
+   git submodules init
+   git submodules update
+#+end_src
 
-will pull the whole repository, and create a "master" branch to work
-on.  If you are making edits, Probably, you don't want to use the
-master branch, but more to use a topic-centric branch, so you might:
+   will pull the whole repository, and create a "master" branch to
+   work on.  If you are making edits, Probably, you don't want to use
+   the master branch, but more to use a topic-centric branch, so you
+   might:
 
+#+begin_src shell
     git checkout -b myTopicBranch
+#+end_src
 
 and then work on myTopicBranch, pulling back to the master branch when
 needed by
 
+#+begin_src shell
     git checkout master
     git pull . myTopicBranch
+#+end_src
 
 (or
+#+begin_src shell
     git rebase myTopicBranch
+#+end_src
 )
 
 of course, perhaps you want to contribute to the mob branch.   For
 that, after cloning the repository as above, you would:
 
+#+begin_src shell
     git checkout -b mob remotes/origin/mob
+#+end_src
 
 (work, work, work... through a cycle of
 
+#+begin_src shell
          <edit>
 	 git add <files just edited>
 	 git commit -m "what I just did"
+#+end_src
 
  ad-nauseum.  When ready to commit, then just:
 
+#+begin_src shell
      git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
+#+end_src
 
 )
 
@@ -130,9 +149,11 @@ branch before uploading.   Will work on a formal example soon.
 (the basic principle is that instead of the edit cycle on mob, do
 something like:
 
+#+begin_src shell
   git checkout mob
   git pull . myTopicBranch   
   git push git+ssh://mob@repo.or.cz/srv/git/CommonLispStat.git mob:mob
+#+end_src
 
 )
 
@@ -162,3 +183,13 @@ we could have used SEXPs as well.   This is currently done by using an
     </example>
 
 ===========
+
+
+* Footnotes
+
+[fn:1] I´m not including instructions for Emacs or git, as the former
+is dealt with other places and the latter was required for you to get
+this.  Since disk space is cheap, I´m intentionally forcing git to be
+part of this system.  Sorry if you hate it.  Org-mode, org-babel, and
+org-babel-lisp, and hypo are useful for making this file a literate
+and interactively executable piece of work. 

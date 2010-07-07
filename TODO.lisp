@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-03-19 08:17:46 tony>
+;;; Time-stamp: <2010-06-15 09:59:40 tony>
 ;;; Creation:   <2008-09-08 08:06:30 tony>
 ;;; File:       TODO.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,10 +24,13 @@
     ;; core system
     ;;(asdf:oos 'asdf:load-op 'lisp-matrix)
     ;;(asdf:oos 'asdf:compile-op 'cls :force t)
-    (asdf:oos 'asdf:load-op 'cls)
+    (asdf:oos 'asdf:load-op :cls)
 
     ;; visualization
-    (asdf:oos 'asdf:load-op 'cl-cairo2-x11)
+    ;;  (asdf:oos 'asdf:load-op 'cl-cairo2-x11)
+    ;;  (asdf:oos 'asdf:compile-op 'iterate :force t)
+    (asdf:oos 'asdf:load-op 'iterate)
+    ;;  (asdf:oos 'asdf:compile-op :cl-2d :force t)
     (asdf:oos 'asdf:load-op 'cl-2d)
     
     ;; doc reporting
@@ -35,7 +38,7 @@
     (asdf:oos 'asdf:load-op 'cl-typesetting))
 
   ;;INFRA
-  ;; (asdf:oos 'asdf:compile-op 'asdf-system-connections :force t)
+  ;; (asdf:oos 'asdf:compile-op 'asdf-system-connections :force t)
   ;; (asdf:oos 'asdf:compile-op 'lisp-matrix)
   ;; (asdf:oos 'asdf:load-op 'xarray)
 
@@ -129,14 +132,23 @@
 
 (check-var *df-test* 0)
 
-(check-type (xref *df-test* 1 1) simple-character-string)
+(class-of
+  (xref *df-test* 1 1))
+
+(check-type (xref *df-test* 1 1)
+	    string) ;; => nil, so good.
+(check-type (xref *df-test* 1 1)
+	    vector) ;; => nil, so good.
+(check-type (xref *df-test* 1 1)
+	    real) ;; => simple-error type thrown, so good.
+
+;; How to nest errors within errors?
+(check-type (check-type (xref *df-test* 1 1) real) ;; => error thrown, so good.
+	    simple-error)
 (xref *df-test* 1 2)
 
-(class-of
-  (xref *df-test* 1 1) )
 
 (check-type)
-
 
 
 (integerp (xref *df-test* 1 2))
@@ -146,10 +158,8 @@
 (floatp (xref *df-test* 1 3))
 
 (type-of (vector 1 1d0))
+(type-of *df-test*)
 
-
-
-(loop )
 
 (xref *df-test* 2 1)
 (xref *df-test* 0 0)
@@ -334,3 +344,16 @@ where
 ;; difference between empirical, fisherian, and ...? information.
 
 ;;; Docudown...
+
+;;; CL-genomic
+(asdf:oos 'asdf:compile-op :ironclad)
+
+(in-package :cl-user)
+(asdf:oos 'asdf:load-op :cl-genomic)
+
+(in-package :bio-sequence)
+(make-dna "agccg") ;; fine
+(make-aa "agccg")  ;; fine
+(make-aa "agc9zz") ;; error
+
+

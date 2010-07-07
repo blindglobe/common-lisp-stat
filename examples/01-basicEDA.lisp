@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-03-03 16:22:26 tony>
+;;; Time-stamp: <2010-06-07 09:29:46 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,7 +17,7 @@
 ;; We assume that the "loading-data.lisp" code has been run, and one
 ;; now wants to analyze the data loaded into *chickwts-df*
 
-(load (localized-pathto "loading-data.lisp")
+(load (localized-pathto "examples/00-loadingData.lisp")
       :verbose t)
 
 *chickwts-df*
@@ -38,7 +38,10 @@
 ;;       random, biased, convenience sampling;
 ;; #2 purpose of dataset integration/manipulation
 ;; #3 sampling/temporal component of variables
-;; 
+
+
+;; Create metadata variable graph which provides an initial analysis
+;; structure for recording results.
 
 (defparameter *chkwt-df-depgraph*
  (let ((g  (make-container 'graph-container )))

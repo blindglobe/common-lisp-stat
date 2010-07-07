@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2010-02-10 14:07:45 tony>
+;;; Time-stamp: <2010-06-07 13:55:13 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -39,8 +39,10 @@
 ;; we'll be loading from directories in the CLS homedir, so we want to
 ;; make it easier to reach.  
 (defun localized-pathto (x)
-  "return a string denoting the complete path.
-FIXME: UNIX-centric (though might work on Mac OSX).  Might want to
+  "Given a string representing a relative path from the CLS home
+directory, return a string denoting the complete path.  
+
+FIXME: UNIX-centric (though might work on Mac OSX).  We really want to
 return a pathspec, not a string/namespec"
   (check-type x string)
   (concatenate 'string *cls-home-dir* x))
@@ -55,6 +57,8 @@ return a pathspec, not a string/namespec"
   ;; of packages.lisp, as it holds the overall defsystem structure.
   (load-data "iris.lsp")  ;; (the above partially fixed).
   diabetes
+  ;; FIXME above: Diabetes unbound, but it shouldn't be.  I think
+  ;; we need to eliminate LispStat v1.
   (variables))
 
 (progn
