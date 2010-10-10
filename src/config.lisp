@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-02-08 16:10:16 tony>
+;;; Time-stamp: <2010-09-06 13:46:06 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,7 +17,7 @@
 ;;; version..   Think, "21st Century Schizoid Man".
 
 ;;; enforce all floating reads as doubles
-;; (setf *read-default-float-format* 'double-float)
+(setf *read-default-float-format* 'double-float)
 
 ;;; optimization settings
 ;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
@@ -32,7 +32,7 @@
 (defparameter *cls-home-dir*
   (directory-namestring
    (truename (asdf:system-definition-pathname :cls)))
-  "Value considered \"home\" for the installation")
+  "Value considered \"home\" for the installation.  Requires the use of ASDF to find out where we are.")
 
 #|
 (setf *cls-home-dir*

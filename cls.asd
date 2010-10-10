@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-02-13 15:24:47 tony>
+;;; Time-stamp: <2010-10-10 16:04:08 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -11,7 +11,11 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;; Load ASDF if it isn't loaded
+;; Load ASDF if it isn't loaded -- BUT we need to ensure that we sync
+;; properly with the new ASDF!  Maybe we should make the git repo a
+;; submodule, and tag a particular version to use, pulling that
+;; version?
+
 #-asdf(load (pathname (concatenate 'string (namestring *cls-external-dir*) "asdf")))
 
 (in-package :cl-user)
@@ -24,11 +28,11 @@
 
 (in-package #:cls-system)
 
-;;; To avoid renaming everything from *.lsp to *.lisp...
-;;; borrowed from Cyrus Harmon's work, for example for the ch-util.
-;;; NOT secure against serving multiple architectures/hardwares from
-;;; the same file system (i.e. PPC and x86 would not be
-;;; differentiated). 
+;;; To avoid renaming everything from *.lsp to *.lisp...  borrowed
+;;; from Cyrus Harmon's work, for example for the ch-util.  NOT secure
+;;; against serving multiple architectures/hardwares from the same
+;;; file system (i.e. PPC and x86 would not be differentiated).
+;;; However, this might be more of a solution for quicklisp?
 
 (defclass cls-lsp-source-file (cl-source-file) ())
 (defparameter *fasl-directory*
@@ -40,7 +44,6 @@
 			       #+clisp "fasl-clisp"
 			       #-(or sbcl openmcl clisp cmucl) "fasl"
 			       )))
-
 
 ;;; Handle Luke's *.lsp suffix
 (defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
@@ -79,6 +82,7 @@
 	       (:module
 		"packaging"
 		:pathname #p"src/"
+		:serial t
 		:components
 		((:file "packages")
 		 (:file "config")))
