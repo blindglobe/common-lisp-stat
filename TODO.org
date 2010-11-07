@@ -1,230 +1,376 @@
 
-
-Time-stamp: <2010-09-06 16:57:21 tony>
+Time-stamp: <2010-11-07 11:54:36 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
 
 File:       TODO.lisp
 Author:     AJ Rossini <blindglobe@gmail.com>
-Copyright:  (c) 2007-2008, AJ Rossini <blindglobe@gmail.com>.  BSD.
-Purpose: Stuff that needs to be made working sits inside the
-         progns... This file contains the current challenges to
-         solve, including a description of the setup and the work
-         to solve....
+Copyright:  (c) 2007-2010, AJ Rossini <blindglobe@gmail.com>.  BSD.
+Purpose:    Stuff that needs to be made working sits inside the
+            Task sections.
+
+            This file contains the current challenges to solve,
+            including a description of the setup and the work to
+            solve.  Solutions welcome.
 
 What is this talk of 'release'? Klingons do not make software
 'releases'.  Our software 'escapes', leaving a bloody trail of
 designers and quality assurance people in its wake.
 
-* Code and "Do"-ing
+* Design
 
-** SET UP
+** (Internal) Package and (External) System Hierarchy
 
-(in-package :cl-user)
 
-(progn 
-  (defun init-CLS ()
-
-    ;; core system
-    ;;(asdf:oos 'asdf:load-op 'lisp-matrix)
-    ;;(asdf:oos 'asdf:compile-op 'cls :force t)
-    (asdf:oos 'asdf:load-op :cls)
-
-    ;; visualization
-    ;;  (asdf:oos 'asdf:load-op 'cl-cairo2-x11)
-    ;;  (asdf:oos 'asdf:compile-op 'iterate :force t)
-    (asdf:oos 'asdf:load-op 'iterate)
-    ;;  (asdf:oos 'asdf:compile-op :cl-2d :force t)
-    (asdf:oos 'asdf:load-op 'cl-2d)
+*** Singletons (primary building blocks)
     
-    ;; doc reporting
-    (asdf:oos 'asdf:load-op 'cl-pdf)
-    (asdf:oos 'asdf:load-op 'cl-typesetting))
+    These are packages as well as 
 
-  ;;INFRA
-  ;; (asdf:oos 'asdf:compile-op 'asdf-system-connections :force t)
-  ;; (asdf:oos 'asdf:compile-op 'lisp-matrix)
-  ;; (asdf:oos 'asdf:load-op 'xarray)
-
-  ;;DOCS
-  ;;; (asdf:oos 'asdf:compile-op 'metatilities-base :force t)
-  ;;; (asdf:oos 'asdf:load-op 'metatilities-base)
-  ;;; (asdf:oos 'asdf:load-op 'anaphora)
-  ;;; (asdf:oos 'asdf:load-op 'tinaa)
-  ;;; (asdf:oos 'asdf:load-op 'cl-ppcre)
-  ;; (asdf:oos 'asdf:load-op 'cl-markdown) ;; just need this and the next...
-  ;; (asdf:oos 'asdf:load-op 'docudown)
-
-  ;;use of extension packages supporting versioning and validation of
-  ;;CLOS objects?
-  ;; (asdf:oos 'asdf:compile-op 'versioned-objects :force t)
-  ;; (asdf:oos 'asdf:load-op 'versioned-objects)
-  ;; (asdf:oos 'asdf:compile-op 'validations :force t)
-  ;; (asdf:oos 'asdf:load-op 'validations)
-
-  ;;VIZ
-  ;; (asdf:oos 'asdf:compile-op 'cffi :force t)
-  ;; (asdf:oos 'asdf:load-op 'cl-opengl)
-  ;; (asdf:oos 'asdf:load-op 'cl-glu)
-  ;; (asdf:oos 'asdf:load-op 'cl-glut)
-  ;; (asdf:oos 'asdf:load-op 'cl-glut-examples)
-
-  ;; (asdf:oos 'asdf:load-op 'cells)
-  (asdf:oos 'asdf:load-op 'bordeaux-threads)
-  ;; (asdf:oos 'asdf:load-op 'cells-gtk)
-
-  (init-CLS))
-
-** Testing
-
-(in-package :lisp-stat-unittests)
-
-;; tests = 78, failures = 7, errors = 20
-(run-tests :suite 'lisp-stat-ut)
-
-(asdf:oos 'asdf:test-op 'cls)
-;; which runs (describe (run-tests :suite 'lisp-stat-ut))
-
-(describe 'lisp-stat-ut)
-(documentation 'lisp-stat-ut 'type)
-
-;; FIXME: Example: currently not relevant, yet
-;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
-;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
-
-(describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
-(lift::run-tests :suite 'lisp-stat-ut-dataframe)
-
-(describe (lift::run-test
-	   :test-case  'lisp-stat-unittests::create-proto
-	   :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
-
-(in-package :ls-user)
-
-;;; Tasks working on...
-
-#+nil
-(progn )
-
-#+nil
-(progn
-  ;; Syntax examples using lexical scope, closures, and bindings to
-  ;; ensure a clean communication of results
-  (with-data dataset ((dsvarname1 [usevarname1])
-                      (dsvarname2 [usevarname2]))
-      @body))
-
-(defparameter *df-test*
-  (make-instance 'dataframe-array
-		 :storage #2A (('a "test0" 0 0d0)
-			       ('b "test1" 1 1d0)
-			       ('c "test2" 2 2d0)
-			       ('d "test3" 3 3d0)
-			       ('e "test4" 4 4d0))
-		 :doc "test reality"
-		 :case-labels (list "0" "1" 2 "3" "4")
-		 :var-labels (list "symbol" "string" "integer" "double-float")
-		 :var-types (list 'symbol 'string 'integer 'double-float)))
-
-*df-test* ; but with SBCL, ints become floats? 
-
-(defun check-var (df colnum)
-  (let ((nobs (xdim (dataset df) 0)))
-    (dotimes (i nobs)
-      (check-type (xref df i colnum) (elt (var-types df) i)))))
-
-(xdim (dataset *df-test*) 1)
-(xdim (dataset *df-test*) 0)
-
-(check-var *df-test* 0)
-
-(class-of
-  (xref *df-test* 1 1))
-
-(check-type (xref *df-test* 1 1)
-	    string) ;; => nil, so good.
-(check-type (xref *df-test* 1 1)
-	    vector) ;; => nil, so good.
-(check-type (xref *df-test* 1 1)
-	    real) ;; => simple-error type thrown, so good.
-
-;; How to nest errors within errors?
-(check-type (check-type (xref *df-test* 1 1) real) ;; => error thrown, so good.
-	    simple-error)
-(xref *df-test* 1 2)
+    | asdf          | common system loader                          |
+    | xarray        | common access structure to array-like         |
+    |               | (matrix, vector) structures.                  |
+    | cls-config    | initialization of Lisp state, variables, etc, |
+    |               | localization to the particular lisp.          |
+    | lift          | unit-testing                                  |
+    | cffi          | foriegn function library                      |
+    | alexandria    |                                               |
+    | babel         |                                               |
+    | iterate       |                                               |
+    | metabang-bind |                                               |
 
 
-(check-type)
+*** Dependency structure
+
+    | lisp-matrix     | general purpose matrix package, linking to lapack |      |
+    |                 | for numerics. Depends on:                         |      |
+    |                 | ffa                                               | cffi |
+    |                 | fnv                                               | cffi |
+    |                 | cl-blapack                                        | cffi |
+    |                 | xarray                                            |      |
+    | cls-dataframe   | in the same spirit as lisp-matrix, a means to     |      |
+    |                 | create tables.  Perhaps better called datatables? |      |
+    | cls-probability | depends on gsll, cl-variates, cl-? initially,     |      |
 
 
-(integerp (xref *df-test* 1 2))
-(floatp (xref *df-test* 1 2))
-(integerp (xref *df-test* 1 3))
-(type-of (xref *df-test* 1 3))
-(floatp (xref *df-test* 1 3))
+*** Need to integrate
 
-(type-of (vector 1 1d0))
-(type-of *df-test*)
+    cl-randist
 
+    rsm-string
 
-(xref *df-test* 2 1)
-(xref *df-test* 0 0)
-(xref *df-test* 1 0)
-(xref *df-test* 1 '*)
+    ?? cl-2d  : 
+       	      cl-cairo2 : cffi
 
-;;; Experiments with cl-variates
-
-;; (asdf:oos 'asdf:compile-op 'cl-variates :force t)
-;; (asdf:oos 'asdf:compile-op 'cl-variates-test :force t)
-;; (asdf:oos 'asdf:load-op 'lift)
-;; (asdf:oos 'asdf:compile-op 'lift :force t)
-;; (asdf:oos 'asdf:load-op 'cl-variates)
-(asdf:oos 'asdf:load-op 'cl-variates-test)
-
-(in-package :cl-variates-test)
-;; check tests
-(run-tests :suite 'cl-variates-test)
-(describe (run-tests :suite 'cl-variates-test))
-
-(in-package :cl-variates-user)
-;; example usage
-(defparameter state (make-random-number-generator))
-(setf (random-seed state) 44)
-(random-seed state)
-(loop for i from 1 to 10 collect
-                  (random-range state 0 10))
-;; => (1 5 1 0 7 1 2 2 8 10)
-(setf (random-seed state) 44)
-(loop for i from 1 to 10 collect
-                  (random-range state 0 10))
-;; => (1 5 1 0 7 1 2 2 8 10)
-
-(setf (random-seed state) 44)
-(random-seed state)
-(loop for i from 1 to 10 collect
-                  (normal-random state 0 1))
-;; => 
-;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
-;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
-;;  0.20750134211656893 -0.14501914108452274)
-
-(setf (random-seed state) 44)
-(loop for i from 1 to 10 collect
-                  (normal-random state 0 1))
-;; => 
-;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
-;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
-;;  0.20750134211656893 -0.14501914108452274)
+    ?? cl-plplot : cffi
 
 
+* Tasks to Do
+  Usually, we need to load it before going on.
+#+srcname: loadit
+#+begin_src lisp
+  (asdf:oos 'asdf:load-op :cls)
+#+end_src
+** DONE [#B] SET UP
+   - State "DONE"       from "CURR"       [2010-10-12 Tue 13:48] \\
+     setup is mostly complete
+   - State "CURR"       from "TODO"       [2010-10-12 Tue 13:47]
+   - State "TODO"       from ""           [2010-10-12 Tue 13:47]
+
+#+srcname: loader
+#+begin_src lisp
+  (in-package :cl-user)
+  
+  (progn 
+    (defun init-CLS (&key (compile 'nil))
+      (let ((packagesToLoad (list ;; core system
+                                  :lift :lisp-matrix :cls
+  
+                                  ;; visualization
+                                  ;; :cl-cairo2-x11 :iterate
+                                  :cl-2d
+                                  ;; doc reporting
+                                  :cl-pdf :cl-typesetting
+                                  ;;INFRA
+                                  :asdf-system-connections :xarray
+                                  ;;DOCS
+                                  :metatilities-base :anaphora :tinaa
+                                  :cl-ppcre :cl-markdown :docudown
+                                  ;; version and validate CLOS objects
+                                  ;; :versioned-objects :validations
+                                  ;;VIZ
+                                  ;; :cl-opengl
+                                  ;; :cl-glu :cl-glut :cl-glut-examples
+  
+                                  :bordeaux-threads
+                                  ;; :cells :cells-gtk
+                                  )))
+        (mapcar #'(lambda (x)
+                    (if compile
+                        (asdf:oos 'asdf:compile-op x :force T)
+                        (asdf:oos 'asdf:load-op x)))
+                packagesToLoad)))
+  
+    (init-CLS))
+#+end_src
+
+#+results:
+|   | #<PACKAGE "COMMON-LISP-USER"> |
+
+** CURR [#A] Testing: unit, regression, examples. [0/3]
+   - State "CURR"       from "TODO"       [2010-10-12 Tue 13:51]
+   - State "TODO"       from ""           [2010-10-12 Tue 13:51]
+   Testing consists of unit tests, which internally verify subsets of
+   code, regression tests, and functional tests (in increasing order
+   of scale).
+*** CURR [#B] Unit tests
+    - State "CURR"       from "TODO"       [2010-11-04 Thu 18:33]
+   - State "CURR"       from "TODO"       [2010-10-12 Tue 13:48]
+   - State "TODO"       from ""           [2010-10-12 Tue 13:48]
+   Unit tests have been started using LIFT.  Need to consider some of
+   the other systems that provide testing, when people add them to the
+   mix of libraries that we need, along with examples of how to use.
+#+srcname: 
+#+begin_src lisp
+  (in-package :lisp-stat-unittests)
+  (run-tests :suite 'lisp-stat-ut)
+  ;; => tests = 78, failures = 7, errors = 20
+  (asdf:oos 'asdf:test-op 'cls)
+  ;; which runs (describe (run-tests :suite 'lisp-stat-ut))
+#+end_src
+   and check documentation to see if it is useful.
+#+srcname: 
+#+begin_src lisp
+   (in-package :lisp-stat-unittests)
+
+   (describe 'lisp-stat-ut)
+   (documentation 'lisp-stat-ut 'type)
+
+   ;; FIXME: Example: currently not relevant, yet
+   ;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
+   ;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+
+   (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
+   (lift::run-tests :suite 'lisp-stat-ut-dataframe)
+
+   (describe (lift::run-test
+  	       :test-case  'lisp-stat-unittests::create-proto
+  	       :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+#+end_src
+
+*** TODO [#B] Regression Tests
+    - State "TODO"       from ""           [2010-10-12 Tue 13:54]
+
+*** TODO [#B] Functional Tests
+    - State "TODO"       from ""           [2010-10-12 Tue 13:54]
+
+** TODO [#B] Functional Examples that need to work [0/2]
+   - State "TODO"       from ""           [2010-10-12 Tue 13:55]
+
+   These examples should be functional forms within CLS, describing
+   working functionality which is needed for work.
+
+*** TODO [#B] Scoping with datasets
+    - State "TODO"       from ""           [2010-11-04 Thu 18:46]
+
+    The following needs to work, and a related syntax for resampling
+    and similar synthetic data approaches (bootstrapping, imputation)
+    ought to use similar syntax as well.
+#+srcname: DataSetNameScoping
+#+begin_src lisp
+  (in-package :ls-user)
+  (progn
+    ;; Syntax examples using lexical scope, closures, and bindings to
+    ;; ensure a clean communication of results
+    (with-data dataset ((dsvarname1 [usevarname1])
+                        (dsvarname2 [usevarname2]))
+        @body))
+#+end_src
+
+*** TODO [#B] Dataframe variable typing
+    - State "TODO"       from ""           [2010-11-04 Thu 18:48]
+
+#+srcname: DFvarTyping
+#+begin_src lisp
+  (in-package :ls-user)
+  (defparameter *df-test*
+    (make-instance 'dataframe-array
+                   :storage #2A (('a "test0" 0 0d0)
+                                 ('b "test1" 1 1d0)
+                                 ('c "test2" 2 2d0)
+                                 ('d "test3" 3 3d0)
+                                 ('e "test4" 4 4d0))
+                   :doc "test reality"
+                   :case-labels (list "0" "1" 2 "3" "4")
+                   :var-labels (list "symbol" "string" "integer" "double-float")
+                   :var-types (list 'symbol 'string 'integer 'double-float)))
+  
+  ;; with SBCL, ints become floats?  Need to adjust output
+  ;; representation appropriately..
+  ,*df-test* 
+  
+  (defun check-var (df colnum)
+    (let ((nobs (xdim (dataset df) 0)))
+      (dotimes (i nobs)
+        (check-type (xref df i colnum) (elt (var-types df) i)))))
+  
+  (xdim (dataset *df-test*) 1)
+  (xdim (dataset *df-test*) 0)
+  
+  (check-var *df-test* 0)
+  
+  (class-of
+    (xref *df-test* 1 1))
+  
+  (check-type (xref *df-test* 1 1)
+              string) ;; => nil, so good.
+  (check-type (xref *df-test* 1 1)
+              vector) ;; => nil, so good.
+  (check-type (xref *df-test* 1 1)
+              real) ;; => simple-error type thrown, so good.
+  
+  ;; How to nest errors within errors?
+  (check-type (check-type (xref *df-test* 1 1) real) ;; => error thrown, so good.
+              simple-error)
+  (xref *df-test* 1 2)
+  
+  (check-type)
+  
+  (integerp (xref *df-test* 1 2))
+  (floatp (xref *df-test* 1 2))
+  (integerp (xref *df-test* 1 3))
+  (type-of (xref *df-test* 1 3))
+  (floatp (xref *df-test* 1 3))
+  
+  (type-of (vector 1 1d0))
+  (type-of *df-test*)
+  
+  (xref *df-test* 2 1)
+  (xref *df-test* 0 0)
+  (xref *df-test* 1 0)
+  (xref *df-test* 1 '*)
+#+end_src
+
+** CURR [#A] Random Numbers
+   - State "CURR"       from "TODO"       [2010-11-05 Fri 15:41]
+   - State "TODO"       from ""           [2010-10-14 Thu 00:12]
+
+   Need to select and choose a probability system (probability
+   functions, random numbers).  Goal is to have a general framework
+   for representing probability functions, functionals on
+   probabilities, and reproducible random streams based on such
+   numbers. 
+*** CURR [#B] CL-VARIATES system evaluation [2/3]
+    - State "CURR"       from "TODO"       [2010-11-05 Fri 15:40]
+    - State "TODO"       from ""           [2010-10-12 Tue 14:16]
+    
+    CL-VARIATES is a system developed by Gary W King.  It uses streams
+    with seeds, and is hence reproducible.  (Random comment: why do CL
+    programmers as a class ignore computational reproducibility?)
+**** DONE [#B] load and verify
+     - State "DONE"       from "CURR"       [2010-11-04 Thu 18:59] \\
+       load, init, and verify performance.
+     - State "CURR"       from "TODO"       [2010-11-04 Thu 18:58]
+     - State "TODO"       from ""           [2010-11-04 Thu 18:58]
+
+#+srcname: Loading-CL-VARIATES
+#+begin_src lisp
+  (in-package :cl-user)
+  (asdf:oos 'asdf:load-op 'cl-variates)
+  (asdf:oos 'asdf:load-op 'cl-variates-test)
+#+end_src
+
+
+#+srcname: CL-VARIATES-UNITTESTS
+#+begin_src lisp
+  (in-package :cl-variates-test)
+  ;; check tests
+  (run-tests :suite 'cl-variates-test)
+  (describe (run-tests :suite 'cl-variates-test))
+#+end_src
+
+**** DONE [#B] Examples of use
+     - State "DONE"       from "CURR"       [2010-11-05 Fri 15:39] \\
+       basic example of reproducible draws from the uniform and normal random
+       number streams.
+     - State "CURR"       from "TODO"       [2010-11-05 Fri 15:39]
+     - State "TODO"       from ""           [2010-11-04 Thu 19:01]
+
+#+srcname: CL-VARIATES-EXAMPLE-USE
+#+begin_src lisp
+  (in-package :cl-variates-user)
+  ;; example usage
+  (defparameter state (make-random-number-generator))
+  (setf (random-seed state) 44)
+  (random-seed state)
+  (loop for i from 1 to 10 collect
+                    (random-range state 0 10))
+  ;; => (1 5 1 0 7 1 2 2 8 10)
+  (setf (random-seed state) 44)
+  (loop for i from 1 to 10 collect
+                    (random-range state 0 10))
+  ;; => (1 5 1 0 7 1 2 2 8 10)
+  
+  (setf (random-seed state) 44)
+  (random-seed state)
+  (loop for i from 1 to 10 collect
+                    (normal-random state 0 1))
+  ;; => 
+  ;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
+  ;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
+  ;;  0.20750134211656893 -0.14501914108452274)
+  
+  (setf (random-seed state) 44)
+  (loop for i from 1 to 10 collect
+                    (normal-random state 0 1))
+  ;; => 
+  ;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
+  ;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
+  ;;  0.20750134211656893 -0.14501914108452274)
+#+end_src
+
+**** CURR [#B] Full example of general usage 
+     - State "CURR"       from "TODO"       [2010-11-05 Fri 15:40]
+     - State "TODO"       from ""           [2010-11-05 Fri 15:40]
+
+     What we want to do here is describe the basic available API that
+     is present.  So while the previous work describes what the 
+*** TODO [#B] CL-RANDOM system evaluation
+    - State "TODO"       from ""           [2010-11-05 Fri 15:40]
+
+    Problems:
+    1. no seed setting for random numbers
+    2. contamination of a probability support with optimization and
+       linear algebra.
+
+    Positives:
+    1. good code
+    2. nice design for generics.
+       
+*** TODO [#B] Native CLS (from XLS)
+    - State "TODO"       from ""           [2010-11-05 Fri 15:40]
+      
+** TODO [#B] Numerical Linear Algebra
+   - State "TODO"       from ""           [2010-10-14 Thu 00:12]
+
+*** TODO [#B] LLA evaluation
+    - State "TODO"       from ""           [2010-10-12 Tue 14:13]
 ;;; experiments with LLA
 (in-package :cl-user)
 (asdf:oos 'asdf:load-op 'lla)
 (in-package :lla-user)
 
- 
+*** CURR [#B] Lisp-Matrix system evaluation
+    - State "CURR"       from "TODO"       [2010-10-12 Tue 14:13]
+    - State "TODO"       from ""           [2010-10-12 Tue 14:13]
 
+*** TODO [#B] LispLab system evaluation
+    - State "TODO"       from ""           [2010-10-12 Tue 14:13]
+
+** TODO [#B] Statistical Procedures to implement
+   - State "TODO"       from ""           [2010-10-14 Thu 00:12]
+
+*** PFIM 
 (in-package :cls-user)
 ;;;; PFIM notes
 
@@ -278,8 +424,7 @@ Design comparisons:
 
 find design maxing D opt, (power (determinant MF) (/ 1 P))
 Design varialables 
- -- contin vars for smapling times within interval or set
- -- number of groups for cat vars
+ -- contin vars for smapling times within interval or set -- number of groups for cat vars
 
 Stat in Med 2009, expansion around post-hoc RE est, not necessarily zero.
 
@@ -330,6 +475,7 @@ where
 ;;See
 (url-get "www.pfim.biostat.fr")
 
+
 ;;; Thinking of generics...
 (information-matrix model parameters)
 (information-matrix variance-matrix)
@@ -347,21 +493,36 @@ where
 	(setf (aref IM I J)
 	      (differentiate (differentiate loglikelihood parameterI) parameterJ))))))
 
+*** difference between empirical, fisherian, and ...? information.
+*** Example of Integration with CL-GENOMIC
+    - State "TODO"       from ""           [2010-10-12 Tue 14:03]
+    
+    CL-GENOMIC is a very interesting data-structure strategy for
+    manipulating sequence data.
 
+#+srcname: 
+#+begin_src lisp
+    (in-package :cl-user)
+    (asdf:oos 'asdf:compile-op :ironclad)
+    (asdf:oos 'asdf:load-op :cl-genomic)
 
-;; difference between empirical, fisherian, and ...? information.
+    (in-package :bio-sequence)
+    (make-dna "agccg") ;; fine
+    (make-aa "agccg")  ;; fine
+    (make-aa "agc9zz") ;; error expected
+#+end_src
 
-;;; Docudown...
+** TODO [#B] Documentation and Examples [0/3]
+   - State "TODO"       from ""           [2010-10-14 Thu 00:12]
 
-;;; CL-genomic
-(asdf:oos 'asdf:compile-op :ironclad)
+*** TODO [#B] Docudown
+    - State "TODO"       from ""           [2010-11-05 Fri 15:34]
 
-(in-package :cl-user)
-(asdf:oos 'asdf:load-op :cl-genomic)
+*** TODO [#A] CLDOC
+    - State "TODO"       from ""           [2010-11-05 Fri 15:34]
 
-(in-package :bio-sequence)
-(make-dna "agccg") ;; fine
-(make-aa "agccg")  ;; fine
-(make-aa "agc9zz") ;; error
+*** TODO [#B] CLPDF, and literate data analysis
+    - State "TODO"       from ""           [2010-11-05 Fri 15:34]
 
-
+*** 
+* Proposals

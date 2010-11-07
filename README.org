@@ -1,7 +1,10 @@
 
 This file will work better with org-mode and David Ito´s
-org-babel-lisp as well as his hypo approach to literate programming
-for gaming, as an org-babel extension. [fn:1]
+org-babel-lisp.  Along those lines, please note his hypo approach to
+literate programming for gaming, as an org-babel extension. [fn:1] .
+That approach describes a literate approach for describing games, but
+clearly is no different than the literate approaches described for
+data analysis, which is just another game.
 
 * Fast Start
 
@@ -18,18 +21,20 @@ for gaming, as an org-babel extension. [fn:1]
   git clone http://repo.or.cz/w/CLS.git
 #+end_src
 
-  which might be a few revisions behind, and now you should:
+** TODO set up git submodules to do the right thing. 
+   - State "TODO"       from ""           [2010-10-10 Sun 23:30]
 
 #+begin_src shell
   git submodules init
   git submodules update
 #+end_src
 
-  to get the whole package.  However, not all submodules are attached
-  yet (need to do this soon).
+  to get the whole package.
 
-  Make the shared library liblispstat with an ANSI C compiler (only gcc
-  tested at this point):
+  *_Obsolete_*: Make the shared library liblispstat with an ANSI C
+  compiler (only gcc tested at this point).  This is used for
+  numerical support which might be more robust to obtain from GSLL or
+  similar other systems.  It would be done via.
 
 #+begin_src shell
   cd lib && make && cd
@@ -51,42 +56,51 @@ for gaming, as an org-babel extension. [fn:1]
 
   Step through ls-demo.lisp for a range of examples of activities.
 
-  So basically
+** Example Usage steps
   
-1. change directory into the CommonLispStat working directory.
-2. start your lisp
-3. follow the commands in the ls-demo.lisp file, i.e.
+*** change directory into the CommonLispStat working directory.
+*** start your lisp
+*** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
  
-   a. (asdf:oos 'asdf:load-op 'cls) ;; use ASDF to load lispstat
-   b. (in-package :ls-user)
-   c. (normal-rand 20)
-   d. (setf mytest (normal-rand 20))
-   e. ... (and so on) ...
+**** (asdf:oos 'asdf:load-op :cls)
+
+     use ASDF to load lispstat
+
+
+**** (in-package :ls-user)
+
+     work in the scratch user package.  Normally, one would create a
+     special package to work in.
+
+**** (normal-rand 20)
+
+**** (setf mytest (normal-rand 20))
+
+**** ... (and so on) ...
 
    and see if they work (basic CFFI functionality for external C
    library, LIFT package for unit-testing framework to ensure run time
    stability).
   
-4. Tell me ( mailto:blindglobe@gmail.com ) if there is any thing wrong
-   (or if anything happens to work.
+*** Inform  moi of problems or successes
 
-   CMUCL and SBCL seem to work just fine at this stage.
+    mailto:blindglobe@gmail.com if there is anything wrong, or
+    even if something happens to work.
 
-   CLISP is finicky regarding the problems that we have with CFFI
-   conversation.  In particular that we can not really do typing that
-   we need to take care of.  I think this is my problem, not someone
-   elses.
+    Current beliefs:
+    - CMUCL and SBCL seem to work just fine at this stage.
+    - CLISP is finicky regarding the problems that we have with CFFI
+      conversation.  In particular that we can not really do typing
+      that we need to take care of.  I think this is my problem, not
+      someone elses.
+    - Need to test ECL.  Clozure-CL seems to work.
 
-   Need to test ECL.  Clozure-CL seems to work.
-
-   ===========
+* History
 
    See Doc/README* for history and design considerations
    See Doc/INSTALL for getting this to work and run
 
-   ===========
-
-   Working on this with git:
+* Working on your own modifications
 
 #+begin_src shell
    git clone git://repo.or.cz/CommonLispStat.git 
@@ -96,9 +110,9 @@ for gaming, as an org-babel extension. [fn:1]
 #+end_src
 
    will pull the whole repository, and create a "master" branch to
-   work on.  If you are making edits, Probably, you don't want to use
-   the master branch, but more to use a topic-centric branch, so you
-   might:
+   work on.  If you are making edits, which I'd like, you don't want
+   to use the master branch, but more to use a topic-centric branch,
+   so you might:
 
 #+begin_src shell
     git checkout -b myTopicBranch
@@ -164,26 +178,27 @@ libraries.
 
 That gets a bit tricky, but see ./bin/GetRepos.sh for an example. 
 
-===========
+* Documentation and examples
 
-I've started putting examples of use in function documentation.   If
-you are a lisp'er, you'll find this pendantic and insulting.  Many of
-the uses are trivial.  However, this has been tested out on a number
-of research statisticians (the primary user audience) and found
-useful.
+  I've started putting examples of use in function documentation.  If
+  you are a lisp'er, you'll find this pendantic and insulting.  Many
+  of the uses are trivial.  However, this has been tested out on a
+  number of research statisticians (the primary user audience) and
+  found useful.
 
-Still need to write the (run-doc-ex 'function-name)  function, which
-would print out the example and run it live.  Hopefully with the same
-results.  I've used XML markup for this, but for no particular reason,
-we could have used SEXPs as well.   This is currently done by using an
-<example> tag set, as in
-    <example>
-    (progn
-       (example-code-for-function))
-    </example>
+  Still need to write the (run-doc-ex 'function-name) function, which
+  would print out the example and run it live.  Hopefully with the
+  same results.  I've used XML markup for this, but for no particular
+  reason, we could have used SEXPs as well.  This is currently done by
+  using an <example> tag set, as in
 
-===========
-
+#+srcname: 
+#+begin_src xml
+  <example>
+  (progn
+    (example-code-for-function))
+  </example>
+#+end_src
 
 * Footnotes
 
