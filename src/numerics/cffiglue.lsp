@@ -17,7 +17,7 @@
 
 (cffi:load-foreign-library
  (concatenate 'string
-	      (namestring lisp-stat-config::*cls-home-dir*)
+	      (namestring lisp-stat-config::*cls-installation-home-dir*)
 	      "lib/liblispstat"
 	      #+darwin ".dylib"
 	      #-darwin ".so"))
