@@ -1,11 +1,11 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-10-10 16:04:08 tony>
+;;; Time-stamp: <2010-11-02 11:29:10 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2005--2010, by AJ Rossini <blindglobe@gmail.com>
 ;;; License:    MIT, see the file LICENSE.mit in this directory for details.
-;;; Purpose:    ASDF specification for Common Lisp Statistics
+;;; Purpose:    ASDF specification for Common Lisp Statistical System
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -14,7 +14,7 @@
 ;; Load ASDF if it isn't loaded -- BUT we need to ensure that we sync
 ;; properly with the new ASDF!  Maybe we should make the git repo a
 ;; submodule, and tag a particular version to use, pulling that
-;; version?
+;; version?  However, most "modern" CLs use the "new" (>=v2) ASDF.
 
 #-asdf(load (pathname (concatenate 'string (namestring *cls-external-dir*) "asdf")))
 
@@ -55,24 +55,28 @@
 
 
 (defsystem "cls"
+  :name "Common Lisp Statistical System"
   :version #.(with-open-file
                  (vers (merge-pathnames "version.lisp-expr" *load-truename*))
                (read vers))
   :author "A.J. Rossini <blindglobe@gmail.com>"
-  :license "BSD"
+  :license "MIT"
   :description "Common Lisp Statistics (CLS): A System for Statistical
   Computing with Common Lisp; based on Common LispStat (CLS alpha1) by
   Luke Tierney <luke@stat.uiowa.edu> (apparently originally written
   when Luke was at CMU, on leave at Bell Labs?).  Last touched by him
   in 1991, then by AJR starting in 2005."
   :serial t
-  :depends-on (:cffi
+  :depends-on (:cldoc
+	       :cffi
 	       :xarray
 	       :lisp-matrix ; on fnv, cl-blapack, ffa
 	       :listoflist
 	       :lift
 	       :rsm-string
-	       ;;      :cl-random ;; or cl-variates, or...?
+	       ;;; need to select pRNG stream system
+	       ;; :cl-random ;; or cl-variates, or...?
+	       ;;; if graphics exist, then...
 	       ;; :cl-cairo2  :cl-2d
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
