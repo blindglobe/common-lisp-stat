@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-11-04 16:45:44 tony>
+;;; Time-stamp: <2010-11-10 14:03:10 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -274,7 +274,12 @@
 	   poisson-cdf poisson-quant poisson-pmf poisson-rand 
 	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
-
+(defpackage :cls-probability
+  (:use common-lisp
+	cl-variates
+	)
+  (:export probability-law distribution
+	   density-fcn quantile-fcn survivorship-fcn ))
 
 (defpackage :lisp-stat-math
    (:use :common-lisp

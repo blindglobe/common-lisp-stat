@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-11-02 11:29:10 tony>
+;;; Time-stamp: <2010-11-30 17:58:30 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -76,7 +76,8 @@
 	       :rsm-string
 	       ;;; need to select pRNG stream system
 	       ;; :cl-random ;; or cl-variates, or...?
-	       ;;; if graphics exist, then...
+	       :cl-variates
+ 	       ;;; if graphics exist, then...
 	       ;; :cl-cairo2  :cl-2d
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
