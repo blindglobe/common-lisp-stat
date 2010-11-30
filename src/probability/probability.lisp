@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-11-07 11:29:30 tony>
+;;; Time-stamp: <2010-11-30 08:55:58 tony>
 ;;; Creation:   <2010-11-06 01:51:20 tony>
 ;;; File:       probability.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -22,10 +22,34 @@
 ;;; reproducible.  This is just a stub for the interface/API that we
 ;;; would like to be able to use.
 
+;;; A bit of theory behind this:
+;;; We would like to think about where probability fits into
+;;; statistics.  For example, consider the simple case of the "mean".
+;;; If we treat both empirical distributions and theoretical
+;;; distributions as equivalent first-class objects, it leads to some
+;;; computationally interesting ways of doing things.  This means that
+;;; observed data implies a first-class (discrete) empirical
+;;; distribution in its first right, and also implies that we need to
+;;; include a means of computing both functionals of 1 distribution as
+;;; well as functionals of multiple distributions (think of the
+;;; kullback-leibler distance).
+;;;
+;;; This file should describe the primary generic functions and data
+;;; structures that imply what is feasible in this case.  
+;;; 
+;;; We will map empirical and theoretical distributions into this
+;;; structure in different files, as well as common (and uncommon)
+;;; functionals.
+
+
 (in-package :cls-probability)
 
 (defgeneric density (probability-law-instance value))
-(defmethod density ((pli probability-law) value))
+
+(defmethod density ((pli probability-law) (value real)))
+(defmethod density ((pli probability-law) (value list)))
+(defmethod density ((pli probability-law) (value vector-like)))
+
 
 (defgeneric distribution (probability-law-instance value))
 
@@ -38,6 +62,9 @@
 (defclass probability-parameters ()
   ()
   :documentation "Virtual class to denote prob parameters")
+
+;; TODO: need to understand how to manage multiple parameterizations
+;; for the same family of probability laws.  
 
 (defclass probability-law ()
   ((density-function
@@ -55,12 +82,13 @@
     :type list)
    (prng-stream
     :type unif-stream
-    :documentation "current underlying prng stream object, typically Uniform[0,1]"))
-  (:documentation "sufficient data to compute probabilistic
-  quantities.  Given the support of the probability law, and a
-  function mapping the law to the prob result, we can compute, in an
-  expensive manner, most quantities.  When feasible, we can accelerate
-  this quite a bit.")
+    :documentation "current underlying prng stream object, typically
+    Uniform[0,1], but could be Uniform{0,...,n} for some discrete pRNGs."))
+  (:documentation "Sufficient data to compute probabilistic quantities
+  and draw from the particularly specified probability law.  Given the
+  support of the probability law, and a function mapping the law to
+  the prob result, we can compute, in an expensive manner, most
+  quantities.  When feasible, we can accelerate this quite a bit.")
   ())
 
 
