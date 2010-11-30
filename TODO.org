@@ -1,5 +1,5 @@
 
-Time-stamp: <2010-11-07 11:54:36 tony>
+Time-stamp: <2010-11-30 18:01:26 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -21,8 +21,6 @@ designers and quality assurance people in its wake.
 * Design
 
 ** (Internal) Package and (External) System Hierarchy
-
-
 *** Singletons (primary building blocks)
     
     These are packages as well as 
@@ -39,7 +37,6 @@ designers and quality assurance people in its wake.
     | iterate       |                                               |
     | metabang-bind |                                               |
 
-
 *** Dependency structure
 
     | lisp-matrix     | general purpose matrix package, linking to lapack |      |
@@ -52,7 +49,6 @@ designers and quality assurance people in its wake.
     |                 | create tables.  Perhaps better called datatables? |      |
     | cls-probability | depends on gsll, cl-variates, cl-? initially,     |      |
 
-
 *** Need to integrate
 
     cl-randist
@@ -64,8 +60,7 @@ designers and quality assurance people in its wake.
 
     ?? cl-plplot : cffi
 
-
-* Tasks to Do
+* Tasks to Do [4/25]
   Usually, we need to load it before going on.
 #+srcname: loadit
 #+begin_src lisp
@@ -76,11 +71,11 @@ designers and quality assurance people in its wake.
      setup is mostly complete
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:47]
    - State "TODO"       from ""           [2010-10-12 Tue 13:47]
-
+   This is an example of a custom setup, not really interesting at
+   this point except to remind Tony how to program.
 #+srcname: loader
 #+begin_src lisp
   (in-package :cl-user)
-  
   (progn 
     (defun init-CLS (&key (compile 'nil))
       (let ((packagesToLoad (list ;; core system
@@ -111,12 +106,16 @@ designers and quality assurance people in its wake.
                         (asdf:oos 'asdf:load-op x)))
                 packagesToLoad)))
   
-    (init-CLS))
+    (init-CLS)) ;; vs (init-CLS :compile T)
 #+end_src
 
 #+results:
 |   | #<PACKAGE "COMMON-LISP-USER"> |
 
+** TODO [#A] Integrate with quicklist support.
+   - State "TODO"       from ""           [2010-11-30 Tue 18:00]
+   
+   important to merge with quicklisp system loader support.
 ** CURR [#A] Testing: unit, regression, examples. [0/3]
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:51]
    - State "TODO"       from ""           [2010-10-12 Tue 13:51]
@@ -164,7 +163,8 @@ designers and quality assurance people in its wake.
 *** TODO [#B] Functional Tests
     - State "TODO"       from ""           [2010-10-12 Tue 13:54]
 
-** TODO [#B] Functional Examples that need to work [0/2]
+** CURR [#B] Functional Examples that need to work [1/2]
+   - State "CURR"       from "TODO"       [2010-11-30 Tue 17:57]
    - State "TODO"       from ""           [2010-10-12 Tue 13:55]
 
    These examples should be functional forms within CLS, describing
@@ -182,13 +182,44 @@ designers and quality assurance people in its wake.
   (progn
     ;; Syntax examples using lexical scope, closures, and bindings to
     ;; ensure a clean communication of results
+    ;; This is actually a bit tricky, since we need to clarify whether
+    ;; it is line-at-a-time that we are considering or if there is
+    ;; another mapping strategy.  In particular, one could imagine a
+    ;; looping-over-observations function, or a
+    ;; looping-over-independent-observations function which leverages a
+    ;; grouping variable which provides guidance for what is considered
+    ;; independent from the sampling frame being considered. The frame
+    ;; itself (definable via some form of metadata to clarify scope?)
+    ;; could clearly provide a bit of relativity for clarifying what
+    ;; statistical independence means.
+    
     (with-data dataset ((dsvarname1 [usevarname1])
                         (dsvarname2 [usevarname2]))
-        @body))
+        @body)
+    
+    (looping-over-observations
+       dataset ((dsvarname1 [usevarname1])
+                (dsvarname2 [usevarname2]))
+         @body)
+  
+    (looping-over-independent-observations
+       dataset independence-defining-variable
+         ((dsvarname1 [usevarname1])
+          (dsvarname2 [usevarname2]))
+         @body)
+    )
+  
 #+end_src
 
-*** TODO [#B] Dataframe variable typing
+*** DONE [#B] Dataframe variable typing
+    - State "DONE"       from "CURR"       [2010-11-30 Tue 17:56] \\
+      check-type approach works, we would just have to throw a catchable
+      error if we want to use it in a reliable fashion.
+    - State "CURR"       from "TODO"       [2010-11-30 Tue 17:56]
     - State "TODO"       from ""           [2010-11-04 Thu 18:48]
+
+    Seems to generally work, need to ensure that we use this for
+    appropriate typing.
 
 #+srcname: DFvarTyping
 #+begin_src lisp
@@ -207,7 +238,7 @@ designers and quality assurance people in its wake.
   
   ;; with SBCL, ints become floats?  Need to adjust output
   ;; representation appropriately..
-  ,*df-test* 
+  *df-test* 
   
   (defun check-var (df colnum)
     (let ((nobs (xdim (dataset df) 0)))
@@ -234,7 +265,8 @@ designers and quality assurance people in its wake.
               simple-error)
   (xref *df-test* 1 2)
   
-  (check-type)
+  (check-type *df-test*
+              dataframe-array) ; nil is good.
   
   (integerp (xref *df-test* 1 2))
   (floatp (xref *df-test* 1 2))
@@ -251,7 +283,7 @@ designers and quality assurance people in its wake.
   (xref *df-test* 1 '*)
 #+end_src
 
-** CURR [#A] Random Numbers
+** CURR [#A] Random Numbers [2/6]
    - State "CURR"       from "TODO"       [2010-11-05 Fri 15:41]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
 
@@ -273,6 +305,9 @@ designers and quality assurance people in its wake.
      - State "CURR"       from "TODO"       [2010-11-04 Thu 18:58]
      - State "TODO"       from ""           [2010-11-04 Thu 18:58]
 
+     <2010-11-30 Tue> : just modified cls.asd to ensure that we load
+     as appropriate the correct random variate package.
+
 #+srcname: Loading-CL-VARIATES
 #+begin_src lisp
   (in-package :cl-user)
@@ -287,6 +322,7 @@ designers and quality assurance people in its wake.
   ;; check tests
   (run-tests :suite 'cl-variates-test)
   (describe (run-tests :suite 'cl-variates-test))
+  
 #+end_src
 
 **** DONE [#B] Examples of use
