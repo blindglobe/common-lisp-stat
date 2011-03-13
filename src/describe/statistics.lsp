@@ -119,7 +119,9 @@ consist of lists, vectors or matrices."
 Returns the standard deviation of the elements x. Vector reducing.
 
 FIXME AJR: This should be redone as square-root of the variance, and
-defer to that structure for computation."
+defer to that structure for computation.  The justification for this
+'redo' is that it holds for many generalized variance structures such
+as variance-covariance matrices."
   (let ((n (count-elements x))
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
@@ -127,15 +129,21 @@ defer to that structure for computation."
 (defgeneric quantile (x p)
   (:documentation "Returns the P-th quantile(s) of sequence X as a
   native lisp list (which could be fed into a vector-like or similar
-  for the final format).") 
+  for the final format).  
+
+  NOT OPTIMIZED.  This approach uses the native Common Lisp sort,
+  which is destructive.  We can optimize space usage by using some
+  form of rank computations instead.")
   (:method ((x sequence) (p real))
-    (let ((np (* p (- (length x) 1))))
-      (mean (list (aref x (floor np))
-		  (aref x (ceiling np)))))) ;; aref work in general for lists too, or use nth?
+    (let ((np (* p (- (length x) 1)))
+	  (x-copy x))
+      (mean (list (aref x-copy (floor np))
+		  (aref x-copy (ceiling np)))))) ;; aref work in general for lists too, or use nth?
   (:method ((x vector-like) (p real))  ;; average of sorted elements.  Could store compile
-    (let ((np (* p (- (nelts x) 1))))
-      (mean (list (vref (sort x) (floor np))
-		  (vref (sort x) (ceiling np))))))
+    (let ((np (* p (- (nelts x) 1)))
+	  (x-copy x))
+      (mean (list (vref (sort x-copy #'<) (floor np))
+		  (vref (sort x-copy #'<) (ceiling np))))))
   (:method ((x sequence) (p sequence))
     (error "FIXME: generalize.   Basically, do mapcar or similar across a vector."))
   (:method ((x vector-like) (p sequence))
