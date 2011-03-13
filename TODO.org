@@ -1,5 +1,5 @@
 
-Time-stamp: <2010-11-30 18:01:26 tony>
+Time-stamp: <2011-01-24 20:10:44 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -282,7 +282,7 @@ designers and quality assurance people in its wake.
   (xref *df-test* 1 0)
   (xref *df-test* 1 '*)
 #+end_src
-
+  
 ** CURR [#A] Random Numbers [2/6]
    - State "CURR"       from "TODO"       [2010-11-05 Fri 15:41]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
@@ -318,6 +318,7 @@ designers and quality assurance people in its wake.
 
 #+srcname: CL-VARIATES-UNITTESTS
 #+begin_src lisp
+  
   (in-package :cl-variates-test)
   ;; check tests
   (run-tests :suite 'cl-variates-test)
@@ -332,12 +333,14 @@ designers and quality assurance people in its wake.
      - State "CURR"       from "TODO"       [2010-11-05 Fri 15:39]
      - State "TODO"       from ""           [2010-11-04 Thu 19:01]
 
-#+srcname: CL-VARIATES-EXAMPLE-USE
+#+srcname: CL-VARIATES-REPRO
 #+begin_src lisp
+  
   (in-package :cl-variates-user)
-  ;; example usage
+  
   (defparameter state (make-random-number-generator))
   (setf (random-seed state) 44)
+  
   (random-seed state)
   (loop for i from 1 to 10 collect
                     (random-range state 0 10))
@@ -363,6 +366,7 @@ designers and quality assurance people in its wake.
   ;; (-1.2968656102820426 0.40746363934173213 -0.8594712469518473 0.8795681301148328
   ;;  1.0731526250004264 -0.8161629082481728 0.7001813608754809 0.1078045427044097
   ;;  0.20750134211656893 -0.14501914108452274)
+  
 #+end_src
 
 **** CURR [#B] Full example of general usage 
@@ -370,7 +374,15 @@ designers and quality assurance people in its wake.
      - State "TODO"       from ""           [2010-11-05 Fri 15:40]
 
      What we want to do here is describe the basic available API that
-     is present.  So while the previous work describes what the 
+     is present.  So while the previous work describes what the basic
+     reproducibility approach would be in terms of generating lists of
+     reproducible pRNG streams, we need the full range of possible
+     probability laws that are present. 
+
+     One of the good things about cl-variates is that it provides for
+     reproducibility.  One of the bad things is that it has a mixed
+     bag for an API.
+
 *** TODO [#B] CL-RANDOM system evaluation
     - State "TODO"       from ""           [2010-11-05 Fri 15:40]
 
