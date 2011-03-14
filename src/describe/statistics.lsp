@@ -72,7 +72,7 @@ FIXME: Why is this so complex?  When figure out, put into generic."
 (defgeneric variance (x)
   (:documentation "compute the variance of the entity X, i.e. if a
   scalar, vector, or (covariance) matrix.")
-  (:method ((x list))
+  (:method ((x sequence))
     (let ((n (length x))
 	  (r (- x (mean x))))
       (sqrt (* (mean (* r r)) (/ n (- n 1))))))
@@ -85,7 +85,7 @@ FIXME: Why is this so complex?  When figure out, put into generic."
 		       (vref negresid i)))
 	 (- (nelts negresid) 1))))
   (:method ((x matrix-like))
-    (error "FIXME: define variance for matrices as covariance (?).")))
+    (error "FIXME: implement variance for matrices (i.e. var-covar on variables, or?).")))
 
 (defun covariance-matrix (&rest args)
 "Args: (&rest args)
@@ -108,11 +108,7 @@ consist of lists, vectors or matrices."
     ;; if elements are not  numeric, error, otherwise
     (sqrt (variance x)))
   (:method ((x matrix-like))
-    (error "FIXME: define SD for matrix-like objects")))
-
-(defun standard-deviation-fn (x)
-  "Function front-end to generic.  Do we really need this?"
-  (standard-deviation x))
+    (error "FIXME: implement SD for (square) matrix-like objects")))
 
 (defun standard-deviation-old (x)
 "Args: (x)
@@ -181,18 +177,23 @@ max) of the elements X."
   Return value shoud match the input values.")
   (:method ((x sequence) (n fixnum)
 	    &optional replace weights)
-    (sample-fn x n replace))
+    (declare (ignorable weights))
+    (sample-fn x n replace weights))
   (:method ((x vector-like) (n fixnum)
 	    &optional replace weights)
+    (declare (ignorable weights replace))
     (error "SAMPLE for vector-likes not implemented yet.")))
 
-(defun sample-fn (x ssize &optional replace)
-"Args: (x n &optional (replace nil))
+(defun sample-fn (x ssize &optional replace weights)
+  "Args: (x n &optional (replace nil))
 Returns a list of a random sample of size N from sequence X drawn with or
-without replacement."
+without replacement.
+
+IMPROVE: need to implement sampling with weights."
+  (declare (ignorable weights)) ;; need to implement
   (check-sequence x)
   (let ((n (length x))
-	(x (if (consp x) (coerce x 'vector) (copy-vector x)))
+	(x (if (consp x) (coerce x 'vector) (copy-seq x)))
 	(result nil))
     (if (< 0 n)
 	(dotimes (i ssize result)
