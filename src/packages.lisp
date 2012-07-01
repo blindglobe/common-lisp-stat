@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-11-10 14:03:10 tony>
+;;; Time-stamp: <2012-07-01 11:19:31 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -27,10 +27,7 @@
    (:cls-datatrans : )
 |#	     
 	                 
-	      
-
 ;;; Basics
-
 
 (defpackage :lisp-stat-config
   (:documentation "holds Common Lisp Statistics configuration/loading variables and related functions.")
@@ -132,6 +129,7 @@
 	:lisp-stat-compound-data)
   (:export make-rv-function make-rv-function-1))
 
+;;;;;;;; NEw CLS structure
 
 (defpackage :cls-matrix
   (:documentation "basic utilities for using lisp arrays as numerical
@@ -143,7 +141,6 @@
 	   row-list column-list inner-product outer-product
 	   cross-product transpose bind-columns bind-rows
 	   array-data-vector vector-to-array))
-
 
 ;;; NEW CLOS STRUCTURE
 
@@ -184,8 +181,7 @@
    xref xtype xdims xdim xrank slice take carray
  
    ;; support
-   make-labels
-   ))
+   make-labels))
 
 (defpackage :cls-dataio
   (:documentation "Data I/O and similar import technologies.")
@@ -200,8 +196,7 @@
 	   dsvstream->matrix
 	   dsvstream->listoflist
 
-	   filename.dsv->dataframe
-	   ))
+	   filename.dsv->dataframe))
 
 (defpackage :cls-datatrans
   (:documentation "Data I/O and similar import technologies.")
@@ -214,9 +209,7 @@
 			  call-method call-next-method)
   (:export listoflist->dataframe   dataframe->listoflist
 	   listoflist->array	   array->listoflist
-	   listoflist->matrix-like matrix-like->listoflist
-
-	   ))
+	   listoflist->matrix-like matrix-like->listoflist))
 
 ;;;; MODELING
 

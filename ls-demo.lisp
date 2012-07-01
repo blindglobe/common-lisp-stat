@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2009-09-22 23:42:06 tony>
+;;; Time-stamp: <2011-12-06 16:04:17 tony>
 ;;; Creation:   <2009-09-17 22:19:31 tony> (sometime earlier, but serious now)
 ;;; File:       ls-demo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -24,10 +24,11 @@
 ;; Go somewhere so that you have the functions available.
 (in-package :ls-user)
 
+
 ;; we'll be loading from directories in the CLS homedir, so we want to
 ;; make it easier to reach.  
 (defparameter *my-cls-homedir* 
-  "/media/disk/Desktop/sandbox/CLS.git/"    ; <- value with trailing
+  "/home/tony/sandbox/CLS.git/"    ; <- value with trailing
 					    ;    directory separator
   "documentation: change this to localize") ; <- doc
 ;; so
@@ -58,7 +59,7 @@ return a pathspec, not a string/namespec"
 *df-test* ; but with SBCL, ints become floats? 
 (caselabels *df-test*)
 (varlabels *df-test*)
-(vartypes *df-test*)
+(vartypes *df-test*) ;; currently errors
 
 (setf (xref *df-test* 0 0) -1d0) ; for dataframes, we might want to do
 				 ; some type checking to prevent what
@@ -70,8 +71,8 @@ return a pathspec, not a string/namespec"
 
 ;; Making from arrays and matrix-likes
 (make-dataframe  #2A((1 2 3 4 5)
-		     (10 20 30 40 50)))
-(make-dataframe (rand 4 3))
+		     (10 20 30 40 50)))  ;; another error...
+(make-dataframe (rand 4 3))  ;; another error
 
 ;;; HERE#1
 ;;; == READ DATA
@@ -88,9 +89,6 @@ return a pathspec, not a string/namespec"
 (rsm.string:file->number-table
  (localized-pathto "Data/example-numeric.csv")
  :delims ",")
-
-
-
 
 
 
@@ -133,6 +131,8 @@ return a pathspec, not a string/namespec"
 
 (aref  (dataset *my-df-4*) 0 1)
 
+(xref  (dataset *my-df-4*) 0 1) ;; preferred to use the x* tools.
+
 
 (defparameter *my-df-5*
   (make-instance 'dataframe-array
@@ -157,9 +157,17 @@ return a pathspec, not a string/namespec"
                            (4d0 4d0 -5d0))))
 (mref *mat-1* 2 0)
 
+(xref *mat-1* 2 0) ;; fails, but should work.
+
+
+
 (defparameter *mat-2*
   (let ((m (rand 3 3)))
-    (m* m (transpose m))))
+    (m* m (transpose m)))) ;; fails, but should work.
+
+(defparameter *mat-2*
+  (let ((m (rand 3 3)))
+    (m* m (transpose-matrix m)))) ;; works, it's transpose-matrix
 
 (axpy 100.0d0 *mat-2* (eye 3 3))
 
