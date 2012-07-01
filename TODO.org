@@ -1,5 +1,5 @@
 
-Time-stamp: <2011-01-24 20:10:44 tony>
+Time-stamp: <2012-07-01 11:14:12 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -37,6 +37,8 @@ designers and quality assurance people in its wake.
     | iterate       |                                               |
     | metabang-bind |                                               |
 
+    as of now, all are in QL heirarchy
+
 *** Dependency structure
 
     | lisp-matrix     | general purpose matrix package, linking to lapack |      |
@@ -61,11 +63,23 @@ designers and quality assurance people in its wake.
     ?? cl-plplot : cffi
 
 * Tasks to Do [4/25]
+
   Usually, we need to load it before going on.
+
 #+srcname: loadit
 #+begin_src lisp
-  (asdf:oos 'asdf:load-op :cls)
+      (ql:quickload :cls)
 #+end_src
+
+  though sometimes we might want to recompile fully.  (Can this be
+  done via QL?  Need to check)
+
+#+name: compile-it-all
+#+begin_src lisp
+  (asdf:oos 'asdf:compile-op :cls :force T)
+#+end_src
+
+
 ** DONE [#B] SET UP
    - State "DONE"       from "CURR"       [2010-10-12 Tue 13:48] \\
      setup is mostly complete
@@ -80,7 +94,6 @@ designers and quality assurance people in its wake.
     (defun init-CLS (&key (compile 'nil))
       (let ((packagesToLoad (list ;; core system
                                   :lift :lisp-matrix :cls
-  
                                   ;; visualization
                                   ;; :cl-cairo2-x11 :iterate
                                   :cl-2d
@@ -129,14 +142,32 @@ designers and quality assurance people in its wake.
    Unit tests have been started using LIFT.  Need to consider some of
    the other systems that provide testing, when people add them to the
    mix of libraries that we need, along with examples of how to use.
-#+srcname: 
+
+#+srcname: ex-cls-unittest
 #+begin_src lisp
   (in-package :lisp-stat-unittests)
   (run-tests :suite 'lisp-stat-ut)
+#+end_src
+
+#+results:
+: #<Results for LISP-STAT-UT 78 Tests, 7 Failures, 20 Errors>
+
   ;; => tests = 78, failures = 7, errors = 20
+
+
+
+The following needs to be solved in order to have a decent
+installation qualification (IQ) and performance qualification (PQ)
+
+#+srcname: cls-unittest
+#+begin_src lisp
+  (in-package :lisp-stat-unittests)
   (asdf:oos 'asdf:test-op 'cls)
   ;; which runs (describe (run-tests :suite 'lisp-stat-ut))
 #+end_src
+
+
+
    and check documentation to see if it is useful.
 #+srcname: 
 #+begin_src lisp
@@ -196,19 +227,25 @@ designers and quality assurance people in its wake.
     (with-data dataset ((dsvarname1 [usevarname1])
                         (dsvarname2 [usevarname2]))
         @body)
-    
+  
+    ;; SAS-centric approach to spec'ing work 
     (looping-over-observations
        dataset ((dsvarname1 [usevarname1])
                 (dsvarname2 [usevarname2]))
          @body)
   
+    ;; SAS plus "statistical sensibility"... for example, if an
+    ;; independent observation actually consists of many observations so
+    ;; that a dataframe of independence results -- for example,
+    ;; longitudinal data or spatial data or local-truncated network data
+    ;; are clean examples of such happening -- then we get the data
+    ;; frame or row representing the independent result.
     (looping-over-independent-observations
        dataset independence-defining-variable
          ((dsvarname1 [usevarname1])
           (dsvarname2 [usevarname2]))
          @body)
     )
-  
 #+end_src
 
 *** DONE [#B] Dataframe variable typing
@@ -238,7 +275,7 @@ designers and quality assurance people in its wake.
   
   ;; with SBCL, ints become floats?  Need to adjust output
   ;; representation appropriately..
-  *df-test* 
+  ,*df-test* 
   
   (defun check-var (df colnum)
     (let ((nobs (xdim (dataset df) 0)))
@@ -314,6 +351,10 @@ designers and quality assurance people in its wake.
   (asdf:oos 'asdf:load-op 'cl-variates)
   (asdf:oos 'asdf:load-op 'cl-variates-test)
 #+end_src
+
+#+results:
+: #<ASDF:LOAD-OP NIL {C2C30E1}>
+: NIL
 
 
 #+srcname: CL-VARIATES-UNITTESTS
@@ -572,5 +613,11 @@ where
 *** TODO [#B] CLPDF, and literate data analysis
     - State "TODO"       from ""           [2010-11-05 Fri 15:34]
 
-*** 
 * Proposals
+  Place proposals for features, work, etc here...
+** <2011-12-29 Thu> new stuff
+   First new proposal is to track proposals.
+* Rejoinder
+  This project is dedicated to all the lisp hackers out there who
+  provided the basic infrastructure to get so far so fast with minimal
+  effort on my part.

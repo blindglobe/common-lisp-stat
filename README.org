@@ -1,24 +1,20 @@
 
-This file will work better with org-mode and David Ito´s
-org-babel-lisp.  Along those lines, please note his hypo approach to
-literate programming for gaming, as an org-babel extension. [fn:1] .
-That approach describes a literate approach for describing games, but
-clearly is no different than the literate approaches described for
-data analysis, which is just another game.
+Time-stamp: <2012-07-01 10:56:30 tony>
 
 * Fast Start
 
   You probably did  (preferred)
 
+#+name: GitClone
 #+begin_src shell
   git clone git://github.com/blindglobe/common-lisp-stat.git
 #+end_src
 
-  or
+  or (coming soon!) from within a Lisp instance, 
 
-#+begin_src shell
-  git clone git://repo.or.cz/CLS.git
-  git clone http://repo.or.cz/w/CLS.git
+#+name: QuickLispLoad
+#+begin_src lisp
+  (ql:quickload :cls)
 #+end_src
 
 ** TODO set up git submodules to do the right thing. 
@@ -30,6 +26,8 @@ data analysis, which is just another game.
 #+end_src
 
   to get the whole package.
+
+** Build shared library
 
   *_Obsolete_*: Make the shared library liblispstat with an ANSI C
   compiler (only gcc tested at this point).  This is used for
