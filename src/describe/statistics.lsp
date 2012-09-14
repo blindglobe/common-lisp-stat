@@ -18,9 +18,12 @@
 
 (defgeneric mean (x)
   (:documentation "compute the mean of lists, vectors, various objects")
-  (:method ((x list))
+  (:method ((x list) )
     (/ (reduce #'+ x)
        (length x)))
+  (:method ((x sequence))
+   (/ (reduce #'+ x)
+       (length x)) )
   (:method ((x vector-like))
       ;; (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
     (/ (loop for i from 0 to (- (nelts x) 1)
@@ -122,6 +125,13 @@ as variance-covariance matrices."
         (r (- x (mean x))))
     (sqrt (* (mean (* r r)) (/ n (- n 1))))))
 
+(defun calculate-quantile (x p)
+  "a helper function for quantile"
+  (let ((np (* p (1- (length x))))
+	(x-copy x))
+    (mean (list (elt (sort  x-copy #'<) (floor np))
+		(elt (sort  x-copy #'<) (ceiling np))))));; aref does not work for lists.
+
 (defgeneric quantile (x p)
   (:documentation "Returns the P-th quantile(s) of sequence X as a
   native lisp list (which could be fed into a vector-like or similar
@@ -131,17 +141,14 @@ as variance-covariance matrices."
   which is destructive.  We can optimize space usage by using some
   form of rank computations instead.")
   (:method ((x sequence) (p real))
-    (let ((np (* p (- (length x) 1)))
-	  (x-copy x))
-      (mean (list (aref x-copy (floor np))
-		  (aref x-copy (ceiling np)))))) ;; aref work in general for lists too, or use nth?
+    (calculate-quantile x p)) ;; dbh - dry.
   (:method ((x vector-like) (p real))  ;; average of sorted elements.  Could store compile
     (let ((np (* p (- (nelts x) 1)))
 	  (x-copy x))
       (mean (list (vref (sort x-copy #'<) (floor np))
 		  (vref (sort x-copy #'<) (ceiling np))))))
   (:method ((x sequence) (p sequence))
-    (error "FIXME: generalize.   Basically, do mapcar or similar across a vector."))
+    (loop for the-p in p collect (calculate-quantile (coerce  x 'vector) the-p)) )
   (:method ((x vector-like) (p sequence))
     (error "FIXME: generalize."))
   (:method ((x vector-like) (p vector-like))
