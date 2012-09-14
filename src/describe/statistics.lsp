@@ -69,6 +69,67 @@ FIXME: Why is this so complex?  When figure out, put into generic."
       mean)))
 
 
+
+
+(defun sum-vector (v)
+  (loop for i from 0 below (nelts v)
+	summing (vref v i)))
+
+(defun reduce-vector (function v)
+  "reduce a vector with function yielding a scalar"
+  (loop with result = (vref v 0)
+	for i from 1 below (nelts v) do
+	  (setf result (funcall function result (vref v i)))
+	finally (return result)))
+
+(defun reduce-matrix (function m &key (dim :row))
+  "reduce a matrix yielding a vector"
+  (flet ((reduce-dimension (m row-or-column number-elts)
+	   (loop with result = (make-matrix 1 number-elts)
+	   for i from 0 below number-elts
+		 do (setf (vref result i)
+			  (reduce-vector function (funcall row-or-column m i)))
+	   finally (return result))))
+    
+    (cond
+      ((eq dim :row)
+       (reduce-dimension m #'row (nrows m)))
+      ((eq dim :col)
+       (reduce-dimension m #'col (ncols m)))
+      (t (error "reduce-matrix: invalid dimension specified only row or column supported")))))
+
+
+(defun map-vector (function v)
+  (loop with result = (make-matrix 1 (nelts v))
+	for i from 0 below (nelts v)
+	do (setf (vref result i) (funcall function (vref v i)))
+	finally (return result)))
+
+(defun map-matrix (function m)
+  (loop with result = (apply  #'make-matrix (matrix-dimensions m))
+	for i from 0 below (nrows m) do
+	  (loop for j from 0 below (ncols m) do
+	    (setf (mref result i j) (funcall function (mref m i j))))
+	finally (return result)))
+
+(defun matrix-mean (m)
+  "the mean of the columns of a matrix, returned as a vector"
+  (map-vector #'(lambda (x) (/ x (nrows m)))
+	      (reduce-matrix #'+ m :dim :col)))
+
+
+(defun matrix-sd (m)
+  "standard deviation of the matrix"
+  (sqrt (variance (data m))))
+
+(defun matrix-covariance (m)
+  "This is actually quite nice. Just not sure if its correct. too much consing though"
+  (let* ((rows  (nrows m))
+	 (deviation-scores (m- m
+			       (m* (ones rows rows) (map-matrix #'(lambda (x) (/ x rows)) m )))))
+    (m* (transpose-matrix deviation-scores)
+	(map-matrix #'(lambda (x) (/ x rows)) deviation-scores))))
+
 ;; We do the variance, since the STANDARD-DEVIATION is simply the root
 ;; (for interesting definitions of "simply"), and VARIANCE is a bit
 ;; more general.
@@ -88,21 +149,9 @@ FIXME: Why is this so complex?  When figure out, put into generic."
 		       (vref negresid i)))
 	 (- (nelts negresid) 1))))
   (:method ((x matrix-like))
-    (error "FIXME: implement variance for matrices (i.e. var-covar on variables, or?).")))
+    (matrix-covariance x)))
 
-(defun covariance-matrix (&rest args)
-"Args: (&rest args)
-Returns the sample covariance matrix of the data columns in ARGS. ARGS may
-consist of lists, vectors or matrices."
-  (let ((columns (apply #'append 
-                        (mapcar #'(lambda (x) 
-				    (if (typep x 'matrix-like)
-					(list-of-columns x)
-					(list x)))
-                                args))))
-    (/ (cross-product (reduce #'bind2 
-			      (- columns (mapcar #'mean columns))))
-       (- (length (car columns)) 1))))
+
 
 (defgeneric standard-deviation (x)
   (:documentation "Compute standard deivation of entity X.")
@@ -111,7 +160,7 @@ consist of lists, vectors or matrices."
     ;; if elements are not  numeric, error, otherwise
     (sqrt (variance x)))
   (:method ((x matrix-like))
-    (error "FIXME: implement SD for (square) matrix-like objects")))
+    (matrix-sd x)))
 
 (defun standard-deviation-old (x)
 "Args: (x)
