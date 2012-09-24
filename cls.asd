@@ -47,10 +47,10 @@
 
 ;;; Handle Luke's *.lsp suffix
 (defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
-(defmethod asdf::output-files :around ((operation compile-op)
-				       (c cls-lsp-source-file))
-  (list (merge-pathnames *fasl-directory*
-			 (compile-file-pathname (component-pathname c)))))
+;; (defmethod asdf::output-files :around ((operation compile-op)
+;; 				       (c cls-lsp-source-file))
+;;   (list (merge-pathnames *fasl-directory*
+;; 			 (compile-file-pathname (component-pathname c)))))
 ;;; again, thanks to Cyrus for saving me time...
 
 
@@ -70,15 +70,16 @@
   :depends-on (:cldoc
 	       :cffi
 	       :xarray
+	       :lift
 	       :lisp-matrix ; on fnv, cl-blapack, ffa
 	       :listoflist
-	       :lift
 	       :rsm-string
 	       ;;; need to select pRNG stream system
 	       ;; :cl-random ;; or cl-variates, or...?
 	       :cl-variates
  	       ;;; if graphics exist, then...
 	       ;; :cl-cairo2  :cl-2d
+	       :cl-plplot
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
@@ -117,26 +118,7 @@
 								 "lsmacros"
 								 "lsfloat"))))
 
-	       (:module
-		"numerics-internal"
-		:pathname "src/numerics/"
-		:depends-on ("packaging" "proto-objects" "cls-core")
-		:components
-		((:cls-lsp-source-file "cffiglue")
-		 (:cls-lsp-source-file "dists"
-					    :depends-on ("cffiglue"))
-#|
-		 (:cls-lsp-source-file "matrices"
-					    :depends-on ("cffiglue"))
-		 (:cls-lsp-source-file "ladata"
-					    :depends-on ("cffiglue"
-							 "matrices"))
-		 (:file "linalg"
-			:depends-on ("cffiglue"
-				     "matrices"
-				     "ladata"))
-|#
-		 ))
+	       
 
 
 	       ;; Dataframes and statistical structures.
@@ -145,8 +127,7 @@
 		:pathname "src/data/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "cls-core"
-			     "numerics-internal")
+			     "cls-core")
 		:components
 		((:file "dataframe")
 		 (:file "dataframe-array")
@@ -162,7 +143,6 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
 			     "stat-data")
 		:components
 		((:cls-lsp-source-file "lsbasics")))
@@ -175,26 +155,24 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
 			     "stat-data"
 			     "cls-basics")
 		:components
 		((:cls-lsp-source-file "statistics")))
-#|
+
 	       (:module
 		"visualize"
 		:pathname "src/visualize/"
 		:depends-on ("cls-core")
 		:components
 		((:file "plot")))
-|#
+
 	       (:module
 		"optimization"
 		:pathname "src/numerics/"
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
 			     "stat-data"
 			     "cls-basics")
 		:components
@@ -208,7 +186,6 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
 			     "cls-basics"
 			     "descriptives"
 			     "optimization")
@@ -227,7 +204,6 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
 			     "cls-basics"
 			     "descriptives"
 			     "optimization")
@@ -252,7 +228,6 @@
 		 "lisp-stat-unittest"
 		:depends-on  ("packaging" "proto-objects"
 			      "cls-core"
-			      "numerics-internal" 
 			      "stat-data"
 			      "cls-basics"
 			      "descriptives"
