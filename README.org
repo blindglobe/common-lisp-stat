@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-07-01 10:56:30 tony>
+Time-stamp: <2012-07-12 18:36:03 tony>
 
 * Fast Start
 
@@ -60,9 +60,9 @@ Time-stamp: <2012-07-01 10:56:30 tony>
 *** start your lisp
 *** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
  
-**** (asdf:oos 'asdf:load-op :cls)
+**** (ql:quickload :cls)
 
-     use ASDF to load lispstat
+     use QUICKLISP to load lispstat
 
 
 **** (in-package :ls-user)

@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2012-07-01 11:59:27 tony>
+;;; Time-stamp: <2012-10-03 05:30:37 tony>
 ;;; Creation:   <2012-07-01 11:29:42 tony>
 ;;; File:       example.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -52,6 +52,7 @@
 (setf *testdata-prespec-2Darray*
       (make-dataframe #2A((1 2 3)(4 5 6))))
 
-(setf *testdata-prespec-listoflist*
-      (make-dataframe  (list ((1 2 3)(4 5 6)))))
+
+;; (setf *testdata-prespec-listoflist*
+;;       (make-dataframe  '(list ((1 2 3)(4 5 6)))))
 
