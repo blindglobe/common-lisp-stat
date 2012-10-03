@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-03-03 16:23:01 tony>
+;;; Time-stamp: <2012-07-01 11:58:05 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -179,7 +179,10 @@ value is returned indicating the success of the conversion.  Examples:
 (defgeneric nvars (df)
   (:documentation "number of variables represented in storage type.")
   (:method ((df dataframe-like))
-    (xdim (store df) 0)))
+    (xdim (store df) 1))
+  (:method ((df array))
+    (xdim df 1)))
+
 
 #|
  (defun nvars-store (store)
@@ -197,9 +200,9 @@ test that that list is a valid listoflist dataframe structure."
   (:method ((df matrix-like))
     (nrows df))
   (:method ((df list))
-    (xdim df)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
+    (xdim df 0)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
   (:method ((df array))
-    (xdim df)))
+    (xdim df 0)))
 
 #|
  (defun ncase-store (store)
@@ -296,9 +299,7 @@ construction of proper DF-array."
 			:ncols (length newvarlabels)
 			:case-labels newcaselabels
 			:var-labels newvarlabels
-			:var-types vartypes))
-
-	))))
+			:var-types vartypes))))))
 
 #| 
  (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))

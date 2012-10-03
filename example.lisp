@@ -1,4 +1,18 @@
-;; example of possible usage.
+;;; -*- mode: lisp -*-
+;;; Copyright (c) 2006-2008, by A.J. Rossini <blindglobe@gmail.com>
+;;; See COPYRIGHT file for any additional restrictions (BSD license).
+;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+
+;;; Time-stamp: <2012-07-01 11:59:27 tony>
+;;; Creation:   <2012-07-01 11:29:42 tony>
+;;; File:       example.lisp
+;;; Author:     AJ Rossini <blindglobe@gmail.com>
+;;; Copyright:  (c) 2012, AJ Rossini.  BSD.
+;;; Purpose:    example of possible usage.
+
+;;; What is this talk of 'release'? Klingons do not make software
+;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
+;;; designers and quality assurance people in its wake.
 
 
 ;; Load system
@@ -15,9 +29,10 @@
     what needs to be done for a user- or analysis-package.")
   (:nicknames :my-clswork-user)
   (:use :common-lisp ; always needed for user playgrounds!
-	:lisp-matrix
+	:lisp-matrix ; we only need the packages that we need...
 	:common-lisp-statistics
 	:lisp-stat-data-examples) ;; this ensures access to a data package
+  (:export summarize-data summarize-results this-data this-report)
   (:shadowing-import-from :lisp-stat call-method call-next-method
 
       expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
@@ -34,4 +49,9 @@
 
 ;; create some data by hand
 
-(setf testdata)
+(setf *testdata-prespec-2Darray*
+      (make-dataframe #2A((1 2 3)(4 5 6))))
+
+(setf *testdata-prespec-listoflist*
+      (make-dataframe  (list ((1 2 3)(4 5 6)))))
+
