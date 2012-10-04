@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2010-11-30 17:58:30 tony>
+;;; Time-stamp: <2012-10-04 16:05:52 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -67,13 +67,13 @@
   when Luke was at CMU, on leave at Bell Labs?).  Last touched by him
   in 1991, then by AJR starting in 2005."
   :serial t
-  :depends-on (:cldoc
+  :depends-on (;;  :cldoc  documentation tool? (not Lit Prog, but coding support)
 	       :cffi
 	       :xarray
 	       :lisp-matrix ; on fnv, cl-blapack, ffa
 	       :listoflist
 	       :lift
-	       :rsm-string
+	       ;; :rsm-string  -- need something for importing CSV files into listoflist or arrays.
 	       ;;; need to select pRNG stream system
 	       ;; :cl-random ;; or cl-variates, or...?
 	       :cl-variates
