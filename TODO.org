@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-04 02:40:24 tony>
+Time-stamp: <2012-10-04 04:10:12 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -93,11 +93,11 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
      ?? cl-plplot : cffi
 
 
-* Tasks to Do [4/19]
+* Tasks to Do [4/21]
 
   Usually, we need to load it before going on.
 
-#+srcname: loadit
+#+name: loadit
 #+begin_src lisp
       (ql:quickload :cls)
 #+end_src
@@ -118,7 +118,7 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
    - State "TODO"       from ""           [2010-10-12 Tue 13:47]
    This is an example of a custom setup, not really interesting at
    this point except to remind Tony how to program.
-#+srcname: loader
+#+name: loader
 #+begin_src lisp
   (in-package :cl-user)
   (progn 
@@ -174,7 +174,7 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
    the other systems that provide testing, when people add them to the
    mix of libraries that we need, along with examples of how to use.
 
-#+srcname: ex-cls-unittest
+#+name: ex-cls-unittest
 #+begin_src lisp
   (in-package :lisp-stat-unittests)
   (run-tests :suite 'lisp-stat-ut)
@@ -190,7 +190,7 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
 The following needs to be solved in order to have a decent
 installation qualification (IQ) and performance qualification (PQ)
 
-#+srcname: cls-unittest
+#+name: cls-unittest
 #+begin_src lisp
   (in-package :lisp-stat-unittests)
   (asdf:oos 'asdf:test-op 'cls)
@@ -200,7 +200,7 @@ installation qualification (IQ) and performance qualification (PQ)
 
 
    and check documentation to see if it is useful.
-#+srcname: 
+#+name: unittest-ex
 #+begin_src lisp
    (in-package :lisp-stat-unittests)
 
@@ -305,7 +305,7 @@ installation qualification (IQ) and performance qualification (PQ)
     The following needs to work, and a related syntax for resampling
     and similar synthetic data approaches (bootstrapping, imputation)
     ought to use similar syntax as well.
-#+srcname: DataSetNameScoping
+#+name: DataSetNameScoping
 #+begin_src lisp
   (in-package :ls-user)
   (progn
@@ -356,7 +356,7 @@ installation qualification (IQ) and performance qualification (PQ)
     Seems to generally work, need to ensure that we use this for
     appropriate typing.
 
-#+srcname: DFvarTyping
+#+name: DFvarTyping
 #+begin_src lisp
   (in-package :ls-user)
   (defparameter *df-test*
@@ -434,45 +434,29 @@ installation qualification (IQ) and performance qualification (PQ)
     CL-VARIATES is a system developed by Gary W King.  It uses streams
     with seeds, and is hence reproducible.  (Random comment: why do CL
     programmers as a class ignore computational reproducibility?)
-**** DONE [#B] load and verify
-     - State "DONE"       from "CURR"       [2010-11-04 Thu 18:59] \\
-       load, init, and verify performance.
-     - State "CURR"       from "TODO"       [2010-11-04 Thu 18:58]
-     - State "TODO"       from ""           [2010-11-04 Thu 18:58]
 
-     <2010-11-30 Tue> : just modified cls.asd to ensure that we load
-     as appropriate the correct random variate package.
+    The main problem with this system is licensing.  It has a weird
+    licensing schema which prevents 
 
-#+srcname: Loading-CL-VARIATES
+#+name: Loading-CL-VARIATES
 #+begin_src lisp
   (in-package :cl-user)
-  (asdf:oos 'asdf:load-op 'cl-variates)
-  (asdf:oos 'asdf:load-op 'cl-variates-test)
+  (ql:quickload :cl-variates)
+  ;;(ql:quickload :cl-variates-test)
 #+end_src
 
-#+results:
-: #<ASDF:LOAD-OP NIL {C2C30E1}>
-: NIL
-
-
-#+srcname: CL-VARIATES-UNITTESTS
+#+name: CL-VARIATES-UNITTESTS
 #+begin_src lisp
-  
   (in-package :cl-variates-test)
   ;; check tests
   (run-tests :suite 'cl-variates-test)
   (describe (run-tests :suite 'cl-variates-test))
-  
 #+end_src
 
-**** DONE [#B] Examples of use
-     - State "DONE"       from "CURR"       [2010-11-05 Fri 15:39] \\
-       basic example of reproducible draws from the uniform and normal random
-       number streams.
-     - State "CURR"       from "TODO"       [2010-11-05 Fri 15:39]
-     - State "TODO"       from ""           [2010-11-04 Thu 19:01]
+    basic example of reproducible draws from the uniform and normal
+    random number streams.
 
-#+srcname: CL-VARIATES-REPRO
+#+name: CL-VARIATES-REPRO
 #+begin_src lisp
   
   (in-package :cl-variates-user)
@@ -542,22 +526,35 @@ installation qualification (IQ) and performance qualification (PQ)
 
 *** TODO [#B] LLA evaluation
     - State "TODO"       from ""           [2010-10-12 Tue 14:13]
-;;; experiments with LLA
+
+LLA is an SBCL targetted linear algebra library from Tamas Papp
+
+#+NAME LLA-experiments
+#+BEGIN_SRC lisp
 (in-package :cl-user)
 (asdf:oos 'asdf:load-op 'lla)
 (in-package :lla-user)
+;;; experiment here
+#+END_SRC
 
 *** CURR [#B] Lisp-Matrix system evaluation
     - State "CURR"       from "TODO"       [2010-10-12 Tue 14:13]
     - State "TODO"       from ""           [2010-10-12 Tue 14:13]
 
+      in progress
+
 *** TODO [#B] LispLab system evaluation
     - State "TODO"       from ""           [2010-10-12 Tue 14:13]
+
+LL is an SBCL targetted linear algebra library from ---
 
 ** TODO [#B] Statistical Procedures to implement
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
 
-*** PFIM 
+*** TODO [#C] PFIM 
+
+#+BEGIN_SRC lisp
+
 (in-package :cls-user)
 ;;;; PFIM notes
 
@@ -679,15 +676,16 @@ where
       (dolist (parameterJ parameters)
 	(setf (aref IM I J)
 	      (differentiate (differentiate loglikelihood parameterI) parameterJ))))))
+#+END_SRC
 
 *** difference between empirical, fisherian, and ...? information.
-*** Example of Integration with CL-GENOMIC
+*** TODO [#C] Example of Integration with CL-GENOMIC
     - State "TODO"       from ""           [2010-10-12 Tue 14:03]
     
     CL-GENOMIC is a very interesting data-structure strategy for
     manipulating sequence data.
 
-#+srcname: 
+#+name: CL-GENOMIC
 #+begin_src lisp
     (in-package :cl-user)
     (asdf:oos 'asdf:compile-op :ironclad)
@@ -698,6 +696,7 @@ where
     (make-aa "agccg")  ;; fine
     (make-aa "agc9zz") ;; error expected
 #+end_src
+
 
 ** TODO [#B] Documentation and Examples [0/3]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
@@ -715,7 +714,11 @@ where
   Place proposals for features, work, etc here...
 ** <2011-12-29 Thu> new stuff
    First new proposal is to track proposals.
+
 * Rejoinder
+
   This project is dedicated to all the lisp hackers out there who
   provided the basic infrastructure to get so far so fast with minimal
   effort on my part.
+
+  And to all the people trying to help to get this off the ground.
