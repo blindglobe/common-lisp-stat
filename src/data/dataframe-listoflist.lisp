@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-21 17:03:03 tony>
+;;; Time-stamp: <2012-07-01 12:02:55 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -30,8 +30,8 @@
 	  :accessor dataset
 	  :documentation "Data storage: typed as matrix-like
   (numerical only)."))
-  (:documentation "example implementation of dataframe-like using storage
-  based on lisp-matrix structures."))
+  (:documentation "example implementation of dataframe-like using
+  storage based on lisp-matrix structures."))
 
 (defmethod nrows ((df dataframe-listoflist))
   "specializes on inheritance from listoflist in lisp-matrix."
@@ -42,8 +42,8 @@
   (length (elt (dataset df) 0)))
 
 (defmethod xref ((df dataframe-listoflist) &rest subscripts)
-  "Returns a scalar in array, in the same vein as aref, mref, vref, etc.
-idx1/2 is row/col or case/var."
+  "Returns a scalar in array, in the same vein as aref, mref, vref,
+etc. idx1/2 is row/col or case/var."
   (elt (elt (dataset df) (elt subscripts 0)) (elt subscripts 1))) ;; ??
 
 (defmethod (setf xref) (value (df dataframe-listoflist) &rest subscripts)

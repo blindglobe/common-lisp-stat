@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-07-01 11:14:12 tony>
+Time-stamp: <2012-10-04 02:31:38 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -18,7 +18,7 @@ What is this talk of 'release'? Klingons do not make software
 'releases'.  Our software 'escapes', leaving a bloody trail of
 designers and quality assurance people in its wake.
 
-* Design
+* Design Documentation
 
 ** (Internal) Package and (External) System Hierarchy
 *** Singletons (primary building blocks)
@@ -61,6 +61,7 @@ designers and quality assurance people in its wake.
        	      cl-cairo2 : cffi
 
     ?? cl-plplot : cffi
+
 
 * Tasks to Do [4/25]
 

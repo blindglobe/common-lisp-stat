@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-07-12 18:36:03 tony>
+Time-stamp: <2012-10-04 02:30:43 tony>
 
 * Fast Start
 
@@ -17,40 +17,33 @@ Time-stamp: <2012-07-12 18:36:03 tony>
   (ql:quickload :cls)
 #+end_src
 
-** TODO set up git submodules to do the right thing. 
-   - State "TODO"       from ""           [2010-10-10 Sun 23:30]
+  At one point, I planned on git-delivery via submodules, but this
+  proved to be a bit more complex than needed, thanks to the creation
+  of quicklisp.  
 
-#+begin_src shell
-  git submodules init
-  git submodules update
-#+end_src
+  There will need to be a version for delivering a development QL
+  environment (for development) and this will consist of git
+  repositories, possibly through submodules, but this is for
+  discussion. 
 
-  to get the whole package.
+  There are quite a few libraries that are needed, and right now we
+  are working on simplifying the whole thing.   Once you get past
+  this step, then you should:
 
-** Build shared library
+  1. run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in
+     the current directory.  Recent versions of CFFI and LIFT can be
+     found in the external/ subdirectory, and should be autoload-able,
+     assuming that you are using a Lisp implementation supporting
+     ASDF.  (AJR-FIXME: need to upload my GIT mirrors to repo.or.cz or
+     similar, and have them potentially available as submodules if
+     needed)
 
-  *_Obsolete_*: Make the shared library liblispstat with an ANSI C
-  compiler (only gcc tested at this point).  This is used for
-  numerical support which might be more robust to obtain from GSLL or
-  similar other systems.  It would be done via.
-
-#+begin_src shell
-  cd lib && make && cd
-#+end_src
-
-  run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in the
-  current directory.  Recent versions of CFFI and LIFT can be found in
-  the external/ subdirectory, and should be autoload-able, assuming
-  that you are using a Lisp implementation supporting ASDF.
-  (AJR-FIXME: need to upload my GIT mirrors to repo.or.cz or similar,
-  and have them potentially available as submodules if needed)
-
-  (on Debian or similar systems: can use CLC (Common Lisp Controller)
-  or SBCL approaches, i.e.  ~/.clc/systems or ~/.sbcl/systems should
-  contain softlinks to the cls, cffi, and lift ASDF files
-  (i.e. cls.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
-  probably a similar incantation for other CL's, need to record that
-  here!).
+  2. (on Debian or similar systems: can use CLC (Common Lisp
+     Controller) or SBCL approaches, i.e.  ~/.clc/systems or
+     ~/.sbcl/systems should contain softlinks to the cls, cffi, and
+     lift ASDF files (i.e. cls.asd, cffi.asd, and lift.asd).
+     AJR-FIXME: There is probably a similar incantation for other
+     CL's, need to record that here!).
 
   Step through ls-demo.lisp for a range of examples of activities.
 
