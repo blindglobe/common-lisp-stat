@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-04 02:31:38 tony>
+Time-stamp: <2012-10-04 02:40:24 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -20,7 +20,25 @@ designers and quality assurance people in its wake.
 
 * Design Documentation
 
+This section provides some of the details regarding infrastructure of
+the system, as a means of including TODO statements.
+
 ** (Internal) Package and (External) System Hierarchy
+
+current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
+
+ 0  ~/sandbox/xarray.git
+ 1  ~/sandbox/foreign-numeric-vector.git
+ 2  ~/sandbox/trivial-features.git
+ 3  ~/sandbox/alexandria.git
+ 4  ~/sandbox/babel.git
+ 5  ~/sandbox/cffi.git
+ 6  ~/sandbox/cl-utilities
+ 7  ~/sandbox/metabang-bind.git
+ 8  ~/sandbox/iterate.git
+ 9  ~/sandbox/array-operations.git
+
+
 *** Singletons (primary building blocks)
     
     These are packages as well as 
@@ -53,17 +71,29 @@ designers and quality assurance people in its wake.
 
 *** Need to integrate
 
-    cl-randist
-
-    rsm-string
-
-    ?? cl-2d  : 
-       	      cl-cairo2 : cffi
-
-    ?? cl-plplot : cffi
+**** Random number streams and probability calculus
 
 
-* Tasks to Do [4/25]
+     Something for random numbers, that has a settable seed.  However,
+     we could pass on the "right thing" in favor of something that
+     will "work for now".  
+     cl-randist
+
+**** import of data in text files
+
+     CSV and similar specialized imports
+
+     rsm-string
+
+**** Graphics
+
+     ?? cl-2d  : 
+       	       cl-cairo2 : cffi
+
+     ?? cl-plplot : cffi
+
+
+* Tasks to Do [4/19]
 
   Usually, we need to load it before going on.
 
@@ -195,13 +225,80 @@ installation qualification (IQ) and performance qualification (PQ)
 *** TODO [#B] Functional Tests
     - State "TODO"       from ""           [2010-10-12 Tue 13:54]
 
-** CURR [#B] Functional Examples that need to work [1/2]
+** CURR [#B] Functional Examples that need to work [1/3]
    - State "CURR"       from "TODO"       [2010-11-30 Tue 17:57]
    - State "TODO"       from ""           [2010-10-12 Tue 13:55]
 
    These examples should be functional forms within CLS, describing
    working functionality which is needed for work.
+*** TODO [#A] Dataframe creation
+    Illustration via a file, that we need to get working so that we
+    can get data in-and-out of CLS structures.
 
+#+BEGIN_SRC lisp :export examples/example-DF-creation.lisp
+  ;;; -*- mode: lisp -*-
+  ;;; Copyright (c) 2006-2012, by A.J. Rossini <blindglobe@gmail.com>
+  ;;; See COPYRIGHT file for any additional restrictions (BSD license).
+  ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
+  
+  ;;; Time-stamp: <2012-10-04 02:16:45 tony>
+  ;;; Creation:   <2012-07-01 11:29:42 tony>
+  ;;; File:       example.lisp
+  ;;; Author:     AJ Rossini <blindglobe@gmail.com>
+  ;;; Copyright:  (c) 2012, AJ Rossini.  BSD.
+  ;;; Purpose:    example of possible usage.
+  
+  ;;; What is this talk of 'release'? Klingons do not make software
+  ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
+  ;;; designers and quality assurance people in its wake.
+  
+  
+  ;; Load system
+  (ql:quickload "cls")
+  
+  ;; use the example package...
+  (in-package :cls-user)
+  
+  
+  ;; or better yet, create a package/namespace for the particular problem being attacked.
+  (defpackage :my-package-user
+    (:documentation "demo of how to put serious work should be placed in
+      a similar package elsewhere for reproducibility.  This hints as to
+      what needs to be done for a user- or analysis-package.")
+    (:nicknames :my-clswork-user)
+    (:use :common-lisp ; always needed for user playgrounds!
+          :lisp-matrix ; we only need the packages that we need...
+          :common-lisp-statistics
+          :lisp-stat-data-examples) ;; this ensures access to a data package
+    (:export summarize-data summarize-results this-data this-report)
+    (:shadowing-import-from :lisp-stat call-method call-next-method
+  
+        expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+        asin acos atan sinh cosh tanh asinh acosh atanh float random
+        truncate floor ceiling round minusp zerop plusp evenp oddp 
+        < <= = /= >= > > ;; complex
+        conjugate realpart imagpart phase
+        min max logand logior logxor lognot ffloor fceiling
+        ftruncate fround signum cis
+  
+        <= float imagpart)) 
+  
+  (in-package :my-clswork-user)
+  
+  ;; create some data by hand using arrays, and demonstrate access. 
+  
+  (let ((myArray #2A((1 2 3)(4 5 6)))
+        (myDF    (make-dataframe #2A((1 2 3)(4 5 6))))
+        (myLOL   (list (list 1 2 3) (list 4 5 6)))
+        ;; FIXME: listoflist conversion does not work.
+        ;; (myDFlol (make-dataframe  '(list ((1 2 3)(4 5 6)))))
+        )
+  
+    (= (xref myArray 1 1)
+       (xref myDF    1 1)
+       (xref myLOL   1 1)))
+  
+#+END_SRC
 *** TODO [#B] Scoping with datasets
     - State "TODO"       from ""           [2010-11-04 Thu 18:46]
 
