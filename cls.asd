@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2012-10-04 16:05:52 tony>
+;;; Time-stamp: <2012-10-04 17:45:23 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -67,13 +67,13 @@
   when Luke was at CMU, on leave at Bell Labs?).  Last touched by him
   in 1991, then by AJR starting in 2005."
   :serial t
-  :depends-on (;;  :cldoc  documentation tool? (not Lit Prog, but coding support)
-	       :cffi
+  :depends-on (;;  :cldoc  ;; documentation tool? (not Lit Prog, but coding support)
+	       ;;  :cffi   ;; only needed within lisp-matrix
 	       :xarray
-	       :lisp-matrix ; on fnv, cl-blapack, ffa
+	       :lisp-matrix ;; on fnv, cl-blapack, ffa
 	       :listoflist
 	       :lift
-	       ;; :rsm-string  -- need something for importing CSV files into listoflist or arrays.
+	       :rsm-string ;; need something for importing CSV files into listoflist or arrays.
 	       ;;; need to select pRNG stream system
 	       ;; :cl-random ;; or cl-variates, or...?
 	       :cl-variates
@@ -117,26 +117,26 @@
 								 "lsmacros"
 								 "lsfloat"))))
 
-	       (:module
-		"numerics-internal"
-		:pathname "src/numerics/"
-		:depends-on ("packaging" "proto-objects" "cls-core")
-		:components
-		((:cls-lsp-source-file "cffiglue")
-		 (:cls-lsp-source-file "dists"
-					    :depends-on ("cffiglue"))
-#|
-		 (:cls-lsp-source-file "matrices"
-					    :depends-on ("cffiglue"))
-		 (:cls-lsp-source-file "ladata"
-					    :depends-on ("cffiglue"
-							 "matrices"))
-		 (:file "linalg"
-			:depends-on ("cffiglue"
-				     "matrices"
-				     "ladata"))
-|#
-		 ))
+;; 	       (:module
+;; 		"numerics-internal"
+;; 		:pathname "src/numerics/"
+;; 		:depends-on ("packaging" "proto-objects" "cls-core")
+;; 		:components
+;; 		((:cls-lsp-source-file "cffiglue")
+;; 		 (:cls-lsp-source-file "dists"
+;; 					    :depends-on ("cffiglue"))
+;; #|
+;; 		 (:cls-lsp-source-file "matrices"
+;; 					    :depends-on ("cffiglue"))
+;; 		 (:cls-lsp-source-file "ladata"
+;; 					    :depends-on ("cffiglue"
+;; 							 "matrices"))
+;; 		 (:file "linalg"
+;; 			:depends-on ("cffiglue"
+;; 				     "matrices"
+;; 				     "ladata"))
+;; |#
+;; 		 ))
 
 
 	       ;; Dataframes and statistical structures.
@@ -146,7 +146,8 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal")
+			     ;; "numerics-internal"
+			     )
 		:components
 		((:file "dataframe")
 		 (:file "dataframe-array")
@@ -162,7 +163,7 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
+			     ;; "numerics-internal"
 			     "stat-data")
 		:components
 		((:cls-lsp-source-file "lsbasics")))
@@ -175,7 +176,7 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
+			     ;; "numerics-internal"
 			     "stat-data"
 			     "cls-basics")
 		:components
@@ -188,13 +189,17 @@
 		:components
 		((:file "plot")))
 |#
+
+#|
+
+;;; FIXME:  OPTIMIZE USES ORIG CLS CFFI-based LIBCODE, NEED TO REPLACE WITH ALT MINIMIZERS
 	       (:module
 		"optimization"
 		:pathname "src/numerics/"
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
+			     ;; "numerics-internal"
 			     "stat-data"
 			     "cls-basics")
 		:components
@@ -208,7 +213,7 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
+			     ;;   "numerics-internal"
 			     "cls-basics"
 			     "descriptives"
 			     "optimization")
@@ -219,6 +224,7 @@
 		 ;; (:cls-lsp-source-file "bayes"
 		 ;;	  :depends-on ("regression"))
 		 ))
+|#
 
 	       ;; Applications
 	       (:module
@@ -227,10 +233,11 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     "numerics-internal"
+			     ;; "numerics-internal"
 			     "cls-basics"
 			     "descriptives"
-			     "optimization")
+			     ;;  "optimization"
+			     )
 		:components
 		((:file "examples")
 		 (:cls-lsp-source-file "absorbtion")
@@ -252,12 +259,12 @@
 		 "lisp-stat-unittest"
 		:depends-on  ("packaging" "proto-objects"
 			      "cls-core"
-			      "numerics-internal" 
+			      ;; "numerics-internal" 
 			      "stat-data"
 			      "cls-basics"
 			      "descriptives"
-			      "optimization"
-			      "stat-models"
+			      ;; "optimization"
+			      ;; "stat-models"
 			      "example-data")
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
@@ -271,6 +278,8 @@
 			      (:file "unittests-dataframe" :depends-on ("unittests"))))))
 
 #|
+
+;;; NEED TO ADD A TEST OPERATION
  (defmethod perform ((o test-op) (c (eql (find-system :cls))))
     (describe (lift:run-tests :suite 'lisp-stat-unittests::lisp-stat-ut)))
 |#

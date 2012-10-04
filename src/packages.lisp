@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-07-01 11:19:31 tony>
+;;; Time-stamp: <2012-10-04 17:33:12 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -243,29 +243,29 @@
 
 ;;; USER PACKAGES
 
-(defpackage :lisp-stat-ffi-int
-  (:use :common-lisp
-	:cffi)
-  (:export ccl-store-integer ccl-store-double ccl-store-ptr
-	   get-buf ))
+;; (defpackage :lisp-stat-ffi-int
+;;   (:use :common-lisp
+;; 	:cffi)
+;;   (:export ccl-store-integer ccl-store-double ccl-store-ptr
+;; 	   get-buf ))
 
-(defpackage :lisp-stat-probability
-  (:use :common-lisp
-	:cffi
-	:lisp-stat-ffi-int
-	:lisp-stat-macros)
-  (:export log-gamma set-seed
-	   uniform-rand
-	   normal-cdf normal-quant normal-dens normal-rand
-	   bivnorm-cdf
-	   cauchy-cdf cauchy-quant cauchy-dens cauchy-rand
-	   gamma-cdf gamma-quant gamma-dens gamma-rand
-	   chisq-cdf chisq-quant chisq-dens chisq-rand
-	   beta-cdf beta-quant beta-dens beta-rand
-	   t-cdf t-quant t-dens t-rand
-	   f-cdf f-quant f-dens f-rand
-	   poisson-cdf poisson-quant poisson-pmf poisson-rand 
-	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
+;; (defpackage :lisp-stat-probability
+;;   (:use :common-lisp
+;; 	:cffi
+;; 	:lisp-stat-ffi-int
+;; 	:lisp-stat-macros)
+;;   (:export log-gamma set-seed
+;; 	   uniform-rand
+;; 	   normal-cdf normal-quant normal-dens normal-rand
+;; 	   bivnorm-cdf
+;; 	   cauchy-cdf cauchy-quant cauchy-dens cauchy-rand
+;; 	   gamma-cdf gamma-quant gamma-dens gamma-rand
+;; 	   chisq-cdf chisq-quant chisq-dens chisq-rand
+;; 	   beta-cdf beta-quant beta-dens beta-rand
+;; 	   t-cdf t-quant t-dens t-rand
+;; 	   f-cdf f-quant f-dens f-rand
+;; 	   poisson-cdf poisson-quant poisson-pmf poisson-rand 
+;; 	   binomial-cdf binomial-quant binomial-pmf binomial-rand))
 
 (defpackage :cls-probability
   (:use common-lisp
@@ -514,7 +514,7 @@
 |#
 
    ;; optimize.lsp
-   newtonmax nelmeadmax
+;;   newtonmax nelmeadmax
 
    ;; package LISPSTAT-MACROS
    make-rv-function make-rv-function-1 
@@ -568,14 +568,14 @@
    fivnum sample
 
    ;; probability (dists.lisp)
-   log-gamma set-seed
-   uniform-rand normal-cdf normal-quant normal-dens
-   normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
-   cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
-   chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
-   beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
-   f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
-   binomial-cdf binomial-quant binomial-pmf binomial-rand
+   ;; log-gamma set-seed
+   ;; uniform-rand normal-cdf normal-quant normal-dens
+   ;; normal-rand bivnorm-cdf cauchy-cdf cauchy-quant cauchy-dens
+   ;; cauchy-rand gamma-cdf gamma-quant gamma-dens gamma-rand
+   ;; chisq-cdf chisq-quant chisq-dens chisq-rand beta-cdf beta-quant
+   ;; beta-dens beta-rand t-cdf t-quant t-dens t-rand f-cdf f-quant
+   ;; f-dens f-rand poisson-cdf poisson-quant poisson-pmf poisson-rand 
+   ;; binomial-cdf binomial-quant binomial-pmf binomial-rand
 
    ;; Here is where we have a problem -- lispstat core should be core
    ;; data management and config problems, with packages providing
@@ -687,35 +687,35 @@
   (:export absorbtion aluminum iron))
 
 
-(defpackage :lisp-stat-optimize
- (:use :common-lisp
-       :cffi
-       :lisp-matrix
-       :lisp-stat-ffi-int
-       :lisp-stat-object-system
-       :lisp-stat-types
-       :lisp-stat-compound-data
-       :lisp-stat-math
-       :lisp-stat-float
-       :lisp-stat-basics
-#|
-       :lisp-stat-matrix
-       :lisp-stat-linalg-data
-       :lisp-stat-linalg
-|#
-       )
- (:shadowing-import-from :lisp-stat-object-system
-			 call-method call-next-method)
- (:shadowing-import-from :lisp-stat-math
-	   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
- 	   asin acos atan sinh cosh tanh asinh acosh atanh float random
- 	   truncate floor ceiling round minusp zerop plusp evenp oddp 
- 	   < <= = /= >= > complex conjugate realpart imagpart phase
- 	   min max logand logior logxor lognot ffloor fceiling
- 	   ftruncate fround signum cis)
- (:export
-     ;; derivatives
-     numgrad numhess
+;; (defpackage :lisp-stat-optimize
+;;  (:use :common-lisp
+;;        :cffi
+;;        :lisp-matrix
+;;        :lisp-stat-ffi-int
+;;        :lisp-stat-object-system
+;;        :lisp-stat-types
+;;        :lisp-stat-compound-data
+;;        :lisp-stat-math
+;;        :lisp-stat-float
+;;        :lisp-stat-basics
+;; #|
+;;        :lisp-stat-matrix
+;;        :lisp-stat-linalg-data
+;;        :lisp-stat-linalg
+;; |#
+;;        )
+;;  (:shadowing-import-from :lisp-stat-object-system
+;; 			 call-method call-next-method)
+;;  (:shadowing-import-from :lisp-stat-math
+;; 	   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+;;  	   asin acos atan sinh cosh tanh asinh acosh atanh float random
+;;  	   truncate floor ceiling round minusp zerop plusp evenp oddp 
+;;  	   < <= = /= >= > complex conjugate realpart imagpart phase
+;;  	   min max logand logior logxor lognot ffloor fceiling
+;;  	   ftruncate fround signum cis)
+;;  (:export
+;;      ;; derivatives
+;;      numgrad numhess
 
-     ;; optimization
-     newtonmax nelmeadmax))
+;;      ;; optimization
+;;      newtonmax nelmeadmax))

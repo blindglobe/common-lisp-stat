@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-04 04:10:12 tony>
+Time-stamp: <2012-10-04 17:26:54 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -99,8 +99,11 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
 
 #+name: loadit
 #+begin_src lisp
-      (ql:quickload :cls)
+  (ql:quickload :cls)
 #+end_src
+
+#+RESULTS: loadit
+| :CLS |
 
   though sometimes we might want to recompile fully.  (Can this be
   done via QL?  Need to check)
