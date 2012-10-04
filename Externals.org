@@ -1,6 +1,9 @@
 
 * Introduction
 
+  This document describes external dependencies and how I think I
+  should be tracking them.  It is a bit outdated as of 
+  <2012-10-04 Thu> but hopefully that will be fixed soon.
 
 * Getting required external files.
 
@@ -13,11 +16,17 @@
    cd cffi.darcs ; darcs pull
 #+end_src
 
-   We can use darcs-to-git script to convert, and ideally upload to
-   GitHub or the CommonLisp.net Git repository.
+   We can use darcs-to-git script to convert (findable on github), and
+   ideally upload to GitHub, CommonLisp.net, or repo Git
+   public-repository repositories.
 
-   Once it is there, we can register as a submodule, and then use git
-   submodule commands to get the versions we need to use.
+   IS THIS A GOOD IDEA?  Once it is there, we can register as a
+   submodule, and then use git submodule commands to get the versions
+   we need to use.
+
+   I think it's a good idea, only for core development.  For
+   developers of CLS programs (away from core), provide the core
+   packages and have people develop on top of them.
 
 ** Commands for external GIT:
 
