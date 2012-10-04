@@ -1,1 +1,0 @@
-../external/ch-asdf.git/ch-asdf.asd

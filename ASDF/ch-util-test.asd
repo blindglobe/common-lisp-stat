@@ -1,1 +1,0 @@
-../external/ch-util.git/ch-util-test.asd
