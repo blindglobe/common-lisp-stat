@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-04 17:33:12 tony>
+;;; Time-stamp: <2012-10-05 04:08:40 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -415,7 +415,7 @@
 	:lisp-stat-config
 	:lisp-stat-object-system
 	:lisp-stat-compound-data
-	:lisp-stat-probability
+	;;	:lisp-stat-probability
 	:lisp-stat-types
         :lisp-stat-float
 	:lisp-stat-basics

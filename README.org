@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-05 04:03:26 tony>
+Time-stamp: <2012-10-05 04:19:12 tony>
 
 * Current Status: COMPLETELY BROKEN
 
@@ -49,7 +49,7 @@ Time-stamp: <2012-10-05 04:03:26 tony>
   some proposed, in the file:examples/ directory.  Also see
   file:TODO.org for snippets of code that work or fail to work.
 
-** Example Usage steps [2/6]
+** Example Usage steps [2/7]
 
 *** DONE Start and Load 
   
@@ -77,7 +77,9 @@ probability calculus, numerical linear algebra, basic summaries
 However, it can be better is to create a package to work in, which
 pulls in only desired functionality:
 
+
 #+BEGIN_SRC lisp +n :tangle "readme-example.lisp"
+  (in-package cl-user)
   (defpackage :my-package-user
     (:documentation "demo of how to put serious work should be placed in
       a similar package elsewhere for reproducibility.  This hints as to
@@ -86,10 +88,29 @@ pulls in only desired functionality:
     (:use :common-lisp ; always needed for user playgrounds!
           :lisp-matrix ; we only need the packages that we need...
           :common-lisp-statistics
+          :cl-variates
           :lisp-stat-data-examples) ;; this ensures access to a data package
-    (:export summarize-data summarize-results this-data this-report)) 
+    (:shadowing-import-from :lisp-stat
+        ;; This is needed temporarily until we resolve the dependency and call structure. 
+        call-method call-next-method
+  
+        expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+        asin acos atan sinh cosh tanh asinh acosh atanh float random
+        truncate floor ceiling round minusp zerop plusp evenp oddp 
+        < <= = /= >= > > ;; complex
+        conjugate realpart imagpart phase
+        min max logand logior logxor lognot ffloor fceiling
+        ftruncate fround signum cis
+  
+        <= float imagpart)
+  
+    (:export summarize-data summarize-results this-data this-report))
   
   (in-package :my-clswork-user) ;; or :my-package-user
+  
+  (setf my-data
+        (let ((var1 )) ))
+  
 #+END_SRC
 
 We need to pull in the packages with data or functions that we need;
@@ -110,7 +131,9 @@ that fundamental objects and functions are always available.
 One can build a package, or save an image (CL implementation
 dependent) or...
   
-*** Inform  moi of problems or successes
+*** TODO Inform  moi of problems or successes
+
+    NEED TO SETUP A MAILING LIST!!
 
     mailto:blindglobe@gmail.com if there is anything wrong, or
     even if something happens to work.
@@ -128,7 +151,7 @@ dependent) or...
    See files in file:Doc/  for history, design considerations, and
    random, sometimes false and misleading, musings.
 
-* Working on your own modifications
+* Local modifications, Development, Contributions
 
 #+begin_src shell
    git clone git://repo.or.cz/CommonLispStat.git 

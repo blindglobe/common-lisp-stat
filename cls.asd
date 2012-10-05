@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2012-10-04 17:45:23 tony>
+;;; Time-stamp: <2012-10-05 04:09:33 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -270,7 +270,7 @@
 		 :components ((:file "unittests")
 			      (:file "unittests-lstypes" :depends-on ("unittests"))
 			      (:file "unittests-specfn" :depends-on ("unittests"))
-			      (:file "unittests-prob" :depends-on ("unittests"))
+			      ;;    (:file "unittests-prob" :depends-on ("unittests"))
 			      (:file "unittests-proto" :depends-on ("unittests"))
 			      (:file "unittests-regression" :depends-on ("unittests"))
 			      (:file "unittests-listoflist" :depends-on ("unittests"))
