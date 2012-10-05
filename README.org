@@ -1,5 +1,9 @@
 
-Time-stamp: <2012-10-04 02:30:43 tony>
+Time-stamp: <2012-10-05 04:03:26 tony>
+
+* Current Status: COMPLETELY BROKEN
+
+  but we are rebuilding it.
 
 * Fast Start
 
@@ -17,61 +21,94 @@ Time-stamp: <2012-10-04 02:30:43 tony>
   (ql:quickload :cls)
 #+end_src
 
-  At one point, I planned on git-delivery via submodules, but this
-  proved to be a bit more complex than needed, thanks to the creation
-  of quicklisp.  
+  At one point, I planned a pure git-delivery via cloning and
+  submodules, but this proved to be a bit more complex than needed,
+  thanks to the creation of quicklisp.  It's also a stupid idea if
+  one plans to have users who are not hackers or developers, and
+  eventually we want users.
 
-  There will need to be a version for delivering a development QL
-  environment (for development) and this will consist of git
-  repositories, possibly through submodules, but this is for
-  discussion. 
+  Despite quicklisp, there will need to be a version for delivering a
+  system development-oriented CLS environment and this will consist of
+  git repositories, possibly through submodules, but this (submodules)
+  is for discussion.
 
   There are quite a few libraries that are needed, and right now we
   are working on simplifying the whole thing.   Once you get past
   this step, then you should:
 
   1. run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in
-     the current directory.  Recent versions of CFFI and LIFT can be
-     found in the external/ subdirectory, and should be autoload-able,
-     assuming that you are using a Lisp implementation supporting
-     ASDF.  (AJR-FIXME: need to upload my GIT mirrors to repo.or.cz or
-     similar, and have them potentially available as submodules if
-     needed)
+     the current directory.  You will need ASDF at a minimum,
+     QUICKLISP preferred.  And you should have QUICKLISP.
 
   2. (on Debian or similar systems: can use CLC (Common Lisp
      Controller) or SBCL approaches, i.e.  ~/.clc/systems or
-     ~/.sbcl/systems should contain softlinks to the cls, cffi, and
-     lift ASDF files (i.e. cls.asd, cffi.asd, and lift.asd).
-     AJR-FIXME: There is probably a similar incantation for other
-     CL's, need to record that here!).
+     ~/.sbcl/systems should contain softlinks to the cls and other
+     required ASDF files (i.e. cls.asd, cffi.asd, and lift.asd).
 
-  Step through ls-demo.lisp for a range of examples of activities.
+  There are example sessions and scripts for data analysis, some real,
+  some proposed, in the file:examples/ directory.  Also see
+  file:TODO.org for snippets of code that work or fail to work.
 
-** Example Usage steps
+** Example Usage steps [2/6]
+
+*** DONE Start and Load 
   
-*** change directory into the CommonLispStat working directory.
-*** start your lisp
-*** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
- 
-**** (ql:quickload :cls)
+1. start your lisp
+2. load CLS
 
-     use QUICKLISP to load lispstat
+#+BEGIN_SRC lisp
+(ql:quickload :cls)
+#+END_SRC
+
+*** DONE Setup a place to work
+
+In Common Lisp, you need to select and setup namespace to store data
+and functions.  There is a scratch user-package, or sandbox, for
+CLS, *cls-user* , which you can select via:
+
+#+BEGIN_SRC lisp -n :tangle "readme-example.lisp"
+(in-package :cls-user)
+#+END_SRC
+
+and this has some basic modules from CLS instantiated (dataframes,
+probability calculus, numerical linear algebra, basic summaries
+(numerical and visual displays).  
+
+However, it can be better is to create a package to work in, which
+pulls in only desired functionality:
+
+#+BEGIN_SRC lisp +n :tangle "readme-example.lisp"
+  (defpackage :my-package-user
+    (:documentation "demo of how to put serious work should be placed in
+      a similar package elsewhere for reproducibility.  This hints as to
+      what needs to be done for a user- or analysis-package.")
+    (:nicknames :my-clswork-user)
+    (:use :common-lisp ; always needed for user playgrounds!
+          :lisp-matrix ; we only need the packages that we need...
+          :common-lisp-statistics
+          :lisp-stat-data-examples) ;; this ensures access to a data package
+    (:export summarize-data summarize-results this-data this-report)) 
+  
+  (in-package :my-clswork-user) ;; or :my-package-user
+#+END_SRC
+
+We need to pull in the packages with data or functions that we need;
+just because the data/function is pulled in by another package, in
+that package's namespace, does NOT mean it is available in this name
+space.  However, the *common-lisp-statistics* package will ensure
+that fundamental objects and functions are always available. 
 
 
-**** (in-package :ls-user)
+*** TODO Get to work [0/3]
 
-     work in the scratch user package.  Normally, one would create a
-     special package to work in.
+**** TODO Pull in or create data
 
-**** (normal-rand 20)
+**** TODO Summarize results
 
-**** (setf mytest (normal-rand 20))
+**** TODO Save work and results for knowledge building and reuse 
 
-**** ... (and so on) ...
-
-   and see if they work (basic CFFI functionality for external C
-   library, LIFT package for unit-testing framework to ensure run time
-   stability).
+One can build a package, or save an image (CL implementation
+dependent) or...
   
 *** Inform  moi of problems or successes
 
@@ -79,25 +116,25 @@ Time-stamp: <2012-10-04 02:30:43 tony>
     even if something happens to work.
 
     Current beliefs:
-    - CMUCL and SBCL seem to work just fine at this stage.
+    - SBCL is target platform.   CCL and CMUCL should be similar.
     - CLISP is finicky regarding the problems that we have with CFFI
       conversation.  In particular that we can not really do typing
-      that we need to take care of.  I think this is my problem, not
-      someone elses.
-    - Need to test ECL.  Clozure-CL seems to work.
+      that we need to take care of.  I think this is my (Tony's)
+      problem, not someone elses, and specifically, not CLISP's
+    - Need to test ECL.
 
 * History
 
-   See Doc/README* for history and design considerations
-   See Doc/INSTALL for getting this to work and run
+   See files in file:Doc/  for history, design considerations, and
+   random, sometimes false and misleading, musings.
 
 * Working on your own modifications
 
 #+begin_src shell
    git clone git://repo.or.cz/CommonLispStat.git 
    cd CommonLispStat
-   git submodules init
-   git submodules update
+#   git submodules init
+#   git submodules update
 #+end_src
 
    will pull the whole repository, and create a "master" branch to
