@@ -1,10 +1,10 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-07-01 12:02:55 tony>
+;;; Time-stamp: <2012-10-06 08:56:53 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2009--, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
+;;; Copyright:  (c)2009--2012, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
 ;;;             on how it arrives.  
 ;;; Purpose:    Instance of dataframe with the storage done using
 ;;;             LISTOFLIST data storage.
@@ -20,7 +20,7 @@
 
 ;;; DATAFRAME-LISTOFLIST
 ;;; 
-;;; example/implementatin of using lisp-matrix datastructures for
+;;; example/implementatin of using listoflist datastructures for
 ;;; dataframe storage.
 
 (defclass dataframe-listoflist (dataframe-like)
@@ -28,17 +28,18 @@
 	  :initarg :storage
 	  :type list
 	  :accessor dataset
-	  :documentation "Data storage: typed as matrix-like
-  (numerical only)."))
-  (:documentation "example implementation of dataframe-like using
-  storage based on lisp-matrix structures."))
+	  :documentation "Data storage: typed as listoflist."))
+  (:documentation "example implementation of dataframe-like objects
+  using list-of-list data storage."))
 
 (defmethod nrows ((df dataframe-listoflist))
   "specializes on inheritance from listoflist in lisp-matrix."
   (length (dataset df)))
 
 (defmethod ncols ((df dataframe-listoflist))
-  "specializes on inheritance from matrix-like in lisp-matrix."
+  "specializes on inheritance from listoflist. This approach assumes
+that the list of list is in a coherent form, that is that it maps
+naturally to a rectangular array."
   (length (elt (dataset df) 0)))
 
 (defmethod xref ((df dataframe-listoflist) &rest subscripts)
