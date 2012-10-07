@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-04 17:26:54 tony>
+Time-stamp: <2012-10-06 08:52:25 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -119,8 +119,12 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
      setup is mostly complete
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:47]
    - State "TODO"       from ""           [2010-10-12 Tue 13:47]
+
    This is an example of a custom setup, not really interesting at
-   this point except to remind Tony how to program.
+   this point (it's obsolete) except to remind Tony how to program.
+   Pointy-headed managers need any support they can find in order to
+   regress to their hacker-childhood.
+
 #+name: loader
 #+begin_src lisp
   (in-package :cl-user)
