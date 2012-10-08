@@ -1,9 +1,0 @@
--*- mode:text -*-
-
-
-Let $CLSHOME be the toplevel directory.  Then to get started, within
-the Lisp REPL,  $CLSHOME/init.lisp 
-
-This should initialize all of the right variables to autoload.
-
-
