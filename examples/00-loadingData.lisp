@@ -1,18 +1,19 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2010-06-07 13:55:13 tony>
+;;; Time-stamp: <2012-10-08 16:21:58 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
-;;; File:       template.lisp
+;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2009--, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
-;;; Purpose:    Template header file
+;;; Copyright:  (c)2009--2012, AJ Rossini.  MIT license.
+;;; Purpose:    Example of loading data
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
 (in-package :cl-user)
+
+(ql:quickload :cls)
 
 (cl:defpackage :cls-examples  ;; similar setup to cls-user, without test data
   (:use :common-lisp
@@ -45,7 +46,7 @@ directory, return a string denoting the complete path.
 FIXME: UNIX-centric (though might work on Mac OSX).  We really want to
 return a pathspec, not a string/namespec"
   (check-type x string)
-  (concatenate 'string *cls-home-dir* x))
+  (concatenate 'string *cls-installation-home-dir* x))
 
 
 (progn
