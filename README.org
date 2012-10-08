@@ -1,11 +1,117 @@
 
-Time-stamp: <2012-10-08 05:34:55 tony>
+Time-stamp: <2012-10-08 15:22:18 tony>
 
 * Current Status: COMPLETELY BROKEN
 
   but we are rebuilding it.
 
 * Fast Start
+
+** Version 2 (David)
+
+   (This held for the version before we removed liblispstat and plplot
+   and some other "crutches" which had a bit too much bitrot).
+
+   We assume that you have a lisp installed and that you have a
+   passing acquaintence with the unix shell.
+
+   1. The first point that you should note that is that these
+      instructions are written with the assumption of the availibility
+      of quicklisp.
+
+   If you do not have quicklisp , please go to www.quicklisp.org and
+   install it now
+
+   2. The second point to note is that you will need the "git" utility
+      installed on your machine.
+
+      for mac osx sudo port install git
+      for linux (eg debian) sudo apt-get install git
+
+   3. Once that is done execute the following shell commands
+
+#+begin_src shell
+  cd ~/quicklisp/local-projects
+  git clone git://github.com/blindglobe/common-lisp-stat.git
+  cd comon-list-stat
+  git submodules init
+#+end_src
+
+      These commands copy the the source from the repository and all
+      the associated libraries. It will live as a quicklisp project in
+      the local-projects directory. I find it convenient to
+      symbolically link the quicklisp direct to ~/lisp for easy access
+
+#+begin_src shell
+   ln ~/quicklisp/local-projects ~/lisp
+#+end_src
+
+   4. Configure the locations of the BLAS and LINPACK libraries
+
+      Currently this is a manual operation, which will change in a
+      later version.
+
+      Edit the file external/cl-blapack/load-blapack-libs.lisp
+
+      Search for the following 3 parameters *gfortran-lib* *blas-lib*
+      *lapack-lib*
+
+      For OS X: change the parameters as suggested in the file. Both
+      BLAS and LAPACK are pre installed on Mac OSX.
+
+      For linux, make sure you have the neccessary libraries installed,
+      through apt, yum or otherwise viz
+
+      viz sudo apt-get install libblas, sudo apt-get install liblapack
+
+   5. For visualization we are currently using plplot and the
+      cl-plplot interface. this requires the installation of the
+      plplot library
+
+      for MAC OSX you can use macports or homebrew
+
+      5.1 sudo port install xquartz (or download from the xquartz home site)
+
+      5.2 sudo port install plplot
+
+      and on linux your favourite package manager of course.
+
+      For windows, we recommend you use cygwin to get straightforward
+      access. I'll document the steps if there is a demand.
+
+   6. You need to check that your dynamic library path has been
+      properly set up in the shell.  In your .bashrc (or equivalent
+      shell init file)
+
+      For Mac OSX set 
+
+#+BEGIN_SRC 
+DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
+#+END_SRC
+
+      For Linux set 
+
+#+BEGIN_SRC 
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
+#+END_SRC
+
+      If you get this wrong the load process will not be able to find
+      the libraries and will prompt you.
+
+   5. Once the pre prequisites have been done, start your favourite lisp
+      and enter 
+
+#+begin_src lisp
+(ql:register-local-projects)
+(ql:quickload :cls) 
+#+end_src lisp
+
+      Retire for a well earned coffee and upon your return you should
+      find the package completely installed.Obviously, potential
+      errors can creep in with spelling the filenames correctly, so be
+      careful.
+
+** Version 1 (Tony)
 
   You probably did  (preferred)
 
