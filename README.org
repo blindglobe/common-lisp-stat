@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-08 15:22:18 tony>
+Time-stamp: <2012-10-08 15:44:30 tony>
 
 * Current Status: COMPLETELY BROKEN
 
@@ -60,9 +60,13 @@ Time-stamp: <2012-10-08 15:22:18 tony>
       BLAS and LAPACK are pre installed on Mac OSX.
 
       For linux, make sure you have the neccessary libraries installed,
-      through apt, yum or otherwise viz
+      through apt, yum or otherwise
 
-      viz sudo apt-get install libblas, sudo apt-get install liblapack
+      i.e.: 
+#+BEGIN_SRC shell
+sudo apt-get install libblas
+sudo apt-get install liblapack
+#+END_SRC
 
    5. For visualization we are currently using plplot and the
       cl-plplot interface. this requires the installation of the
