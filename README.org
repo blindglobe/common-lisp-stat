@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-10-05 04:19:12 tony>
+Time-stamp: <2012-10-08 05:34:55 tony>
 
 * Current Status: COMPLETELY BROKEN
 
@@ -9,14 +9,15 @@ Time-stamp: <2012-10-05 04:19:12 tony>
 
   You probably did  (preferred)
 
-#+name: GitClone
+#+name: LoadWithGitClone
 #+begin_src shell
   git clone git://github.com/blindglobe/common-lisp-stat.git
 #+end_src
 
-  or (coming soon!) from within a Lisp instance, 
+  (or maybe using the repo.or.cz git repository archive), or (coming
+  soon!) from within a Lisp instance:
 
-#+name: QuickLispLoad
+#+name: LoadWithQuickLisp
 #+begin_src lisp
   (ql:quickload :cls)
 #+end_src
@@ -153,9 +154,12 @@ dependent) or...
 
 * Local modifications, Development, Contributions
 
+  Since this project is 
+
 #+begin_src shell
-   git clone git://repo.or.cz/CommonLispStat.git 
-   cd CommonLispStat
+#   git clone git://repo.or.cz/CommonLispStat.git 
+   git clone git://github.com/blindglobe/common-lisp-stat.git 
+   cd common-lisp-stat
 #   git submodules init
 #   git submodules update
 #+end_src
@@ -183,6 +187,23 @@ needed by
 #+end_src
 )
 
+BETTER DOCUMENTATION EXAMPLES EXIST ON-LINE!! PLEASE READ THEM, THE
+ABOVE IS SPARSE AND MIGHT BE OUTDATED!
+
+
+** Contributing through GitHub
+
+   Alternatively, one can work on the github repositories as well.
+   They are a bit differently organized, and require one to get a
+   github account and work from there.
+
+   basically, clone the repository on github on the WWW interface,
+   then make a branch (as below), push back the branch to github, and
+   notify the main repository that there is something to be pulled.
+   And we'll pull it back in.
+
+** Commiting with the MOB on repo.or.cz
+
 of course, perhaps you want to contribute to the mob branch.   For
 that, after cloning the repository as above, you would:
 
@@ -206,7 +227,7 @@ that, after cloning the repository as above, you would:
 
 )
 
-and it'll be put on the mob branch, as a proposal for merging.
+and it'll be put on the mob branch, as a proposal for merging. 
 
 Another approach would be to pull from the topic branch into the mob
 branch before uploading.   Will work on a formal example soon.
@@ -222,34 +243,11 @@ something like:
 
 )
 
-Alternatively, one can work on the github repositories as well.  They
-are a bit differently organized, and require one to get a github
-account and work from there.  In that case, you'd need to D/L the
-libraries. 
+** Licensing
 
-That gets a bit tricky, but see ./bin/GetRepos.sh for an example. 
-
-* Documentation and examples
-
-  I've started putting examples of use in function documentation.  If
-  you are a lisp'er, you'll find this pendantic and insulting.  Many
-  of the uses are trivial.  However, this has been tested out on a
-  number of research statisticians (the primary user audience) and
-  found useful.
-
-  Still need to write the (run-doc-ex 'function-name) function, which
-  would print out the example and run it live.  Hopefully with the
-  same results.  I've used XML markup for this, but for no particular
-  reason, we could have used SEXPs as well.  This is currently done by
-  using an <example> tag set, as in
-
-#+srcname: 
-#+begin_src xml
-  <example>
-  (progn
-    (example-code-for-function))
-  </example>
-#+end_src
+   Licensing will be important.  Next decade.  But do think through
+   what you intend with your contributions.  Should we become famous
+   (Ha!) make sure that you've communicated your expectations...
 
 * Footnotes
 

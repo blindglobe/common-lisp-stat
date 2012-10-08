@@ -1,5 +1,8 @@
+#+TODO: TODO CURR | DONE
+#+TODO: CANCELED
 
-Time-stamp: <2012-10-06 08:52:25 tony>
+
+Time-stamp: <2012-10-08 05:26:30 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -93,9 +96,9 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
      ?? cl-plplot : cffi
 
 
-* Tasks to Do [4/21]
+* Tasks to Do [2/26]
 
-  Usually, we need to load it before going on.
+  Usually, we need to load it everything before going on.
 
 #+name: loadit
 #+begin_src lisp
@@ -105,14 +108,16 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
 #+RESULTS: loadit
 | :CLS |
 
-  though sometimes we might want to recompile fully.  (Can this be
-  done via QL?  Need to check)
+  and sometimes we might want to recompile fully:
 
-#+name: compile-it-all
+#+name: recompile-it-all
 #+begin_src lisp
   (asdf:oos 'asdf:compile-op :cls :force T)
 #+end_src
 
+  Currently QuickLisp support doesn't provide a recompilation
+  facility.  And QL is built over and partially extends ASDF, so we
+  should be fine for now. 
 
 ** DONE [#B] SET UP
    - State "DONE"       from "CURR"       [2010-10-12 Tue 13:48] \\
@@ -125,9 +130,13 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
    Pointy-headed managers need any support they can find in order to
    regress to their hacker-childhood.
 
-#+name: loader
-#+begin_src lisp
-  (in-package :cl-user)
+   The only point of this section is to illustrate that we could want
+   to load additional modules that are not a central part of the core
+   files.
+
+#+name: CustomLoader
+#+begin_src lisp :tangle "examples/CustomLoader.lisp
+  (in-package :cl-user) ; always ensure we are in the right package to leave droppings and access functionality
   (progn 
     (defun init-CLS (&key (compile 'nil))
       (let ((packagesToLoad (list ;; core system
@@ -148,9 +157,9 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
                                   ;; :cl-opengl
                                   ;; :cl-glu :cl-glut :cl-glut-examples
   
-                                  :bordeaux-threads
+  
                                   ;; :cells :cells-gtk
-                                  )))
+                                  :bordeaux-threads)))
         (mapcar #'(lambda (x)
                     (if compile
                         (asdf:oos 'asdf:compile-op x :force T)
@@ -163,10 +172,13 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
 #+results:
 |   | #<PACKAGE "COMMON-LISP-USER"> |
 
-** TODO [#A] Integrate with quicklist support.
-   - State "TODO"       from ""           [2010-11-30 Tue 18:00]
+** CURR [#A] Integrate with quicklist support.
    
-   important to merge with quicklisp system loader support.
+   important to merge with quicklisp system loader support.  We
+   currently have some of this work integrated, but I think there are
+   a few systems which are not auto-installable.
+
+
 ** CURR [#A] Testing: unit, regression, examples. [0/3]
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:51]
    - State "TODO"       from ""           [2010-10-12 Tue 13:51]
@@ -704,9 +716,42 @@ where
     (make-aa "agc9zz") ;; error expected
 #+end_src
 
-
 ** TODO [#B] Documentation and Examples [0/3]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
+
+   I've started putting examples of use in function documentation.  If
+   you are a lisp'er, you'll find this pendantic and insulting.  Many
+   of the uses are trivial.  However, this has been tested out on a
+   number of research statisticians (the primary user audience) and
+   found useful.
+
+   Still need to write the 
+
+#+BEGIN_SRC lisp
+  (evaluate-documentation-example 'function-name)
+#+END_SRC
+
+   function, which would print out the example and run it live.
+   Hopefully with the same results.  Need to setup the infrastructure,
+   but basically, we'd like something like:
+
+#+name: Example-InLineDoc
+#+begin_src lisp
+  (cls-example-progn
+      (example-code-for-function-1)
+      (example-code-for-function-...)
+      (example-code-for-function-n))
+#+end_src
+
+   and have this within the doc-string.  Then the doc-string would be
+   parsed for the appropriate code and we'd get the results, evaluated
+   in a special name space derived from the object (function, class)
+   name, possibly with the corresponding functions and environment
+   set up that would be required.  OR, it could just work in cl-user
+   (which is the default starting location.
+
+   Here are some possible common lisp systems that could be
+   evaluated:
 
 *** TODO [#B] Docudown
     - State "TODO"       from ""           [2010-11-05 Fri 15:34]
