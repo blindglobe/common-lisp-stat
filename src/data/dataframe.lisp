@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-06 08:44:24 tony>
+;;; Time-stamp: <2012-10-08 17:46:02 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -253,7 +253,7 @@ that that list is a valid listoflist dataframe structure."
 	  (repeat-seq num initstr)
 	  (mapcar #'(lambda (x) (format nil "~A" x)) (gen-seq num))))
 
-(defun check-dataframe-params (data vartypes varlabels caselabels)
+(defun check-dataframe-params (data vartypes varlabels caselabels doc)
   "This will throw an exception (FIXME: Need to put together a CLS exception system, this could be part of it)"
   ;; type checking
   (check-type data (or matrix-like array list))
@@ -268,7 +268,7 @@ that that list is a valid listoflist dataframe structure."
 
 (defmacro build-dataframe (type) 
   `(progn
-    (check-dataframe-params data vartypes varlabels caselabels)
+    (check-dataframe-params data vartypes varlabels caselabels doc)
     (let ((newcaselabels (if caselabels
 			     caselabels
 			     (make-labels "C" (ncases data))))
@@ -291,13 +291,11 @@ that that list is a valid listoflist dataframe structure."
 
 ;;  (macroexpand '(build-dataframe 'test)))
 
-
 (defgeneric make-dataframe2 (data &key vartypes varlabels caselabels doc)
   (:documentation "trial generic dispatch.  Data should be in table format desired for use.")
   (:method ((data dataframe-array)
-	    &key (vartypes sequence) (varlabels sequence) (caselabels  sequence)
-	      (doc string))
-    (check-dataframe-params data vartypes varlabels caselabels)
+	    &key vartypes varlabels caselabels doc)
+    (check-dataframe-params data vartypes varlabels caselabels doc)
     (let ((newcaselabels (if caselabels
 			     caselabels
 			     (make-labels "C" (ncases data))))
@@ -317,11 +315,17 @@ that that list is a valid listoflist dataframe structure."
 		     :case-labels newcaselabels
 		     :var-labels newvarlabels
 		     :var-types newvartypes)))
-  (:method ((data dataframe-matrixlike) &key (vartypes sequence) (varlabels sequence) (caselabels sequence) (doc string))
-    (check-dataframe-params data vartypes caselabels)
+  (:method ((data dataframe-matrixlike)
+	    &key vartypes varlabels caselabels doc 
+	      ;; (vartypes sequence) (varlabels sequence) (caselabels sequence) (doc string)
+	      )
+    (check-dataframe-params data vartypes varlabels caselabels doc)
     (build-dataframe 'dataframe-matrixlike))
-  (:method ((data dataframe-listoflist) &key (vartypes sequence) (varlabels sequence) (caselabels sequence) (doc string))
-    (check-dataframe-params data vartypes caselabels)
+  (:method ((data dataframe-listoflist)
+  	    &key vartypes varlabels caselabels doc 
+	      ;; (vartypes sequence) (varlabels sequence) (caselabels sequence) (doc string)
+	      )
+    (check-dataframe-params data vartypes varlabels caselabels doc)
     (build-dataframe 'dataframe-listoflist)))
 
 (defun make-dataframe (newdata
@@ -436,7 +440,7 @@ construction of proper DF-array."
 (defsetf caselabels set-caselabels)
 
 ;;;;;;;;;;;; IMPLEMENTATIONS, with appropriate methods.
-;; See also:
+;; See also: 
 ;; (documentation 'dataframe-like  'type)
 
 
