@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-23 14:18:47 tony>
+;;; Time-stamp: <2012-10-09 04:39:58 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -20,27 +20,54 @@
 
 ;; XLISPSTAT compatibility functions.
 
-;;;;
-;;;; Listing and Saving Variables and Functions (XLispStat compatibility)
-;;;;
+;;;
+;;; Listing and Saving Variables and Functions (XLispStat compatibility)
+;;;
 
 (defvar *variables* nil)
 (defvar *ask-on-redefine* nil)
 
-(defmacro def (symbol value)
+(defmacro def (name value &optional (documentation nil documentation-p))
   "Syntax: (def var form)
 VAR is not evaluated and must be a symbol.  Assigns the value of FORM to
 VAR and adds VAR to the list *VARIABLES* of def'ed variables. Returns VAR.
 If VAR is already bound and the global variable *ASK-ON-REDEFINE*
 is not nil then you are asked if you want to redefine the variable."
-  `(progn
-     (unless (and *ask-on-redefine*
-		  (boundp ',symbol)
-		  (not (y-or-n-p "Variable has a value. Redefine?")))
-       (defparameter ,symbol ,value))
-     (pushnew ',symbol *variables*)
-     ',symbol))
-  
+  `(progn (declaim (special ,name))
+	  (unless (and *ask-on-redefine*
+		       (boundp ',name)
+		       (not (y-or-n-p "Variable has a value. Redefine?")))
+	    ,(when documentation-p
+		   `(setf (documentation ',name 'variable) ',documentation))
+	    (setf (symbol-value ',name) ,value)
+	    (pushnew ',name *variables*))
+	  ',name))
+
+
+;; (def *mydef* (list 1 2 3 4 5))
+
+#| Taken from the CLHS, for use in getting the DEF XLS-compat function right.
+defparameter and defvar might be defined as follows:
+
+ (defmacro defparameter (name initial-value 
+                         &optional (documentation nil documentation-p))
+   `(progn (declaim (special ,name))
+           (setf (symbol-value ',name) ,initial-value)
+           ,(when documentation-p
+              `(setf (documentation ',name 'variable) ',documentation))
+           ',name))
+ (defmacro defvar (name &optional
+                        (initial-value nil initial-value-p)
+                        (documentation nil documentation-p))
+   `(progn (declaim (special ,name))
+           ,(when initial-value-p
+              `(unless (boundp ',name)
+                 (setf (symbol-value ',name) ,initial-value)))
+           ,(when documentation-p
+              `(setf (documentation ',name 'variable) ',documentation))
+           ',name))
+|#
+
 (defun variables-list () 
   "Return list of variables as a lisp list of strings."
   (mapcar #'intern (sort-data (mapcar #'string *variables*))))
@@ -51,6 +78,15 @@ Returns a list of the names of all def'ed variables to STREAM"
   (if *variables*
       (mapcar #'intern (sort-data (mapcar #'string *variables*)))))
   
+
+#|
+(defgeneric undef2 (v)
+  (:documentation "generic version of the XLS-1 `undef` function.")
+  (:method ((v symbol)))
+  (:method ((v sequence)))) ;; FIXME: a sequence/list of symbols
+;; (vector symbol *)
+;; (and list (satifies symbol)) ?? NO. 
+|#
 
 (defun undef (v)
 "Args: (v)
