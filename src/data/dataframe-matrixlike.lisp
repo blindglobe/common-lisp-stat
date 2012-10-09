@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-25 08:02:52 tony>
+;;; Time-stamp: <2012-10-09 03:21:09 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-matrixlike.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -34,6 +34,13 @@
   (numerical only)."))
   (:documentation "example implementation of dataframe-like using storage
   based on lisp-matrix structures."))
+
+(defmethod make-dataframe2 ((data dataframe-matrixlike)
+	    &key vartypes varlabels caselabels doc)
+    ""
+  (check-dataframe-params data vartypes varlabels caselabels doc)
+  (build-dataframe 'dataframe-matrixlike))
+
 
 (defmethod nrows ((df dataframe-matrixlike))
   "specializes on inheritance from matrix-like in lisp-matrix."

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-06 08:56:53 tony>
+;;; Time-stamp: <2012-10-09 03:18:49 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -32,9 +32,19 @@
   (:documentation "example implementation of dataframe-like objects
   using list-of-list data storage."))
 
+
+(defmethod make-dataframe2 ((data dataframe-listoflist)
+			    &key vartypes varlabels caselabels doc 
+			      ;; (vartypes sequence) (varlabels sequence) (caselabels sequence) (doc string)
+			      )
+  (check-dataframe-params data vartypes varlabels caselabels doc)
+  (build-dataframe 'dataframe-listoflist))
+
+
 (defmethod nrows ((df dataframe-listoflist))
   "specializes on inheritance from listoflist in lisp-matrix."
   (length (dataset df)))
+
 
 (defmethod ncols ((df dataframe-listoflist))
   "specializes on inheritance from listoflist. This approach assumes

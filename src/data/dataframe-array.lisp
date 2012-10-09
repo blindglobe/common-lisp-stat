@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-01-22 07:54:51 tony>
+;;; Time-stamp: <2012-10-09 03:17:34 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -31,6 +31,30 @@
   (:documentation "example implementation of dataframe-like using storage
   based on lisp arrays.  An obvious alternative could be a
   dataframe-matrix-like which uses the lisp-matrix classes."))
+
+(defmethod make-dataframe2 ((data dataframe-array)
+			    &key vartypes varlabels caselabels doc)
+  (check-dataframe-params data vartypes varlabels caselabels doc)
+  (let ((newcaselabels (if caselabels
+			   caselabels
+			     (make-labels "C" (ncases data))))
+	  (newvarlabels (if varlabels
+			    varlabels
+			    (make-labels "V" (nvars data))))
+	  ;; also should determine most restrictive possible (compsci
+	  ;; and/or statistical) variable typing (integer, double,
+	  ;; string, symbol, *).  FIXME: until we get the mixed typing system in place, we will just leave null
+	  (newvartypes (if vartypes
+			  vartypes
+			  (make-labels "*" (nvars data)))))
+      (make-instance 'dataframe-array
+		     :storage data
+		     :nrows (length newcaselabels)
+		     :ncols (length newvarlabels)
+		     :case-labels newcaselabels
+		     :var-labels newvarlabels
+		     :var-types newvartypes)))
+
 
 (defmethod nrows ((df dataframe-array))
   "specializes on inheritance from matrix-like in lisp-matrix."
@@ -77,3 +101,4 @@ idx1/2 is row/col or case/var."
 	      (xref df
 		    (position (elt cases i) (case-labels df))
 		    (position (elt vars j) (var-labels df))))))))
+
