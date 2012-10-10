@@ -1,9 +1,42 @@
 
-Time-stamp: <2012-10-08 15:44:30 tony>
+Time-stamp: <2012-10-10 05:00:41 tony>
 
-* Current Status: COMPLETELY BROKEN
+* Current Status: SOMEWHAT BROKEN
 
   but we are rebuilding it.
+
+
+* Introduction
+
+** Core Philosophy
+
+  "Languages shape how we ..."   Need to get and insert this quote
+  that Duncan Temple-Lang found.
+
+  The API should distinguish between the realization and the
+  statistical interpretation.  Goal is to teach statisticians how to
+  think "systems-computationally", and programmers, comp-sci types,
+  informaticists and other "data scientists" how to think
+  "statistically", in order to get a jump on the competition.
+
+  The goal of this system is to promote a change in thinking, to move
+  the data analysis approach, currently stuck in a mix of 70s-early
+  90s approaches, into a new generation/level.
+
+** Design Philosophy
+
+   The approach we are taking is one where we provide a general
+   method, and some fundamental building blocks, but don't force users
+   into approaches in order to allow for experimentation.
+
+   DSL's should be built on top of the core packages, as needed or
+   wanted.  
+
+   (TonyR:)  The DSL I want to build is a verbose statistically
+   precise computing language, but we need quality code underneathe
+   (which others could use for specialized terse DSL's).
+
+   DSL: domain specific language.
 
 * Fast Start
 

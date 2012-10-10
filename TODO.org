@@ -1,8 +1,8 @@
 #+TODO: TODO CURR | DONE
-#+TODO: CANCELED
+#+TODO: POSTPONED | CANCELED
 
 
-Time-stamp: <2012-10-08 05:26:30 tony>
+Time-stamp: <2012-10-10 05:33:29 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -96,7 +96,7 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
      ?? cl-plplot : cffi
 
 
-* Tasks to Do [2/26]
+* Tasks to Do [2/39]
 
   Usually, we need to load it everything before going on.
 
@@ -115,28 +115,30 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
   (asdf:oos 'asdf:compile-op :cls :force T)
 #+end_src
 
-  Currently QuickLisp support doesn't provide a recompilation
-  facility.  And QL is built over and partially extends ASDF, so we
-  should be fine for now. 
+  Currently <2012-10-10 Wed> QuickLisp support doesn't provide a
+  recompilation facility.  And QL is built over and partially extends
+  ASDF, so we should be fine for now.
 
-** DONE [#B] SET UP
+** DONE [#B] Example of Custom Data analysis set up
    - State "DONE"       from "CURR"       [2010-10-12 Tue 13:48] \\
      setup is mostly complete
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:47]
    - State "TODO"       from ""           [2010-10-12 Tue 13:47]
 
    This is an example of a custom setup, not really interesting at
-   this point (it's obsolete) except to remind Tony how to program.
-   Pointy-headed managers need any support they can find in order to
-   regress to their hacker-childhood.
+   this point (it will hopefully be obsolete by the first release)
+   except to remind Tony how to program.  Pointy-headed managers need
+   any support they can find in order to regress to their
+   hacker-childhood.
 
    The only point of this section is to illustrate that we could want
    to load additional modules that are not a central part of the core
    files.
-
+   
 #+name: CustomLoader
-#+begin_src lisp :tangle "examples/CustomLoader.lisp
-  (in-package :cl-user) ; always ensure we are in the right package to leave droppings and access functionality
+#+begin_src lisp :tangle "examples/CustomLoader.lisp"
+  ;; always ensure we are in the right package to leave droppings and access functionality
+  (in-package :cl-user) 
   (progn 
     (defun init-CLS (&key (compile 'nil))
       (let ((packagesToLoad (list ;; core system
@@ -165,8 +167,8 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
                         (asdf:oos 'asdf:compile-op x :force T)
                         (asdf:oos 'asdf:load-op x)))
                 packagesToLoad)))
-  
-    (init-CLS)) ;; vs (init-CLS :compile T)
+    ;; (init-CLS :compile T) vs:
+    (init-CLS))
 #+end_src
 
 #+results:
@@ -177,7 +179,6 @@ current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
    important to merge with quicklisp system loader support.  We
    currently have some of this work integrated, but I think there are
    a few systems which are not auto-installable.
-
 
 ** CURR [#A] Testing: unit, regression, examples. [0/3]
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:51]
@@ -540,7 +541,7 @@ installation qualification (IQ) and performance qualification (PQ)
 *** TODO [#B] Native CLS (from XLS)
     - State "TODO"       from ""           [2010-11-05 Fri 15:40]
       
-** TODO [#B] Numerical Linear Algebra
+** TODO [#B] Numerical Linear Algebra [0/3]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
 
 *** TODO [#B] LLA evaluation
@@ -567,8 +568,14 @@ LLA is an SBCL targetted linear algebra library from Tamas Papp
 
 LL is an SBCL targetted linear algebra library from ---
 
-** TODO [#B] Statistical Procedures to implement
-   - State "TODO"       from ""           [2010-10-14 Thu 00:12]
+** TODO [#B] Numerical Statistical Procedures to implement
+
+   By this, I mean procedures which provide numerical quantitative or
+   precise categorical qualitative results (for example, excluding
+   visualizations, which tend to produce very useful but relatively
+   imprecise actionable insights).
+
+*** CURR [#A] Basic Descriptives
 
 *** TODO [#C] PFIM 
 
@@ -697,7 +704,7 @@ where
 	      (differentiate (differentiate loglikelihood parameterI) parameterJ))))))
 #+END_SRC
 
-*** difference between empirical, fisherian, and ...? information.
+*** TODO [#C] difference between empirical, fisherian, and ...? information.
 *** TODO [#C] Example of Integration with CL-GENOMIC
     - State "TODO"       from ""           [2010-10-12 Tue 14:03]
     
@@ -715,6 +722,60 @@ where
     (make-aa "agccg")  ;; fine
     (make-aa "agc9zz") ;; error expected
 #+end_src
+
+** TODO [#A] Visual data analytic methods [0/10]
+*** TODO [#B] Evaluate Graphics toolkits [0/3]
+
+**** TODO [#B] QT and similar tools
+
+     Pros: Insight from Deepyan Saarkar and Mike -- super fast plot
+     routines for dynamic interactive graphics.  Crossplatform.
+
+     Common-QT, or ??
+
+**** TODO [#B] Cairo-based
+
+     Pros: actually have example lattice/trellis plotting system with
+     Tamas Papp's cl-2d based on cl-cairo2.
+
+     Con: cross-platform?  setup on a mac?
+
+**** TODO [#C] Others?
+
+     increase priority if someone cares enough to code
+
+*** TODO [#A] Evaluate APIs, methods, designs, back-end into framework [0/2]
+    By this, I mean that we need a good proposal, and it should be
+    based on history.  I need to email Paul Murrell and Deepyan and
+    Hadley for a "lessons learned in statistical graphics systems".  
+**** TODO [#B] Paul Murrell's core R system (grid?)
+
+**** TODO [#B] Peter Siebel's Grammer of Graphics javascript implementation
+     Thanks Peter Schmiedeskamp for pointing this out.
+
+*** TODO [#B] Implement Visualization routines [0/2]
+    This should happen one-two times.  Remember, with the package
+    approach, we can try out new packages and continually build newer
+    ones, as long as we appropriately version the interface for user
+    selection purposes.
+**** TODO [#A] actual statistical graphics
+     we need functions to x-y plots, bar charts, and need the API to
+     describe in terms of statistical quantities, scatter plots,
+     etc.
+
+     Also, will be important to get prototypes working ASAP to get
+     testing and feedback.  But remember, not all users want what is
+     good for them, just like not all people "honestly prefer"
+     completely healthy approaches to life.
+
+      See file:README.org and the Philosophy for background for the
+      above. 
+
+**** TODO [#C] Statistical toolkit and pipeline, ala ORCA 
+
+     Orca (sutherland, cook, lumley, rossini, etal) was a java based
+     toolkit for pipelined DAG representations of interactive dynamic
+     graphics.
 
 ** TODO [#B] Documentation and Examples [0/3]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
