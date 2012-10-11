@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 14:29:23 tony>
+;;; Time-stamp: <2012-10-11 16:12:48 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -15,8 +15,10 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version..   Think, "21st Century Schizoid Man".
 
-(in-package :ls-user) ; we do this in the CLS user playground, so we
-		      ; have access to example data.
+
+;; we do this in the CLS user playground, so we have access to example
+;; data.
+(in-package :cls-user)
 
 ;;; Guidelines:
 
@@ -59,19 +61,19 @@
 			   (21d0 22d0 23d0 24d0)
 			   (31d0 32d0 33d0 34d0)))
 
-
-
-;; Matrices
+;;; Matrices
 
 (make-matrix 3 4 :initial-contents *ex-lol*)
 (make-matrix 3 4 :initial-contents *ex-ary*)
 
-;; Dataframes
+;;; Dataframes
 
 (make-dataframe *ex-ary*)
-(make-dataframe (cls-data-listoflist:listoflist->array  *ex-lol*))
-
-;; need to make "make-dataframe" generic.
+(make-dataframe (cls-data-listoflist:listoflist->array  *ex-lol*)) ;; FIXME
 ;; (make-dataframe *ex-lol*) ;; error
+
+;;; "make-dataframe2" is generic -- FIXME: but it is not yet exported!
+;; FIXME: (make-dataframe2 *ex-ary*)
+;; FIXME: (make-dataframe2 *ex-lol*)) ;; FIXME
 
 

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-06-07 09:29:46 tony>
+;;; Time-stamp: <2012-10-11 16:07:25 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -21,6 +21,10 @@
       :verbose t)
 
 *chickwts-df*
+
+
+;;;;;;;;;;;;;;; EVERYTHING BELOW IS BROKEN
+
 
 ;; Summarize is the basic EDA tool -- it accepts symbols or lists of
 ;; symbols, to describe what, when, and how to do it.  The resulting
