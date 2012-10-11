@@ -1,7 +1,11 @@
-
+;;; -*- mode: lisp -*-
 
 ;;; From LispStat 1 : need to document source appropriately.
 
+
+;; We need to think this through -- nice that it is only loaded in
+;; this package, but will require training to get people used to
+;; multiple writeable namespaces.
 (in-package :lisp-stat-data-examples)
 
 ;;; FIXME: Shutup compiler warnings, need to clean up and
