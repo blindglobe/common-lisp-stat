@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-09 04:39:58 tony>
+;;; Time-stamp: <2012-10-11 14:39:04 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -74,7 +74,9 @@ defparameter and defvar might be defined as follows:
 
 (defun variables ()
   "Args:()
-Returns a list of the names of all def'ed variables to STREAM"
+Returns a list of the names of all def'ed variables to STREAM.
+
+FIXME: THIS IS BROKEN -- NEEDS TO ALSO PROVIDE PACKAGE LOCATION AS WELL!!"
   (if *variables*
       (mapcar #'intern (sort-data (mapcar #'string *variables*)))))
   
@@ -124,7 +126,7 @@ Reads the data in FILE as COLS columns and returns a list of lists representing 
       (transpose (split-list (read-data-file file) cols))))
 |#
 
-;;; FIXME:AJR:  ALL THE FOLLOWING NEED TO BE SOLVED BY PLATFORM-INDEP PATHNAME WORK! 
+;;; FIXME:AJR: ALL THE FOLLOWING NEED TO BE SOLVED BY PLATFORM-INDEP PATHNAME WORK! 
 ;;; FIXME:AJR: use either string or pathname.
 
 (defun path-string-to-path (p s) 
@@ -132,10 +134,10 @@ Reads the data in FILE as COLS columns and returns a list of lists representing 
 
 (defun load-data (file)
 "Args: (file) as string
-Read in data file from the System DATA library."
-  (if (load (path-string-to-path *cls-data-dir* file))
+Read in data file from the System DATA library.  Return true if success, failure value otherwise."
+  (if (load (path-string-to-path *cls-data-dir* file) :verbose T :print T)
       t
-      (load (path-string-to-path *cls-data-dir* file))))
+      (load (path-string-to-path *cls-data-dir* file) :verbose T :print T)))
 
 (defun load-example (file)
   "Args: (file) as string

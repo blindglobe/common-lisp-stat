@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2012-10-08 16:21:58 tony>
+;;; Time-stamp: <2012-10-11 14:41:55 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -57,9 +57,9 @@ return a pathspec, not a string/namespec"
   ;; configuration details, and this would be the only package outside
   ;; of packages.lisp, as it holds the overall defsystem structure.
   (load-data "iris.lsp")  ;; (the above partially fixed).
-  diabetes
-  ;; FIXME above: Diabetes unbound, but it shouldn't be.  I think
-  ;; we need to eliminate LispStat v1.
+  (load-data "diabetes.lsp")
+  lisp-stat-data-examples:diabetes
+  lisp-stat-data-examples:dlabs
   (variables))
 
 (progn
