@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-11 16:07:25 tony>
+;;; Time-stamp: <2012-10-11 16:20:36 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -25,6 +25,12 @@
 
 ;;;;;;;;;;;;;;; EVERYTHING BELOW IS BROKEN
 
+;; This is a test philosophy for data analysis from an EDA
+;; perspective.  It could be expanded to decision support and
+;; inferential statistics, but currently is only intended to provide
+;; statistically appropriate numerical and visual summaries that are
+;; objects that can be manipulated to explore the effect of varying
+;; data and metadata.
 
 ;; Summarize is the basic EDA tool -- it accepts symbols or lists of
 ;; symbols, to describe what, when, and how to do it.  The resulting
