@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-12 10:48:15 tony>
+;;; Time-stamp: <2012-10-12 16:40:46 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -380,6 +380,8 @@ construction of proper DF-array."
       (dotimes (j ncols)
 	(append result (aref ary i j))))))
 
+
+;;; FIXME: need to have a by-reference and by-copy variant.
 (defun transpose-array (ary)
   "map NxM to MxN."
   (make-array (reverse (array-dimensions ary))
@@ -426,6 +428,14 @@ construction of proper DF-array."
 ;;; Do we establish methods for dataframe-like, which specialize to
 ;;; particular instances of storage?
 
+
+;;; FIXME: 
+;;; - doesn't line up output
+;;; - doesn't process large (wide, OR long) objects, efficiently (need
+;;;   to flag such processing to avoid gigabyte printouts) 
+;;; - should include options for better printing, or perhaps the
+;;;   defmethod should be simpler, with a complex method for providing
+;;;   actual data. 
 (defmethod print-object ((object dataframe-like) stream)
   (print-unreadable-object (object stream :type t)
     (format stream " ~d x ~d" (nrows object) (ncols object))
@@ -513,7 +523,10 @@ function."
   (error "make-data-set-from-lists: proposed name exists"))
 
 
-;;;;;;;; from dataframe-xarray experiment
+
+
+;;; FIXME: THIS COMPLETELY OBSOLETE?
+;;; from dataframe-xarray experiment
 
 #| 
  (defmethod xref ((obj dataframe-like)  &rest subscripts)
