@@ -2,14 +2,14 @@
 #+TODO: POSTPONED | CANCELED
 
 
-Time-stamp: <2012-10-12 09:00:45 tony>
+Time-stamp: <2012-10-12 10:22:43 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
 
 File:       TODO.lisp
 Author:     AJ Rossini <blindglobe@gmail.com>
-Copyright:  (c) 2007-2010, AJ Rossini <blindglobe@gmail.com>.  BSD.
+Copyright:  (c) 2007-2012, AJ Rossini <blindglobe@gmail.com>.  MIT license.
 Purpose:    Stuff that needs to be made working sits inside the
             Task sections.
 
@@ -28,6 +28,11 @@ designers and quality assurance people in its wake.
    Please develop possible high level API code in examples
    subdirectory -- when we get it "reasonable", migrate into
    appropriate core code directories in the src subdirectory. 
+
+** Design
+
+   Collection of packages.  Include as appropriate, so that we end up
+   with a coherent collection as needed.
 
 ** (Internal) Package and (External) System Hierarchy
 
@@ -102,7 +107,7 @@ designers and quality assurance people in its wake.
      ?? cl-plplot : cffi
 
 
-* Tasks to Do [2/39]
+* Tasks to Do [2/40]
 
   Usually, we need to load it everything before going on.
 
@@ -186,19 +191,31 @@ designers and quality assurance people in its wake.
    currently have some of this work integrated, but I think there are
    a few systems which are not auto-installable.
 
+*** TODO [#B] Determine which packages still need to be in QuickLisp
+
+    Currently, probably need my versions of files, or will need to
+    preface them as needed.  As we can afford at most 2 more renames,
+    probably have something like cls-cl-XXXX for packages which have
+    API conflicts, and then if we rename the system, something like
+    NAME-RANDOM, NAME-CORE, NAME-MATRIX, etc... as needed.
+
 ** CURR [#A] Testing: unit, regression, examples. [0/3]
    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:51]
    - State "TODO"       from ""           [2010-10-12 Tue 13:51]
+
    Testing consists of unit tests, which internally verify subsets of
    code, regression tests, and functional tests (in increasing order
    of scale).
+
 *** CURR [#B] Unit tests
     - State "CURR"       from "TODO"       [2010-11-04 Thu 18:33]
-   - State "CURR"       from "TODO"       [2010-10-12 Tue 13:48]
-   - State "TODO"       from ""           [2010-10-12 Tue 13:48]
-   Unit tests have been started using LIFT.  Need to consider some of
-   the other systems that provide testing, when people add them to the
-   mix of libraries that we need, along with examples of how to use.
+    - State "CURR"       from "TODO"       [2010-10-12 Tue 13:48]
+    - State "TODO"       from ""           [2010-10-12 Tue 13:48]
+
+    Unit tests have been started using LIFT.  Need to consider some of
+    the other systems that provide testing, when people add them to
+    the mix of libraries that we need, along with examples of how to
+    use.
 
 #+name: ex-cls-unittest
 #+begin_src lisp
@@ -206,47 +223,54 @@ designers and quality assurance people in its wake.
   (run-tests :suite 'lisp-stat-ut)
 #+end_src
 
-#+results:
-: #<Results for LISP-STAT-UT 78 Tests, 7 Failures, 20 Errors>
-
-  ;; => tests = 78, failures = 7, errors = 20
+#+RESULTS: ex-cls-unittest
+: #<Results for LISP-STAT-UT 66 Tests, 3 Failures, 21 Errors>
 
 
+    Before we removed the internal legacy lispstat probability code,
+    we had:
 
-The following needs to be solved in order to have a decent
-installation qualification (IQ) and performance qualification (PQ)
+: ;; => tests = 78, failures = 7, errors = 20
+
+    The following needs to be solved in order to have a decent
+    installation qualification (IQ) and performance qualification
+    (PQ).  It currently fails on approach.
 
 #+name: cls-unittest
 #+begin_src lisp
   (in-package :lisp-stat-unittests)
-  (asdf:oos 'asdf:test-op 'cls)
-  ;; which runs (describe (run-tests :suite 'lisp-stat-ut))
+  (asdf:oos 'asdf:test-op 'cls) ; (describe (run-tests :suite 'lisp-stat-ut))
 #+end_src
 
+    and check documentation to see if it is useful.
 
-
-   and check documentation to see if it is useful.
 #+name: unittest-ex
 #+begin_src lisp
-   (in-package :lisp-stat-unittests)
-
-   (describe 'lisp-stat-ut)
-   (documentation 'lisp-stat-ut 'type)
-
-   ;; FIXME: Example: currently not relevant, yet
-   ;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
-   ;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
-
-   (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
-   (lift::run-tests :suite 'lisp-stat-ut-dataframe)
-
-   (describe (lift::run-test
-  	       :test-case  'lisp-stat-unittests::create-proto
-  	       :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+  (in-package :lisp-stat-unittests)
+  (describe 'lisp-stat-ut)
+  (documentation 'lisp-stat-ut 'type)
+  
+  ;; FIXME: Example: currently not relevant, yet
+  ;;   (describe (lift::run-test :test-case  'lisp-stat-unittests::create-proto
+  ;;                             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
+  
+  (describe (lift::run-tests :suite 'lisp-stat-ut-dataframe))
+  ;; => Test Report for LISP-STAT-UT-DATAFRAME: 11 tests run, 5 Errors.
+  
+  (lift::run-tests :suite 'lisp-stat-ut-dataframe)
+  
+  ;;; The following barfs, doesn't like test-case keyword
+  ;; (describe (lift::run-test
+  ;;             :test-case  'lisp-stat-unittests::create-proto
+  ;;             :suite 'lisp-stat-unittests::lisp-stat-ut-proto))
 #+end_src
 
 *** TODO [#B] Regression Tests
     - State "TODO"       from ""           [2010-10-12 Tue 13:54]
+
+    By regression tests, we refer to tests which focus on probing a
+    range of high level interactions.  The test skeleton should focus
+    on managing complex interactions which are reasonable.  
 
 *** TODO [#B] Functional Tests
     - State "TODO"       from ""           [2010-10-12 Tue 13:54]
