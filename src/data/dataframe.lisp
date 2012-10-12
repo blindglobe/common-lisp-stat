@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-09 03:21:23 tony>
+;;; Time-stamp: <2012-10-12 10:48:15 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -351,6 +351,17 @@ construction of proper DF-array."
 |#
 
 
+;;; FIXME: the following two functions hurt the eyes.  I think that
+;;;
+;;;      array->listoflist :order '(:column :row)
+;;;
+;;; would be a better approach.  But don't we already have this in the
+;;; listoflist package?  and more critically, we should have this as a
+;;; generic, so that it would be more like
+;;;
+;;;      dataframe->listoflist :order '(:column :row)
+;;;
+
 (defun row-order-as-list (ary)
   "Pull out data in row order into a list."
   (let ((result (list))
@@ -361,7 +372,7 @@ construction of proper DF-array."
 	(append result (aref ary i j))))))
 
 (defun col-order-as-list (ary)
-  "Pull out data in row order into a list."
+  "Pull out data in column order into a list."
   (let ((result (list))
 	(nrows (nth 0 (array-dimensions ary)))
 	(ncols (nth 1 (array-dimensions ary))))
