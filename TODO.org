@@ -2,7 +2,7 @@
 #+TODO: POSTPONED | CANCELED
 
 
-Time-stamp: <2012-10-10 05:33:29 tony>
+Time-stamp: <2012-10-12 09:00:45 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -21,14 +21,20 @@ What is this talk of 'release'? Klingons do not make software
 'releases'.  Our software 'escapes', leaving a bloody trail of
 designers and quality assurance people in its wake.
 
-* Design Documentation
+* Approach and Design, Strategy and Tactics
 
-This section provides some of the details regarding infrastructure of
-the system, as a means of including TODO statements.
+** Approach
+
+   Please develop possible high level API code in examples
+   subdirectory -- when we get it "reasonable", migrate into
+   appropriate core code directories in the src subdirectory. 
 
 ** (Internal) Package and (External) System Hierarchy
 
-current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
+  This section provides some of the details regarding infrastructure of
+  the system.
+
+  current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
 
  0  ~/sandbox/xarray.git
  1  ~/sandbox/foreign-numeric-vector.git
