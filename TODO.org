@@ -1,8 +1,11 @@
+#+STARTUP: logdone
+#+STARTUP: lognotedone
+
 #+TODO: TODO CURR | DONE
 #+TODO: POSTPONED | CANCELED
 
 
-Time-stamp: <2012-10-12 10:22:43 tony>
+Time-stamp: <2012-10-12 16:34:40 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -107,7 +110,7 @@ designers and quality assurance people in its wake.
      ?? cl-plplot : cffi
 
 
-* Tasks to Do [2/40]
+* Tasks to Do [2/43]
 
   Usually, we need to load it everything before going on.
 
@@ -571,7 +574,7 @@ designers and quality assurance people in its wake.
 *** TODO [#B] Native CLS (from XLS)
     - State "TODO"       from ""           [2010-11-05 Fri 15:40]
       
-** TODO [#B] Numerical Linear Algebra [0/3]
+** TODO [#B] Numerical Linear Algebra [0/6]
    - State "TODO"       from ""           [2010-10-14 Thu 00:12]
 
 *** TODO [#B] LLA evaluation
@@ -592,6 +595,21 @@ LLA is an SBCL targetted linear algebra library from Tamas Papp
     - State "TODO"       from ""           [2010-10-12 Tue 14:13]
 
       in progress
+
+*** TODO [#A] Review GSLL and Antik as per Mirko's suggestion [0/2]
+
+    <2012-10-12 Fri>: Mirko suggested this approach.  Might look into
+    using GSLL and Antik to augment lisp-matrix, pRNG selection (GSLL)
+    and replace xarray (Antik).
+
+**** TODO [#A] Review Antik
+     
+     evaluation should go here
+
+**** TODO [#A] Review GSLL
+
+     evaluation (updated to <2012-10-12 Fri>, removing Tony's obsolete
+     opinions) should go here.
 
 *** TODO [#B] LispLab system evaluation
     - State "TODO"       from ""           [2010-10-12 Tue 14:13]
