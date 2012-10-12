@@ -1,12 +1,11 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-09-21 19:32:22 tony>
+;;; Time-stamp: <2012-10-12 08:54:07 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
-;;; File:       plotting-data.lisp
+;;; File:       20-visual-2d-cairo.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2009--, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
-;;; Purpose:    Example of generating plots.
+;;; Copyright:  (c)2009--2012, AJ Rossini.  MIT license.
+;;; Purpose:    Example visualizations using cl-2d and cl-cairo2
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -18,21 +17,28 @@
 ;; SETUP FOR PLOT EXAMPLE:
 (in-package :cl-user)
 
-(defpackage :cl-2d-user-x11
+(ql:quickload :cl-cairo2)
+(ql:quickload :cl-2d)
+
+(defpackage :cls-2d-user-x11
+  ;; do we need all of these for the plotting? not sure about numlib and cairo2?
   (:use :cl :cl-cairo2  :cl-2d :cl-numlib :cl-colors :bind :cls)
-  (:shadowing-import-from :lisp-stat call-method call-next-method
-			  
-      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-      asin acos atan sinh cosh tanh asinh acosh atanh float random
-      truncate floor ceiling round minusp zerop plusp evenp oddp 
-      < <= = /= >= > > ;; complex
-      conjugate realpart imagpart phase
-      min max logand logior logxor lognot ffloor fceiling
-      ftruncate fround signum cis
+  (:shadowing-import-from
+   :lisp-stat call-method call-next-method
 
-      <= float imagpart))
+   expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
+   asin acos atan sinh cosh tanh asinh acosh atanh float random
+   truncate floor ceiling round minusp zerop plusp evenp oddp 
+   < <= = /= >= > > ;; complex
+   conjugate realpart imagpart phase
+   min max logand logior logxor lognot ffloor fceiling
+   ftruncate fround signum cis
+   ;; ?? where did these come from? <= float imagpart
+   )
+  ;; (:export objects and data that we want to use post load)
+  )
 
-(in-package :cl-2d-user-x11)
+(in-package :cls-2d-user-x11)
 
 ;; PLOT EXAMPLE
 #+nil
@@ -121,4 +127,4 @@
   (xlib-image-context-to-png (context *frame2*) "/home/tony/test2.png")
   (destroy (context  *frame2*))
 
-
+;;; End of examples
