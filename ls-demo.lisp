@@ -22,12 +22,12 @@
 (asdf:oos 'asdf:load-op 'cls)
 
 ;; Go somewhere so that you have the functions available.
-(in-package :ls-user)
+(in-package :cls)
 
 ;; we'll be loading from directories in the CLS homedir, so we want to
 ;; make it easier to reach.  
 (defparameter *my-cls-homedir* 
-  "/media/disk/Desktop/sandbox/CLS.git/"    ; <- value with trailing
+  "/users/dbh/quicklisp/local-projects/common-lisp-stat/"    ; <- value with trailing
 					    ;    directory separator
   "documentation: change this to localize") ; <- doc
 ;; so
@@ -58,7 +58,7 @@ return a pathspec, not a string/namespec"
 *df-test* ; but with SBCL, ints become floats? 
 (caselabels *df-test*)
 (varlabels *df-test*)
-(vartypes *df-test*)
+(vartypes *df-test*) ;dbh vartypes not found?
 
 (setf (xref *df-test* 0 0) -1d0) ; for dataframes, we might want to do
 				 ; some type checking to prevent what
@@ -159,7 +159,7 @@ return a pathspec, not a string/namespec"
 
 (defparameter *mat-2*
   (let ((m (rand 3 3)))
-    (m* m (transpose m))))
+    (m* m (lisp-matrix:transpose-matrix m))))
 
 (axpy 100.0d0 *mat-2* (eye 3 3))
 
@@ -293,7 +293,8 @@ return a pathspec, not a string/namespec"
 
 ;;;;;HERE#2
 
-(factorize 
+;; FIXME factorize missing
+(lisp-matrix:factorize 
  (make-matrix 3 3
 	      :initial-contents #2A((2d0 3d0 4d0)
 				    (1d0 2d0 4d0)
@@ -311,7 +312,7 @@ return a pathspec, not a string/namespec"
 ;;  T)
 
 ()
-
+;; fixme missing 
 (qr-decomp  #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#2A((-0.6666666666666665 0.7453559924999298 5.551115123125783e-17)
 ;;      (-0.3333333333333333 -0.2981423969999719 -0.894427190999916)
@@ -320,10 +321,12 @@ return a pathspec, not a string/namespec"
 ;;      (0.0 -0.7453559924999292 -1.1925695879998877)
 ;;      (0.0 0.0 -1.3416407864998738)))
 
+;; FIXME missing
 (rcondest #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; 6.8157451e7
 ;;; CURRENTLY FAILS!!
 
+;; FIXME Missing
 (eigen #2A((2 3 4) (1 2 4) (2 4 5)))
 ;; (#(10.656854249492381 -0.6568542494923802 -0.9999999999999996)
 ;;  (#(0.4999999999999998 0.4999999999999997 0.7071067811865475)
@@ -331,6 +334,7 @@ return a pathspec, not a string/namespec"
 ;;   #(0.7071067811865483 -0.7071067811865466 -1.2560739669470215e-15))
 ;;  NIL)
 
+;; FIXME missing
 (spline #(1.0 1.2 1.3 1.8 2.1 2.5)  
 	#(1.2 2.0 2.1 2.0 1.1 2.8) :xvals 6)
 ;; ((1.0 1.3 1.6 1.9 2.2 2.5)
@@ -542,7 +546,7 @@ return a pathspec, not a string/namespec"
 
 
 (defparameter fit1 nil)
-(setf fit1 (regression-model absorbtion iron))
+(setf fit1 (regression-model (bind2  absorbtion iron)))
 (send fit1 :display)
 (send fit1 :residuals)
 

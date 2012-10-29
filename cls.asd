@@ -11,47 +11,14 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;; Load ASDF if it isn't loaded -- BUT we need to ensure that we sync
-;; properly with the new ASDF!  Maybe we should make the git repo a
-;; submodule, and tag a particular version to use, pulling that
-;; version?  However, most "modern" CLs use the "new" (>=v2) ASDF.
-
-#-asdf(load (pathname (concatenate 'string (namestring *cls-external-dir*) "asdf")))
 
 (in-package :cl-user)
 
-;;(pushnew *cls-asdf-dir* asdf:*central-registry*)
-;;(pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
 
 (cl:defpackage #:cls-system
     (:use :common-lisp :asdf))
 
 (in-package #:cls-system)
-
-;;; To avoid renaming everything from *.lsp to *.lisp...  borrowed
-;;; from Cyrus Harmon's work, for example for the ch-util.  NOT secure
-;;; against serving multiple architectures/hardwares from the same
-;;; file system (i.e. PPC and x86 would not be differentiated).
-;;; However, this might be more of a solution for quicklisp?
-
-(defclass cls-lsp-source-file (cl-source-file) ())
-(defparameter *fasl-directory*
-   (make-pathname :directory '(:relative
-			       #+sbcl "fasl-sbcl"
-			       #+openmcl "fasl-ccl"
-			       #+openmcl "fasl-ccl"
-			       #+cmu "fasl-cmucl"
-			       #+clisp "fasl-clisp"
-			       #-(or sbcl openmcl clisp cmucl) "fasl"
-			       )))
-
-;;; Handle Luke's *.lsp suffix
-(defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
-;; (defmethod asdf::output-files :around ((operation compile-op)
-;; 				       (c cls-lsp-source-file))
-;;   (list (merge-pathnames *fasl-directory*
-;; 			 (compile-file-pathname (component-pathname c)))))
-;;; again, thanks to Cyrus for saving me time...
 
 
 (defsystem "cls"
@@ -79,7 +46,7 @@
 	       :cl-variates
  	       ;;; if graphics exist, then...
 	       ;; :cl-cairo2  :cl-2d
-	       :cl-plplot
+
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
@@ -99,21 +66,21 @@
 		:serial t
 		:depends-on ("packaging")
 		:components
-		((:cls-lsp-source-file "lsobjects")))
+		((:file "lsobjects")))
 
 	       (:module "cls-core"
 			:pathname "src/basics/"
 			:serial t
 			:depends-on ("packaging" "proto-objects")
 			:components
-			((:cls-lsp-source-file "lstypes")
-			 (:cls-lsp-source-file "lsfloat")
+			((:file "lstypes")
+			 (:file "lsfloat")
 			 
-			 (:cls-lsp-source-file "compound")
-			 (:cls-lsp-source-file "lsmacros" 
+			 (:file "compound")
+			 (:file "lsmacros" 
 						    :depends-on ("compound"))
 			 
-			 (:cls-lsp-source-file "lsmath"
+			 (:file "lsmath"
 						    :depends-on ("compound"
 								 "lsmacros"
 								 "lsfloat"))))
@@ -145,7 +112,7 @@
 			     "cls-core"
 			     "stat-data")
 		:components
-		((:cls-lsp-source-file "lsbasics")))
+		((:file "lsbasics")))
 
 
 	       
@@ -158,7 +125,7 @@
 			     "stat-data"
 			     "cls-basics")
 		:components
-		((:cls-lsp-source-file "statistics")))
+		((:file "statistics")))
 
 	       (:module
 		"visualize"
@@ -167,7 +134,7 @@
 		:components
 		((:file "plot")))
 
-	       (:module
+#|	       (:module
 		"optimization"
 		:pathname "src/numerics/"
 		:depends-on ("packaging"
@@ -176,7 +143,7 @@
 			     "stat-data"
 			     "cls-basics")
 		:components
-		((:file "optimize")))
+	       ((:file "optimize")))
 		 
 	       
 	       ;; Applications
@@ -191,12 +158,13 @@
 			     "optimization")
 		:components
 		((:file "regression")
-		 ;; (:cls-lsp-source-file "nonlin"
+		 ;; (:file "nonlin"
 		 ;;	  :depends-on ("regression"))
-		 ;; (:cls-lsp-source-file "bayes"
+		 ;; (:file "bayes"
 		 ;;	  :depends-on ("regression"))
 		 ))
-
+	       |#
+	       
 	       ;; Applications
 	       (:module
 		"example-data"
@@ -206,23 +174,24 @@
 			     "cls-core"
 			     "cls-basics"
 			     "descriptives"
-			     "optimization")
+			    ; "optimization"
+			     )
 		:components
 		((:file "examples")
-		 (:cls-lsp-source-file "absorbtion")
-		 (:cls-lsp-source-file "diabetes")
-		 (:cls-lsp-source-file "leukemia")
-		 (:cls-lsp-source-file "randu")
-		 (:cls-lsp-source-file "aircraft")
-		 (:cls-lsp-source-file "metabolism")
-		 (:cls-lsp-source-file "book")
-		 (:cls-lsp-source-file "heating")
-		 (:cls-lsp-source-file "oxygen")
-		 (:cls-lsp-source-file "stackloss") 
-		 (:cls-lsp-source-file "car-prices")
-		 (:cls-lsp-source-file "iris")
-		 (:cls-lsp-source-file "puromycin")
-		 (:cls-lsp-source-file "tutorial")))
+		 (:file "absorbtion")
+		 (:file "diabetes")
+		 (:file "leukemia")
+		 (:file "randu")
+		 (:file "aircraft")
+		 (:file "metabolism")
+		 (:file "book")
+		 (:file "heating")
+		 (:file "oxygen")
+		 (:file "stackloss") 
+		 (:file "car-prices")
+		 (:file "iris")
+		 (:file "puromycin")
+		 (:file "tutorial")))
 
 	       (:module
 		 "lisp-stat-unittest"
@@ -231,8 +200,8 @@
 			      "stat-data"
 			      "cls-basics"
 			      "descriptives"
-			      "optimization"
-			      "stat-models"
+;			      "optimization"
+;			      "stat-models"
 			      "example-data")
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")

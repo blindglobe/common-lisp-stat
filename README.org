@@ -8,53 +8,86 @@ data analysis, which is just another game.
 
 * Fast Start
 
-  You probably did  (preferred)
+Common Lisp Stat is a very rich and mature framework for data
+exploration and visualisation using statistics with the Common Lisp
+Environment.
+
+This design choice gives a number of advantages - both in the ability
+to create fast running code, as well as being able to express complex
+algorithms in a powerful and consistent language.
+
+However, as with all large complex things, setup requires a few steps.
+
+We assume that you have a lisp installed and that you have a passing
+acquaintence with the unix shell.
+
+1. The first point that you should note that is that these instructions
+are written with the assumption of the availibility of quicklisp.
+
+If you do not have quicklisp , please go to www.quicklisp.org and
+install it now
+
+2. The second point to note is that you will need the "git" utility
+installed on your machine.
+
+for mac osx sudo port install git
+for linux (eg debian) sudo apt-get install git
+
+3. Once that is done execute the following shell commands
 
 #+begin_src shell
+  cd ~/quicklisp/local-projects
   git clone git://github.com/blindglobe/common-lisp-stat.git
-#+end_src
-
-  or
-
-#+begin_src shell
-  git clone git://repo.or.cz/CLS.git
-  git clone http://repo.or.cz/w/CLS.git
-#+end_src
-
-** TODO set up git submodules to do the right thing. 
-   - State "TODO"       from ""           [2010-10-10 Sun 23:30]
-
-#+begin_src shell
+  cd comon-list-stat
   git submodules init
-  git submodules update
 #+end_src
 
-  to get the whole package.
-
-  *_Obsolete_*: Make the shared library liblispstat with an ANSI C
-  compiler (only gcc tested at this point).  This is used for
-  numerical support which might be more robust to obtain from GSLL or
-  similar other systems.  It would be done via.
+These commands copy the the source from the repository and all the
+associated libraries. It will live as a quicklisp project in the
+local-projects directory. I find it convenient to symbolically link the
+quicklisp direct to ~/lisp for easy access
 
 #+begin_src shell
-  cd lib && make && cd
+   ln ~/quicklisp/local-projects ~/lisp
 #+end_src
 
-  run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in the
-  current directory.  Recent versions of CFFI and LIFT can be found in
-  the external/ subdirectory, and should be autoload-able, assuming
-  that you are using a Lisp implementation supporting ASDF.
-  (AJR-FIXME: need to upload my GIT mirrors to repo.or.cz or similar,
-  and have them potentially available as submodules if needed)
+4. Configure the locations of the BLAS and LINPACK libraries
 
-  (on Debian or similar systems: can use CLC (Common Lisp Controller)
-  or SBCL approaches, i.e.  ~/.clc/systems or ~/.sbcl/systems should
-  contain softlinks to the cls, cffi, and lift ASDF files
-  (i.e. cls.asd, cffi.asd, and lift.asd).  AJR-FIXME: There is
-  probably a similar incantation for other CL's, need to record that
-  here!).
+For MacOS, we will use the pre installed libraries
 
-  Step through ls-demo.lisp for a range of examples of activities.
+For linux, make sure you have the neccessary libraries installed,
+through apt, yum or otherwise viz
+
+viz sudo apt-get install libblas, sudo apt-get install liblapack
+
+5. For visualization we are currently implementing a gnuplot
+   interface, stay tuned.
+
+
+
+For windows, we recommend you use cygwin to get straightforward
+access. I'll document the steps if there is a demand.
+
+6. You need to check that your dynamic library path has been properly
+   set up in the shell.
+In your .bashrc (or equivalent shell init file) 
+For Mac OSX set DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
+For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
+
+If you get this wrong the load process will not be able to find the
+libraries and will prompt you. 
+
+5. Once the pre prequisites have been done, start your favourite lisp
+   and enter 
+
+#+begin_src lisp
+(ql:register-local-projects)
+(ql:quickload :cls) 
+#+end_src lisp
+
+Retire for a well earned coffee and upon your return you should find
+the package completely installed.Obviously, potential errors can creep
+in with spelling the filenames correctly, so be careful.
 
 ** Example Usage steps
   
@@ -62,15 +95,15 @@ data analysis, which is just another game.
 *** start your lisp
 *** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
  
-**** (asdf:oos 'asdf:load-op :cls)
+**** (ql:quickload :cls)
 
-     use ASDF to load lispstat
+**** (in-package :cls)
 
+     Initially we will work in the cls package as all the basic
+     functions we would need are present
 
-**** (in-package :ls-user)
-
-     work in the scratch user package.  Normally, one would create a
-     special package to work in.
+     For serious work we would create our own workspace and save it in
+     a separate package, but for now we will take this short cut.
 
 **** (normal-rand 20)
 
