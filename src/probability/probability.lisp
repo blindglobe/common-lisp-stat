@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-11-30 08:55:58 tony>
+;;; Time-stamp: <2012-10-29 14:19:07 tony>
 ;;; Creation:   <2010-11-06 01:51:20 tony>
 ;;; File:       probability.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,22 +17,23 @@
 ;;; version..   Think, "21st Century Schizoid Man".
 
 
-;;; Current computations are handled by leveraging the cl-variates and
-;;; gsll packages, as they have flexibility and the capability to be
-;;; reproducible.  This is just a stub for the interface/API that we
-;;; would like to be able to use.
+;;; Current thinking (30-10-2012) is that computations are handled by
+;;; leveraging the cl-variates and gsll packages, as they have
+;;; flexibility and the capability to be reproducible.  This is just a
+;;; stub for the interface/API that we would like to be able to use.
 
-;;; A bit of theory behind this:
+;;; A bit of applicable design theory behind this:
+;;; 
 ;;; We would like to think about where probability fits into
 ;;; statistics.  For example, consider the simple case of the "mean".
 ;;; If we treat both empirical distributions and theoretical
 ;;; distributions as equivalent first-class objects, it leads to some
 ;;; computationally interesting ways of doing things.  This means that
 ;;; observed data implies a first-class (discrete) empirical
-;;; distribution in its first right, and also implies that we need to
+;;; distribution in its own right, and also implies that we need to
 ;;; include a means of computing both functionals of 1 distribution as
 ;;; well as functionals of multiple distributions (think of the
-;;; kullback-leibler distance).
+;;; kullback-leibler divergence).
 ;;;
 ;;; This file should describe the primary generic functions and data
 ;;; structures that imply what is feasible in this case.  
@@ -40,20 +41,29 @@
 ;;; We will map empirical and theoretical distributions into this
 ;;; structure in different files, as well as common (and uncommon)
 ;;; functionals.
-
+;;; 
+;;; in addition, probability and bayesian modeling requires a means to
+;;; compute with mass functions, densities, and similar quantities.
+;;; Some of these are algorithmically computable, though perhaps not
+;;; in an optimal framework.  For example, given a prior, likelihood,
+;;; and data, we ought to be able to compute a posterior in a number
+;;; of ways.
+;;;
 
 (in-package :cls-probability)
 
-(defgeneric density (probability-law-instance value))
+
+
+(defgeneric density (probability-law value))
 
 (defmethod density ((pli probability-law) (value real)))
 (defmethod density ((pli probability-law) (value list)))
 (defmethod density ((pli probability-law) (value vector-like)))
 
 
-(defgeneric distribution (probability-law-instance value))
+(defgeneric distribution (probability-law value))
 
-(defgeneric quantile (probability-law-instance value))
+(defgeneric quantile (probability-law value))
 
 (defgeneric interquartile-range (probability-law))
 
@@ -66,20 +76,33 @@
 ;; TODO: need to understand how to manage multiple parameterizations
 ;; for the same family of probability laws.  
 
+;; This structure is semi-BROKEN.  what was I thinking?  (but is
+;; getting better).  Need a composition function approach as well...?
+
 (defclass probability-law ()
-  ((density-function
+  ((density/mass-function
     :type prob-function
-    :documention "density function, if exists")
-   (mass-function
-    :type prob-function
-    :documention "function")
+    :documention "mass/density function, if exists.  Should be
+    non-negative, and integrate over the support to being 1.  Can take
+    values or ranges.  If mass function, results in probabililties.
+    If density, only ranges produce valid probabilities.")
+   (distn-function
+    :type function
+    :documention "distribution function.  value from [0,1],
+    over the support of the space.")
    (support-function
-    :documentation "List of values for discrete mass functions, list of pairs denoting for ranges")
+    :documentation "Range or region where functions are defined, if
+    computationally need to be restricted.")
    (support-class
     :type symbol
-    :documentation "'REAL, 'DISCRETE'")
+    :documentation "'REAL, 'DISCRETE', 'MIXED' (eg: zip dist'n model)")
    (parameters
-    :type list)
+    :type list
+    :documentation "dotted list of symbols and ranges that are used
+    for specification of the density and distribution functions.  If
+    'nil or 'null, then we have a single distribution and not a family
+    of distributions.  Ranges could be intervals, spaces, or a
+    list (finite, ?infinite?) of discrete values")
    (prng-stream
     :type unif-stream
     :documentation "current underlying prng stream object, typically
@@ -90,6 +113,8 @@
   the prob result, we can compute, in an expensive manner, most
   quantities.  When feasible, we can accelerate this quite a bit.")
   ())
+
+
 
 
 #|
@@ -127,6 +152,9 @@
   (mean my-empirical-law) ; empirical mean
   (draw-variates my-empirical-law 10) ; bootstrap (unweighted)
   ;; the rest would consist of empirical
+
+  (let ((posterior-prob-fcn (bayes-theorem prior likelihood dataX)))
+     (mean posterior-prob-fcn))
 
   ())
 
