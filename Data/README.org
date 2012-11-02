@@ -1,0 +1,9 @@
+
+* Overview
+
+  This directory (structure) contains datasets from XLispStat, R, as
+  well as documentation surrounding how to get such data into
+  lisp-stat.  This is different that the actual importation code in
+  the .../src/data directory.
+
+* 
