@@ -110,7 +110,7 @@ designers and quality assurance people in its wake.
      ?? cl-plplot : cffi
 
 
-* Tasks to Do [2/43]
+* Tasks to Do [1/10]
 
   Usually, we need to load it everything before going on.
 
@@ -133,6 +133,8 @@ designers and quality assurance people in its wake.
   recompilation facility.  And QL is built over and partially extends
   ASDF, so we should be fine for now.
 
+** TODO [#A] ASDF updating for both v1 and v2 of ASDF.
+   Need to update as appropriate, to use modern features.
 ** DONE [#B] Example of Custom Data analysis set up
    - State "DONE"       from "CURR"       [2010-10-12 Tue 13:48] \\
      setup is mostly complete
@@ -148,6 +150,10 @@ designers and quality assurance people in its wake.
    The only point of this section is to illustrate that we could want
    to load additional modules that are not a central part of the core
    files.
+
+   <2012-10-29 Mon> Perhaps another point is to demonstrate that we
+   might not want certain functionality, or would like to replace
+   with different functionality.
    
 #+name: CustomLoader
 #+begin_src lisp :tangle "examples/CustomLoader.lisp"
