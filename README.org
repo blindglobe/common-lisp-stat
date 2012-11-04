@@ -1,44 +1,105 @@
 
-Time-stamp: <2012-10-10 05:00:41 tony>
+Time-stamp: <2012-11-04 09:48:24 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
   but we are rebuilding it.
 
-
-* Introduction
-
-** Core Philosophy
-
-  "Languages shape how we ..."   Need to get and insert this quote
-  that Duncan Temple-Lang found.
-
-  The API should distinguish between the realization and the
-  statistical interpretation.  Goal is to teach statisticians how to
-  think "systems-computationally", and programmers, comp-sci types,
-  informaticists and other "data scientists" how to think
-  "statistically", in order to get a jump on the competition.
-
-  The goal of this system is to promote a change in thinking, to move
-  the data analysis approach, currently stuck in a mix of 70s-early
-  90s approaches, into a new generation/level.
-
-** Design Philosophy
-
-   The approach we are taking is one where we provide a general
-   method, and some fundamental building blocks, but don't force users
-   into approaches in order to allow for experimentation.
-
-   DSL's should be built on top of the core packages, as needed or
-   wanted.  
-
-   (TonyR:)  The DSL I want to build is a verbose statistically
-   precise computing language, but we need quality code underneathe
-   (which others could use for specialized terse DSL's).
-
-   DSL: domain specific language.
-
 * Fast Start
+
+  Here's a general fast start approach for using this.   
+
+  1. Get access to a Common Lisp implementation on your platform.
+     Make sure you have BLAS, LAPACK, and their corresponding
+     development environments on your system
+  2. if needed, install quicklisp (http://www.quicklisp.org)
+  3. if needed, install git (http://www.git-scm.org/)
+  4. Use git to fetch common-lisp-statistics from the repository:
+        git://github.com/blindglobe/common-lisp-stat.git
+     and put it into your quicklisp local-projects directory
+     (need a few more projects from there as well)
+  5. Start up the Common Lisp implementation, and:
+#+begin_src lisp
+(ql:quickload :cls)
+#+end_src
+  6. get coffee, review the Common Lisp Statistics mailing list, chat
+     with friends, etc, until it is done compiling and loading.
+  7. Report success/failure back to the news group or to me
+     (mailto:blindglobe@gmail.com)
+  8. Start trying it out.
+
+** Common Lisp, Support Libraries
+
+   Right now, one needs a Common Lisp implementation, SBCL, CCL, and
+   CLISP seem to be the easiest to get.   There are many others.  
+
+   GCL might be one not to try at this point?
+
+*** Microsoft Windows
+
+    Currently, LispCabinet would be the simplest way to get started,
+    with either SBCL or CCL as the Lisp Implementation.  Need
+    experiences from others using 
+
+    http://lispcabinet.sourceforge.net/
+
+    *FIXME:* (how) does one need to get BLAS, LAPACK, and the
+     compilation environment if needed, on Microsoft Windows?
+
+*** Linux
+
+    SBCL is known to work
+
+    CCL is thought to work
+
+    Get lapack-dev, blas-dev from your Linux distribution.
+
+*** MacOSX
+
+    *FIXME*: Tony has no clue, please fill this in since most mailing
+    list folks use Macs...
+
+    CCL is thought to work
+    SBCL is known to work
+
+    LAPACK/BLAS: get from...
+
+** Install Quicklisp
+
+   LispCabinet has it preinstalled, and you can use that version to upgrade
+
+   Debian/Ubuntu also allow you access to a (possibly outdated)
+   version.  Not sure about upgrade potential.
+
+   On Linux and MacOSX, I would recommend using the instructions at
+   the QuickLisp www site (http://www.quicklisp.org).
+
+** Install Git
+
+   Unfortunately, as much as we really would like to get rid of this
+   PITA stage, we are pre-alpha, and that means no chance, unless you
+   want to fix your own bugs and copy/paste fixes, etc.  Much simpler
+   to figure out a small bit of git.
+
+   Hopefully, your distribution (Linux) has it, or you can get it for
+   MacOSX and Microsoft Windows via  http://www.git-scm.org/ 
+
+   GitHub also has a Microsoft Windows application that might be
+   useful.
+
+** Using git to fetch Common Lisp Statistics
+
+   At this stage, we need to identify where you will put the D/L'd
+   package.  If you are have an existing, highly tuned quicklisp
+   setup, please figure it out and jump to the next stage, but
+   basically you need to pull common-lisp-stat from Blindglobe's
+   repository, along with a few others.  
+
+   *FIXME*: must figure out the current "few others" and keep it current.
+
+*** 
+  
+
 
 ** Version 2 (David)
 
@@ -289,6 +350,38 @@ dependent) or...
       that we need to take care of.  I think this is my (Tony's)
       problem, not someone elses, and specifically, not CLISP's
     - Need to test ECL.
+
+* Introduction
+
+** Core Philosophy
+
+  "Languages shape how we ..."   Need to get and insert this quote
+  that Duncan Temple-Lang found.
+
+  The API should distinguish between the realization and the
+  statistical interpretation.  Goal is to teach statisticians how to
+  think "systems-computationally", and programmers, comp-sci types,
+  informaticists and other "data scientists" how to think
+  "statistically", in order to get a jump on the competition.
+
+  The goal of this system is to promote a change in thinking, to move
+  the data analysis approach, currently stuck in a mix of 70s-early
+  90s approaches, into a new generation/level.
+
+** Design Philosophy
+
+   The approach we are taking is one where we provide a general
+   method, and some fundamental building blocks, but don't force users
+   into approaches in order to allow for experimentation.
+
+   DSL's should be built on top of the core packages, as needed or
+   wanted.  
+
+   (TonyR:)  The DSL I want to build is a verbose statistically
+   precise computing language, but we need quality code underneathe
+   (which others could use for specialized terse DSL's).
+
+   DSL: domain specific language.
 
 * History
 
