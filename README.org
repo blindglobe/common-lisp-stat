@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-11-04 09:48:24 tony>
+Time-stamp: <2012-11-04 10:53:37 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -97,9 +97,21 @@ Time-stamp: <2012-11-04 09:48:24 tony>
 
    *FIXME*: must figure out the current "few others" and keep it current.
 
-*** 
-  
+** Compile and load dependencies.
 
+Start up your Common Lisp implementation and type in:
+
+#+begin_src lisp
+(ql:quickload :cls)
+#+end_src
+
+and everything should be working.  This is the case for at least one
+person, so data on failures is very welcome.
+
+** Start trying it out
+
+   Now, load into your IDE or lisp, the files in the examples
+   directory, to get a feel for what to do.
 
 ** Version 2 (David)
 
