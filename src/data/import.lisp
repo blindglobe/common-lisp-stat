@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2012-11-05 13:24:10 tony> 
+;;; Time-stamp: <2012-11-06 08:58:08 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -27,8 +27,6 @@
 
 ;;; Reading from DSV files:
 
-;;; consider either the cybertyggyr-dsv package, or the rsm.string
-;;; package.  Decision:  RSM.STRING
 ;;; The latter seems to actually work a bit at what we need to
 ;;; acccomplish, is better licensed (i.e. BSD-style) and is now
 ;;; implemented through filename.dsv->dataframe
@@ -162,22 +160,31 @@ to use it next time if wanted."
 		 :doc docstring))))
 |#
 
+(defun convert-strings-to-data-types (cl-array)
+  cl-array
+#|
+need to implement a clean...
+  (for each column
+    (set column (coerce column (determined type of column))))
+|#
+)
+
+
 (defun filename.dsv->dataframe (filename
 				&optional
-				  (delimchar ",")
-				  (varnameheader 't)
-				  (docstring "This is an amusing dataframe array")
+				  (delimchar fare-csv:*separator*)
+				  (varnameheader 't) ;; strip the first line for variables?
+				  (docstring "This is default doc for an amusing dataframe array")
 				  (arraystorage-object 'dataframe-array))
-  ;; FIXME: cl-csv:read-csv returns strings, we need to convert some to numbers
-  (let ((csv-file-data (cl-csv:read-csv filename :separator delimchar))) 
+  ;; FIXME: fare-csv:read-csv-file returns strings, we need to convert some to numbers
+  (let ((csv-file-data (fare-csv:read-csv-file filename :separator delimchar))) 
     (let ((var-name-list (if varnameheader
 			     (car csv-file-data)
 			     (make-labels "V"  (length (car csv-file-data)))))
-	  (data-list (listoflist:listoflist->array (cdr csv-file-data))))
+	  (data-list (if varnameheader
+			 (listoflist:listoflist->array (cdr csv-file-data))
+			 (listoflist:listoflist->array csv-file-data))))
       (make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
-		     :storage data-list
+		     :storage data-list ;; needs to be (convert-strings-to-data-types data-list)
 		     :var-labels var-name-list
 		     :doc docstring))))
-
-
-

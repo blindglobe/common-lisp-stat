@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-06 07:03:47 tony>
+;;; Time-stamp: <2012-11-06 08:26:01 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -186,7 +186,7 @@
 (defpackage :cls-dataio
   (:documentation "Data I/O and similar import technologies.")
   (:use :common-lisp
-	:cl-csv
+	:fare-csv
 	:lisp-stat-object-system
 	:cls-data
 	:cls-dataframe)
@@ -196,7 +196,10 @@
 	   dsvstream->matrix
 	   dsvstream->listoflist
 
-	   filename.dsv->dataframe))
+	   filename.dsv->dataframe
+
+	   ;; How should we manage the fare-csv symbols on export?
+	   ))
 
 (defpackage :cls-datatrans
   (:documentation "Data I/O and similar import technologies.")

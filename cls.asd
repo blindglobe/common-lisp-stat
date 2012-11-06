@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2012-11-06 07:01:26 tony>
+;;; Time-stamp: <2012-11-06 09:02:58 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -73,8 +73,7 @@
 	       :lisp-matrix ;; on fnv, cl-blapack, ffa
 	       :listoflist
 	       :lift
-	       :cl-csv
-	       ;; :rsm-string ;; need something for importing CSV files into listoflist or arrays.
+	       :fare-csv
 	       ;;; need to select pRNG stream system
 	       ;; :cl-random ;; or cl-variates, or...?
 	       :cl-variates
