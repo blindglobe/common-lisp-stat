@@ -54,35 +54,6 @@
   ;; (coerce "2.3" 'number)  => ERROR
   ;; (coerce "2" 'float)  => ERROR
   
-  (defparameter *csv-num*
-    (cybertiggyr-dsv::load-escaped
-     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric.csv"
-     :field-separator #\,
-     :filter #'parse-number
-     :trace T))
-
-  (nth 0 (nth 0 *csv-num*))
-
-  (defparameter *csv-num*
-    (cybertiggyr-dsv::load-escaped
-     #p"/media/disk/Desktop/sandbox/CLS.git/Data/example-numeric2.dsv"
-     :field-separator #\:
-     :filter #'parse-number))
-
-  (nth 0 (nth 0 *csv-num*))
-  
-  ;; now we've got the DSV code in the codebase, auto-loaded I hope:
-  cybertiggyr-dsv:*field-separator*
-  (defparameter *example-numeric.csv* 
-    (cybertiggyr-dsv:load-escaped "Data/example-numeric.csv"
-				  :field-separator #\,))
-  *example-numeric.csv*
-
-  ;; the following fails because we've got a bit of string conversion
-  ;; to do.   2 thoughts: #1 modify dsv package, but mucking with
-  ;; encapsulation.  #2 add a coercion tool (better, but potentially
-  ;; inefficient).
-  #+nil(coerce  (nth 3 (nth 3 *example-numeric.csv*)) 'double-float)
 
   ;; cases, simple to not so
   (defparameter *test-string1* "1.2")
