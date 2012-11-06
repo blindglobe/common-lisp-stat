@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-02 17:29:34 tony>
+;;; Time-stamp: <2012-11-03 11:56:46 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -16,6 +16,9 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version..   Think, "21st Century Schizoid Man".
 
+
+
+;;;; BROKEN!!!
 (load "00-loadingData.lisp")
 
 (in-package :cls-examples)
@@ -23,6 +26,18 @@
 (ql:quickload :cl-csv)
 (use-package :cl-csv)
 
+
+(ql:quickload :cl-csv)
+(use-package :cl-csv)
+
+
+(ql:quickload :fare-csv)
+(use-package :fare-csv)
+
+
+
+
+(let ((results (make-dataframe ))))
 
 
 

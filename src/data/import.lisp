@@ -1,9 +1,9 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2008, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2008--2012, by A.J. Rossini <blindglobe@gmail.com>
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2010-01-25 17:15:35 tony> 
+;;; Time-stamp: <2012-11-05 13:24:10 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -138,6 +138,7 @@ Usually used by:
 
 ;; Support functions
 
+#|
 (defun filename.dsv->dataframe (filename &optional
 				(delimchar ",")
 				(varnameheader 't)
@@ -159,3 +160,24 @@ to use it next time if wanted."
 		 :storage data-list
 		 :var-labels var-name-list
 		 :doc docstring))))
+|#
+
+(defun filename.dsv->dataframe (filename
+				&optional
+				  (delimchar ",")
+				  (varnameheader 't)
+				  (docstring "This is an amusing dataframe array")
+				  (arraystorage-object 'dataframe-array))
+  ;; FIXME: cl-csv:read-csv returns strings, we need to convert some to numbers
+  (let ((csv-file-data (cl-csv:read-csv filename :separator delimchar))) 
+    (let ((var-name-list (if varnameheader
+			     (car csv-file-data)
+			     (make-labels "V"  (length (car csv-file-data)))))
+	  (data-list (listoflist:listoflist->array (cdr csv-file-data))))
+      (make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
+		     :storage data-list
+		     :var-labels var-name-list
+		     :doc docstring))))
+
+
+
