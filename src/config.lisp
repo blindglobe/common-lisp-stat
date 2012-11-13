@@ -1,13 +1,13 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2010-11-02 11:20:55 tony>
+;;; Time-stamp: <2012-11-13 13:41:17 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2009--, AJ Rossini.  Currently licensed under MIT
 ;;;             license.  See file LICENSE.mit in top-level directory
 ;;;             for information.
-;;; Purpose:    Template header file
+;;; Purpose:    Configuration variables
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -16,10 +16,12 @@
 ;;; This organization and structure is new to the 21st Century
 ;;; version..   Think, "21st Century Schizoid Man".
 
-;;; enforce all floating reads as doubles
+;;; enforce all floating reads as doubles; at least to the extent that
+;;; we can.  People can change if there is a scalable reason to save
+;;; bits.
 (setf *read-default-float-format* 'double-float)
 
-;;; optimization settings
+;;; optimization settings: at this point, premature to optimize.
 ;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
 
 (in-package :lisp-stat-config)
