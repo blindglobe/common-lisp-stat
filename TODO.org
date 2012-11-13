@@ -4,7 +4,7 @@
 #+TODO: TODO CURR | DONE
 #+TODO: POSTPONED | CANCELED
 
-Time-stamp: <2012-11-05 13:09:37 tony>
+Time-stamp: <2012-11-13 13:35:09 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -108,7 +108,7 @@ designers and quality assurance people in its wake.
 
      ?? cl-plplot : cffi
 
-* Tasks to Do [1/12]
+* Tasks to Do [2/12]
 
   Usually, we need to load it everything before going on.
 
@@ -130,7 +130,11 @@ designers and quality assurance people in its wake.
   Currently <2012-10-10 Wed> QuickLisp support doesn't provide a
   recompilation facility.  And QL is built over and partially extends
   ASDF, so we should be fine for now.
-** TODO [#A] Agree on a releasable license (MIT, LLGPL, BSD, GPL, ...?)
+** DONE [#A] Agree on a releasable license (MIT, LLGPL, BSD, GPL, ...?)
+   CLOSED: [2012-11-13 Tue 13:34]
+   - CLOSING NOTE [2012-11-13 Tue 13:34] \\
+     MIT for now, unless someone really insists on Boost license.
+   Decision: MIT.
 ** TODO [#B] Get rid of rsm-string-cls
 ** TODO [#A] ASDF updating for both v1 and v2 of ASDF.
    Need to update as appropriate, to use modern features.
