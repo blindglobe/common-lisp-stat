@@ -78,12 +78,12 @@
       (append (gen-seq (- n 1) start) (list n))))
 
 (defun repeat-seq (n item)
-  "FIXME: There has to be a better way -- I'm sure of it!   
+  "dbh: append/recursion changed to loop.   
   (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
   (repeat-seq 3 'd) ; => ('d 'd 'd)
   (repeat-seq 3 (list 1 2))"
   (if (>= n 1)
-      (append (repeat-seq (1- n)  item) (list item))))
+      (loop for i upto n collect item  )))
 
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.
@@ -106,6 +106,54 @@ value is returned indicating the success of the conversion.  Examples:
   (position #'(lambda (x) (equal x "testme")) (list "a" "b" "testme" "c"))
   (position #'(lambda (x) (equal x 1)) (list 2 1 3 4))
 |#
+
+(defun reduce-column (df function column )
+  "reduce a column of a df with function yielding a scalar"
+  (assert (and (>= column 0) (< column (ncols df))) )
+  (loop with result = (xref df 0 column)
+	for i from 1 below (nrows df) do
+	  (setf result (funcall function result (xref df i column)))
+	finally (return result)))
+
+(defun map-column (df function column)
+  (assert (and (>= column 0) (< column (ncols df))) )
+  (loop with result = (make-sequence 'vector (nrows df) )
+	for i from 1 below (nrows df) do
+	  (setf (xref result i ) (funcall function (xref df i column)))
+	finally (return result)))
+
+
+(defun column-type-classifier (df column)
+  "column type classifier, finds the smallest subtype that can
+  accomodate the elements of list, in the ordering fixnum < integer <
+  float < complex < t.  Rational, float (any kind) are classified as
+  double-float, and complex numbers as (complex double-float).  Meant
+  to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
+
+  (case (reduce #'max (map-column df #' 
+				  (lambda (x)
+				    (typecase x
+				      (fixnum 0)
+				      (integer 1)
+				      ((or rational double-float) 2)
+				      (complex 3)
+				      (simple-array 4)
+				      ((or symbol  keyword) 5)
+				      (t 6))) column))
+    (0 'fixnum)
+    (1 'integer)
+    (2 'double-float)
+    (3 '(complex double-float))
+    (4 'string) ;; for the moment a categorical variable
+    (5 'keyword) ;; and likewise, regarded as a categorical varial
+    (6 t))) ;; nil will end up here.
+
+(defun infer-dataframe-types (df)
+  "infer the numeric types for each column in the dataframe. note that all non numerc types are lumped into T, so further discrimination will be required."
+  (let ((column-types (loop for col  below (ncols df)
+			    collect (column-type-classifier df col))))
+    column-types))
+
 
 ;;; abstract dataframe class
 
@@ -145,7 +193,11 @@ value is returned indicating the success of the conversion.  Examples:
 	       :accessor doc-string
 	       :documentation "additional information, potentially
   	         uncomputable, possibly metadata, about dataframe-like
-	         instance."))
+	         instance.")
+   (print-widths :initform nil
+		 :initarg :print-widths
+		 :accessor print-widths
+		 :documentation " the print widths of each of the variables. "))
   (:documentation "Abstract class for standard statistical analysis
      dataset for (possible conditionally, externally) independent
      data.  Rows are considered to be independent, matching
@@ -178,6 +230,8 @@ value is returned indicating the success of the conversion.  Examples:
 
 (defgeneric nvars (df)
   (:documentation "number of variables represented in storage type.")
+  (:method ((df simple-array))
+    (array-dimension df 1))
   (:method ((df dataframe-like))
     (xdim (store df) 1))
   (:method ((df array))
@@ -197,12 +251,14 @@ test that that list is a valid listoflist dataframe structure."
 (defgeneric ncases (df)
   (:documentation "number of cases (indep, or indep within context,
   observantions) within DF storage form.")
+  (:method ((df simple-array))
+    (array-dimension df 0))
   (:method ((df matrix-like))
     (nrows df))
   (:method ((df list))
-    (xdim df 0)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
+    (nrows df)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
   (:method ((df array))
-    (xdim df 0)))
+    (nrows df)))
 
 #|
  (defun ncase-store (store)
@@ -228,6 +284,7 @@ that that list is a valid listoflist dataframe structure."
      ;; ensure dimensionality
      (= (length (var-labels df)) (ncols df)) ; array-dimensions (dataset df))
      (= (length (case-labels df)) (nrows df))
+     (= (length (var-types df) (ncols df)))
      ;; ensure claimed STORE-CLASS
      ;; when dims are sane, ensure variable-typing is consistent
      (progn
@@ -251,7 +308,7 @@ that that list is a valid listoflist dataframe structure."
   (check-type initstr string)
   (mapcar #'(lambda (x y)  (concatenate 'string x y))
 	  (repeat-seq num initstr)
-	  (mapcar #'(lambda (x) (format nil "~A" x)) (gen-seq num))))
+	  (mapcar #'(lambda (x) (format nil "~A" x)) (alexandria:iota num))))
 
 (defun check-dataframe-params (data vartypes varlabels caselabels doc)
   "This will throw an exception (FIXME: Need to put together a CLS exception system, this could be part of it)"
@@ -303,6 +360,7 @@ construction of proper DF-array."
   (check-type newdata (or matrix-like array list))
   (check-type caselabels sequence)
   (check-type varlabels sequence)
+  (check-type vartypes sequence)
   (check-type doc string)
   (let ((ncases (ncases newdata))
 	(nvars (nvars newdata)))
@@ -349,6 +407,73 @@ construction of proper DF-array."
  (make-dataframe #2A((4)))
  (make-dataframe (rand 10 5)) ;; ERROR, but should work!
 |#
+
+(defparameter *CLS-DATE-FORMAT* :UK
+  "should be one of :UK (d/m/y) :US (m/d/y) or maybe others as required. Giving a hint to the parsing routine.SUffix with a -TIME (is :US-TIME for MDY hhmmss. Or supply the ANTIK specification as a list '(2 1 0 3 4 5)  ")
+
+(defparameter *CLS-DATE-TEST-LIMIT* 5
+  "the number of rows to check when deciding if the column is a date column or not.")
+(defun antik-date-format-helper (date)
+  "provide decoding for shorthand notation in *CLS-DATE-FORMAT*  or allow the full spec to be supplied "
+  (cond
+    ((equal date :UK) '(2 1 0))
+    ((equal date :UK-TIME) '(2 1 0 3 4 5))
+    ((equal date :US) '(2 0 1))
+    ((equal date :US-TIME) '(2 0 1 3 4 5))
+    (t date)))
+
+(defun date-conversion-fu (df)
+  "for any string column in the dataframe, try to parse the first n entries as a date according to the global format. If we can do that successfully for at least one entry, the convert the column, converting failures to nil"
+  (labels ((read-timepoint (row column)
+	   "read a timepoint. if there is an error return nil"
+	   (handler-case
+			 (antik:read-timepoint (xref df row column)
+					       (antik-date-format-helper *CLS-DATE-FORMAT*))
+	     (error () nil)))
+	 
+	   (date-column-detected (index)
+	     "guess if the column has dates or not"
+	   (loop
+	     for i upto *CLS-DATE-TEST-LIMIT*
+	     collect  (read-timepoint i index) into result
+	     finally (return (some #'identity result))))
+	 
+	 (convert-date-column (index)
+	   (loop for i upto (nrows df) do
+	     (setf (xref df i index) (read-timepoint i index)))))
+    
+    (let ((maybe-dates (loop for i = 0 
+			     and item in (var-types df)
+			     when (equal 'string item)
+			       collect i)))
+      
+      (when maybe-dates
+	(dolist (index maybe-dates)
+	  (when (date-column-detected index)
+	    (convert-date-column  index)
+	    (setf (var-types df) 'date ))))))))
+
+;; (defun determine-print-widths (df)
+;;   "make a rough guess at the print widths of each column, guided by the types."
+;;   (let ((widths (loop for i upto (ncols df) do
+;;     (cond
+;;       ((equal 'string (nth i (var-types df)))))
+;; 			collect (reduce #'max  (map-column df #'length i  ))
+;; 		      when (equal 'date (nth i (var-types df)))
+;; 			collect )))))
+(defmethod initialize-instance :after ((df dataframe-like) &key)
+  "Do post processing for variables  after we initialize the object"
+  (unless (var-types df) 
+    (setf (vartypes df) (infer-dataframe-types df)))
+  (when (var-labels df)
+    (setf (var-labels df) (mapcar #'alexandria:make-keyword (var-labels df))))
+  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df) )
+  (date-conversion-fu df)
+					;
+  ;(determine-print-widths df)
+  )
+
+
 
 
 ;;; FIXME: the following two functions hurt the eyes.  I think that
@@ -418,8 +543,9 @@ construction of proper DF-array."
 
 (defsetf caselabels set-caselabels)
 
+
 ;;;;;;;;;;;; IMPLEMENTATIONS, with appropriate methods.
-;; See also: 
+;; See also:
 ;; (documentation 'dataframe-like  'type)
 
 
@@ -428,16 +554,30 @@ construction of proper DF-array."
 ;;; Do we establish methods for dataframe-like, which specialize to
 ;;; particular instances of storage?
 
+(defparameter dataframe-print-formats '((FIXNUM . "~7D")
+					(INTEGER . "~7D")
+					(STRING . "~7A")
+					(SIMPLE-STRING . "~A")
+					(CONS . "~a")
+					(SYMBOL . "~7a")
+					(KEYWORD . "~7a")
+					(RATIONAL . "~7a")
+					(NUMBER . "~7a")
+					(FLOAT . "~7a")
+					(date . "~9a")
+					(LONG-FLOAT . "~7,3G")
+					(SHORT-FLOAT . "~7,3G")
+					(SINGLE-FLOAT . "~7,3G")
+					(DOUBLE-FLOAT . "~7,3G")))
 
-;;; FIXME: 
-;;; - doesn't line up output
-;;; - doesn't process large (wide, OR long) objects, efficiently (need
-;;;   to flag such processing to avoid gigabyte printouts) 
-;;; - should include options for better printing, or perhaps the
-;;;   defmethod should be simpler, with a complex method for providing
-;;;   actual data. 
+(defun print-directive (df col)
+  (cdr  (assoc (elt (vartypes df) col) DATAFRAME-PRINT-FORMATS)))
+
+(defun print-columns-widths)
 (defmethod print-object ((object dataframe-like) stream)
+  
   (print-unreadable-object (object stream :type t)
+    (declare (optimize (debug 3)))
     (format stream " ~d x ~d" (nrows object) (ncols object))
     (terpri stream)
     ;; (format stream "~T ~{~S ~T~}" (var-labels object))
@@ -451,7 +591,11 @@ construction of proper DF-array."
       (dotimes (j (ncols object))
         (write-char #\tab stream) ; (write-char #\space stream)
         ;; (write (xref object i j) :stream stream)
-        (format stream "~7,3E" (xref object i j)) ; if works, need to include a general output mechanism control
+       ;
+	(format stream (print-directive object j)
+		(if (equal 'DATE (nth j (var-types object)))
+		    (antik:write-us-date (xref object i j) )
+		    (xref object i j))	) ; ;if works, need to include a general output mechanism control
 	))))
 
 #|
@@ -569,4 +713,7 @@ function."
   "Stream-handling, maintaining I/O through object typing.")
 
 |#
+
+
+
 
