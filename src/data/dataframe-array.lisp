@@ -32,11 +32,17 @@
   (:documentation "example implementation of dataframe-like using storage
   based on lisp arrays.  An obvious alternative could be a
   dataframe-matrix-like which uses the lisp-matrix classes."))
+
 (defun translate-column (df column)
+  "for production use, we would wrap this in a handler to enable entry of the correct column id"
   (cond
-    ((typep column 'keyword) (position column (varlabels df)))
+    ((typep column 'keyword)
+     (let ((col (position column (varlabels df))))
+       (if col
+	   col
+	   (error "Column name misspelt: try again ~a~%" column))))
     ((typep column 'number) column)
-    (t (error "Invalid argument passed to translate-column"))))
+    (t (error "Invalid argument passed to translate-column ~a~%" column))))
 
 
 (defmethod nrows ((df dataframe-array))
@@ -55,7 +61,7 @@ idx1/2 is row/col or case/var."
   (assert (typep (elt subscripts 0) integer))
   (assert (typep (elt subscripts 1) integer))
 |#
-  (aref (dataset df) (elt subscripts 0) (elt subscripts 1)))
+  (aref (dataset df) (elt subscripts 0) (translate-column df (elt subscripts 1))))
 
 (defmethod (setf xref) (value (df dataframe-array) &rest subscripts)
   "set value for df-ar."
@@ -102,7 +108,7 @@ idx1/2 is row/col or case/var."
     (maphash #'(lambda (k v) (format t "~a => ~a~%" k v)) h)))
 
 (defmethod dfsummarisebycategory ((df dataframe-array) category observation function)
-  "apply function to the rows identifed by the variable - eg variance (x) where (x) = blah, that sort of thing"
+  "apply function to the observation in rows identifed by the category variable"
   (let ((category (translate-column df category))
 	(observation (translate-column df observation))
 	(h (make-hash-table :test #'equal)))
@@ -115,9 +121,7 @@ idx1/2 is row/col or case/var."
 			     finally (return (funcall function g)))) into groups
 	 finally (return groups))) )
 
-(defmethod dfcolumn (( df dataframe-array) variable)
-  "return a column as a list. a quick hack until we decide what the array manipulations should be"
-  (loop for row below (nrows df) collect (xref df row variable)))
+
 
 (defun reduce-column (df function column )
   "reduce a column of a df with function yielding a scalar"
