@@ -9,7 +9,7 @@
 
 ;;; Purpose:    Data packaging and access for Common Lisp Statistics,
 ;;;             using a DATAFRAME-LIKE virtual structure.
-;;;             This redoes dataframe structures in a CLOS based
+;;;             This redoes dataframe structures in adfcolumn CLOS based
 ;;;             framework.   Currently contains the virtual class
 ;;;             DATAFRAME-LIKE as well as the actual classes
 ;;;             DATAFRAME-ARRAY and DATAFRAME-MATRIXLIKE.
@@ -220,6 +220,10 @@ value is returned indicating the success of the conversion.  Examples:
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
 
+(defmethod dfcolumn (( df dataframe-array) variable)
+  "return a column as a list. a quick hack until we decide what the array manipulations should be"
+  (loop for row below (nrows df) collect (xref df row variable)))
+
 (defgeneric nvars (df)
   (:documentation "number of variables represented in storage type.")
   (:method ((df simple-array))
@@ -391,15 +395,16 @@ construction of proper DF-array."
 	   (date-column-detected (index)
 	     "guess if the column has dates or not"
 	   (loop
-	     for i upto *CLS-DATE-TEST-LIMIT*
+	     for i below *CLS-DATE-TEST-LIMIT*
 	     collect  (read-timepoint i index) into result
 	     finally (return (some #'identity result))))
 	 
-	 (convert-date-column (index)
-	   (loop for i upto (nrows df) do
-	     (setf (xref df i index) (read-timepoint i index)))))
+	 (convert-date-column (column )
+	   (loop for i below (nrows df) do
+	     (setf (xref df i column) (read-timepoint i column)))))
     
-    (let ((maybe-dates (loop for i = 0 
+    (let ((maybe-dates
+	    (loop for i upto (length (vartypes df))
 			     and item in (var-types df)
 			     when (equal 'string item)
 			       collect i)))
@@ -407,25 +412,19 @@ construction of proper DF-array."
       (when maybe-dates
 	(dolist (index maybe-dates)
 	  (when (date-column-detected index)
-	    (convert-date-column  index)
-	    (setf (var-types df) 'date ))))))))
+	 	    (convert-date-column  index)
+	    (setf (nth index (vartypes df) ) 'date)))))))
 
-;; (defun determine-print-widths (df)
-;;   "make a rough guess at the print widths of each column, guided by the types."
-;;   (let ((widths (loop for i upto (ncols df) do
-;;     (cond
-;;       ((equal 'string (nth i (var-types df)))))
-;; 			collect (reduce #'max  (map-column df #'length i  ))
-;; 		      when (equal 'date (nth i (var-types df)))
-;; 			collect )))))
+
+
 (defmethod initialize-instance :after ((df dataframe-like) &key)
   "Do post processing for variables  after we initialize the object"
   (unless (var-types df) 
     (setf (vartypes df) (infer-dataframe-types df)))
   (when (var-labels df)
     (setf (var-labels df) (mapcar #'alexandria:make-keyword (var-labels df))))
-  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df) )
   (date-conversion-fu df)
+  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df) )
 					;
   ;(determine-print-widths df)
   )
@@ -507,16 +506,68 @@ construction of proper DF-array."
 					(RATIONAL . "~7a")
 					(NUMBER . "~7a")
 					(FLOAT . "~7a")
-					(date . "~9a")
+					(DATE . "~9a")
 					(LONG-FLOAT . "~7,3G")
 					(SHORT-FLOAT . "~7,3G")
 					(SINGLE-FLOAT . "~7,3G")
 					(DOUBLE-FLOAT . "~7,3G")))
+(defparameter new-dataframe-print-formats '((FIXNUM . "D")
+					(INTEGER . "D")
+					(STRING . "A")
+					(SIMPLE-STRING . "A")
+					(CONS . "a")
+					(SYMBOL . "7a")
+					(KEYWORD . "a")
+					(RATIONAL . "a")
+					(NUMBER . "a")
+					(FLOAT . "a")
+					(DATE . "a")
+					(LONG-FLOAT . "G")
+					(SHORT-FLOAT . "~G")
+					(SINGLE-FLOAT . "~G")
+					    (DOUBLE-FLOAT . "~G")))
+(defun build-format-string (df)
+  "build the format string by checking widths of each column. to be rewritten as a table "
+  (labels ((numeric-width (col)
+	     (reduce #'max (mapcar #'(lambda (x) (ceiling (log x 10))) (dfcolumn df col) )))
+	   (string-width (col)
+	     (reduce  #'max (mapcar #'length (dfcolumn df col))))
+	   (keyword-width (col)
+	     (reduce #'max (mapcar #'(lambda (x) (length (symbol-name x))) (dfcolumn df col))))
+	   (date-width (col) 12)
+	   
+	   (integer-variable (variable)
+	     (member variable '(FIXNUM INTEGER RATIONAL)))
+	   (float-variable (variable)
+	     (member variable '(NUMBER FLOAT LONG-FLOAT SHORT-FLOAT SINGLE-FLOAT DOUBLE-FLOAT)))
+	   (string-variable (variable)
+	     (equal variable 'STRING))
+	   (keyword-variable (variable)
+	     (equal variable 'KEYWORD))
+	   (date-variable (variable)
+	     (member variable '(DATE ANTIK:TIMEPOINT))))
+    
+    (loop for variable in (var-types df) and
+	  col below (ncols df)
+	  when (integer-variable variable)
+	    collect (format nil "~~~AA " (numeric-width col)) into format-control
+	  when (float-variable variable)
+	    collect (format nil "~~~A,3G " (numeric-width col)) into format-control
+	  when (keyword-variable variable)
+	   collect (format nil "~~~AA " (keyword-width col)) into format-control 
+	  when (string-variable variable)
+	    collect (format nil "~~~AA " (string-width col)) into format-control
+	  when (date-variable variable)
+	    collect (format nil "~~~AA " (date-width col)) into format-control
+	  finally (return (format nil "~~{~{~a~}~~}~~%" format-control)))))
 
 (defun print-directive (df col)
   (cdr  (assoc (elt (vartypes df) col) DATAFRAME-PRINT-FORMATS)))
 
-(defun print-columns-widths)
+(defun row (df row)
+  (loop for col  below (ncols df)
+	collect (xref df row col)))
+
 (defmethod print-object ((object dataframe-like) stream)
   
   (print-unreadable-object (object stream :type t)
@@ -524,22 +575,16 @@ construction of proper DF-array."
     (format stream " ~d x ~d" (nrows object) (ncols object))
     (terpri stream)
     ;; (format stream "~T ~{~S ~T~}" (var-labels object))
-    (dotimes (j (ncols object)) ; print labels
-      (write-char #\tab stream)
-      (write-char #\tab stream)
-      (format stream "~T~A~T" (nth j (var-labels object))))
-    (dotimes (i (nrows object)) ; print obs row
-      (terpri stream)
-      (format stream "~A:~T" (nth i (case-labels object)))
-      (dotimes (j (ncols object))
-        (write-char #\tab stream) ; (write-char #\space stream)
-        ;; (write (xref object i j) :stream stream)
-       ;
-	(format stream (print-directive object j)
-		(if (equal 'DATE (nth j (var-types object)))
-		    (antik:write-us-date (xref object i j) )
-		    (xref object i j))	) ; ;if works, need to include a general output mechanism control
-	))))
+    (let ((format-control (build-format-string object))
+	  (case-format (format nil "~~~AA: " (reduce #'max (mapcar #'length (case-labels object))))))
+      (dotimes (j (ncols object))	; print labels
+	(write-char #\tab stream)
+	(write-char #\tab stream)
+	(format stream "~T~A~T" (nth j (var-labels object))))
+      (dotimes (i (nrows object))	; print obs row
+	(terpri stream)
+	(format stream case-format (nth i (case-labels object)))
+	(format stream format-control (row object i))))))
 
 #|
  (defun print-structure-relational (ds)
