@@ -4,7 +4,7 @@
 #+TODO: TODO CURR | DONE
 #+TODO: POSTPONED | CANCELED
 
-Time-stamp: <2012-11-13 13:35:09 tony>
+Time-stamp: <2012-11-24 16:51:26 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -108,7 +108,7 @@ designers and quality assurance people in its wake.
 
      ?? cl-plplot : cffi
 
-* Tasks to Do [2/12]
+* Tasks to Do [3/12]
 
   Usually, we need to load it everything before going on.
 
@@ -135,7 +135,10 @@ designers and quality assurance people in its wake.
    - CLOSING NOTE [2012-11-13 Tue 13:34] \\
      MIT for now, unless someone really insists on Boost license.
    Decision: MIT.
-** TODO [#B] Get rid of rsm-string-cls
+** DONE [#B] Get rid of rsm-string-cls
+   CLOSED: [2012-11-24 Sat 16:51]
+   - CLOSING NOTE [2012-11-24 Sat 16:51] \\
+     replaced with fare-csv.
 ** TODO [#A] ASDF updating for both v1 and v2 of ASDF.
    Need to update as appropriate, to use modern features.
 ** DONE [#B] Example of Custom Data analysis set up

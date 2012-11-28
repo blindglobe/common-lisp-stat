@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-11-04 10:53:37 tony>
+Time-stamp: <2012-11-25 02:24:59 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -17,10 +17,10 @@ Time-stamp: <2012-11-04 10:53:37 tony>
   4. Use git to fetch common-lisp-statistics from the repository:
         git://github.com/blindglobe/common-lisp-stat.git
      and put it into your quicklisp local-projects directory
-     (need a few more projects from there as well)
+     (you will need to put a few more projects there as well)
   5. Start up the Common Lisp implementation, and:
 #+begin_src lisp
-(ql:quickload :cls)
+  (ql:quickload :cls)
 #+end_src
   6. get coffee, review the Common Lisp Statistics mailing list, chat
      with friends, etc, until it is done compiling and loading.
