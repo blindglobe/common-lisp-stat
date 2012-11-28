@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2012-10-11 14:41:55 tony>
+;;; Time-stamp: <2012-11-24 17:09:16 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -49,6 +49,7 @@ return a pathspec, not a string/namespec"
   (concatenate 'string *cls-installation-home-dir* x))
 
 
+
 (progn
   ;; LISP-STAT COMPATIBILITY MODE:
   ;;
@@ -89,3 +90,6 @@ return a pathspec, not a string/namespec"
   (xref *chickwts-df* 1 1) ; => 160
   (xref *chickwts-df* 40 2) ; => "sunflower"
   *chickwts-df*)
+
+
+(+   (xref *chickwts-df* 1 1)   (xref *chickwts-df* 63 1))

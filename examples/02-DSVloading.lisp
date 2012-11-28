@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-03 11:56:46 tony>
+;;; Time-stamp: <2012-11-24 17:05:52 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -18,26 +18,15 @@
 
 
 
-;;;; BROKEN!!!
+;;;; BROKEN unless you are running your lisp in the examples/ directory
 (load "00-loadingData.lisp")
 
 (in-package :cls-examples)
 
+#|
 (ql:quickload :cl-csv)
 (use-package :cl-csv)
-
-
-(ql:quickload :cl-csv)
-(use-package :cl-csv)
-
-
-(ql:quickload :fare-csv)
-(use-package :fare-csv)
-
-
-
-
-(let ((results (make-dataframe ))))
+|#
 
 
 

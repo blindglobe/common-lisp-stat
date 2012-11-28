@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2012-11-06 09:02:58 tony>
+;;; Time-stamp: <2012-11-24 16:32:51 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -79,6 +79,11 @@
 	       :cl-variates
  	       ;;; if graphics exist, then...
 	       ;; :cl-cairo2  :cl-2d
+
+	       ;; we are experimenting with GSLL and Antik for the
+	       ;; numerical infrastructure.
+	       :gsll 
+	       :antik
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")

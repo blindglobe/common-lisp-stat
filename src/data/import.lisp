@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2012-11-06 08:58:08 tony> 
+;;; Time-stamp: <2012-11-24 17:10:03 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -173,18 +173,19 @@ need to implement a clean...
 (defun filename.dsv->dataframe (filename
 				&optional
 				  (delimchar fare-csv:*separator*)
-				  (varnameheader 't) ;; strip the first line for variables?
+				  (varnameheader 't) ;; strip the first line for variable names
 				  (docstring "This is default doc for an amusing dataframe array")
 				  (arraystorage-object 'dataframe-array))
   ;; FIXME: fare-csv:read-csv-file returns strings, we need to convert some to numbers
-  (let ((csv-file-data (fare-csv:read-csv-file filename :separator delimchar))) 
-    (let ((var-name-list (if varnameheader
-			     (car csv-file-data)
-			     (make-labels "V"  (length (car csv-file-data)))))
-	  (data-list (if varnameheader
-			 (listoflist:listoflist->array (cdr csv-file-data))
-			 (listoflist:listoflist->array csv-file-data))))
-      (make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
-		     :storage data-list ;; needs to be (convert-strings-to-data-types data-list)
-		     :var-labels var-name-list
-		     :doc docstring))))
+  (let ((fare-csv:*separator* delimchar))  
+    (let ((csv-file-data (fare-csv:read-csv-file filename))) 
+      (let ((var-name-list (if varnameheader
+			       (car csv-file-data)
+			       (make-labels "V"  (length (car csv-file-data)))))
+	    (data-list (if varnameheader
+			   (listoflist:listoflist->array (cdr csv-file-data))
+			   (listoflist:listoflist->array csv-file-data))))
+	(make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
+		       :storage data-list ;; needs to be (convert-strings-to-data-types data-list)
+		       :var-labels var-name-list
+		       :doc docstring)))))
