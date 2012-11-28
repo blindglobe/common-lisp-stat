@@ -1,5 +1,8 @@
 ;;; -*- mode: lisp -*-
-;;; Copyright (c) 2005--2009, by A.J. Rossini <blindglobe@gmail.com>
+
+;;; Copyright (c) 2005--2012, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2012, by David Hodge <davidbhodge@gmail.com>
+
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
