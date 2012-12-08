@@ -45,7 +45,7 @@ directory, return a string denoting the complete path.
 FIXME: UNIX-centric (though might work on Mac OSX).  We really want to
 return a pathspec, not a string/namespec"
   (check-type x string)
-  (concatenate 'string *cls-home-dir* x))
+  (concatenate 'string *cls-installation-home-dir* x))
 
 
 (progn
@@ -83,8 +83,14 @@ return a pathspec, not a string/namespec"
 > 
 |#
 
-  (defparameter *chickwts-df* (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv")))
+ (progn 
+   (defparameter *chickwts-df* (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv"))))
   ;; *chickwts-df*
   (xref *chickwts-df* 1 1) ; => 160
   (xref *chickwts-df* 40 2) ; => "sunflower"
   *chickwts-df*)
+
+(defparameter *chickwts-df* (filename.dsv->dataframe  "~/lisp/common-lisp-stat/Data/R-chickwts.csv"))
+
+
+(defparameter *chickwts-df* (cls-dataio:filename.dsv->dataframe  "~/lisp/common-lisp-stat/Data/chickwts-date.csv"))
