@@ -578,8 +578,6 @@ construction of proper DF-array."
       (t (error "determine-print-width, unrecognized type ~%" )))))
 
 
-  
-
 (defun make-variable-metadata (df)
   " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists will disappear when I figureo ut a convenient initiaslization method"
   (format t "vars = ~A~%" (nvars df))
@@ -677,7 +675,6 @@ construction of proper DF-array."
 ;;;;;;;;;;;; IMPLEMENTATIONS, with appropriate methods.
 ;; See also:
 ;; (documentation 'dataframe-like  'type)
-
 
 
 
