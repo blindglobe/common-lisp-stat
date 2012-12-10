@@ -5,12 +5,13 @@
 ;; the general idea is to take a lisp expression and rewrite any keyword fields to call an approporate accessor
 ;; so (> :id 50) ==> (> (xref df row (translate-column :id) 50)
 ;; if a keyword is not translateable, we leave it alone.
+;; this has the side effect of 
 
 
 
-(defun maybe-rewrite-keyword (df keyword)
+(defun maybe-rewrite-keyword (df keyword )
   "if we find the keyword is a column name translate it to the index value, otherwise leave it alone."
-  (let ((column (translate-column df keyword)))
+  (let ((column (translate-column df keyword  t)))
     (if column
 	`(xref df the-row ,column) 
 	keyword)))
