@@ -79,7 +79,7 @@
   (repeat-seq 3 'd) ; => ('d 'd 'd)
   (repeat-seq 3 (list 1 2))"
   (if (>= n 1)
-      (loop for i upto n collect item  )))
+      (loop for i below n collect item  )))
 
 
 (defun string->number (str)
@@ -129,7 +129,7 @@ value is returned indicating the success of the conversion.  Examples:
      data.  Rows are considered to be independent, matching
      observations.  Columns are considered to be type-consistent,
      match a variable with distribution.  inherits from lisp-matrix
-     base MATRIX-LIKE class.  MATRIX-LIKE (from lisp-matrix) is
+     base MATrRixsr-LIKE class.  MATRIX-LIKE (from lisp-matrix) is
      basically a rectangular table without storage.  We emulate that,
      and add storage, row/column labels, and within-column-typing.
 
@@ -243,7 +243,7 @@ nil on error is for non interactive use"
   (if (= (length (var-labels df))
 	 (length vl))
       (setf (var-labels df) vl)
-      (error "wrong size.")))
+      (error "set varlables: wrong size.")))
 
 (defsetf varlabels set-varlabels)
 
@@ -257,7 +257,7 @@ nil on error is for non interactive use"
   (if (= (length (case-labels df))
 	 (length cl))
       (setf (case-labels df) cl)
-      (error "wrong size.")))
+      (error "set caselabels: wrong size.")))
 
 (defsetf caselabels set-caselabels)
 
