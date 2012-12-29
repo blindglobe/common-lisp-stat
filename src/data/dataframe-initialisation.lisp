@@ -27,7 +27,7 @@
     (2 'double-float)
     (3 '(complex double-float))
     (4 'string) ;; for the moment a categorical variable
-    (5 'keyword) ;; and likewise, regarded as a categorical varial
+    (5 'keyword) ;; and likewise, regarded as a categorical variable
     (6 t))) ;; nil will end up here.
 
 (defun infer-dataframe-types (df)
@@ -158,8 +158,9 @@ construction of proper DF-array."
       (when maybe-dates
 	(dolist (index maybe-dates)
 	  (when (date-column-detected index)
-	 	    (convert-date-column  index)
-	    (setf (nth index (vartypes df) ) 'date)))))))
+	    (convert-date-column  index)
+	    ;; FIXME: A nice accessor required!
+	    (setf (getf  (nth index (variables df)) :type ) 'date)))))))
 
 (defun classify-print-type (df column)
   " look at the type of each column, assuming that types are homogenous of course, and assign a descriptive type - number, date, string etc, to enable  for nice tabular printing"
@@ -206,30 +207,32 @@ construction of proper DF-array."
   
 
 (defun make-variable-metadata (df)
-  " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists (varlabels etc) will disappear when I figureo ut a convenient initialization method"
+  " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists (varlabels etc) will disappear when I figure out a convenient initialization method"
   
   (loop for index below (nvars df) 
 	collect
 	(list
 	 :name (elt (var-labels df) index) 
-	 :type (elt (var-types df) index)
+	 :type (column-type-classifier df index)
 	 :print-type (classify-print-type df index)
 	 :print-width (determine-print-width df index)) into variable-plist
 	finally (setf (slot-value df 'variables) variable-plist)))
 
 (defmethod initialize-instance :after ((df dataframe-like) &key)
   "Do post processing for variables  after we initialize the object"
-					; obviously I want to nuke var types & var labels at some point
+					
  
-  (unless (var-types df) 
-    (setf (vartypes df) (infer-dataframe-types df)))
+  ;; i have yet to figure out a way of getting rid of var-labels.....
+  
   (when (var-labels df)
-    (setf (var-labels df) (mapcar #'(lambda (keyword)
-				      (alexandria:make-keyword (string-upcase keyword))) (var-labels df))))
+    (setf (var-labels df)
+	  (mapcar #'(lambda (keyword)
+		      (unless (keywordp x) (alexandria:make-keyword (string-upcase keyword))))
+		  (var-labels df))))
  
- ;; only do the metadta stuff when all the information has been supplied 
-  (when (and (var-types df) (var-labels df))
+ ;; only do the metadata stuff when all the information has been supplied 
+  (when (and (vartypes df) (varlabels df))
     (date-conversion-fu df)
     (make-variable-metadata df))
   ;; actually I am finding this quite useful, so will leave it here for the moment
-  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df)))
+  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (varlabels df) (vartypes df)))
