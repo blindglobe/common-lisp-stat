@@ -105,7 +105,7 @@ value is returned indicating the success of the conversion.  Examples:
 	       :type list
 	       :accessor var-labels
 	       :documentation "Variable names. List order matches
-	         order in STORE.")
+	         order in STORE. superceded by variables below")
    (var-types :initform nil
 	      :initarg :var-types
 	      :type list
@@ -113,7 +113,7 @@ value is returned indicating the success of the conversion.  Examples:
 	      :documentation "List of symbols representing classes
 	        which describe the range of contents for a particular
 	        variable. Symbols must be valid types for check-type.
-	        List order matches order in STORE.")
+	        List order matches order in STORE. superceded by variables below")
    (doc-string :initform nil
 	       :initarg :doc
 	       :accessor doc-string
@@ -196,17 +196,6 @@ nil on error is for non interactive use"
 	  (repeat-seq num initstr)
 	  (mapcar #'(lambda (x) (format nil "~A" x)) (alexandria:iota num))))
 
-(defun vartypes (df)
-  (var-types df))
-
-(defun set-vartypes (df vt)
-  (assert (= (length vt) (ncols df)))
-  (setf (var-types df) vt))
-(defsetf vartypes set-vartypes)
-
-(defun make-comparison-function (df function field value)
-  `#'(lambda (row) (funcall ,function (xref df row ,field) ,value)))
-
 (defun row-order-as-list (ary)
   "Pull out data in row order into a list. naughty, should use xref"
   (let ((result (list))
@@ -226,26 +215,31 @@ nil on error is for non interactive use"
 	(append result (aref ary i j))))))
 
 (defun transpose-array (ary)
-  "map NxM to MxN."
+  "map NxM to MxN. "
   (make-array (reverse (array-dimensions ary))
       :initial-contents (col-order-as-list ary)))
+
+(defun varlabels (df)
+  "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
+  (mapcar  (lambda (variable) (getf variable :type)) (variables  df)))
+
+(defun vartypes (df)
+  "list of types for each column"
+  (mapcar  (lambda (variable) (getf variable :name)) (variables  df))  )
 
 ;;; THE FOLLOWING 2 dual-sets done to provide error checking
 ;;; possibilities on top of the generic function structure.  Not
 ;;; intended as make-work!
 
-(defun varlabels (df)
-  "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (var-labels df))
 
-(defun set-varlabels (df vl)
-  "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (if (= (length (var-labels df))
-	 (length vl))
-      (setf (var-labels df) vl)
-      (error "set varlables: wrong size.")))
+;; (defun set-varlabels (df vl)
+;;   "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
+;;   (if (= (length (var-labels df))
+;; 	 (length vl))
+;;       (setf (var-labels df) vl)
+;;       (error "set varlables: wrong size.")))
 
-(defsetf varlabels set-varlabels)
+;; (defsetf varlabels set-varlabels)
 
 ;;; Case-name handling for Tables.  Needs error checking.
 (defun caselabels (df)
@@ -315,49 +309,6 @@ function."
   (error "make-data-set-from-lists: proposed name exists"))
 
 
-;;;;;;;; from dataframe-xarray experiment
-
-#| 
- (defmethod xref ((obj dataframe-like)  &rest subscripts)
-  "For data-frame-like, dispatch on storage object."
-  (xref (dataset obj) subscripts))
-
- (defmethod (setf xref) (value (obj dataframe-like) &rest subscripts)
-  (setf (xref (dataset obj) subscripts) value))
-  
- (defmethod xref ((obj matrix-like) &rest indices))
-  
- (defmethod xtype ((obj dataframe-like))
-  "Unlike the standard xtype, here we need to return a vector of the
-  types.  Vectors can have single types, but arrays have single type.
-  Dataframe-like have multiple types, variable-like single type,
-  case-like has multiple types, and matrix-like has single type.")
-
- (defmethod xdims ((obj dataframe-like))
-  (dataframe-dimensions obj))
-
- ;; use default methods at this point, except for potentially weird DFs
- (defmethod xdims* ())
-
- (defmethod xdim ((obj dataframe-like) index)
-  (dataframe-dimension index))
-
-
- (defmethod xrank ())
-
- (defmethod slice ())
-  
- (defmethod take ())
-
- (defmethod carray ())
-
- (defmacro with-dataframe (env &rest progn) 
-  "Compute using variable names with with.data.frame type semantics.")
-
- (defmacro with-data (body)
-  "Stream-handling, maintaining I/O through object typing.")
-
-|#
 
 
 
