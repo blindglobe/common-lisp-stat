@@ -38,21 +38,19 @@
   (:method (( df dataframe-like) row)
     (loop for column below (nvars df) collect (xref df row column) )))
 
-(defgeneric df->grid (df &rest cols)
-  "a helper function that creates a foreign grid of (ncase df) and (length cols) specifically for passing to gsll. If a column is a date then it will be converted into the equivalent fixnum representation."
-  (flet ((timeparse-to-clut (timeparse)
-	   "Convert timeparse to clut, CL's unfortunately-named `universal-time'.
-   No scale is provided; it is a uniform time."
-	   (multiple-value-bind (secs frac) (cl:floor (timeparse-second timeparse))
-	     (cl:+ frac
-		   (apply #'encode-universal-time
-			  (append (cons secs (rest timeparse)) (list 0))))))
-	 (create-subset (df  cols)
+(defun  df->grid (df &rest cols)
+   "A helper function that creates a foreign grid of (ncase df) and (length cols) specifically for passing to gsll. If a column is a date then it will be converted into the equivalent fixnum representation - thats not implemented as yet. if colls is the single keyword  :all then just do all the cols "
+  (flet ((create-subset (df  cols)
+	   "return selected columns as a list"
 	   (loop for the-row below (ncases df)
 		 collect (loop for col in cols
 			       collect (xref df the-row))))
 	 (translate-columns (&rest cols)
-	   (loop for c in cols
-		 collect (translate-column df c)))))
+	   "convert list of column keywords to indexes"
+	   (if (equal cols :all)
+	       (alexandria:iota (nvars df))
+	       (loop for c in cols
+		     collect (translate-column df c))))))
   (grid:make-foreign-array 'double-float
-			   :initial-contents (create-subset df (translate-columns cols))))
+			   :initial-contents (create-subset df (translate-columns cols)))
+  )
