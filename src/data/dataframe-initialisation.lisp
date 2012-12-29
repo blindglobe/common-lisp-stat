@@ -11,7 +11,7 @@
   float < complex < t.  Rational, float (any kind) are classified as
   double-float, and complex numbers as (complex double-float).  Meant
   to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
-
+ 
   (case (reduce #'max (map-column df #' 
 				  (lambda (x)
 				    (typecase x
@@ -48,9 +48,9 @@
     "At minimum, must dispatch on virtual-class."
     (and
      ;; ensure dimensionality
-     (= (length (var-labels df)) (nvars df)) ; array-dimensions (dataset df))
+     (= (length (varlabels df)) (nvars df)) ; array-dimensions (dataset df))
      (= (length (case-labels df)) (ncases df))
-     (= (length (var-types df)) (nvars df))
+     (= (length (vartypes df)) (nvars df))
      ;; ensure claimed STORE-CLASS
      ;; when dims are sane, ensure variable-typing is consistent
      (progn
@@ -60,7 +60,7 @@
 	   ;; about specialization.  Need to ensure xref throws a
 	   ;; condition we can recover from.
 	   ;; (check-type  (aref dt i j) (elt lot j)))))) ???
-	   (typep (xref df i j) (nth j (var-types df))))) 
+	   (typep (xref df i j) (nth j (vartypes df))))) 
        t))))
 
 
@@ -69,7 +69,7 @@
 		       (caselabels nil) (varlabels nil)
 		       (doc "no docs"))
   "Helper function to use instead of make-instance to assure
-construction of proper DF-array."
+construction of proper DF-array. needs some thought so we don't have to use listoflist->array when creating a dataframe array so much"
   (check-type newdata (or matrix-like array list ))
   (check-type caselabels sequence)
   (check-type varlabels sequence)
@@ -151,7 +151,7 @@ construction of proper DF-array."
     
     (let ((maybe-dates
 	    (loop for i upto (length (vartypes df))
-			     and item in (var-types df)
+			     and item in (vartypes df)
 			     when (equal 'string item)
 			       collect i)))
       
@@ -162,7 +162,7 @@ construction of proper DF-array."
 	    ;; FIXME: A nice accessor required!
 	    (setf (getf  (nth index (variables df)) :type ) 'date)))))))
 
-(defun classify-print-type (df column)
+(defun classify-print-type ( variable-type)
   " look at the type of each column, assuming that types are homogenous of course, and assign a descriptive type - number, date, string etc, to enable  for nice tabular printing"
   (labels ((integer-variable (variable)
 	     (member variable '(FIXNUM INTEGER RATIONAL)))
@@ -174,18 +174,16 @@ construction of proper DF-array."
 	     (equal variable 'KEYWORD))
 	   (date-variable (variable)
 	     (member variable '(DATE ANTIK:TIMEPOINT))))
-
-    (let ((variable-type (elt (var-types df) column)))
-      
-      (cond
-	( (integer-variable variable-type) :INTEGER)
-	((float-variable variable-type) :FLOAT)
-	((keyword-variable variable-type) :KEYWORD)
-	((string-variable variable-type) :STRING)
-	((date-variable variable-type) :DATE)
-	(t (error "classify-print-type, unrecognized type ~a~%" variable-type))))))
+    
+    (cond
+      ( (integer-variable variable-type) :INTEGER)
+      ((float-variable variable-type) :FLOAT)
+      ((keyword-variable variable-type) :KEYWORD)
+      ((string-variable variable-type) :STRING)
+      ((date-variable variable-type) :DATE)
+      (t (error "classify-print-type, unrecognized type ~a~%" variable-type)))))
   
-(defun determine-print-width (df  column)
+(defun determine-print-width (df  column type) 
   "build the format string by checking widths of each column. "
   (labels ((numeric-width (the-col)
 	     (1+  (reduce #'max (mapcar #'(lambda (x) (ceiling (log (abs x) 10))) (dfcolumn df the-col)) )))
@@ -196,7 +194,7 @@ construction of proper DF-array."
 	   ;; FIXME - what is the print width of a timepoint?
 	   (date-width (the-col) 12))
     
-    (case (classify-print-type df column)
+    (case (classify-print-type  type)
       ((:INTEGER :FLOAT) (numeric-width column))
       (:KEYWORD          (keyword-width column))
       (:STRING           (string-width column))
@@ -211,28 +209,27 @@ construction of proper DF-array."
   
   (loop for index below (nvars df) 
 	collect
-	(list
-	 :name (elt (var-labels df) index) 
-	 :type (column-type-classifier df index)
-	 :print-type (classify-print-type df index)
-	 :print-width (determine-print-width df index)) into variable-plist
+	(let ((type (column-type-classifier df index)))
+	  (list
+	   :name (elt (var-labels df) index) 
+	   :type type
+	   :print-type (classify-print-type  type)
+	   :print-width (determine-print-width df index type))) into variable-plist
 	finally (setf (slot-value df 'variables) variable-plist)))
 
 (defmethod initialize-instance :after ((df dataframe-like) &key)
   "Do post processing for variables  after we initialize the object"
-					
- 
-  ;; i have yet to figure out a way of getting rid of var-labels.....
-  
-  (when (var-labels df)
-    (setf (var-labels df)
-	  (mapcar #'(lambda (keyword)
-		      (unless (keywordp x) (alexandria:make-keyword (string-upcase keyword))))
-		  (var-labels df))))
  
  ;; only do the metadata stuff when all the information has been supplied 
-  (when (and (vartypes df) (varlabels df))
-    (date-conversion-fu df)
-    (make-variable-metadata df))
+  (when  (var-labels df)
+    (FORMAT T "before metadata")
+    (setf (var-labels df)
+	  (mapcar #'(lambda (keyword)
+		      (if  (keywordp keyword)
+			   keyword
+			   (alexandria:make-keyword (string-upcase keyword))))
+		  (var-labels df)))
+    (make-variable-metadata df)
+    (date-conversion-fu df))
   ;; actually I am finding this quite useful, so will leave it here for the moment
   (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (varlabels df) (vartypes df)))
