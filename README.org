@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-11-25 02:24:59 tony>
+Time-stamp: <2012-12-19 16:39:37 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -19,9 +19,12 @@ Time-stamp: <2012-11-25 02:24:59 tony>
      and put it into your quicklisp local-projects directory
      (you will need to put a few more projects there as well)
   5. Start up the Common Lisp implementation, and:
+
+#+name: loadIt
 #+begin_src lisp
   (ql:quickload :cls)
 #+end_src
+
   6. get coffee, review the Common Lisp Statistics mailing list, chat
      with friends, etc, until it is done compiling and loading.
   7. Report success/failure back to the news group or to me
@@ -48,21 +51,22 @@ Time-stamp: <2012-11-25 02:24:59 tony>
 
 *** Linux
 
-    SBCL is known to work
+    SBCL is known to work (0.58+, 1.1.1+)
 
     CCL is thought to work
 
     Get lapack-dev, blas-dev from your Linux distribution.
 
-*** MacOSX
+    (CMUCL and CLISP may work, but not tested)
+
+*** TODO MacOSX
 
     *FIXME*: Tony has no clue, please fill this in since most mailing
-    list folks use Macs...
+    list folks use Macs.
 
-    CCL is thought to work
-    SBCL is known to work
-
-    LAPACK/BLAS: get from...
+    - CCL is thought to work
+    - SBCL is known to work
+    - LAPACK/BLAS: get from 
 
 ** Install Quicklisp
 

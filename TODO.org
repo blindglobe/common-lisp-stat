@@ -4,7 +4,7 @@
 #+TODO: TODO CURR | DONE
 #+TODO: POSTPONED | CANCELED
 
-Time-stamp: <2012-11-24 16:51:26 tony>
+Time-stamp: <2012-12-19 17:15:54 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -24,6 +24,10 @@ What is this talk of 'release'? Klingons do not make software
 designers and quality assurance people in its wake.
 
 * Approach and Design, Strategy and Tactics
+
+  This chapter describes the general philosophy along with the thinking
+  behind some of the selections which might appear a bit on the
+  strange side.
 
 ** Approach
 
@@ -130,11 +134,22 @@ designers and quality assurance people in its wake.
   Currently <2012-10-10 Wed> QuickLisp support doesn't provide a
   recompilation facility.  And QL is built over and partially extends
   ASDF, so we should be fine for now.
-** DONE [#A] Agree on a releasable license (MIT, LLGPL, BSD, GPL, ...?)
+
+  Another activity, to check current state of the unit tests, is to
+  run the tests.  This can be done by:
+
+#+name: ex-cls-unittest
+#+begin_src lisp
+  (in-package :lisp-stat-unittests)
+  (run-tests :suite 'lisp-stat-ut)
+#+end_src
+
+
+** DONE [#A] Agree on a releasable license (MIT, LLGPL, BSD, GPL, ?): MIT
    CLOSED: [2012-11-13 Tue 13:34]
    - CLOSING NOTE [2012-11-13 Tue 13:34] \\
      MIT for now, unless someone really insists on Boost license.
-   Decision: MIT.
+   Decision: MIT
 ** DONE [#B] Get rid of rsm-string-cls
    CLOSED: [2012-11-24 Sat 16:51]
    - CLOSING NOTE [2012-11-24 Sat 16:51] \\
@@ -628,7 +643,7 @@ LLA is an SBCL targetted linear algebra library from Tamas Papp
 
 LL is an SBCL targetted linear algebra library from ---
 
-** TODO [#B] Numerical Statistical Procedures to implement
+** TODO [#B] Numerical Statistical Procedures to implement [0/4]
 
    By this, I mean procedures which provide numerical quantitative or
    precise categorical qualitative results (for example, excluding
@@ -883,8 +898,10 @@ where
 *** TODO [#B] CLPDF, and literate data analysis
     - State "TODO"       from ""           [2010-11-05 Fri 15:34]
 
+
 * Proposals
-  Place proposals for features, work, etc here...
+  Place proposals for features, work, etc here
+
 ** <2011-12-29 Thu> new stuff
    First new proposal is to track proposals.
 

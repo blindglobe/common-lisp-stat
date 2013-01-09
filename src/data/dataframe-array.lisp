@@ -1,6 +1,7 @@
+1
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-28 21:15:50 tony>
+;;; Time-stamp: <2013-01-09 08:22:40 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Authors:    AJ Rossini <blindglobe@gmail.com>
@@ -34,6 +35,12 @@
   (:documentation "example implementation of dataframe-like using storage
   based on lisp arrays.  An obvious alternative could be a
   dataframe-matrix-like which uses the lisp-matrix classes."))
+(defun translate-column (df column)
+  (cond
+    ((typep column 'keyword) (position column (varlabels df)))
+    ((typep column 'number) column)
+    (t (error "Invalid argument passed to translate-column"))))
+
 
 (defun translate-column (df column)
   (cond
@@ -193,6 +200,4 @@ idx1/2 is row/col or case/var."
     column-types))
 
 
-(defmethod dfsummary (df dataframe-array)
-  )
-
+(defmethod dfsummary (df dataframe-array))

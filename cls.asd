@@ -1,9 +1,9 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2012-11-24 16:32:51 tony>
+;;; Time-stamp: <2012-12-19 16:49:32 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c) 2005--2010, by AJ Rossini <blindglobe@gmail.com>
+;;; Copyright:  (c) 2005--2013, by AJ Rossini <blindglobe@gmail.com>
 ;;; License:    MIT, see the file LICENSE.mit in this directory for details.
 ;;; Purpose:    ASDF specification for Common Lisp Statistical System
 
