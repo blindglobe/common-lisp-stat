@@ -4,7 +4,7 @@
 #+TODO: TODO CURR | DONE
 #+TODO: POSTPONED | CANCELED
 
-Time-stamp: <2012-12-19 17:15:54 tony>
+Time-stamp: <2013-01-15 19:10:14 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -47,17 +47,22 @@ designers and quality assurance people in its wake.
 
   current (possibly incomplete) set of lisp dependencies <2012-10-04 Thu>
 
- 0  ~/sandbox/xarray.git
- 1  ~/sandbox/foreign-numeric-vector.git
- 2  ~/sandbox/trivial-features.git
- 3  ~/sandbox/alexandria.git
- 4  ~/sandbox/babel.git
- 5  ~/sandbox/cffi.git
- 6  ~/sandbox/cl-utilities
- 7  ~/sandbox/metabang-bind.git
- 8  ~/sandbox/iterate.git
- 9  ~/sandbox/array-operations.git
+| xarray.git                 |   |
+| foreign-numeric-vector.git |   |
+| trivial-features.git       |   |
+|                            |   |
+|                            |   |
+| alexandria.git             |   |
+|                            |   |
+| babel.git                  |   |
+|                            |   |
+| cffi.git                   |   |
+| cl-utilities               |   |
+| metabang-bind.git          |   |
+| iterate.git                |   |
+| array-operations.git       |   |
 
+antik
 
 *** Singletons (primary building blocks)
     
