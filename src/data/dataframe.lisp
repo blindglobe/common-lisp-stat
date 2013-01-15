@@ -194,6 +194,10 @@ value is returned indicating the success of the conversion.  Examples:
 	       :documentation "additional information, potentially
   	         uncomputable, possibly metadata, about dataframe-like
 	         instance.")
+   (variables :initarg :variables
+	      :initform (list)
+	      :accessor variables
+	      :documentation " a plist of the meta data for each variable. "))
    (print-widths :initform nil
 		 :initarg :print-widths
 		 :accessor print-widths
@@ -264,15 +268,50 @@ test that that list is a valid listoflist dataframe structure."
   (:method ((df array))
     (nrows df)))
 
-#|
- (defun ncase-store (store)
-  "Return number of cases (rows) in dataframe storage.  Doesn't test
-that that list is a valid listoflist dataframe structure."
-  (etypecase store
-    (array (array-dimension store 0))
-    (matrix-like (nrows store))
-    (list (length store))))
-|#
+(defun translate-column (df column &optional ( nil-on-error nil))
+  "for production use, we would wrap this in a handler to enable entry of the correct column id.
+nil on error is for non interactive use"
+  (typecase column
+    (keyword
+     (let ((col (position column (varlabels df))))
+       (if col
+	   col
+	   (if nil-on-error nil  (error "Column name misspelt: try again ~a~%" column)))))
+    (number column)
+    (t (error "Invalid argument passed to translate-column ~a~%" column))))
+
+
+
+(defun column-type-classifier (df column)
+  "column type classifier, finds the smallest subtype that can
+  accomodate the elements of list, in the ordering fixnum < integer <
+  float < complex < t.  Rational, float (any kind) are classified as
+  double-float, and complex numbers as (complex double-float).  Meant
+  to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
+
+  (case (reduce #'max (map-column df #' 
+				  (lambda (x)
+				    (typecase x
+				      (fixnum 0)
+				      (integer 1)
+				      ((or rational double-float) 2)
+				      (complex 3)
+				      (simple-array 4)
+				      ((or symbol  keyword) 5)
+				      (t 6))) column))
+    (0 'fixnum)
+    (1 'integer)
+    (2 'double-float)
+    (3 '(complex double-float))
+    (4 'string) ;; for the moment a categorical variable
+    (5 'keyword) ;; and likewise, regarded as a categorical varial
+    (6 t))) ;; nil will end up here.
+
+(defun infer-dataframe-types (df)
+  "infer the numeric types for each column in the dataframe. note that all non numerc types are lumped into T, so further discrimination will be required."
+  (let ((column-types (loop for col  below (nvars df)
+			    collect (column-type-classifier df col))))
+    column-types))
 
 ;; Testing consistency/coherency.
 
@@ -301,6 +340,20 @@ that that list is a valid listoflist dataframe structure."
 	   (typep (xref df i j) (nth j (var-types df))))) 
        t))))
 
+(defmethod reduce-column (df function column )
+  "reduce a column of a df with function yielding a scalar"
+  (assert (and (>= column 0) (< column (nvars df))) )
+  (loop with result = (xref df 0 column)
+	for i from 1 below (ncases df) do
+	  (setf result (funcall function result (xref df i column)))
+	finally (return result)))
+
+(defmethod map-column (df function column)
+  (assert (and (>= column 0) (< column (ncols df))) )
+  (loop with result = (make-sequence 'vector (ncases df) )
+	for i from 1 below (ncases df) do
+	  (setf (xref result i ) (funcall function (xref df i column)))
+	finally (return result)))
 
 ;;; FUNCTIONS WHICH DISPATCH ON INTERNAL METHODS OR ARGS
 ;;;
@@ -326,6 +379,15 @@ that that list is a valid listoflist dataframe structure."
   (if vartypes   (assert (= (nvars data) (length vartypes))))
   (if varlabels  (assert (= (nvars data) (length varlabels))))
   (if caselabels (assert (= (ncases data) (length varlabels)))))
+
+(defun vartypes (df)
+  (var-types df))
+
+(defun set-vartypes (df vt)
+  (assert (= (length vt) (ncols df)))
+  (setf (var-types df) vt))
+(defsetf vartypes set-vartypes)
+
 
 (defmacro build-dataframe (type) 
   `(progn
@@ -368,6 +430,7 @@ construction of proper DF-array."
   (check-type doc string)
   (let ((ncases (ncases newdata))
 	(nvars (nvars newdata)))
+    
     (if caselabels (assert (= ncases (length caselabels))))
     (if varlabels (assert (= nvars (length varlabels))))
     (let ((newcaselabels (if caselabels
@@ -376,6 +439,7 @@ construction of proper DF-array."
 	  (newvarlabels (if varlabels
 			    varlabels
 			    (make-labels "V" nvars))))
+    
       (etypecase newdata 
 	(list
 	 (make-instance 'dataframe-listoflist
@@ -393,6 +457,7 @@ construction of proper DF-array."
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))
+	
 	(matrix-like
 	 (make-instance 'dataframe-matrixlike
 			:storage newdata
@@ -401,6 +466,20 @@ construction of proper DF-array."
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))))))
+
+(defun make-comparison-function (df function field value)
+  `#'(lambda (row) (funcall ,function (xref df row ,field) ,value)))
+
+(defun dfquery (df ))
+(defmethod dfextract (df  &key ( head 5) (tail 5) )
+  "just for the moment "
+  (let* ((rows (ncases df))
+	 (head-rows (loop for row below  (min head rows) collect (dfrow df row)))
+	 (tail-rows (loop for row from (max 0 (- rows tail)) below rows collect (dfrow df row))))
+    ; this is only temprorary. need to get dataframe-list sorted out
+    (make-dataframe (listoflist:listoflist->array  (append head-rows tail-rows))
+		    :vartypes (vartypes df)
+		    :varlabels (varlabels df))))
 
 #| 
  (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
@@ -458,22 +537,74 @@ construction of proper DF-array."
 	 	    (convert-date-column  index)
 	    (setf (nth index (vartypes df) ) 'date)))))))
 
+(defun classify-print-type (df column)
+  (labels ((integer-variable (variable)
+	     (member variable '(FIXNUM INTEGER RATIONAL)))
+	   (float-variable (variable)
+	     (member variable '(NUMBER FLOAT LONG-FLOAT SHORT-FLOAT SINGLE-FLOAT DOUBLE-FLOAT)))
+	   (string-variable (variable)
+	     (equal variable 'STRING))
+	   (keyword-variable (variable)
+	     (equal variable 'KEYWORD))
+	   (date-variable (variable)
+	     (member variable '(DATE ANTIK:TIMEPOINT))))
 
+    (let ((variable-type (elt (var-types df) column)))
+      
+      (cond
+	( (integer-variable variable-type) :INTEGER)
+	((float-variable variable-type) :FLOAT)
+	((keyword-variable variable-type) :KEYWORD)
+	((string-variable variable-type) :STRING)
+	((date-variable variable-type) :DATE)
+	(t (error "classify-print-type, unrecognized type ~a~%" variable-type))))))
+  
+(defun determine-print-width (df  column)
+  "build the format string by checking widths of each column. to be rewritten as a table "
+  (labels ((numeric-width (the-col)
+	     (reduce #'max (mapcar #'(lambda (x) (ceiling (log (abs x) 10))) (dfcolumn df the-col)) ))
+	   (string-width (the-col)
+	     (reduce  #'max (mapcar #'length (dfcolumn df the-col))))
+	   (keyword-width (the-col)
+	     (reduce #'max (mapcar #'(lambda (x) (length (symbol-name x))) (dfcolumn df the-col))))
+	   ;; FIXME - what is the print width of a timepoint?
+	   (date-width (the-col) 12))
+    
+    (case (classify-print-type df column)
+      ((:INTEGER :FLOAT) (numeric-width column))
+      (:KEYWORD          (keyword-width column))
+      (:STRING           (string-width column))
+      (:DATE             (date-width column))
+      (t (error "determine-print-width, unrecognized type ~%" )))))
+
+
+  
+
+(defun make-variable-metadata (df)
+  " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists will disappear when I figureo ut a convenient initiaslization method"
+  (format t "vars = ~A~%" (nvars df))
+  (loop for index below (nvars df) 
+	collect
+	(list
+	 :name (elt (var-labels df) index) 
+	 :type (elt (var-types df) index)
+	 :print-type (classify-print-type df index)
+	 :print-width (determine-print-width df index)) into variable-plist
+	finally (setf (slot-value df 'variables) variable-plist)))
 
 (defmethod initialize-instance :after ((df dataframe-like) &key)
   "Do post processing for variables  after we initialize the object"
+					; obviously I want to nuke var types & var labels at some point
+ 
   (unless (var-types df) 
     (setf (vartypes df) (infer-dataframe-types df)))
   (when (var-labels df)
-    (setf (var-labels df) (mapcar #'alexandria:make-keyword (var-labels df))))
+    (setf (var-labels df) (mapcar #'(lambda (keyword)
+				      (alexandria:make-keyword (string-upcase keyword))) (var-labels df))))
+ 
   (date-conversion-fu df)
-  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df) )
-					;
-  ;(determine-print-widths df)
-  )
-
-
-
+  (make-variable-metadata df)
+  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df)))
 
 ;;; FIXME: the following two functions hurt the eyes.  I think that
 ;;;
@@ -585,41 +716,24 @@ construction of proper DF-array."
 					    (DOUBLE-FLOAT . "~G")))
 (defun build-format-string (df)
   "build the format string by checking widths of each column. to be rewritten as a table "
-  (labels ((numeric-width (col)
-	     (reduce #'max (mapcar #'(lambda (x) (ceiling (log x 10))) (dfcolumn df col) )))
-	   (string-width (col)
-	     (reduce  #'max (mapcar #'length (dfcolumn df col))))
-	   (keyword-width (col)
-	     (reduce #'max (mapcar #'(lambda (x) (length (symbol-name x))) (dfcolumn df col))))
-	   (date-width (col) 12)
-	   
-	   (integer-variable (variable)
-	     (member variable '(FIXNUM INTEGER RATIONAL)))
-	   (float-variable (variable)
-	     (member variable '(NUMBER FLOAT LONG-FLOAT SHORT-FLOAT SINGLE-FLOAT DOUBLE-FLOAT)))
-	   (string-variable (variable)
-	     (equal variable 'STRING))
-	   (keyword-variable (variable)
-	     (equal variable 'KEYWORD))
-	   (date-variable (variable)
-	     (member variable '(DATE ANTIK:TIMEPOINT))))
-    
-    (loop for variable in (var-types df) and
-	  col below (ncols df)
-	  when (integer-variable variable)
-	    collect (format nil "~~~AA " (numeric-width col)) into format-control
-	  when (float-variable variable)
-	    collect (format nil "~~~A,3G " (numeric-width col)) into format-control
-	  when (keyword-variable variable)
-	   collect (format nil "~~~AA " (keyword-width col)) into format-control 
-	  when (string-variable variable)
-	    collect (format nil "~~~AA " (string-width col)) into format-control
-	  when (date-variable variable)
-	    collect (format nil "~~~AA " (date-width col)) into format-control
-	  finally (return (format nil "~~{~{~a~}~~}~~%" format-control)))))
+  
+  (loop for  variable in  (variables df) 
+    collect (case (getf variable :print-type)
+	      ((:INTEGER :KEYWORD :STRING :DATE) (format nil "~~~AA " (getf variable :print-width)))
+	      (:FLOAT (format nil "~~~A,3G " (getf variable :print-width)))) into format-control
+	
+	finally  (return (format nil "~~{~{~a~}~~}~~%" format-control))))
 
 (defun print-directive (df col)
   (cdr  (assoc (elt (vartypes df) col) DATAFRAME-PRINT-FORMATS)))
+
+(defun print-headings (df stream)
+  (loop for variable in (variables df)
+	nconc (list
+	       (1+ (max  (getf variable :print-width)
+			 (length (symbol-name  (getf variable :name)))))
+	       (getf variable :name) ) into control-string
+	  finally  (format stream "~{~VA~}~%" control-string) ))
 
 (defun row (df row)
   (loop for col  below (ncols df)
