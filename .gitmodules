@@ -4,3 +4,36 @@
 [submodule "external/ch-util.git"]
 	path = external/ch-util.git
 	url = git://cyrusharmon.org/pub/git/ch-util.git
+[submodule "external/fnv"]
+	path = external/fnv
+	url = https://www.github.com/blindglobe/fnv
+[submodule "external/data-table"]
+	path = external/data-table
+	url = https://www.github.com/blindglobe/data-table
+[submodule "external/lla"]
+	path = external/lla
+	url = https://www.github.com/blindglobe/lla
+[submodule "external/xarray"]
+	path = external/xarray
+	url = https://www.github.com/blindglobe/xarray
+[submodule "external/listoflist"]
+	path = external/listoflist
+	url = https://www.github.com/blindglobe/listoflist
+[submodule "external/lisp-matrix"]
+	path = external/lisp-matrix
+	url = https://www.github.com/blindglobe/lisp-matrix
+[submodule "external/rsm-string-cls"]
+	path = external/rsm-string-cls
+	url = https://www.github.com/blindglobe/rsm-string-cls
+[submodule "external/cl-blapack"]
+	path = external/cl-blapack
+	url = https://www.github.com/blindglobe/cl-blapack
+[submodule "external/cldoc"]
+	path = external/cldoc
+	url = https://www.github.com/danlentz/cldoc
+[submodule "external/ffa-lisp-matrix"]
+	path = external/ffa-lisp-matrix
+	url = https://www.github.com/blindglobe/ffa-lisp-matrix
+[submodule "external/array-operations-lisp-matrix"]
+	path = external/array-operations-lisp-matrix
+	url = https://www.github.com/blindglobe/array-operations-lisp-matrix

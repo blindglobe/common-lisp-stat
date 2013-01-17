@@ -73,8 +73,7 @@ Returns the number of lisp items on the first nonblank line of file FNAME."
   #+dialogs
   (defun open-file-dialog () ;; why?(&optional set)
     (get-string-dialog "Enter a data file name:"))
-  #-dialogs
-  (defun open-file-dialog () ;; why? (&optional set)
+  #-dialogs  (defun open-file-dialog () ;; why? (&optional set)
     (error "You must provide a file name explicitly")))
 
 
@@ -136,12 +135,11 @@ Usually used by:
 
 ;; Support functions
 
-#|
-(defun filename.dsv->dataframe (filename &optional
+(defun filename.dsv->dataframe2 (filename &optional
 				(delimchar ",")
 				(varnameheader 't)
 				(docstring "This is an amusing dataframe array")
-				(arraystorage-object 'dataframe-array))
+				)
   "Reads the DSV file FILENAME and returns a dataframe-array object.
 By default, the delimiter is a ',' which can be changed.  FIXME: could
 read first 2 lines, and logically guess if the first is variable name
@@ -153,12 +151,12 @@ to use it next time if wanted."
     (let ((var-name-list (if varnameheader
 			     (car csv-file-data)
 			     (make-labels "V"  (length (car csv-file-data)))))
-	  (data-list (listoflist:listoflist->array (cdr csv-file-data))))
-      (make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
-		 :storage data-list
-		 :var-labels var-name-list
+	  (data (listoflist:listoflist->array (cdr csv-file-data) )))
+      (make-dataframe data
+		 :varlabels var-name-list
 		 :doc docstring))))
-|#
+
+
 
 (defun convert-strings-to-data-types (cl-array)
   cl-array
@@ -189,3 +187,80 @@ need to implement a clean...
 		       :storage data-list ;; needs to be (convert-strings-to-data-types data-list)
 		       :var-labels var-name-list
 		       :doc docstring)))))
+
+
+;; I have some elisp that will build this short of spec quite nicely for data files with fixed field formats
+;; 
+(defparameter *GHCN-TEMPERATURE-FIELDS*
+  '( (0 10 :id (integer))
+    (11 15 :year (integer))
+    (15 18 :element (string))
+    (19 23 :jan (integer))
+    (24 24 :dmjan (string))
+    (25 25 :qcjan (string))
+    (26 26 :dsjan (string))
+    (27 31 :feb (integer))
+    (32 32 :dmfeb (string))
+    (33 33 :qcfeb (string))
+    (34 34 :dsfeb (string))
+    (35 39 :mar (integer))
+    (40 40 :dmmar (string))
+    (41 41 :qcmar (string))
+    (42 42 :dsmar (string))
+    (43 47 :apr (integer))
+    (48 48 :dmapr (string))
+    (49 49 :qcapr (string))
+    (50 50 :dsapr (string))
+    (51 55 :may (integer))
+    (56 56 :dmmay (string))
+    (57 57 :qcmay (string))
+    (58 58 :dsmay (string))
+    (59 63 :jun (integer))
+    (64 64 :dmjun (string))
+    (55 65 :qcjun (string))
+    (66 66 :dsjun (string))
+    (67 71 :jul (integer))
+    (72 72 :dmjul (string))
+    (73 73 :qcjul (string))
+    (74 74 :dsjul (string))
+    (75 79 :aug (integer))
+    (80 80 :dmaug (string))
+    (81 81 :qcaug (string))
+    (82 82 :dsaug (string))
+    (83 87 :sep (integer))
+    (88 88 :dmsep (string))
+    (89 89 :qcsep (string))
+    (90 90 :dssep (string))
+    (91 95 :oct (integer))
+    (96 96 :dmoct (string))
+    (97 97 :qcoct (string))
+    (98 98 :dsoct (string))
+    (99 103 :nov (integer))
+    (104 104 :dmnov (string))
+    (105 105 :qcnov (string))
+    (106 106 :dsnov (string))
+    (107 111 :dec (integer))
+    (112 112 :dmdec (string))
+    (113 113 :qcdec (string))
+    (114 114 :dsdec (string))
+     ))
+
+
+(defun file.fixed->dataframe (file  field-specification &optional (docstring "a fixed dataframe"))
+  "this returns a record oriented file as a dataframe. The field-specification is of the form
+<start end fieldname type>. where type is defined by data format validation  - ie string, integer, number, date and so on . dataframe metadata is created from this. At the moment different record types are not handled, though this is planned "
+  (labels ((parse-line (line fields)
+	   (loop for  ( from to fname type) in fields
+		 collect  (data-format-validation:parse-input type  (subseq line from to))))
+	 (read-file (file)
+	   (with-open-file ( stream file :direction :input)
+	     (loop for line = (read-line stream  nil nil)
+		   while line
+		   collect (parse-line line field-specification)))))
+    
+     (let ((data (listoflist:listoflist->array (read-file file)))
+		(varlabels (mapcar #'third field-specification)))
+	    (make-dataframe data
+			    :varlabels varlabels
+			    :doc docstring))))
+;; (file.fixed->dataframe "fixed.txt", *GHCN-TEMPERATURE-FIELDS*)

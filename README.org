@@ -36,7 +36,7 @@ Time-stamp: <2012-12-19 16:39:37 tony>
    Right now, one needs a Common Lisp implementation, SBCL, CCL, and
    CLISP seem to be the easiest to get.   There are many others.  
 
-   GCL might be one not to try at this point?
+   GCL might be one NOT to try at this point?
 
 *** Microsoft Windows
 
@@ -178,42 +178,20 @@ sudo apt-get install libblas
 sudo apt-get install liblapack
 #+END_SRC
 
-   5. For visualization we are currently using plplot and the
-      cl-plplot interface. this requires the installation of the
-      plplot library
+For windows, we recommend you use cygwin to get straightforward
+access. I'll document the steps if there is a demand.
 
-      for MAC OSX you can use macports or homebrew
+6. You need to check that your dynamic library path has been properly
+   set up in the shell.
+In your .bashrc (or equivalent shell init file) 
+For Mac OSX set DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
+For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
 
-      5.1 sudo port install xquartz (or download from the xquartz home site)
+If you get this wrong the load process will not be able to find the
+libraries and will prompt you. 
 
-      5.2 sudo port install plplot
-
-      and on linux your favourite package manager of course.
-
-      For windows, we recommend you use cygwin to get straightforward
-      access. I'll document the steps if there is a demand.
-
-   6. You need to check that your dynamic library path has been
-      properly set up in the shell.  In your .bashrc (or equivalent
-      shell init file)
-
-      For Mac OSX set 
-
-#+BEGIN_SRC 
-DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
-#+END_SRC
-
-      For Linux set 
-
-#+BEGIN_SRC 
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
-#+END_SRC
-
-      If you get this wrong the load process will not be able to find
-      the libraries and will prompt you.
-
-   5. Once the pre prequisites have been done, start your favourite lisp
-      and enter 
+5. Once the pre prequisites have been done, start your favourite lisp
+   and enter 
 
 #+begin_src lisp
 (ql:register-local-projects)
@@ -221,58 +199,35 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
 #+end_src lisp
 
       Retire for a well earned coffee and upon your return you should
-      find the package completely installed.Obviously, potential
+      find the package completely installed.  Obviously, potential
       errors can creep in with spelling the filenames correctly, so be
       careful.
 
-** Version 1 (Tony)
+** Example Usage steps
+  
+*** change directory into the CommonLispStat working directory.
+*** start your lisp
+*** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
+ 
+**** (ql:quickload :cls)
 
-  You probably did  (preferred)
+**** (in-package :cls)
 
-#+name: LoadWithGitClone
-#+begin_src shell
-  git clone git://github.com/blindglobe/common-lisp-stat.git
-#+end_src
+     Initially we will work in the cls package as all the basic
+     functions we would need are present
 
-  (or maybe using the repo.or.cz git repository archive), or (coming
-  soon!) from within a Lisp instance:
+     For serious work we would create our own workspace and save it in
+     a separate package, but for now we will take this short cut.
 
-#+name: LoadWithQuickLisp
-#+begin_src lisp
-  (ql:quickload :cls)
-#+end_src
+**** (normal-rand 20)
 
-  At one point, I planned a pure git-delivery via cloning and
-  submodules, but this proved to be a bit more complex than needed,
-  thanks to the creation of quicklisp.  It's also a stupid idea if
-  one plans to have users who are not hackers or developers, and
-  eventually we want users.
+**** (setf mytest (normal-rand 20))
 
-  Despite quicklisp, there will need to be a version for delivering a
-  system development-oriented CLS environment and this will consist of
-  git repositories, possibly through submodules, but this (submodules)
-  is for discussion.
+**** ... (and so on) ...
 
-  There are quite a few libraries that are needed, and right now we
-  are working on simplifying the whole thing.   Once you get past
-  this step, then you should:
-
-  1. run a common lisp (SBCL, CMUCL, CLISP, CLOZURE-CL) starting in
-     the current directory.  You will need ASDF at a minimum,
-     QUICKLISP preferred.  And you should have QUICKLISP.
-
-  2. (on Debian or similar systems: can use CLC (Common Lisp
-     Controller) or SBCL approaches, i.e.  ~/.clc/systems or
-     ~/.sbcl/systems should contain softlinks to the cls and other
-     required ASDF files (i.e. cls.asd, cffi.asd, and lift.asd).
-
-  There are example sessions and scripts for data analysis, some real,
-  some proposed, in the file:examples/ directory.  Also see
-  file:TODO.org for snippets of code that work or fail to work.
-
-** Example Usage steps [2/7]
-
-*** DONE Start and Load 
+   and see if they work (basic CFFI functionality for external C
+   library, LIFT package for unit-testing framework to ensure run time
+   stability).
   
 1. start your lisp
 2. load CLS
@@ -501,6 +456,7 @@ something like:
    what you intend with your contributions.  Should we become famous
    (Ha!) make sure that you've communicated your expectations...
 
+   We currently are using and recommend the MIT style license approach.
 * Footnotes
 
 [fn:1] I´m not including instructions for Emacs or git, as the former

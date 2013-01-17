@@ -85,11 +85,15 @@ return a pathspec, not a string/namespec"
 > 
 |#
 
-  (defparameter *chickwts-df* (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv")))
+ (progn 
+   (defparameter *chickwts-df* (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv"))))
   ;; *chickwts-df*
   (xref *chickwts-df* 1 1) ; => 160
   (xref *chickwts-df* 40 2) ; => "sunflower"
   *chickwts-df*)
 
+(defparameter *chickwts-df* (filename.dsv->dataframe  "~/lisp/common-lisp-stat/Data/R-chickwts.csv"))
 
 (+   (xref *chickwts-df* 1 1)   (xref *chickwts-df* 63 1))
+
+(defparameter *chickwts-df* (cls-dataio:filename.dsv->dataframe  "~/lisp/common-lisp-stat/Data/chickwts-date.csv"))

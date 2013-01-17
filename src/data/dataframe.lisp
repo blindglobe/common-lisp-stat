@@ -83,7 +83,7 @@
   (repeat-seq 3 'd) ; => ('d 'd 'd)
   (repeat-seq 3 (list 1 2))"
   (if (>= n 1)
-      (loop for i upto n collect item  )))
+      (loop for i below n collect item  )))
 
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.
@@ -179,7 +179,7 @@ value is returned indicating the success of the conversion.  Examples:
 	       :type list
 	       :accessor var-labels
 	       :documentation "Variable names. List order matches
-	         order in STORE.")
+	         order in STORE. superceded by variables below")
    (var-types :initform nil
 	      :initarg :var-types
 	      :type list
@@ -187,7 +187,7 @@ value is returned indicating the success of the conversion.  Examples:
 	      :documentation "List of symbols representing classes
 	        which describe the range of contents for a particular
 	        variable. Symbols must be valid types for check-type.
-	        List order matches order in STORE.")
+	        List order matches order in STORE. superceded by variables below")
    (doc-string :initform nil
 	       :initarg :doc
 	       :accessor doc-string
@@ -276,7 +276,7 @@ nil on error is for non interactive use"
      (let ((col (position column (varlabels df))))
        (if col
 	   col
-	   (if nil-on-error nil  (error "Column name misspelt: try again ~a~%" column)))))
+	   (if nil-when-error nil  (error "Column name misspelt: try again ~a~%" column)))))
     (number column)
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
 
@@ -616,7 +616,7 @@ construction of proper DF-array."
 ;;;
 
 (defun row-order-as-list (ary)
-  "Pull out data in row order into a list."
+  "Pull out data in row order into a list. naughty, should use xref"
   (let ((result (list))
 	(nrows (nth 0 (array-dimensions ary)))
 	(ncols (nth 1 (array-dimensions ary))))
@@ -639,6 +639,14 @@ construction of proper DF-array."
   "map NxM to MxN."
   (make-array (reverse (array-dimensions ary))
       :initial-contents (col-order-as-list ary)))
+
+(defun varlabels (df)
+  "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
+  (mapcar  (lambda (variable) (getf variable :type)) (variables  df)))
+
+(defun vartypes (df)
+  "list of types for each column"
+  (mapcar  (lambda (variable) (getf variable :name)) (variables  df))  )
 
 ;;; THE FOLLOWING 2 dual-sets done to provide error checking
 ;;; possibilities on top of the generic function structure.  Not
@@ -667,7 +675,7 @@ construction of proper DF-array."
   (if (= (length (case-labels df))
 	 (length cl))
       (setf (case-labels df) cl)
-      (error "wrong size.")))
+      (error "set caselabels: wrong size.")))
 
 (defsetf caselabels set-caselabels)
 

@@ -11,22 +11,17 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;; Load ASDF if it isn't loaded -- BUT we need to ensure that we sync
-;; properly with the new ASDF!  Maybe we should make the git repo a
-;; submodule, and tag a particular version to use, pulling that
-;; version?  However, most "modern" CLs use the "new" (>=v2) ASDF.
-
-#-asdf(load (pathname (concatenate 'string (namestring *cls-external-dir*) "asdf")))
 
 (in-package :cl-user)
 
-;;(pushnew *cls-asdf-dir* asdf:*central-registry*)
-;;(pushnew #p"C:/Lisp/libs/" asdf-util:*source-dirs* :test #'equal) ; eg for Microsoft
 
 (cl:defpackage #:cls-system
     (:use :common-lisp :asdf))
 
 (in-package #:cls-system)
+
+;; The following must be replaced with new ASDF approach.  
+;; We ONLY run on ASDF/QuickLisp enabled installations.
 
 ;;; To avoid renaming everything from *.lsp to *.lisp...  borrowed
 ;;; from Cyrus Harmon's work, for example for the ch-util.  NOT secure
@@ -70,9 +65,9 @@
   :depends-on (;;  :cldoc  ;; documentation tool? (not Lit Prog, but coding support)
 	       ;;  :cffi   ;; only needed within lisp-matrix
 	       :xarray
-	       :lisp-matrix ;; on fnv, cl-blapack, ffa
-	       :listoflist
 	       :lift
+	       :lisp-matrix ; on fnv, cl-blapack, ffa
+	       :listoflist
 	       :fare-csv
 	       ;;; need to select pRNG stream system
 	       ;; :cl-random ;; or cl-variates, or...?

@@ -48,7 +48,7 @@
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
 
 
-(defun translate-column (df column)
+(defun translate-column2 (df column)
   (cond
     ((typep column 'keyword) (position column (varlabels df)))
     ((typep column 'number) column)
@@ -86,6 +86,8 @@
 (defmethod ncols ((df dataframe-array))
   "specializes on inheritance from matrix-like in lisp-matrix."
   (array-dimension (dataset df) 1))
+
+
 
 (defmethod xref ((df dataframe-array) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref, etc.

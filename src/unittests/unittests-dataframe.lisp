@@ -16,7 +16,7 @@
 (in-package :lisp-stat-unittests)
 
 (deftestsuite lisp-stat-ut-dataframe (lisp-stat-ut)
-  ((my-df-1-good
+  ((my-df-1
     (make-instance 'dataframe-array
 		   :storage #2A((1 2 3 4 5)
 				(10 20 30 40 50))
@@ -33,16 +33,16 @@
 
 ;;; Ensure helper-functions work
 
-(addtest (lisp-stat-ut-dataframe) genseq
-	 (ensure
-	  (equal (cls-dataframe::gen-seq 4)
-		 (list 1 2 3 4)))
-	 (ensure
-	  (equal (cls-dataframe::gen-seq 0)
-		 nil))
-	 (ensure
-	  (equal (cls-dataframe::gen-seq 4 2)
-		 (list 2 3 4))))
+;; (addtest (lisp-stat-ut-dataframe) genseq ;; genseq retired in favour of alexandria
+;; 	 (ensure
+;; 	  (equal (cls-dataframe::gen-seq 4)
+;; 		 (list 1 2 3 4)))
+;; 	 (ensure
+;; 	  (equal (cls-dataframe::gen-seq 0)
+;; 		 nil))
+;; 	 (ensure
+;; 	  (equal (cls-dataframe::gen-seq 4 2)
+;; 		 (list 2 3 4)))) 
 
 (addtest (lisp-stat-ut-dataframe) repeatseq
 	 (ensure
@@ -69,7 +69,7 @@
 					  :storage #2A(('a 'b)
 						       ('c 'd))))
 		  #2A(('a 'b)
-		      ('c 'd)))))
+		      ('c 'd)))v))
 
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure 
