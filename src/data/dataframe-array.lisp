@@ -1,7 +1,7 @@
 1
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-09 08:22:40 tony>
+;;; Time-stamp: <2013-01-19 15:53:48 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Authors:    AJ Rossini <blindglobe@gmail.com>
@@ -35,6 +35,11 @@
   (:documentation "example implementation of dataframe-like using storage
   based on lisp arrays.  An obvious alternative could be a
   dataframe-matrix-like which uses the lisp-matrix classes."))
+
+
+(defmethod dfcolumn (( df dataframe-array) variable)
+  "return a column as a list. a quick hack until we decide what the array manipulations should be"
+  (loop for row below (nrows df) collect (xref df row variable)))
 
 (defun translate-column (df column)
   "for production use, we would wrap this in a handler to enable entry of the correct column id"

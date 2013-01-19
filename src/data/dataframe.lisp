@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-12 16:40:46 tony>
+;;; Time-stamp: <2013-01-19 16:02:51 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -71,6 +71,7 @@
 
 ;; the next two should be merged into a general replicator or iterator
 ;; pattern.
+
 (defun gen-seq (n &optional (start 1))
   "Generates an integer sequence of length N starting at START. Used
  for indexing."
@@ -107,28 +108,24 @@ value is returned indicating the success of the conversion.  Examples:
   (position #'(lambda (x) (equal x 1)) (list 2 1 3 4))
 |#
 
-(defun reduce-column (df function column )
-  "reduce a column of a df with function yielding a scalar"
-  (assert (and (>= column 0) (< column (ncols df))) )
-  (loop with result = (xref df 0 column)
-	for i from 1 below (nrows df) do
-	  (setf result (funcall function result (xref df i column)))
-	finally (return result)))
-
-(defun map-column (df function column)
-  (assert (and (>= column 0) (< column (ncols df))) )
-  (loop with result = (make-sequence 'vector (nrows df) )
-	for i from 1 below (nrows df) do
-	  (setf (xref result i ) (funcall function (xref df i column)))
-	finally (return result)))
-
 
 (defun column-type-classifier (df column)
   "column type classifier, finds the smallest subtype that can
-  accomodate the elements of list, in the ordering fixnum < integer <
-  float < complex < t.  Rational, float (any kind) are classified as
-  double-float, and complex numbers as (complex double-float).  Meant
-  to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
+  accomodate the elements of list, in the ordering:
+
+     fixnum < integer < float < complex < t
+
+  Rational, float (any kind) are classified as double-float, and
+  complex numbers as (complex double-float).  Meant to be used by
+  dataframe constructors so we can guess at column data types. The
+  presence of a non numeric in a column implies the column is
+  represented as a non numeric, as reduces and numeric maps will
+  fail.
+
+  AJR: David made a great start, and what we need to do is construct
+  appropriate statistical types to support AI-style guidance for
+  appropriate statistical procedures, or at least give caveats for why
+  they are not appropriate."
 
   (case (reduce #'max (map-column df #' 
 				  (lambda (x)
@@ -149,7 +146,10 @@ value is returned indicating the success of the conversion.  Examples:
     (6 t))) ;; nil will end up here.
 
 (defun infer-dataframe-types (df)
-  "infer the numeric types for each column in the dataframe. note that all non numerc types are lumped into T, so further discrimination will be required."
+  "infer the numeric types for each column in the dataframe. note that
+all non numerc types are lumped into T, so further discrimination will
+be required."
+
   (let ((column-types (loop for col  below (ncols df)
 			    collect (column-type-classifier df col))))
     column-types))
@@ -197,7 +197,7 @@ value is returned indicating the success of the conversion.  Examples:
    (variables :initarg :variables
 	      :initform (list)
 	      :accessor variables
-	      :documentation " a plist of the meta data for each variable. "))
+	      :documentation " a plist of the meta data for each variable. ")
    (print-widths :initform nil
 		 :initarg :print-widths
 		 :accessor print-widths
@@ -232,9 +232,6 @@ value is returned indicating the success of the conversion.  Examples:
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
 
-(defmethod dfcolumn (( df dataframe-array) variable)
-  "return a column as a list. a quick hack until we decide what the array manipulations should be"
-  (loop for row below (nrows df) collect (xref df row variable)))
 
 (defgeneric nvars (df)
   (:documentation "number of variables represented in storage type.")
@@ -282,12 +279,15 @@ nil on error is for non interactive use"
 
 
 
-(defun column-type-classifier (df column)
+(defun column-type-classifier-2 (df column)
   "column type classifier, finds the smallest subtype that can
   accomodate the elements of list, in the ordering fixnum < integer <
   float < complex < t.  Rational, float (any kind) are classified as
   double-float, and complex numbers as (complex double-float).  Meant
-  to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
+  to be used by dataframe constructors so we can guess at column data
+  types. The presence of a non numeric in a column implies the column
+  is represented as a non numeric, as reduces and numeric maps will
+  fail."
 
   (case (reduce #'max (map-column df #' 
 				  (lambda (x)
@@ -340,18 +340,18 @@ nil on error is for non interactive use"
 	   (typep (xref df i j) (nth j (var-types df))))) 
        t))))
 
-(defmethod reduce-column (df function column )
+(defun reduce-column (df function column )
   "reduce a column of a df with function yielding a scalar"
-  (assert (and (>= column 0) (< column (nvars df))) )
+  (assert (and (>= column 0) (< column (ncols df))) )
   (loop with result = (xref df 0 column)
-	for i from 1 below (ncases df) do
+	for i from 1 below (nrows df) do
 	  (setf result (funcall function result (xref df i column)))
 	finally (return result)))
 
-(defmethod map-column (df function column)
+(defun map-column (df function column)
   (assert (and (>= column 0) (< column (ncols df))) )
-  (loop with result = (make-sequence 'vector (ncases df) )
-	for i from 1 below (ncases df) do
+  (loop with result = (make-sequence 'vector (nrows df) )
+	for i from 1 below (nrows df) do
 	  (setf (xref result i ) (funcall function (xref df i column)))
 	finally (return result)))
 
@@ -417,55 +417,6 @@ nil on error is for non interactive use"
 (defgeneric make-dataframe2 (data &key vartypes varlabels caselabels doc)
   (:documentation "testing generic dispatch.  Data should be in table format desired for use."))
 
-(defun make-dataframe (newdata
-		       &key  (vartypes nil)
-		       (caselabels nil) (varlabels nil)
-		       (doc "no docs"))
-  "Helper function to use instead of make-instance to assure
-construction of proper DF-array."
-  (check-type newdata (or matrix-like array list))
-  (check-type caselabels sequence)
-  (check-type varlabels sequence)
-  (check-type vartypes sequence)
-  (check-type doc string)
-  (let ((ncases (ncases newdata))
-	(nvars (nvars newdata)))
-    
-    (if caselabels (assert (= ncases (length caselabels))))
-    (if varlabels (assert (= nvars (length varlabels))))
-    (let ((newcaselabels (if caselabels
-			     caselabels
-			     (make-labels "C" ncases)))
-	  (newvarlabels (if varlabels
-			    varlabels
-			    (make-labels "V" nvars))))
-    
-      (etypecase newdata 
-	(list
-	 (make-instance 'dataframe-listoflist
-			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
-			:case-labels newcaselabels
-			:var-labels newvarlabels
-			:var-types vartypes))
-	(array
-	 (make-instance 'dataframe-array
-			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
-			:case-labels newcaselabels
-			:var-labels newvarlabels
-			:var-types vartypes))
-	
-	(matrix-like
-	 (make-instance 'dataframe-matrixlike
-			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
-			:case-labels newcaselabels
-			:var-labels newvarlabels
-			:var-types vartypes))))))
 
 (defun make-comparison-function (df function field value)
   `#'(lambda (row) (funcall ,function (xref df row ,field) ,value)))

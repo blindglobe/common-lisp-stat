@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2012-11-24 17:10:03 tony> 
+;;; Time-stamp: <2013-01-19 15:52:14 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -135,6 +135,7 @@ Usually used by:
 
 ;; Support functions
 
+#|
 (defun filename.dsv->dataframe2 (filename &optional
 				(delimchar ",")
 				(varnameheader 't)
@@ -155,7 +156,7 @@ to use it next time if wanted."
       (make-dataframe data
 		 :varlabels var-name-list
 		 :doc docstring))))
-
+|#
 
 
 (defun convert-strings-to-data-types (cl-array)
@@ -168,6 +169,8 @@ need to implement a clean...
 )
 
 
+;; backwards order, since we don't have dataframe-array class loaded.
+#|
 (defun filename.dsv->dataframe (filename
 				&optional
 				  (delimchar fare-csv:*separator*)
@@ -187,7 +190,7 @@ need to implement a clean...
 		       :storage data-list ;; needs to be (convert-strings-to-data-types data-list)
 		       :var-labels var-name-list
 		       :doc docstring)))))
-
+|#
 
 ;; I have some elisp that will build this short of spec quite nicely for data files with fixed field formats
 ;; 
@@ -246,9 +249,20 @@ need to implement a clean...
      ))
 
 
+#|
 (defun file.fixed->dataframe (file  field-specification &optional (docstring "a fixed dataframe"))
-  "this returns a record oriented file as a dataframe. The field-specification is of the form
-<start end fieldname type>. where type is defined by data format validation  - ie string, integer, number, date and so on . dataframe metadata is created from this. At the moment different record types are not handled, though this is planned "
+  "this returns a record oriented file as a dataframe. The
+  field-specification is of the form <start end fieldname type>. where
+  type is defined by data format validation - ie string, integer,
+  number, date and so on . dataframe metadata is created from this. At
+  the moment different record types are not handled, though this is
+  planned.
+
+  eg: (file.fixed->dataframe "fixed.txt", *GHCN-TEMPERATURE-FIELDS*)
+
+ "
+
+
   (labels ((parse-line (line fields)
 	   (loop for  ( from to fname type) in fields
 		 collect  (data-format-validation:parse-input type  (subseq line from to))))
@@ -263,4 +277,5 @@ need to implement a clean...
 	    (make-dataframe data
 			    :varlabels varlabels
 			    :doc docstring))))
-;; (file.fixed->dataframe "fixed.txt", *GHCN-TEMPERATURE-FIELDS*)
+|#
+

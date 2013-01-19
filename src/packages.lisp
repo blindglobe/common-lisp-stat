@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-06 08:26:01 tony>
+;;; Time-stamp: <2013-01-19 16:09:39 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -168,7 +168,7 @@
    ;; generic container class for data -- if small enough
    ;; could be value, otherwise might be reference.
    dataframe-like
-   dataframe-array
+   dataframe-array ;; need to add other dataframe components.
    make-dataframe
 
    dataset
@@ -179,7 +179,8 @@
    varlabels caselabels  nrows ncols
    dataframe-dimension dataframe-dimensons
    xref xtype xdims xdim xrank slice take carray
- 
+   dfcolumn dfrow
+
    ;; support
    make-labels))
 

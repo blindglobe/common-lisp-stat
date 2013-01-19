@@ -1,7 +1,25 @@
 ;;; -*- Mode:Lisp; Syntax:ANSI-Common-Lisp; -*-
 
+;;; Time-stamp: <2013-01-19 16:01:44 tony>
+;;; Creation:   <2012 David Hodge>
+;;; File:       dataframe-query.lisp
+;;; Author:     David Hodge
+;;; Copyright:  (c)2012--, David Hodge.  Currently licensed under MIT
+;;;             license.  See file LICENSE.mit in top-level directory
+;;;             for information.
+;;; Purpose:    implements a convenience functions for dataframe queries.
+
+;;; What is this talk of 'release'? Klingons do not make software
+;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
+;;; designers and quality assurance people in its wake.
+
+;;; This organization and structure is new to the 21st Century
+;;; version..   Think, "21st Century Schizoid Man".
+
+
 (in-package #:cls-dataframe)
-;; this implments a few convenience functions for querying a dataframe
+
+
 ;; the general idea is to take a lisp expression and rewrite any keyword fields to call an approporate accessor
 ;; so (> :id 50) ==> (> (xref df row (translate-column :id) 50)
 ;; if a keyword is not translateable, we leave it alone.

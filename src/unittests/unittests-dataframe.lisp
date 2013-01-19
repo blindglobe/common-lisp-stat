@@ -33,16 +33,16 @@
 
 ;;; Ensure helper-functions work
 
-;; (addtest (lisp-stat-ut-dataframe) genseq ;; genseq retired in favour of alexandria
-;; 	 (ensure
-;; 	  (equal (cls-dataframe::gen-seq 4)
-;; 		 (list 1 2 3 4)))
-;; 	 (ensure
-;; 	  (equal (cls-dataframe::gen-seq 0)
-;; 		 nil))
-;; 	 (ensure
-;; 	  (equal (cls-dataframe::gen-seq 4 2)
-;; 		 (list 2 3 4)))) 
+ (addtest (lisp-stat-ut-dataframe) genseq ;; genseq retired in favour of alexandria
+ 	 (ensure
+ 	  (equal (cls-dataframe::gen-seq 4)
+ 		 (list 1 2 3 4)))
+ 	 (ensure
+ 	  (equal (cls-dataframe::gen-seq 0)
+ 		 nil))
+ 	 (ensure
+ 	  (equal (cls-dataframe::gen-seq 4 2)
+ 		 (list 2 3 4))))
 
 (addtest (lisp-stat-ut-dataframe) repeatseq
 	 (ensure
@@ -63,13 +63,14 @@
 
 ;;; Dataframe tests
 
+
 (addtest (lisp-stat-ut-dataframe) df-equalp
 	 (ensure
 	  (equalp (dataset (make-instance 'dataframe-array
 					  :storage #2A(('a 'b)
 						       ('c 'd))))
 		  #2A(('a 'b)
-		      ('c 'd)))v))
+		      ('c 'd)))))
 
 (addtest (lisp-stat-ut-dataframe) df-consdata
 	 (ensure 

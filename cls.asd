@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2012-12-19 16:49:32 tony>
+;;; Time-stamp: <2013-01-19 16:13:44 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -153,6 +153,8 @@
 		 (:file "dataframe-array")
 		 (:file "dataframe-matrixlike")
 		 (:file "dataframe-listoflist")
+		 (:file "dataframe-functionality")
+
 		 (:file "data")
 		 (:file "data-xls-compat")
 		 (:file "import")))
@@ -275,7 +277,8 @@
 			      (:file "unittests-regression" :depends-on ("unittests"))
 			      (:file "unittests-listoflist" :depends-on ("unittests"))
 			      (:file "unittests-arrays" :depends-on ("unittests"))
-			      (:file "unittests-dataframe" :depends-on ("unittests"))))))
+			      ;;(:file "unittests-dataframe" :depends-on ("unittests"))
+			      ))))
 
 #|
 
