@@ -1,5 +1,5 @@
 
-Time-stamp: <2012-12-19 16:39:37 tony>
+Time-stamp: <2013-01-22 19:31:19 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -13,30 +13,59 @@ Time-stamp: <2012-12-19 16:39:37 tony>
      Make sure you have BLAS, LAPACK, and their corresponding
      development environments on your system
   2. if needed, install quicklisp (http://www.quicklisp.org)
-  3. if needed, install git (http://www.git-scm.org/)
+  3. if wanted, install git (http://www.git-scm.org/)
   4. Use git to fetch common-lisp-statistics from the repository:
         git://github.com/blindglobe/common-lisp-stat.git
      and put it into your quicklisp local-projects directory
-     (you will need to put a few more projects there as well)
+     (you will need to put a few more projects there as well), 
+     OR make sure you have an internet connection and go to step 5 and
+     fetch a not-so-bleeding-edge version from QuickLisp.
   5. Start up the Common Lisp implementation, and:
 
 #+name: loadIt
 #+begin_src lisp
-  (ql:quickload :cls)
+(ql:register-local-projects)
+(ql:quickload :cls)
 #+end_src
 
   6. get coffee, review the Common Lisp Statistics mailing list, chat
      with friends, etc, until it is done compiling and loading.
-  7. Report success/failure back to the news group or to me
-     (mailto:blindglobe@gmail.com)
+  7. Report success/failure back to the news group (
+      https://groups.google.com/forum/?fromgroups#!forum/lisp-stat )
+     or send Tony Rossini mail, i.e.  ( mailto:blindglobe@gmail.com )
   8. Start trying it out.
+
+  More details can be fond in the subsequent sections.
 
 ** Common Lisp, Support Libraries
 
    Right now, one needs a Common Lisp implementation, SBCL, CCL, and
-   CLISP seem to be the easiest to get.   There are many others.  
+   CLISP seem to be the easiest to get, and have been reported to
+   partially work.  SBCL and CCL are in active use by developers.  We
+   are interested in finding out details regarding successes with
+   other distributions and would be pleased to add such information
+   here. 
 
-   GCL might be one NOT to try at this point?
+
+   Configure the locations of the BLAS and LINPACK libraries
+
+   Currently this is a manual operation, which will change in a later
+   version.
+
+   Edit the file external/cl-blapack/load-blapack-libs.lisp
+
+   Search for the following 3 parameters 
+   - *gfortran-lib* 
+   - *blas-lib*
+   - *lapack-lib*
+
+   You need to check that your dynamic library path has been properly
+   set up in the shell.
+
+   In your .bashrc (or equivalent shell init file) 
+
+   For Mac OSX set DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
+   For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
 
 *** Microsoft Windows
 
@@ -46,8 +75,12 @@ Time-stamp: <2012-12-19 16:39:37 tony>
 
     http://lispcabinet.sourceforge.net/
 
-    *FIXME:* (how) does one need to get BLAS, LAPACK, and the
-     compilation environment if needed, on Microsoft Windows?
+**** TODO [#A] How to setup BLAS, LAPACK on Microsoft OS?
+
+     i.e. compilation environment and tools, if needed, on Microsoft Windows?
+
+     For windows, we recommend you use cygwin to get straightforward
+     access. I'll document the steps if there is a demand.
 
 *** Linux
 
@@ -59,6 +92,15 @@ Time-stamp: <2012-12-19 16:39:37 tony>
 
     (CMUCL and CLISP may work, but not tested)
 
+   For linux, make sure you have the neccessary libraries installed,
+   through apt, yum or otherwise
+
+   i.e.: 
+#+BEGIN_SRC shell
+sudo apt-get install libblas
+sudo apt-get install liblapack
+#+END_SRC
+
 *** TODO MacOSX
 
     *FIXME*: Tony has no clue, please fill this in since most mailing
@@ -66,7 +108,9 @@ Time-stamp: <2012-12-19 16:39:37 tony>
 
     - CCL is thought to work
     - SBCL is known to work
-    - LAPACK/BLAS: get from 
+
+    For OS X: change the parameters as suggested in the file. Both
+    BLAS and LAPACK are pre installed on Mac OSX.
 
 ** Install Quicklisp
 
@@ -85,11 +129,27 @@ Time-stamp: <2012-12-19 16:39:37 tony>
    want to fix your own bugs and copy/paste fixes, etc.  Much simpler
    to figure out a small bit of git.
 
-   Hopefully, your distribution (Linux) has it, or you can get it for
-   MacOSX and Microsoft Windows via  http://www.git-scm.org/ 
+   Hopefully, your distribution (Linux) has it, and instructions for
+   getting it, along with tutorials and documentation, can be found
+   for MacOSX and Microsoft Windows on http://www.git-scm.org/
 
    GitHub also has a Microsoft Windows application that might be
-   useful.
+   useful for fetching and working with GitHub repositories (including
+   this one).
+
+*** for mac osx
+
+#+begin_src sh
+sudo port install git
+#+end_src
+
+*** for linux
+
+    (eg debian)
+
+#+begin_src sh
+sudo apt-get install git
+#+end_src
 
 ** Using git to fetch Common Lisp Statistics
 
@@ -99,114 +159,80 @@ Time-stamp: <2012-12-19 16:39:37 tony>
    basically you need to pull common-lisp-stat from Blindglobe's
    repository, along with a few others.  
 
-   *FIXME*: must figure out the current "few others" and keep it current.
+#+begin_src sh
+cd ~/quicklisp/local-projects/
+git clone https://github.com/blindglobe/common-lisp-stat.git
+#+end_src
+
+   Regarding the "few others", all of them are currently part of
+   QuickLisp, so you only need them if you want to develop with them.
+   Which isn't entirely a bad idea.
+
+   These would include:
+
+| lisp-matrix | CLS         | generic interface to BLAS and LAPACK using matrix like API |
+| cl-blapack  | lisp-matrix | BLAS / LAPACK FFI                                          |
+| fnv         | lisp-matrix | foriegn-numeric-vectors, C-storage for lisp-matrix         |
+| ffa         | lisp-matrix | foriegn-??-arrays, LISP storage for lisp-matrix            |
+| lift        | CLS         | unit-testing                                               |
+| listoflist  | CLS         | list as an array data structure                            |
+| xarray      |             |                                                            |
 
 ** Compile and load dependencies.
 
-Start up your Common Lisp implementation and type in:
+   Start up your Common Lisp implementation and type in:
 
 #+begin_src lisp
+(ql:register-local-projects)
 (ql:quickload :cls)
 #+end_src
 
-and everything should be working.  This is the case for at least one
-person, so data on failures is very welcome.
+   Retire for a well earned coffee and upon your return you should
+   find the package completely installed.  Obviously, potential errors
+   can creep in with spelling the filenames correctly, so be careful.
+
+   And now, everything should be working.  This is the case for at least
+   one person, so data on failures is very welcome.
 
 ** Start trying it out
 
    Now, load into your IDE or lisp, the files in the examples
-   directory, to get a feel for what to do.
+   directory, such as:
 
-** Version 2 (David)
-
-   (This held for the version before we removed liblispstat and plplot
-   and some other "crutches" which had a bit too much bitrot).
-
-   We assume that you have a lisp installed and that you have a
-   passing acquaintence with the unix shell.
-
-   1. The first point that you should note that is that these
-      instructions are written with the assumption of the availibility
-      of quicklisp.
-
-   If you do not have quicklisp , please go to www.quicklisp.org and
-   install it now
-
-   2. The second point to note is that you will need the "git" utility
-      installed on your machine.
-
-      for mac osx sudo port install git
-      for linux (eg debian) sudo apt-get install git
-
-   3. Once that is done execute the following shell commands
-
-#+begin_src shell
-  cd ~/quicklisp/local-projects
-  git clone git://github.com/blindglobe/common-lisp-stat.git
-  cd comon-list-stat
-  git submodules init
-#+end_src
-
-      These commands copy the the source from the repository and all
-      the associated libraries. It will live as a quicklisp project in
-      the local-projects directory. I find it convenient to
-      symbolically link the quicklisp direct to ~/lisp for easy access
-
-#+begin_src shell
-   ln ~/quicklisp/local-projects ~/lisp
-#+end_src
-
-   4. Configure the locations of the BLAS and LINPACK libraries
-
-      Currently this is a manual operation, which will change in a
-      later version.
-
-      Edit the file external/cl-blapack/load-blapack-libs.lisp
-
-      Search for the following 3 parameters *gfortran-lib* *blas-lib*
-      *lapack-lib*
-
-      For OS X: change the parameters as suggested in the file. Both
-      BLAS and LAPACK are pre installed on Mac OSX.
-
-      For linux, make sure you have the neccessary libraries installed,
-      through apt, yum or otherwise
-
-      i.e.: 
-#+BEGIN_SRC shell
-sudo apt-get install libblas
-sudo apt-get install liblapack
-#+END_SRC
-
-For windows, we recommend you use cygwin to get straightforward
-access. I'll document the steps if there is a demand.
-
-6. You need to check that your dynamic library path has been properly
-   set up in the shell.
-In your .bashrc (or equivalent shell init file) 
-For Mac OSX set DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
-For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
-
-If you get this wrong the load process will not be able to find the
-libraries and will prompt you. 
-
-5. Once the pre prequisites have been done, start your favourite lisp
-   and enter 
-
-#+begin_src lisp
-(ql:register-local-projects)
-(ql:quickload :cls) 
-#+end_src lisp
-
-      Retire for a well earned coffee and upon your return you should
-      find the package completely installed.  Obviously, potential
-      errors can creep in with spelling the filenames correctly, so be
-      careful.
+| 00-loadingData.lisp        |
+| 02-DSVloading.lisp         |
+| 04-dataManipulation.lisp   |
+| 10-basicEDA.lisp           |
+| 20-visual-2d-cairo2.lisp   |
+| 50-TTestExample.lisp       |
+| 60-regressionExamples.lisp |
+| linear-regression.lisp     |
+| ls-demo.lisp               |
+| ls-demo-ls1.lisp           |
+| XX-readMe.lisp             |
 
 ** Example Usage steps
   
 *** change directory into the CommonLispStat working directory.
+
+    This is just for directory convenience, not for any real reason.
+
+#+begin_src sh
+cd ~/quicklisp/local-projects
+#+end_src
+
 *** start your lisp
+
+#+begin_src sh
+sbcl
+#+end_src
+
+or 
+
+#+begin_src sh
+CCL
+#+end_src
+
 *** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
  
 **** (ql:quickload :cls)
@@ -236,23 +262,23 @@ libraries and will prompt you.
 (ql:quickload :cls)
 #+END_SRC
 
+
 *** DONE Setup a place to work
 
-In Common Lisp, you need to select and setup namespace to store data
-and functions.  There is a scratch user-package, or sandbox, for
-CLS, *cls-user* , which you can select via:
+    In Common Lisp, you need to select and setup namespace to store
+    data and functions.  There is a scratch user-package, or sandbox,
+    for CLS, *cls-user* , which you can select via:
 
 #+BEGIN_SRC lisp -n :tangle "readme-example.lisp"
 (in-package :cls-user)
 #+END_SRC
 
-and this has some basic modules from CLS instantiated (dataframes,
-probability calculus, numerical linear algebra, basic summaries
-(numerical and visual displays).  
+    and this has some basic modules from CLS instantiated (dataframes,
+    probability calculus, numerical linear algebra, basic summaries
+    (numerical and visual displays).
 
-However, it can be better is to create a package to work in, which
-pulls in only desired functionality:
-
+    However, it can be better is to create a package to work in, which
+    pulls in only desired functionality:
 
 #+BEGIN_SRC lisp +n :tangle "readme-example.lisp"
   (in-package cl-user)
@@ -286,18 +312,16 @@ pulls in only desired functionality:
   
   (setf my-data
         (let ((var1 )) ))
-  
 #+END_SRC
 
-We need to pull in the packages with data or functions that we need;
-just because the data/function is pulled in by another package, in
-that package's namespace, does NOT mean it is available in this name
-space.  However, the *common-lisp-statistics* package will ensure
-that fundamental objects and functions are always available. 
-
+    We need to pull in the packages with data or functions that we
+    need; just because the data/function is pulled in by another
+    package, in that package's namespace, does NOT mean it is
+    available in this name space.  However, the
+    *common-lisp-statistics* package will ensure that fundamental
+    objects and functions are always available.
 
 *** TODO Get to work [0/3]
-
 **** TODO Pull in or create data
 
 **** TODO Summarize results
@@ -305,11 +329,9 @@ that fundamental objects and functions are always available.
 **** TODO Save work and results for knowledge building and reuse 
 
 One can build a package, or save an image (CL implementation
-dependent) or...
+dependent), or save text files.
   
 *** TODO Inform  moi of problems or successes
-
-    NEED TO SETUP A MAILING LIST!!
 
     mailto:blindglobe@gmail.com if there is anything wrong, or
     even if something happens to work.
@@ -321,7 +343,7 @@ dependent) or...
       that we need to take care of.  I think this is my (Tony's)
       problem, not someone elses, and specifically, not CLISP's
     - Need to test ECL.
-
+      
 * Introduction
 
 ** Core Philosophy
@@ -364,11 +386,8 @@ dependent) or...
   Since this project is 
 
 #+begin_src shell
-#   git clone git://repo.or.cz/CommonLispStat.git 
-   git clone git://github.com/blindglobe/common-lisp-stat.git 
-   cd common-lisp-stat
-#   git submodules init
-#   git submodules update
+git clone git://github.com/blindglobe/common-lisp-stat.git 
+cd common-lisp-stat
 #+end_src
 
    will pull the whole repository, and create a "master" branch to
@@ -377,26 +396,26 @@ dependent) or...
    so you might:
 
 #+begin_src shell
-    git checkout -b myTopicBranch
+git checkout -b myTopicBranch
 #+end_src
 
 and then work on myTopicBranch, pulling back to the master branch when
 needed by
 
 #+begin_src shell
-    git checkout master
-    git pull . myTopicBranch
+git checkout master
+git pull . myTopicBranch
 #+end_src
 
 (or
 #+begin_src shell
-    git rebase myTopicBranch
+git rebase myTopicBranch
 #+end_src
 )
 
-BETTER DOCUMENTATION EXAMPLES EXIST ON-LINE!! PLEASE READ THEM, THE
-ABOVE IS SPARSE AND MIGHT BE OUTDATED!
-
+BETTER DOCUMENTATION EXAMPLES EXIST ON-LINE (on the git WWW site
+mentioned above)!! PLEASE READ THEM, THE ABOVE IS SPARSE AND MIGHT BE
+OUTDATED!
 
 ** Contributing through GitHub
 
@@ -404,8 +423,8 @@ ABOVE IS SPARSE AND MIGHT BE OUTDATED!
    They are a bit differently organized, and require one to get a
    github account and work from there.
 
-   basically, clone the repository on github on the WWW interface,
-   then make a branch (as below), push back the branch to github, and
+   basically, fork the repository on github on the WWW interface, then
+   make a branch (as below), push back the branch to github, and
    notify the main repository that there is something to be pulled.
    And we'll pull it back in.
 
@@ -452,11 +471,8 @@ something like:
 
 ** Licensing
 
-   Licensing will be important.  Next decade.  But do think through
-   what you intend with your contributions.  Should we become famous
-   (Ha!) make sure that you've communicated your expectations...
-
    We currently are using and recommend the MIT style license approach.
+
 * Footnotes
 
 [fn:1] I´m not including instructions for Emacs or git, as the former
