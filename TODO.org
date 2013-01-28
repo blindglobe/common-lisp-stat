@@ -4,7 +4,7 @@
 #+TODO: TODO CURR | DONE
 #+TODO: POSTPONED | CANCELED
 
-Time-stamp: <2013-01-15 19:10:14 tony>
+Time-stamp: <2013-01-22 19:33:50 tony>
 Creation:   <2008-09-08 08:06:30 tony>
 
 * Intro and Metadata
@@ -133,7 +133,7 @@ antik
 
 #+name: recompile-it-all
 #+begin_src lisp
-  (asdf:oos 'asdf:compile-op :cls :force T)
+(asdf:oos 'asdf:compile-op :cls :force T)
 #+end_src
 
   Currently <2012-10-10 Wed> QuickLisp support doesn't provide a

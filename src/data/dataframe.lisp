@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-19 16:02:51 tony>
+;;; Time-stamp: <2013-01-28 15:21:44 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -145,15 +145,6 @@ value is returned indicating the success of the conversion.  Examples:
     (5 'keyword) ;; and likewise, regarded as a categorical varial
     (6 t))) ;; nil will end up here.
 
-(defun infer-dataframe-types (df)
-  "infer the numeric types for each column in the dataframe. note that
-all non numerc types are lumped into T, so further discrimination will
-be required."
-
-  (let ((column-types (loop for col  below (ncols df)
-			    collect (column-type-classifier df col))))
-    column-types))
-
 
 ;;; abstract dataframe class
 
@@ -265,7 +256,9 @@ test that that list is a valid listoflist dataframe structure."
   (:method ((df array))
     (nrows df)))
 
-(defun translate-column (df column &optional ( nil-on-error nil))
+
+
+(defun translate-column (df column &optional (nil-on-error nil))
   "for production use, we would wrap this in a handler to enable entry of the correct column id.
 nil on error is for non interactive use"
   (typecase column
@@ -273,7 +266,8 @@ nil on error is for non interactive use"
      (let ((col (position column (varlabels df))))
        (if col
 	   col
-	   (if nil-when-error nil  (error "Column name misspelt: try again ~a~%" column)))))
+	   (if nil-on-error nil
+	       (error "Column name misspelt: try again ~a~%" column)))))
     (number column)
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
 
@@ -320,14 +314,14 @@ nil on error is for non interactive use"
   internal interest, since ideally we'd have to use standard
   constructs to ensure that we do not get the dataframe structure
   misaligned.")
-  (:method (object) "General objects are not consistent dataframes!" nil)
+;; (:method (object) "General objects are not consistent dataframes!" nil)
   (:method ((df dataframe-like)) 
     "At minimum, must dispatch on virtual-class."
     (and
      ;; ensure dimensionality
      (= (length (var-labels df)) (ncols df)) ; array-dimensions (dataset df))
      (= (length (case-labels df)) (nrows df))
-     (= (length (var-types df) (ncols df)))
+     (= (length (var-types df))  (ncols df))
      ;; ensure claimed STORE-CLASS
      ;; when dims are sane, ensure variable-typing is consistent
      (progn
@@ -380,13 +374,6 @@ nil on error is for non interactive use"
   (if varlabels  (assert (= (nvars data) (length varlabels))))
   (if caselabels (assert (= (ncases data) (length varlabels)))))
 
-(defun vartypes (df)
-  (var-types df))
-
-(defun set-vartypes (df vt)
-  (assert (= (length vt) (ncols df)))
-  (setf (var-types df) vt))
-(defsetf vartypes set-vartypes)
 
 
 (defmacro build-dataframe (type) 
@@ -421,7 +408,8 @@ nil on error is for non interactive use"
 (defun make-comparison-function (df function field value)
   `#'(lambda (row) (funcall ,function (xref df row ,field) ,value)))
 
-(defun dfquery (df ))
+;;(defun dfquery (df ))
+
 (defmethod dfextract (df  &key ( head 5) (tail 5) )
   "just for the moment "
   (let* ((rows (ncases df))
@@ -443,12 +431,18 @@ nil on error is for non interactive use"
 |#
 
 (defparameter *CLS-DATE-FORMAT* :UK
-  "should be one of :UK (d/m/y) :US (m/d/y) or maybe others as required. Giving a hint to the parsing routine.SUffix with a -TIME (is :US-TIME for MDY hhmmss. Or supply the ANTIK specification as a list '(2 1 0 3 4 5)  ")
+  "should be one of :UK (d/m/y) :US (m/d/y) or maybe others as
+  required.  Giving a hint to the parsing routine.  Suffix with a
+  -TIME (is :US-TIME for MDY hhmmss. Or supply the ANTIK specification
+  as a list '(2 1 0 3 4 5) ")
 
 (defparameter *CLS-DATE-TEST-LIMIT* 5
-  "the number of rows to check when deciding if the column is a date column or not.")
+  "The number of rows to check when deciding if the column is a date
+  column or not.")
+
 (defun antik-date-format-helper (date)
-  "provide decoding for shorthand notation in *CLS-DATE-FORMAT*  or allow the full spec to be supplied "
+  "provide decoding for shorthand notation in *CLS-DATE-FORMAT* or
+allow the full spec to be supplied "
   (cond
     ((equal date :UK) '(2 1 0))
     ((equal date :UK-TIME) '(2 1 0 3 4 5))
@@ -591,21 +585,29 @@ nil on error is for non interactive use"
   (make-array (reverse (array-dimensions ary))
       :initial-contents (col-order-as-list ary)))
 
-(defun varlabels (df)
-  "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (mapcar  (lambda (variable) (getf variable :type)) (variables  df)))
 
 (defun vartypes (df)
   "list of types for each column"
   (mapcar  (lambda (variable) (getf variable :name)) (variables  df))  )
+;; or just:   (var-types df)  ??
+;; something is not right about this...
+
+(defun set-vartypes (df vt)
+  (assert (= (length vt) (ncols df)))
+  (setf (vartypes df) vt))
+
+;;(defsetf vartypes set-vartypes)
+
 
 ;;; THE FOLLOWING 2 dual-sets done to provide error checking
 ;;; possibilities on top of the generic function structure.  Not
 ;;; intended as make-work!
 
+
 (defun varlabels (df)
   "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (var-labels df))
+  (mapcar  (lambda (variable) (getf variable :type)) (variables  df)))
+;; or just:   (var-labels df)  ??
 
 (defun set-varlabels (df vl)
   "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
@@ -614,7 +616,7 @@ nil on error is for non interactive use"
       (setf (var-labels df) vl)
       (error "wrong size.")))
 
-(defsetf varlabels set-varlabels)
+;;(defsetf varlabels set-varlabels) ;; FIXME!
 
 ;;; Case-name handling for Tables.  Needs error checking.
 (defun caselabels (df)
@@ -628,7 +630,7 @@ nil on error is for non interactive use"
       (setf (case-labels df) cl)
       (error "set caselabels: wrong size.")))
 
-(defsetf caselabels set-caselabels)
+(defsetf caselabels set-caselabels) ;; FIXME!
 
 
 ;;;;;;;;;;;; IMPLEMENTATIONS, with appropriate methods.

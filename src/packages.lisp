@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-19 16:09:39 tony>
+;;; Time-stamp: <2013-01-28 09:10:03 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -181,8 +181,10 @@
    xref xtype xdims xdim xrank slice take carray
    dfcolumn dfrow
 
+
    ;; support
-   make-labels))
+   make-labels
+   translate-columns ))
 
 (defpackage :cls-dataio
   (:documentation "Data I/O and similar import technologies.")

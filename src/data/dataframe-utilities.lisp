@@ -3,15 +3,14 @@
 
 (defgeneric nvars (df)
   (:documentation  "number of variables represented in storage type.")
-  (:method ( (df matrix-like))
+  (:method ((df matrix-like))
     (ncols df))
-  (:method ( (df dataframe-array))
+  (:method ((df dataframe-array))
     (ncols df))
   (:method ((df list))
-    (ncols list))
+    (ncols df))
   (:method ((df array))
     (array-dimension  df 1)))
-
 
 (defgeneric ncases (df)
   (:documentation "number of cases (indep, or indep within context,
@@ -39,7 +38,12 @@
     (loop for column below (nvars df) collect (xref df row column) )))
 
 (defun  df->grid (df &rest cols)
-   "A helper function that creates a foreign grid of (ncase df) and (length cols) specifically for passing to gsll. If a column is a date then it will be converted into the equivalent fixnum representation - thats not implemented as yet. if colls is the single keyword  :all then just do all the cols "
+   "A helper function that creates a foreign grid of (ncase df)
+and (length cols) specifically for passing to gsll. If a column is a
+date then it will be converted into the equivalent fixnum
+representation - thats not implemented as yet. if colls is the single
+keyword :all then just do all the cols."
+
   (flet ((create-subset (df  cols)
 	   "return selected columns as a list"
 	   (loop for the-row below (ncases df)
@@ -50,7 +54,6 @@
 	   (if (equal cols :all)
 	       (alexandria:iota (nvars df))
 	       (loop for c in cols
-		     collect (translate-column df c))))))
+		     collect (translate-column df c)))))
   (grid:make-foreign-array 'double-float
-			   :initial-contents (create-subset df (translate-columns cols)))
-  )
+			   :initial-contents (create-subset df (translate-columns cols)))))

@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-01-19 16:13:44 tony>
+;;; Time-stamp: <2013-01-28 15:33:35 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -51,9 +51,11 @@
 
 (defsystem "cls"
   :name "Common Lisp Statistical System"
-  :version #.(with-open-file
-                 (vers (merge-pathnames "version.lisp-expr" *load-truename*))
-               (read vers))
+  :version 
+     #.(with-open-file
+	   (vers (merge-pathnames "version.lisp-expr"
+				  *load-truename*))
+	 (read vers))
   :author "A.J. Rossini <blindglobe@gmail.com>"
   :license "MIT"
   :description "Common Lisp Statistics (CLS): A System for Statistical
@@ -79,6 +81,9 @@
 	       ;; numerical infrastructure.
 	       :gsll 
 	       :antik
+
+	       ;; for David H's dataframe
+	       :data-format-validation
 	       )
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
@@ -154,6 +159,9 @@
 		 (:file "dataframe-matrixlike")
 		 (:file "dataframe-listoflist")
 		 (:file "dataframe-functionality")
+		 (:file "dataframe-query")
+		 (:file "dataframe-initialisation")
+		 (:file "dataframe-utilities")
 
 		 (:file "data")
 		 (:file "data-xls-compat")
