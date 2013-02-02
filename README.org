@@ -1,5 +1,5 @@
 
-Time-stamp: <2013-01-22 19:31:19 tony>
+Time-stamp: <2013-01-28 16:19:01 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -20,6 +20,16 @@ Time-stamp: <2013-01-22 19:31:19 tony>
      (you will need to put a few more projects there as well), 
      OR make sure you have an internet connection and go to step 5 and
      fetch a not-so-bleeding-edge version from QuickLisp.
+
+     We suggest something like:
+#+begin_src shell
+cd ~/quicklisp/local-projects
+git://github.com/blindglobe/common-lisp-stat.git
+#+end_src
+
+     (with the 3rd and on lines representing stuff not yet in
+     quicklisp, I think...  right now, there are no such lines, yet.)
+
   5. Start up the Common Lisp implementation, and:
 
 #+name: loadIt

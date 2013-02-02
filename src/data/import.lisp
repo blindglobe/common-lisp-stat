@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2013-01-22 19:41:41 tony> 
+;;; Time-stamp: <2013-01-28 16:46:06 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -135,7 +135,7 @@ Usually used by:
 
 ;; Support functions
 
-#|
+
 (defun filename.dsv->dataframe2 (filename &optional
 				(delimchar ",")
 				(varnameheader 't)
@@ -156,7 +156,7 @@ to use it next time if wanted."
       (make-dataframe data
 		 :varlabels var-name-list
 		 :doc docstring))))
-|#
+
 
 
 (defun convert-strings-to-data-types (cl-array)
@@ -186,6 +186,7 @@ need to implement a clean...
 	    (data-list (if varnameheader
 			   (listoflist:listoflist->array (cdr csv-file-data))
 			   (listoflist:listoflist->array csv-file-data))))
+
 	(make-instance arraystorage-object ; 'dataframe-array, but all DF-likes have the following attrs
 		       :storage data-list ;; needs to be (convert-strings-to-data-types data-list)
 		       :var-labels var-name-list
@@ -260,7 +261,7 @@ need to implement a clean...
 
   eg:
 
-     (file.fixed->dataframe "fixed.txt", *GHCN-TEMPERATURE-FIELDS*)
+     (file.fixed->dataframe \"fixed.txt\", *GHCN-TEMPERATURE-FIELDS*)
 
   should work."
 
