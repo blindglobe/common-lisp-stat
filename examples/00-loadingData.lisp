@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2012-11-24 17:09:16 tony>
+;;; Time-stamp: <2013-02-09 11:34:32 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -63,9 +63,8 @@ return a pathspec, not a string/namespec"
   lisp-stat-data-examples:dlabs
   (variables))
 
-(progn
-  ;; COMMON LISP STATISTICS
-  ;; Importing data from DSV text files.
+;; COMMON LISP STATISTICS
+;; Importing data from DSV text files.
 
 #| We use as an example a simple R datasert, chickwts, which has one
    nominal categorical variable and one continuous categorical
@@ -85,15 +84,91 @@ return a pathspec, not a string/namespec"
 > 
 |#
 
+
+;;; Experiments with CSV file to dataframe conversion
+
+(defparameter *test1*
+  (let ((fare-csv:*separator* #\, )) ;; default, but we are making a general example
+    (let ((csv-file-data (fare-csv:read-csv-file  (localized-pathto "Data/R-chickwts.csv")))
+	  (varnameheader T))
+      (let ((var-name-list (if varnameheader
+			       (car csv-file-data)
+			       (make-labels "V"  (length (car csv-file-data)))))
+	    (data-list (if varnameheader
+			   (listoflist:listoflist->array (cdr csv-file-data))
+			   (listoflist:listoflist->array csv-file-data))))
+	data-list
+	))))
+
+*test1*
+
+;; confirming type
+(typep *test1* 'array)
+(typep *test1* 'list)
+(typep *test1* 'sequence)
+(typep *test1* 'vector)
+
+
+
+;; both of the following are the same:
+(+ (data-format-validation:parse-input 'integer (aref *test1* 4 1))
+   (data-format-validation:parse-input 'integer (aref *test1* 4 1)))
+
+(+ (data-format-validation:parse-input 'number (aref *test1* 4 1))
+   (data-format-validation:parse-input 'number (aref *test1* 4 1)))
+
+
+(+ (data-format-validation:parse-input 'integer (aref *test1* 4 0))
+   (data-format-validation:parse-input 'integer (aref *test1* 5 0)))
+
+
+(data-format-validation:parse-input 'string (aref *test1* 5 2)) ;; correct, returns a string
+(data-format-validation:parse-input 'number (aref *test1* 5 2)) ;; error, but restarts are not quite right...
+
+;; inline conversion of array data
+
+(setf *test1-types* (list 'integer 'number 'string))
+
+(array-dimensions *test1*)
+
+;;; Is there a cleaner approach using map?  For example, could we work on column-at-a-time?
+;;; and of course: is there a faster/less-consing version?
+(dotimes (i (array-dimension *test1* 0))
+  (dotimes (j (array-dimension *test1* 1))
+    (setf (aref *test1* i j)
+	  (data-format-validation:parse-input (nth j *test1-types*) (aref *test1* i j)))))
+
+*test1*
+
+(defun filename.dsv->array3 (filepath list-of-vartypes) 
+  "Take a filepath referencing a DSV file, and return an array with
+appropriate column(variable) typing."
+  (let ((fare-csv:*separator* #\, )) ;; default, but we are making a general example
+    (let ((csv-file-data-as-listoflist (fare-csv:read-csv-file  filepath))
+	  (varnameheader T))
+      (let ((var-name-list (if varnameheader
+			       (car csv-file-data-as-listoflist)
+			       (make-labels "V"  (length (car csv-file-data-as-listoflist)))))
+	    (data-array (if varnameheader
+			   (listoflist:listoflist->array (cdr csv-file-data-as-listoflist))
+			   (listoflist:listoflist->array csv-file-data-as-listoflist))))
+	(dotimes (i (array-dimension data-array 0))
+	  (dotimes (j (array-dimension data-array 1))
+	    (setf (aref data-array i j)
+		  (data-format-validation:parse-input (nth j list-of-vartypes) (aref data-array i j)))))
+	data-array))))
+
  (progn 
-   (defparameter *chickwts-df* (filename.dsv->dataframe (localized-pathto "Data/R-chickwts.csv"))))
-  ;; *chickwts-df*
-  (xref *chickwts-df* 1 1) ; => 160
-  (xref *chickwts-df* 40 2) ; => "sunflower"
-  *chickwts-df*)
+   (setf *chickwts-array* (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
+						(list 'integer 'number 'string)))
+   ;; *chickwts-df*
+   (xref *chickwts-array* 1 1) ; => 160
+   (xref *chickwts-array* 40 2) ; => "sunflower"
+   *chickwts-array*)
 
-(defparameter *chickwts-df* (filename.dsv->dataframe  "~/lisp/common-lisp-stat/Data/R-chickwts.csv"))
 
-(+   (xref *chickwts-df* 1 1)   (xref *chickwts-df* 63 1))
+(+ (xref *chickwts-array* 1 1)
+   (xref *chickwts-array* 63 1))
 
-(defparameter *chickwts-df* (cls-dataio:filename.dsv->dataframe  "~/lisp/common-lisp-stat/Data/chickwts-date.csv"))
+;; now, how to make a dataframe from an array?
+;; and then the last component is to exam how to use the array.
