@@ -3,7 +3,7 @@
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp. 
 
-;;; Time-stamp: <2013-01-28 16:46:06 tony> 
+;;; Time-stamp: <2013-02-09 10:41:34 tony> 
 ;;; Creation:   <2008-09-03 08:10:00 tony> 
 ;;; File:       import.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -135,7 +135,7 @@ Usually used by:
 
 ;; Support functions
 
-
+#|  example, since requires rsm.string
 (defun filename.dsv->dataframe2 (filename &optional
 				(delimchar ",")
 				(varnameheader 't)
@@ -156,13 +156,13 @@ to use it next time if wanted."
       (make-dataframe data
 		 :varlabels var-name-list
 		 :doc docstring))))
-
+|#
 
 
 (defun convert-strings-to-data-types (cl-array)
   cl-array
 #|
-need to implement a clean...
+  need to implement a clean version of:
   (for each column
     (set column (coerce column (determined type of column))))
 |#
