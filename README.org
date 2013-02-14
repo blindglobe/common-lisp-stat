@@ -1,5 +1,5 @@
 
-Time-stamp: <2013-01-28 16:19:01 tony>
+Time-stamp: <2013-02-09 10:35:59 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -22,6 +22,7 @@ Time-stamp: <2013-01-28 16:19:01 tony>
      fetch a not-so-bleeding-edge version from QuickLisp.
 
      We suggest something like:
+
 #+begin_src shell
 cd ~/quicklisp/local-projects
 git://github.com/blindglobe/common-lisp-stat.git
@@ -38,26 +39,44 @@ git://github.com/blindglobe/common-lisp-stat.git
 (ql:quickload :cls)
 #+end_src
 
-  6. get coffee, review the Common Lisp Statistics mailing list, chat
-     with friends, etc, until it is done compiling and loading.
+  6. get coffee, tea, water, beer, or a glass of wine, review the
+     Common Lisp Statistics mailing list, chat with friends, etc,
+     until it is done compiling and loading.
   7. Report success/failure back to the news group (
       https://groups.google.com/forum/?fromgroups#!forum/lisp-stat )
-     or send Tony Rossini mail, i.e.  ( mailto:blindglobe@gmail.com )
+     or directly to Tony Rossini mail, i.e.  (
+     mailto:blindglobe@gmail.com ) if you don't want to be public
+     about it.
   8. Start trying it out.
 
   More details can be fond in the subsequent sections.
 
-** Common Lisp, Support Libraries
+** Common Lisp
 
-   Right now, one needs a Common Lisp implementation, SBCL, CCL, and
-   CLISP seem to be the easiest to get, and have been reported to
-   partially work.  SBCL and CCL are in active use by developers.  We
-   are interested in finding out details regarding successes with
-   other distributions and would be pleased to add such information
-   here. 
+   Current requirements are basically that you have a Common Lisp
+   implementation such as SBCL or CCL (though CLISP might work) and
+   BLAS/LAPACK on your system.
+
+   SBCL and CCL are in active use by developers.  We are interested in
+   finding out details regarding successes with other distributions
+   and would be pleased to add such information here.
 
 
-   Configure the locations of the BLAS and LINPACK libraries
+*** TODO Microsoft Windows
+
+    Currently, LispCabinet would be the simplest way to get started,
+    with either SBCL or CCL as the Lisp Implementation.  Need
+    experiences from others using 
+
+    http://lispcabinet.sourceforge.net/
+
+
+*** Linux
+
+    Most distributions contain SBCL or CLISP.  The instructions for
+    getting and installing CCL are relatively straightforward.
+
+** Configuring BLAS/LAPACK libraries locations
 
    Currently this is a manual operation, which will change in a later
    version.
@@ -70,29 +89,19 @@ git://github.com/blindglobe/common-lisp-stat.git
    - *lapack-lib*
 
    You need to check that your dynamic library path has been properly
-   set up in the shell.
+   set up in the shell, by setting up your .bashrc (or equivalent
+   shell init file, or equivalent environment variable settings).
 
-   In your .bashrc (or equivalent shell init file) 
+*** TODO [#A] Setting up BLAS/LAPACK on Microsoft OS?
 
-   For Mac OSX set DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
-   For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
+    i.e. compilation environment and tools, if needed, on Microsoft Windows?
 
-*** Microsoft Windows
-
-    Currently, LispCabinet would be the simplest way to get started,
-    with either SBCL or CCL as the Lisp Implementation.  Need
-    experiences from others using 
-
-    http://lispcabinet.sourceforge.net/
-
-**** TODO [#A] How to setup BLAS, LAPACK on Microsoft OS?
-
-     i.e. compilation environment and tools, if needed, on Microsoft Windows?
-
-     For windows, we recommend you use cygwin to get straightforward
-     access. I'll document the steps if there is a demand.
+    For windows, we recommend you use cygwin to get straightforward
+    access. I'll document the steps if there is a demand.
 
 *** Linux
+
+    For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
 
     SBCL is known to work (0.58+, 1.1.1+)
 
@@ -112,6 +121,9 @@ sudo apt-get install liblapack
 #+END_SRC
 
 *** TODO MacOSX
+
+   For Mac OSX set
+   DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
 
     *FIXME*: Tony has no clue, please fill this in since most mailing
     list folks use Macs.
@@ -355,7 +367,6 @@ dependent), or save text files.
     - Need to test ECL.
       
 * Introduction
-
 ** Core Philosophy
 
   "Languages shape how we ..."   Need to get and insert this quote
@@ -390,6 +401,22 @@ dependent), or save text files.
 
    See files in file:Doc/  for history, design considerations, and
    random, sometimes false and misleading, musings.
+
+** XLispStat
+
+
+*** ViSta
+
+*** ARC
+
+** Common LispStat
+
+   Initial development, 1989 time frame, partially developed during a
+   visit by Luke Tierney to Bell Labs.
+
+** Common Lisp Statistics
+
+   This system.
 
 * Local modifications, Development, Contributions
 
