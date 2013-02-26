@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-02-09 11:34:32 tony>
+;;; Time-stamp: <2013-02-26 19:58:37 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -111,8 +111,12 @@ return a pathspec, not a string/namespec"
 
 
 ;; both of the following are the same:
-(+ (data-format-validation:parse-input 'integer (aref *test1* 4 1))
-   (data-format-validation:parse-input 'integer (aref *test1* 4 1)))
+(= 
+ (+ (data-format-validation:parse-input 'integer (aref *test1* 4 1))
+    (data-format-validation:parse-input 'integer (aref *test1* 4 1)))
+
+ (+ (data-format-validation:parse-input 'integer (xref *test1* 4 1))
+    (data-format-validation:parse-input 'integer (xref *test1* 4 1))))
 
 (+ (data-format-validation:parse-input 'number (aref *test1* 4 1))
    (data-format-validation:parse-input 'number (aref *test1* 4 1)))
@@ -172,3 +176,6 @@ appropriate column(variable) typing."
 
 ;; now, how to make a dataframe from an array?
 ;; and then the last component is to exam how to use the array.
+
+;; Also need to figure out how to make a foreign dataframe from this.
+;; Then we can consider that the data is loaded.
