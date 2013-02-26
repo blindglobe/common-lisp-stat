@@ -1,6 +1,7 @@
-;;; -*- mode: lisp -*-
+;;; -*- Mode:Lisp; Syntax:ANSI-Common-Lisp; Coding:utf-8 -*-
 
-;;; Time-stamp: <2012-07-01 11:15:41 tony>
+
+;;; Time-stamp: <2013-02-23 14:01:55 tony>
 ;;; Creation:   <2009 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
