@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-28 15:21:44 tony>
+;;; Time-stamp: <2013-02-23 12:47:54 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -25,17 +25,22 @@
 ;;; integral to the analysis.  Tables are related and matched vectors,
 ;;; for example.  "column" vectors are related observations (by
 ;;; measure/recording) while "row" vectors are related readings (by
-;;; case, independence).  This does mean that we are placing
-;;; statistical semantics into the computational data object -- and
-;;; that it is a violation of use to consider rows which are not at
-;;; the least conditionally independent (though the conditioning
-;;; should be outside the data set, not internally specified).
+;;; case, possibly independence).  When possible, we want to place
+;;; statistical semantics into the computational data object -- so for
+;;; example, to state that it is a violation of use to consider rows
+;;; which are not at the least conditionally independent (though the
+;;; conditioning should be outside the data set, not internally
+;;; specified), though the assumption violation should not be set up
+;;; so that we can never violate -- only be reminded that we are
+;;; indeed violating it, under the principle that statistical
+;;; assumptions are made to be violated.
 
-;;; So we want a verb-driven API for data collection construction.  We
+;;; Using the principle of how to design functional approaches, we
+;;; want a verb-driven API for data collection construction.  We
 ;;; should encode independence or lack of, as a computable status.
 
-;;; Need to figure out statistically-typed vectors.  We then map a
-;;; series of typed vectors over to tables where columns are equal
+;;; TODO: Need to figure out statistically-typed vectors.  We then map
+;;; a series of typed vectors over to tables where columns are equal
 ;;; typed.  In a sense, this is a relation (1-1) of equal-typed
 ;;; arrays.  For the most part, this ends up making the R data.frame
 ;;; into a relational building block (considering 1-1 mappings using
@@ -50,22 +55,21 @@
 ;;; actions are:
 ;;; - import 
 ;;; - get/set row names (case names)
-;;; -         column names (variable names)
-;;; -         dataset values
-;;; -         annotation/metadata
-;;; -    make sure that we do coherency checking in the exported
-;;; -    functions.
-;;; -    ... 
-;;; - reshapeData/reformat/reshapr a reformed version of the dataset (no
+;;;          column names (variable names)
+;;;          dataset values
+;;;          annotation/metadata
+;;; -   make sure that we do coherency checking in the exported
+;;;     functions.
+;;; - reshapeData/reformat/reshape a reformed version of the dataset (no
 ;;;           additional input). 
-;;; -         either overwriting or not, i.e. with or without copy.
+;;;           either overwriting or not, i.e. with or without copy.
 ;;; - check consistency of resulting data with metadata and related
 ;;;           data information.
 
-;;; Is there any need for an N-way dataframe (N>2) ?   Am currently
-;;; assuming not, that this is specializing only the
-;;; "independent cases"-by-variables format and that there would be
-;;; other tools for other structures.
+;;; Is there any need for an N-way dataframe (N>2) ?  Am currently
+;;; assuming not, that this is specializing only the "independent
+;;; cases"-by-variables format and that there would be other tools for
+;;; other structures.  In particular, we should be able to insert
 
 ;;; Misc Functions (to move into a lisp data manipulation support package)
 
@@ -77,6 +81,12 @@
  for indexing."
   (if (>= n start)
       (append (gen-seq (- n 1) start) (list n))))
+
+;; cleaner:
+#|
+  (loop (i n)
+    (collect (+ i start)))
+|#
 
 (defun repeat-seq (n item)
   "dbh: append/recursion changed to loop.   
@@ -125,7 +135,30 @@ value is returned indicating the success of the conversion.  Examples:
   AJR: David made a great start, and what we need to do is construct
   appropriate statistical types to support AI-style guidance for
   appropriate statistical procedures, or at least give caveats for why
-  they are not appropriate."
+  they are not appropriate.
+
+  By statistical types, I mean factors such as nominal, ordinal, as
+  well as grouped observation structures such as
+  profile-with-common-times, profile-with-heterogeneous-times,
+  nestable-networks, separated-networks.
+
+  So there could be:
+
+  nominal < ordinal < fixnum < integer < ... 
+  
+  and for heterogeneous statistical components:
+
+  profile-with-common-times < profile-with-heterogeneous-times <
+  profile-unrelated
+
+  nestable-networks < separated-networks
+
+  or we could call them:
+
+  network-with-common-features < network-with-no-common-features
+  
+  Please note that the above is NOT finalized, nor necessarily
+  correct."
 
   (case (reduce #'max (map-column df #' 
 				  (lambda (x)
@@ -146,7 +179,69 @@ value is returned indicating the success of the conversion.  Examples:
     (6 t))) ;; nil will end up here.
 
 
-;;; abstract dataframe class
+;;; abstract class: dataframe-like
+
+;; In addition, see documentation string.  
+;;
+;; A dataframe-like class is an abstract class which looks like a
+;; table, but has or follows or wishes it could satisfy the following
+;; characteristics, suggestions, provisions, restrictions, conditions,
+;; and suggestions:
+;;
+;; 1. within-column classed- and enforced-class columns (which could be classic
+;;    comp-sci data classes, or statistically-originated classes, or any
+;;    similar classed objects which could be statistically-processed
+;;    data.  
+;;    a. within-column classes should have appropriate API/methods for
+;;       printing single values or a specified collection of values (subset,
+;;       whole), as are requested. 
+;;    b. a sensible means for modifying or replacing values (including
+;;       with a means for missing or coarsened specification).
+;;    c. For example: floating point values, printing only a subset of
+;;       decimal places on demand; kinetic profiles, printing
+;;       descriptive summary or full data, as requested.
+;; 2. between-columns are associated with statistical variables for
+;;    modeling purposes.  Columns, in the best of all worlds, should
+;;    be components (singular values, vectors, paired-vectors describing
+;;    kinetics, i.e. values and time-points, or values and
+;;    state-points, networks, ordinal variables, nominal variables,
+;;    real/rational data, integer, etc). 
+;; 3. rows where the within-row relationship is that the data
+;;    originate from a related observation.
+;; 4. between-row relationships are that the observations are (conditionally)
+;;    independent.  There should be metadata, though perhaps difficult to
+;;    enforce, which should drive this (conditional) independence
+;;    assumption, either that conditional on the dataset and generating
+;;    process, the rows are independent, or that there is a within-row
+;;    variable (classic variables such as center/site, or person/individual for
+;;    classical longitudinal datastructures) for which conditional on this
+;;    (or a number of similar) values, observations should be
+;;    independent. 
+;; 5. This abstract class needs an API, similar to xarray API. There
+;;    should be methods for:
+;;    a. retrieving values,
+;;    b. setting (in the sense of changing) values,
+;;    c. adding columns or rows,
+;;    d. subsetting based on a query language.  This query language
+;;       also needs an API so that class authors can utilize it as
+;;       part of the subsetting.
+;;    e. sensible printing (summaries or abbreviated components).
+;; 6. Default storage type is a lisp array, but clearly one could
+;;    build optimized array structues for all of them.
+;; 7. we are building on matrix-like, so that we can steal
+;;    pass-through, views, and copying routines from what is built for
+;;    that.  Can we have an object which inherits from la-matrix and
+;;    dataframe-like to become an la-dataframe ?   Part of what is
+;;    needed is to ensure that as we progress through the the types, that
+;;    we end up implementing at the right level.  
+;;
+;;    TODO: find out if matrix-like objects enforce common class for
+;;    all values, or if it is just common storage type, i.e.:
+;; 
+;;    matrix-like -> la-matrix -> real-la-matrix -> double-la-matrix
+;;    or  
+;;    matrix-like -> la-matrix -> complex-la-matrix -> complex-double-la-matrix
+;; 8. 
 
 (defclass dataframe-like (matrix-like)
   (
@@ -233,7 +328,6 @@ value is returned indicating the success of the conversion.  Examples:
   (:method ((df array))
     (xdim df 1)))
 
-
 #|
  (defun nvars-store (store)
   "Return number of variables (columns) in dataframe storage.  Doesn't
@@ -272,37 +366,10 @@ nil on error is for non interactive use"
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
 
 
-
-(defun column-type-classifier-2 (df column)
-  "column type classifier, finds the smallest subtype that can
-  accomodate the elements of list, in the ordering fixnum < integer <
-  float < complex < t.  Rational, float (any kind) are classified as
-  double-float, and complex numbers as (complex double-float).  Meant
-  to be used by dataframe constructors so we can guess at column data
-  types. The presence of a non numeric in a column implies the column
-  is represented as a non numeric, as reduces and numeric maps will
-  fail."
-
-  (case (reduce #'max (map-column df #' 
-				  (lambda (x)
-				    (typecase x
-				      (fixnum 0)
-				      (integer 1)
-				      ((or rational double-float) 2)
-				      (complex 3)
-				      (simple-array 4)
-				      ((or symbol  keyword) 5)
-				      (t 6))) column))
-    (0 'fixnum)
-    (1 'integer)
-    (2 'double-float)
-    (3 '(complex double-float))
-    (4 'string) ;; for the moment a categorical variable
-    (5 'keyword) ;; and likewise, regarded as a categorical varial
-    (6 t))) ;; nil will end up here.
-
 (defun infer-dataframe-types (df)
-  "infer the numeric types for each column in the dataframe. note that all non numerc types are lumped into T, so further discrimination will be required."
+  "infer the numeric types for each column in the dataframe. note that
+all non numerc types are lumped into T, so further discrimination will
+be required."
   (let ((column-types (loop for col  below (nvars df)
 			    collect (column-type-classifier df col))))
     column-types))
@@ -311,10 +378,10 @@ nil on error is for non interactive use"
 
 (defgeneric consistent-dataframe-p (df)
   (:documentation "methods to check for consistency.  Mostly of
-  internal interest, since ideally we'd have to use standard
-  constructs to ensure that we do not get the dataframe structure
-  misaligned.")
-;; (:method (object) "General objects are not consistent dataframes!" nil)
+    internal interest, since ideally we'd have to use standard
+    constructs to ensure that we do not get the dataframe structure
+    misaligned.")
+  ;; (:method (object) "General objects are not consistent dataframes!" nil)
   (:method ((df dataframe-like)) 
     "At minimum, must dispatch on virtual-class."
     (and
@@ -440,6 +507,11 @@ nil on error is for non interactive use"
   "The number of rows to check when deciding if the column is a date
   column or not.")
 
+
+;;; Why is this "ANTIK"?  We naturally will be including the antik
+;;; package within this framework. At this point we are heavy, heavy,
+;;; heavy, and done on purpose.  Need to be heavy before we are
+;;; light-weight.
 (defun antik-date-format-helper (date)
   "provide decoding for shorthand notation in *CLS-DATE-FORMAT* or
 allow the full spec to be supplied "
@@ -451,35 +523,38 @@ allow the full spec to be supplied "
     (t date)))
 
 (defun date-conversion-fu (df)
-  "for any string column in the dataframe, try to parse the first n entries as a date according to the global format. If we can do that successfully for at least one entry, the convert the column, converting failures to nil"
+  "for any string column in the dataframe, try to parse the first n
+entries as a date according to the global format. If we can do that
+successfully for at least one entry, the convert the column,
+converting failures to nil"
   (labels ((read-timepoint (row column)
-	   "read a timepoint. if there is an error return nil"
-	   (handler-case
-			 (antik:read-timepoint (xref df row column)
-					       (antik-date-format-helper *CLS-DATE-FORMAT*))
-	     (error () nil)))
+	     "read a timepoint. if there is an error return nil"
+	     (handler-case
+		 (antik:read-timepoint (xref df row column)
+				       (antik-date-format-helper *CLS-DATE-FORMAT*))
+	       (error () nil)))
 	 
 	   (date-column-detected (index)
 	     "guess if the column has dates or not"
-	   (loop
-	     for i below *CLS-DATE-TEST-LIMIT*
-	     collect  (read-timepoint i index) into result
-	     finally (return (some #'identity result))))
+	     (loop
+		for i below *CLS-DATE-TEST-LIMIT*
+		collect  (read-timepoint i index) into result
+		finally (return (some #'identity result))))
 	 
-	 (convert-date-column (column )
-	   (loop for i below (nrows df) do
-	     (setf (xref df i column) (read-timepoint i column)))))
+	   (convert-date-column (column )
+	     (loop for i below (nrows df) do
+		  (setf (xref df i column) (read-timepoint i column)))))
     
     (let ((maybe-dates
-	    (loop for i upto (length (vartypes df))
-			     and item in (var-types df)
-			     when (equal 'string item)
-			       collect i)))
+	   (loop for i upto (length (vartypes df))
+	      and item in (var-types df)
+	      when (equal 'string item)
+	      collect i)))
       
       (when maybe-dates
 	(dolist (index maybe-dates)
 	  (when (date-column-detected index)
-	 	    (convert-date-column  index)
+	    (convert-date-column  index)
 	    (setf (nth index (vartypes df) ) 'date)))))))
 
 (defun classify-print-type (df column)
@@ -524,7 +599,9 @@ allow the full spec to be supplied "
 
 
 (defun make-variable-metadata (df)
-  " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists will disappear when I figureo ut a convenient initiaslization method"
+  "This is a first attempt at consolidating the metadata for a
+variable. ultimately i expect that the other lists will disappear when
+I (DHodge?) figure out a convenient initiaslization method"
   (format t "vars = ~A~%" (nvars df))
   (loop for index below (nvars df) 
 	collect
@@ -536,15 +613,13 @@ allow the full spec to be supplied "
 	finally (setf (slot-value df 'variables) variable-plist)))
 
 (defmethod initialize-instance :after ((df dataframe-like) &key)
-  "Do post processing for variables  after we initialize the object"
-					; obviously I want to nuke var types & var labels at some point
- 
+  "Do post processing for variables after we initialize the object"
+  ;; obviously I want to nuke var types & var labels at some point
   (unless (var-types df) 
     (setf (vartypes df) (infer-dataframe-types df)))
   (when (var-labels df)
     (setf (var-labels df) (mapcar #'(lambda (keyword)
 				      (alexandria:make-keyword (string-upcase keyword))) (var-labels df))))
- 
   (date-conversion-fu df)
   (make-variable-metadata df)
   (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df)))
