@@ -1,5 +1,5 @@
 
-Time-stamp: <2013-02-09 10:35:59 tony>
+Time-stamp: <2013-02-14 18:55:59 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -70,11 +70,15 @@ git://github.com/blindglobe/common-lisp-stat.git
 
     http://lispcabinet.sourceforge.net/
 
-
 *** Linux
 
     Most distributions contain SBCL or CLISP.  The instructions for
     getting and installing CCL are relatively straightforward.
+
+*** MacOSX
+
+    Both CCL and SBCL have been remarked to work.  CCL seems to be
+    preferred on this platform?
 
 ** Configuring BLAS/LAPACK libraries locations
 
@@ -92,7 +96,7 @@ git://github.com/blindglobe/common-lisp-stat.git
    set up in the shell, by setting up your .bashrc (or equivalent
    shell init file, or equivalent environment variable settings).
 
-*** TODO [#A] Setting up BLAS/LAPACK on Microsoft OS?
+*** TODO [#A] Setting up BLAS/LAPACK on Microsoft OS
 
     i.e. compilation environment and tools, if needed, on Microsoft Windows?
 
@@ -101,24 +105,29 @@ git://github.com/blindglobe/common-lisp-stat.git
 
 *** Linux
 
-    For Linux set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:????
+    Get lapack-dev, blas-dev from your Linux distribution.
+
+    i.e., something like:
+
+#+BEGIN_SRC shell
+sudo apt-get install libblas
+sudo apt-get install liblapack
+#+END_SRC
+
+    For Linux, if installed in a weird place, you need to make sure
+    the loader looks for it.
+
+#+begin_src shell
+set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:???
+#+end_src
+
+    and need to replace the ???
 
     SBCL is known to work (0.58+, 1.1.1+)
 
     CCL is thought to work
 
-    Get lapack-dev, blas-dev from your Linux distribution.
-
     (CMUCL and CLISP may work, but not tested)
-
-   For linux, make sure you have the neccessary libraries installed,
-   through apt, yum or otherwise
-
-   i.e.: 
-#+BEGIN_SRC shell
-sudo apt-get install libblas
-sudo apt-get install liblapack
-#+END_SRC
 
 *** TODO MacOSX
 
