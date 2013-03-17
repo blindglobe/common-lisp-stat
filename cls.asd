@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-01-28 15:33:35 tony>
+;;; Time-stamp: <2013-03-17 09:00:26 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -66,6 +66,7 @@
   :serial t
   :depends-on (;;  :cldoc  ;; documentation tool? (not Lit Prog, but coding support)
 	       ;;  :cffi   ;; only needed within lisp-matrix
+	       :alexandria
 	       :xarray
 	       :lift
 	       :lisp-matrix ; on fnv, cl-blapack, ffa
