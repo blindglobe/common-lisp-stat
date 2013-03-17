@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-02-23 12:47:54 tony>
+;;; Time-stamp: <2013-03-05 19:32:36 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -8,11 +8,11 @@
 ;;;             toplevel directory for conditions.  
 
 ;;; Purpose:    Data packaging and access for Common Lisp Statistics,
-;;;             using a DATAFRAME-LIKE virtual structure.
-;;;             This redoes dataframe structures in adfcolumn CLOS based
-;;;             framework.   Currently contains the virtual class
-;;;             DATAFRAME-LIKE as well as the actual classes
-;;;             DATAFRAME-ARRAY and DATAFRAME-MATRIXLIKE.
+;;;             using a DATAFRAME-LIKE virtual structure.  This redoes
+;;;             dataframe structures in adfcolumn CLOS based
+;;;             framework.  Currently contains the virtual class
+;;;             DATAFRAME-LIKE.  The actual classes DATAFRAME-ARRAY
+;;;             and DATAFRAME-MATRIXLIKE should be in a separate file. 
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -76,25 +76,7 @@
 ;; the next two should be merged into a general replicator or iterator
 ;; pattern.
 
-(defun gen-seq (n &optional (start 1))
-  "Generates an integer sequence of length N starting at START. Used
- for indexing."
-  (if (>= n start)
-      (append (gen-seq (- n 1) start) (list n))))
 
-;; cleaner:
-#|
-  (loop (i n)
-    (collect (+ i start)))
-|#
-
-(defun repeat-seq (n item)
-  "dbh: append/recursion changed to loop.   
-  (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
-  (repeat-seq 3 'd) ; => ('d 'd 'd)
-  (repeat-seq 3 (list 1 2))"
-  (if (>= n 1)
-      (loop for i below n collect item  )))
 
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.
@@ -245,6 +227,11 @@ value is returned indicating the success of the conversion.  Examples:
 
 (defclass dataframe-like (matrix-like)
   (
+   ;; STORE and STORE-CLASS need to be defined in the real
+   ;; (non-virtual) class, since they define the storage mode.
+   ;; Technically, we ought to be able to pull off store-class via
+   ;; TYPE-OF, but that isn't quite clear at this point, since we
+   ;; might want play corruption-tricks.
 #|
    (store :initform nil
 	  :accessor dataset
@@ -280,6 +267,10 @@ value is returned indicating the success of the conversion.  Examples:
 	       :documentation "additional information, potentially
   	         uncomputable, possibly metadata, about dataframe-like
 	         instance.")
+
+   ;; The following probably belong along with the dataframe-array
+   ;; class, NOT here.  Printing methods are in instance-specific
+   ;; classes with real data.
    (variables :initarg :variables
 	      :initform (list)
 	      :accessor variables
@@ -302,6 +293,10 @@ value is returned indicating the success of the conversion.  Examples:
      relations.  Goal is to ensure that relations imply and drive the
      potential for statistical relativeness such as correlation,
      interference, and similar concepts.
+
+     So DATAFRAME-LIKE has column IDs (variable names), column
+     types (variable class or type), row IDs (observation names and
+     trackers), and a documentation string.
 
      STORE is the storage component.  We ignore this in the
      DATAFRAME-LIKE class, as it is the primary differentiator,
@@ -349,8 +344,6 @@ test that that list is a valid listoflist dataframe structure."
     (nrows df)) ;; probably should do a valid LISTOFLIST structure test but this would be inefficient
   (:method ((df array))
     (nrows df)))
-
-
 
 (defun translate-column (df column &optional (nil-on-error nil))
   "for production use, we would wrap this in a handler to enable entry of the correct column id.
@@ -416,10 +409,20 @@ be required."
 	  (setf (xref result i ) (funcall function (xref df i column)))
 	finally (return result)))
 
+
+
 ;;; FUNCTIONS WHICH DISPATCH ON INTERNAL METHODS OR ARGS
 ;;;
 ;;; Q: change the following to generic functions and dispatch on 
 ;;; array, matrix, and dataframe?  Others?
+(defun repeat-seq (n item)
+  "dbh: append/recursion changed to loop.   It's a cleaner way to go.
+  (repeat-seq 3 \"d\") ; => (\"d\" \"d\" \"d\")
+  (repeat-seq 3 'd) ; => ('d 'd 'd)
+  (repeat-seq 3 (list 1 2))"
+  (if (>= n 1)
+      (loop for i below n collect item  )))
+
 (defun make-labels (initstr num)
   "generate a list of strings which can be used as labels, i.e. something like 
   (make-labels \"a\" 3) => '(\"a1\" \"a2\" \"a3\")."
@@ -907,5 +910,16 @@ function."
 |#
 
 
+
+(defun gen-seq (n &optional (start 1))
+  "Generates an integer sequence of length N starting at START. Used
+ for indexing.
+
+ Possibly cleaner implementation:
+  (loop (i n)
+    (collect (+ i start)))
+"
+  (if (>= n start)
+      (append (gen-seq (- n 1) start) (list n))))
 
 
