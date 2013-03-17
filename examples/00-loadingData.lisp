@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-03-17 09:26:19 tony>
+;;; Time-stamp: <2013-03-17 12:07:51 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -190,8 +190,5 @@ list-of-vartypes should look like:
 (+ (xref *chickwts-array* 1 1)
    (xref *chickwts-array* 63 1))
 
-;; now, how to make a dataframe from an array?
-;; and then the last component is to exam how to use the array.
-
-;; Also need to figure out how to make a foreign dataframe from this.
-;; Then we can consider that the data is loaded.
+;; now, off to the next part!  more loading examples, and we show how
+;; to make a dataframe from an array.
