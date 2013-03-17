@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-02-26 19:58:37 tony>
+;;; Time-stamp: <2013-03-17 09:26:19 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,11 +13,13 @@
 
 (in-package :cl-user)
 
+(ql:quickload :data-format-validation)
 (ql:quickload :cls)
 
 (cl:defpackage :cls-examples  ;; similar setup to cls-user, without test data
   (:use :common-lisp
 	:lisp-matrix
+	:data-format-validation
 	:common-lisp-statistics)
   (:shadowing-import-from :lisp-stat
       call-method call-next-method
@@ -91,14 +93,16 @@ return a pathspec, not a string/namespec"
   (let ((fare-csv:*separator* #\, )) ;; default, but we are making a general example
     (let ((csv-file-data (fare-csv:read-csv-file  (localized-pathto "Data/R-chickwts.csv")))
 	  (varnameheader T))
-      (let ((var-name-list (if varnameheader
+      (let (
+#|
+	    (var-name-list (if varnameheader  ;; why did we need var-name-list? completely irrelevant
 			       (car csv-file-data)
 			       (make-labels "V"  (length (car csv-file-data)))))
+|#
 	    (data-list (if varnameheader
 			   (listoflist:listoflist->array (cdr csv-file-data))
 			   (listoflist:listoflist->array csv-file-data))))
-	data-list
-	))))
+	data-list))))
 
 *test1*
 
@@ -118,10 +122,6 @@ return a pathspec, not a string/namespec"
  (+ (data-format-validation:parse-input 'integer (xref *test1* 4 1))
     (data-format-validation:parse-input 'integer (xref *test1* 4 1))))
 
-(+ (data-format-validation:parse-input 'number (aref *test1* 4 1))
-   (data-format-validation:parse-input 'number (aref *test1* 4 1)))
-
-
 (+ (data-format-validation:parse-input 'integer (aref *test1* 4 0))
    (data-format-validation:parse-input 'integer (aref *test1* 5 0)))
 
@@ -131,22 +131,38 @@ return a pathspec, not a string/namespec"
 
 ;; inline conversion of array data
 
-(setf *test1-types* (list 'integer 'number 'string))
+(setf *test1-types* (list 'integer 'number 'string)) ;; this works in the sequel
+(setf *test2-types* '('integer 'number 'string)) ;; this fails!
+
+(nth 1 *test1-types*)
 
 (array-dimensions *test1*)
 
-;;; Is there a cleaner approach using map?  For example, could we work on column-at-a-time?
-;;; and of course: is there a faster/less-consing version?
+(data-format-validation:parse-input (nth 1 *test1-types*) (aref *test1* 2 1))
+(data-format-validation:parse-input 'integer (aref *test1* 2 1))
+
+
+(setf *test2* (make-array (array-dimensions *test1*)))
+
+;;; Is there a cleaner approach using map?  For example, could we work
+;;; on column-at-a-time?  and of course: is there a faster or
+;;; less-consing version?
 (dotimes (i (array-dimension *test1* 0))
   (dotimes (j (array-dimension *test1* 1))
-    (setf (aref *test1* i j)
+    (setf (aref *test2* i j)
 	  (data-format-validation:parse-input (nth j *test1-types*) (aref *test1* i j)))))
 
+
 *test1*
+*test2*
 
 (defun filename.dsv->array3 (filepath list-of-vartypes) 
   "Take a filepath referencing a DSV file, and return an array with
-appropriate column(variable) typing."
+appropriate column(variable) typing.
+
+list-of-vartypes should look like:
+   (list 'integer 'number 'string)
+"
   (let ((fare-csv:*separator* #\, )) ;; default, but we are making a general example
     (let ((csv-file-data-as-listoflist (fare-csv:read-csv-file  filepath))
 	  (varnameheader T))
