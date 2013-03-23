@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-24 17:05:52 tony>
+;;; Time-stamp: <2013-03-17 12:25:26 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -23,13 +23,23 @@
 
 (in-package :cls-examples)
 
-#|
-(ql:quickload :cl-csv)
-(use-package :cl-csv)
-|#
+(defparameter *chickwts-column-types* 	(list 'integer 'number 'string))
+
+(progn
+  (setf *chickwts-array* (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
+					       *chickwts-column-types))
+  ;; *chickwts-df*
+  (xref *chickwts-array* 1 1) ; => 160
+  (xref *chickwts-array* 40 2) ; => "sunflower"
+  *chickwts-array*)
+
+;; we now have an array, whose columns have associated types, but this
+;; typing isn't formally controlled - it was only set on loading.
+*chickwts-array*
 
 
-
-
-
+;;; Now to make a dataframe from this.  
+(setf *chickwts-df* (make-dataframe *chickwts-array*
+				    :vartypes *chickwts-column-types*
+				    :varlabels (list "id" "weight" "feedtype")))
 
