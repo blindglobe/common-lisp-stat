@@ -1,5 +1,5 @@
 
-Time-stamp: <2013-02-14 18:55:59 tony>
+Time-stamp: <2013-07-31 06:59:22 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -132,7 +132,10 @@ set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:???
 *** TODO MacOSX
 
    For Mac OSX set
-   DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
+
+#+BEGIN_SRC sh
+   export DYLD_FALLBACK-LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/local/lib
+#+END_SRC
 
     *FIXME*: Tony has no clue, please fill this in since most mailing
     list folks use Macs.
@@ -176,7 +179,7 @@ sudo port install git
 
 *** for linux
 
-    (eg debian)
+    Using Debian, Ubuntu, or other apt-get based distributions as an example:
 
 #+begin_src sh
 sudo apt-get install git
@@ -242,7 +245,11 @@ git clone https://github.com/blindglobe/common-lisp-stat.git
 | ls-demo-ls1.lisp           |
 | XX-readMe.lisp             |
 
+And more
+
 ** Example Usage steps
+
+How to use 
   
 *** change directory into the CommonLispStat working directory.
 
@@ -265,34 +272,29 @@ CCL
 #+end_src
 
 *** follow the commands in the *ls-demo.lisp* (need to add link) file, i.e.
- 
-**** (ql:quickload :cls)
 
-**** (in-package :cls)
-
-     Initially we will work in the cls package as all the basic
-     functions we would need are present
-
-     For serious work we would create our own workspace and save it in
-     a separate package, but for now we will take this short cut.
-
-**** (normal-rand 20)
-
-**** (setf mytest (normal-rand 20))
-
-**** ... (and so on) ...
-
-   and see if they work (basic CFFI functionality for external C
-   library, LIFT package for unit-testing framework to ensure run time
-   stability).
-  
-1. start your lisp
-2. load CLS
 
 #+BEGIN_SRC lisp
-(ql:quickload :cls)
+ (ql:quickload :cls)
+
+ (in-package :cls)
+#+END_SRC 
+
+    Initially we will work in the cls package as all the basic
+    functions we would need are present
+
+    For serious work we would create our own workspace and save it in
+    a separate package, but for now we will take this short cut.
+
+#+BEGIN_SRC lisp
+ (normal-rand 20)
+ (setf mytest (normal-rand 20))
 #+END_SRC
 
+    and see if they work (basic CFFI functionality for external C
+    library, LIFT package for unit-testing framework to ensure run
+    time stability).
+  
 
 *** DONE Setup a place to work
 
@@ -312,7 +314,7 @@ CCL
     pulls in only desired functionality:
 
 #+BEGIN_SRC lisp +n :tangle "readme-example.lisp"
-  (in-package cl-user)
+  (in-package :cl-user)
   (defpackage :my-package-user
     (:documentation "demo of how to put serious work should be placed in
       a similar package elsewhere for reproducibility.  This hints as to
