@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-11 16:12:48 tony>
+;;; Time-stamp: <2013-07-31 07:16:38 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -69,7 +69,7 @@
 ;;; Dataframes
 
 (make-dataframe *ex-ary*)
-(make-dataframe (cls-data-listoflist:listoflist->array  *ex-lol*)) ;; FIXME
+(make-dataframe (listoflist:listoflist->array  *ex-lol*)) ;; FIXME
 ;; (make-dataframe *ex-lol*) ;; error
 
 ;;; "make-dataframe2" is generic -- FIXME: but it is not yet exported!

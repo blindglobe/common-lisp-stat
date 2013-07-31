@@ -1,10 +1,10 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-03-17 12:25:26 tony>
+;;; Time-stamp: <2013-07-31 07:11:50 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2012--, AJ Rossini.  Currently licensed under MIT
+;;; Copyright:  (c)2012--2013, AJ Rossini.  Licensed under MIT
 ;;;             license.  See file LICENSE.mit in top-level directory
 ;;;             for information.
 ;;; Purpose:    Example of loading DSV files
@@ -17,17 +17,16 @@
 ;;; version..   Think, "21st Century Schizoid Man".
 
 
-
-;;;; BROKEN unless you are running your lisp in the examples/ directory
+;;;; BROKEN unless you are running your lisp in the examples/ directory.  Load from the right place. 
 (load "00-loadingData.lisp")
 
 (in-package :cls-examples)
 
-(defparameter *chickwts-column-types* 	(list 'integer 'number 'string))
 
 (progn
-  (setf *chickwts-array* (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
-					       *chickwts-column-types))
+  (defparameter *chickwts-column-types* 	(list 'integer 'number 'string))
+  (defparameter *chickwts-array* (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
+					       *chickwts-column-types*))
   ;; *chickwts-df*
   (xref *chickwts-array* 1 1) ; => 160
   (xref *chickwts-array* 40 2) ; => "sunflower"
@@ -37,9 +36,7 @@
 ;; typing isn't formally controlled - it was only set on loading.
 *chickwts-array*
 
-
 ;;; Now to make a dataframe from this.  
-(setf *chickwts-df* (make-dataframe *chickwts-array*
+(defparameter *chickwts-df* (make-dataframe *chickwts-array*
 				    :vartypes *chickwts-column-types*
 				    :varlabels (list "id" "weight" "feedtype")))
-

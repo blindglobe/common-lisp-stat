@@ -1,21 +1,23 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-03-17 12:07:51 tony>
+;;; Time-stamp: <2013-07-31 07:08:18 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2009--2012, AJ Rossini.  MIT license.
-;;; Purpose:    Example of loading data
+;;; Copyright:  (c)2009--2013, AJ Rossini.  MIT license.
+;;; Purpose:    Example of loading and QA/QC'ing data
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(in-package :cl-user)
+(in-package :cl-user) ; start in the CL user namespace (i.e. package)
 
+;;; load the systems we need
 (ql:quickload :data-format-validation)
 (ql:quickload :cls)
 
+;;; create the package that we will be working in.
 (cl:defpackage :cls-examples  ;; similar setup to cls-user, without test data
   (:use :common-lisp
 	:lisp-matrix
@@ -36,7 +38,7 @@
   (:export localized-pathto
 	   *chkwgts-df*))
 
-;; start within the cls-examples package, which is similar to cls-user
+;; and we will now work within this package
 (in-package :cls-examples)
 
 ;; we'll be loading from directories in the CLS homedir, so we want to
@@ -107,10 +109,10 @@ return a pathspec, not a string/namespec"
 *test1*
 
 ;; confirming type
-(typep *test1* 'array)
-(typep *test1* 'list)
-(typep *test1* 'sequence)
-(typep *test1* 'vector)
+(typep *test1* 'array) ; => T
+(typep *test1* 'list) ; => NIL
+(typep *test1* 'sequence) ; => NIL
+(typep *test1* 'vector) ; => NIL
 
 
 
@@ -120,7 +122,7 @@ return a pathspec, not a string/namespec"
     (data-format-validation:parse-input 'integer (aref *test1* 4 1)))
 
  (+ (data-format-validation:parse-input 'integer (xref *test1* 4 1))
-    (data-format-validation:parse-input 'integer (xref *test1* 4 1))))
+    (data-format-validation:parse-input 'integer (xref *test1* 4 1)))) ; => T
 
 (+ (data-format-validation:parse-input 'integer (aref *test1* 4 0))
    (data-format-validation:parse-input 'integer (aref *test1* 5 0)))
@@ -131,8 +133,8 @@ return a pathspec, not a string/namespec"
 
 ;; inline conversion of array data
 
-(setf *test1-types* (list 'integer 'number 'string)) ;; this works in the sequel
-(setf *test2-types* '('integer 'number 'string)) ;; this fails!
+(defparameter *test1-types* (list 'integer 'number 'string)) ;; this works in the sequel
+(defparameter *test2-types* '('integer 'number 'string)) ;; this fails!
 
 (nth 1 *test1-types*)
 
@@ -142,7 +144,7 @@ return a pathspec, not a string/namespec"
 (data-format-validation:parse-input 'integer (aref *test1* 2 1))
 
 
-(setf *test2* (make-array (array-dimensions *test1*)))
+(defparameter *test2* (make-array (array-dimensions *test1*)))
 
 ;;; Is there a cleaner approach using map?  For example, could we work
 ;;; on column-at-a-time?  and of course: is there a faster or
@@ -166,9 +168,9 @@ list-of-vartypes should look like:
   (let ((fare-csv:*separator* #\, )) ;; default, but we are making a general example
     (let ((csv-file-data-as-listoflist (fare-csv:read-csv-file  filepath))
 	  (varnameheader T))
-      (let ((var-name-list (if varnameheader
-			       (car csv-file-data-as-listoflist)
-			       (make-labels "V"  (length (car csv-file-data-as-listoflist)))))
+      (let (;; (var-name-list (if varnameheader
+	    ;;		       (car csv-file-data-as-listoflist)
+ 	    ;;		       (make-labels "V"  (length (car csv-file-data-as-listoflist)))))
 	    (data-array (if varnameheader
 			   (listoflist:listoflist->array (cdr csv-file-data-as-listoflist))
 			   (listoflist:listoflist->array csv-file-data-as-listoflist))))
