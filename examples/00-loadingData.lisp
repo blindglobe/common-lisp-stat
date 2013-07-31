@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-07-31 07:08:18 tony>
+;;; Time-stamp: <2013-07-31 07:40:31 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -58,11 +58,8 @@ return a pathspec, not a string/namespec"
   ;; LISP-STAT COMPATIBILITY MODE:
   ;;
   ;; FIXME: Need to clean up data examples, licenses, attributions, etc.
-  ;; The following breaks because we should use a package to hold
-  ;; configuration details, and this would be the only package outside
-  ;; of packages.lisp, as it holds the overall defsystem structure.
-  (load-data "iris.lsp")  ;; (the above partially fixed).
-  (load-data "diabetes.lsp")
+  (load-data "iris.lisp")  ;; (the above partially fixed).
+  (load-data "diabetes.lisp")
   lisp-stat-data-examples:diabetes
   lisp-stat-data-examples:dlabs
   (variables))
@@ -129,12 +126,18 @@ return a pathspec, not a string/namespec"
 
 
 (data-format-validation:parse-input 'string (aref *test1* 5 2)) ;; correct, returns a string
+
+;; we need to try-catch-continue with the error here so we can load
+;; this file directly in without an error.  Or ensure that if we let
+;; the user know what to do when the error occurs (to just continue
+;; along merrily...)
+
 (data-format-validation:parse-input 'number (aref *test1* 5 2)) ;; error, but restarts are not quite right...
 
 ;; inline conversion of array data
 
-(defparameter *test1-types* (list 'integer 'number 'string)) ;; this works in the sequel
-(defparameter *test2-types* '('integer 'number 'string)) ;; this fails!
+(defparameter *test1-types* (list 'integer 'number 'string)) ; this works in the sequel
+(defparameter *test2-types* '('integer 'number 'string)) ; this used to fail but no longer?
 
 (nth 1 *test1-types*)
 

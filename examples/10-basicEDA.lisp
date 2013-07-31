@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-11 16:20:36 tony>
+;;; Time-stamp: <2013-07-31 07:33:54 tony>
 ;;; Creation:   <2009-04-19 09:41:09 tony>
 ;;; File:       basic-eda.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -16,7 +16,10 @@
 
 ;; We assume that the "loading-data.lisp" code has been run, and one
 ;; now wants to analyze the data loaded into *chickwts-df*
+;; 
+;; Technically, we also want a great deal more for the loading.
 
+;; This will not work unless 00-##.lisp is loaded.  Catch-22!
 (load (localized-pathto "examples/00-loadingData.lisp")
       :verbose t)
 
