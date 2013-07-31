@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-03-05 19:32:36 tony>
+;;; Time-stamp: <2013-03-17 12:57:13 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -73,11 +73,6 @@
 
 ;;; Misc Functions (to move into a lisp data manipulation support package)
 
-;; the next two should be merged into a general replicator or iterator
-;; pattern.
-
-
-
 (defun strsym->indexnum (df strsym)
   "Returns a number indicating the DF column labelled by STRSYM.
 Probably should be generic/methods dispatching on DATAFRAME-LIKE type."
@@ -88,7 +83,7 @@ Probably should be generic/methods dispatching on DATAFRAME-LIKE type."
 value is returned indicating the success of the conversion.  Examples:
    (string->number \"123\") ; =>  123 t
    (string->number \"1.23\") ; =>  1.23 t"
-   (let ((*read-eval* nil))
+   (let ((*read-eval* nil)) ;; Q: replace nested let's with a let* (enforced serial eval)?
      (let ((num (read-from-string str)))
        (values num (numberp num)))))
 
@@ -159,8 +154,6 @@ value is returned indicating the success of the conversion.  Examples:
     (4 'string) ;; for the moment a categorical variable
     (5 'keyword) ;; and likewise, regarded as a categorical varial
     (6 t))) ;; nil will end up here.
-
-
 ;;; abstract class: dataframe-like
 
 ;; In addition, see documentation string.  
@@ -231,7 +224,12 @@ value is returned indicating the success of the conversion.  Examples:
    ;; (non-virtual) class, since they define the storage mode.
    ;; Technically, we ought to be able to pull off store-class via
    ;; TYPE-OF, but that isn't quite clear at this point, since we
-   ;; might want play corruption-tricks.
+   ;; might want play corruption-tricks.  See the example in
+   ;; dataframe-array.lisp for how this might work.  
+   ;;
+   ;; There could be examples of what this might end up be -- using
+   ;; dataframe-like as a mix-in class, so that other structures share
+   ;; some of the basic API work.
 #|
    (store :initform nil
 	  :accessor dataset
@@ -241,6 +239,23 @@ value is returned indicating the success of the conversion.  Examples:
 		:accessor store-class
 		:documentation "Lisp class used for the dataframe storage.")
 |#
+   (var-types :initform nil
+	      :initarg :var-types
+	      :type list
+	      :accessor var-types
+	      :documentation "List of symbols representing classes
+	        which describe the range of contents for a particular
+	        variable. Symbols must be valid types for check-type,
+	        or be morally equivalent (to be discussed what this
+	        means later).  List order matches order of columns in
+	        STORE. superceded by variables below.")
+
+   ;; BIG question: do we lift out the dataframe metadata into a
+   ;; separate class?  i.e. labels, statistical metadata related to
+   ;; whether the variables are collected or set by design, or ...  I
+   ;; (Tony) have not done this yet, but it is part of the goal of
+   ;; having statistical thinking and philosophy embedded within the
+   ;; business logic of this system.
    (case-labels :initform nil
 		:initarg :case-labels
 		:type list
@@ -253,14 +268,6 @@ value is returned indicating the success of the conversion.  Examples:
 	       :accessor var-labels
 	       :documentation "Variable names. List order matches
 	         order in STORE. superceded by variables below")
-   (var-types :initform nil
-	      :initarg :var-types
-	      :type list
-	      :accessor var-types
-	      :documentation "List of symbols representing classes
-	        which describe the range of contents for a particular
-	        variable. Symbols must be valid types for check-type.
-	        List order matches order in STORE. superceded by variables below")
    (doc-string :initform nil
 	       :initarg :doc
 	       :accessor doc-string
@@ -694,7 +701,7 @@ I (DHodge?) figure out a convenient initiaslization method"
       (setf (var-labels df) vl)
       (error "wrong size.")))
 
-;;(defsetf varlabels set-varlabels) ;; FIXME!
+(defsetf varlabels set-varlabels) ;; FIXME!
 
 ;;; Case-name handling for Tables.  Needs error checking.
 (defun caselabels (df)
@@ -716,64 +723,67 @@ I (DHodge?) figure out a convenient initiaslization method"
 ;; (documentation 'dataframe-like  'type)
 
 
-
 ;;; Do we establish methods for dataframe-like, which specialize to
 ;;; particular instances of storage?
 
-(defparameter dataframe-print-formats '((FIXNUM . "~7D")
-					(INTEGER . "~7D")
-					(STRING . "~7A")
-					(SIMPLE-STRING . "~A")
-					(CONS . "~a")
-					(SYMBOL . "~7a")
-					(KEYWORD . "~7a")
-					(RATIONAL . "~7a")
-					(NUMBER . "~7a")
-					(FLOAT . "~7a")
-					(DATE . "~9a")
-					(LONG-FLOAT . "~7,3G")
-					(SHORT-FLOAT . "~7,3G")
-					(SINGLE-FLOAT . "~7,3G")
-					(DOUBLE-FLOAT . "~7,3G")))
-(defparameter new-dataframe-print-formats '((FIXNUM . "D")
-					(INTEGER . "D")
-					(STRING . "A")
-					(SIMPLE-STRING . "A")
-					(CONS . "a")
-					(SYMBOL . "7a")
-					(KEYWORD . "a")
-					(RATIONAL . "a")
-					(NUMBER . "a")
-					(FLOAT . "a")
-					(DATE . "a")
-					(LONG-FLOAT . "G")
-					(SHORT-FLOAT . "~G")
-					(SINGLE-FLOAT . "~G")
-					    (DOUBLE-FLOAT . "~G")))
+(defparameter dataframe-print-formats
+  '((FIXNUM . "~7D")
+    (INTEGER . "~7D")
+    (STRING . "~7A")
+    (SIMPLE-STRING . "~A")
+    (CONS . "~a")
+    (SYMBOL . "~7a")
+    (KEYWORD . "~7a")
+    (RATIONAL . "~7a")
+    (NUMBER . "~7a")
+    (FLOAT . "~7a")
+    (DATE . "~9a")
+    (LONG-FLOAT . "~7,3G")
+    (SHORT-FLOAT . "~7,3G")
+    (SINGLE-FLOAT . "~7,3G")
+    (DOUBLE-FLOAT . "~7,3G")))
+
+(defparameter new-dataframe-print-formats
+  '((FIXNUM . "D")
+    (INTEGER . "D")
+    (STRING . "A")
+    (SIMPLE-STRING . "A")
+    (CONS . "a")
+    (SYMBOL . "7a")
+    (KEYWORD . "a")
+    (RATIONAL . "a")
+    (NUMBER . "a")
+    (FLOAT . "a")
+    (DATE . "a")
+    (LONG-FLOAT . "G")
+    (SHORT-FLOAT . "~G")
+    (SINGLE-FLOAT . "~G")
+    (DOUBLE-FLOAT . "~G")))
+
 (defun build-format-string (df)
   "build the format string by checking widths of each column. to be rewritten as a table "
   
   (loop for  variable in  (variables df) 
-    collect (case (getf variable :print-type)
-	      ((:INTEGER :KEYWORD :STRING :DATE) (format nil "~~~AA " (getf variable :print-width)))
-	      (:FLOAT (format nil "~~~A,3G " (getf variable :print-width)))) into format-control
-	
-	finally  (return (format nil "~~{~{~a~}~~}~~%" format-control))))
+     collect (case (getf variable :print-type)
+	       ((:INTEGER :KEYWORD :STRING :DATE) (format nil "~~~AA " (getf variable :print-width)))
+	       (:FLOAT (format nil "~~~A,3G " (getf variable :print-width)))) into format-control
+       
+     finally  (return (format nil "~~{~{~a~}~~}~~%" format-control))))
 
 (defun print-directive (df col)
   (cdr  (assoc (elt (vartypes df) col) DATAFRAME-PRINT-FORMATS)))
 
 (defun print-headings (df stream)
   (loop for variable in (variables df)
-	nconc (list
-	       (1+ (max  (getf variable :print-width)
-			 (length (symbol-name  (getf variable :name)))))
-	       (getf variable :name) ) into control-string
-	  finally  (format stream "~{~VA~}~%" control-string) ))
+     nconc (list
+	    (1+ (max  (getf variable :print-width)
+		      (length (symbol-name  (getf variable :name)))))
+	    (getf variable :name) ) into control-string
+     finally  (format stream "~{~VA~}~%" control-string) ))
 
 (defun row (df row)
   (loop for col  below (ncols df)
-	collect (xref df row col)))
+     collect (xref df row col)))
 
 (defmethod print-object ((object dataframe-like) stream)
   

@@ -1,14 +1,13 @@
-1
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-19 15:53:48 tony>
+;;; Time-stamp: <2013-03-17 12:31:03 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Authors:    AJ Rossini <blindglobe@gmail.com>
 ;;;             David Hodge <davidbhodge@gmail.com>
 
-;;; Copyright:  (c)2009--, AJ Rossini. MIT
-;;; Copyright:  (c)2012--, David Hodge. MIT
+;;; Copyright:  (c)2009--, AJ Rossini. MIT license.
+;;; Copyright:  (c)2012--, David Hodge. MIT license.
 
 ;;; Purpose:    real dataframe class using lisp-arrays as storage.
 
@@ -21,7 +20,7 @@
 
 (in-package :cls-dataframe)
 
-;;;;; DATAFRAME-ARRAY
+;;; DATAFRAME-ARRAY
 
 (defclass dataframe-array (dataframe-like)
   ((store :initform nil
@@ -37,7 +36,7 @@
   dataframe-matrix-like which uses the lisp-matrix classes."))
 
 
-(defmethod dfcolumn (( df dataframe-array) variable)
+(defmethod dfcolumn ((df dataframe-array) variable)
   "return a column as a list. a quick hack until we decide what the array manipulations should be"
   (loop for row below (nrows df) collect (xref df row variable)))
 
@@ -51,14 +50,6 @@
 	   (error "Column name misspelt: try again ~a~%" column))))
     ((typep column 'number) column)
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
-
-
-(defun translate-column2 (df column)
-  (cond
-    ((typep column 'keyword) (position column (varlabels df)))
-    ((typep column 'number) column)
-    (t (error "Invalid argument passed to translate-column"))))
-
 
 (defmethod make-dataframe2 ((data dataframe-array)
 			    &key vartypes varlabels caselabels doc)
