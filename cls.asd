@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-03-17 09:00:26 tony>
+;;; Time-stamp: <2013-07-31 07:20:30 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -40,13 +40,14 @@
 			       #-(or sbcl openmcl clisp cmucl) "fasl"
 			       )))
 
-;;; Handle Luke's *.lsp suffix
-(defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
-(defmethod asdf::output-files :around ((operation compile-op)
-				       (c cls-lsp-source-file))
-  (list (merge-pathnames *fasl-directory*
-			 (compile-file-pathname (component-pathname c)))))
-;;; again, thanks to Cyrus for saving me time...
+;;; Was intended to handle Luke's *.lsp suffix
+;;; Now we just remove for ASDF3 issues.
+;;(defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
+;;(defmethod asdf::output-files :around ((operation compile-op)
+;;				       (c cls-lsp-source-file))
+;;  (list (merge-pathnames *fasl-directory*
+;;			 (compile-file-pathname (component-pathname c)))))
+;;;; again, thanks to Cyrus for saving me time long ago, but no longer needed.
 
 
 (defsystem "cls"
