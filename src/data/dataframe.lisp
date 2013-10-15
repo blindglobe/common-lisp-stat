@@ -1,35 +1,40 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-03-17 12:57:13 tony>
+;;; Time-stamp: <2013-10-15 09:15:30 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2008--2010, AJ Rossini.  See LICENSE.mit in
 ;;;             toplevel directory for conditions.  
 
-;;; Purpose:    Data packaging and access for Common Lisp Statistics,
-;;;             using a DATAFRAME-LIKE virtual structure.  This redoes
-;;;             dataframe structures in adfcolumn CLOS based
-;;;             framework.  Currently contains the virtual class
-;;;             DATAFRAME-LIKE.  The actual classes DATAFRAME-ARRAY
-;;;             and DATAFRAME-MATRIXLIKE should be in a separate file. 
+;;; Purpose: Data packaging and access for Common Lisp Statistics,
+;;;          using a DATAFRAME-LIKE virtual structure.  This redoes
+;;;          dataframe structures in a CLOS based framework.
+;;;          Currently contains the virtual class DATAFRAME-LIKE.  The
+;;;          actual classes DATAFRAME-ARRAY and DATAFRAME-MATRIXLIKE
+;;;          should be in a separate file.  New underlying storage
+;;;          structures (GSLL, ODBC, etc) should be done in separate
+;;;          files.
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-(in-package :cls-dataframe)
+(in-package #:cls-dataframe)
 
 ;;; No real basis for work, there is a bit of new-ness and R-ness to
 ;;; this work. In particular, the notion of relation is key and
 ;;; integral to the analysis.  Tables are related and matched vectors,
 ;;; for example.  "column" vectors are related observations (by
 ;;; measure/recording) while "row" vectors are related readings (by
-;;; case, possibly independence).  When possible, we want to place
-;;; statistical semantics into the computational data object -- so for
-;;; example, to state that it is a violation of use to consider rows
-;;; which are not at the least conditionally independent (though the
-;;; conditioning should be outside the data set, not internally
+;;; case, possibly independence).
+
+;;; When possible, we want to place statistical semantics into the
+;;; computational data object!
+
+;;; so for example, to state that it is a violation of use to consider
+;;; rows which are not at the least conditionally independent (though
+;;; the conditioning should be outside the data set, not internally
 ;;; specified), though the assumption violation should not be set up
 ;;; so that we can never violate -- only be reminded that we are
 ;;; indeed violating it, under the principle that statistical
@@ -37,7 +42,11 @@
 
 ;;; Using the principle of how to design functional approaches, we
 ;;; want a verb-driven API for data collection construction.  We
-;;; should encode independence or lack of, as a computable status.
+;;; should encode independence, condition independence, or dependence
+;;; structures, as a computable status.  While it will be important to
+;;; keep this information, there will be times, especially when we are
+;;; trying to check the validity of assumptions and impact of them
+;;; from a sensitivity perspective.
 
 ;;; TODO: Need to figure out statistically-typed vectors.  We then map
 ;;; a series of typed vectors over to tables where columns are equal
@@ -152,8 +161,9 @@ value is returned indicating the success of the conversion.  Examples:
     (2 'double-float)
     (3 '(complex double-float))
     (4 'string) ;; for the moment a categorical variable
-    (5 'keyword) ;; and likewise, regarded as a categorical varial
+    (5 'keyword) ;; and likewise, regarded as a categorical variable
     (6 t))) ;; nil will end up here.
+
 ;;; abstract class: dataframe-like
 
 ;; In addition, see documentation string.  
@@ -381,7 +391,7 @@ be required."
     internal interest, since ideally we'd have to use standard
     constructs to ensure that we do not get the dataframe structure
     misaligned.")
-  ;; (:method (object) "General objects are not consistent dataframes!" nil)
+  (:method (object) "General objects are not consistent dataframes!" nil)
   (:method ((df dataframe-like)) 
     "At minimum, must dispatch on virtual-class."
     (and
@@ -478,6 +488,60 @@ be required."
 
 ;;  (macroexpand '(build-dataframe 'test)))
 
+
+(defun make-dataframe (newdata
+		       &key  (vartypes nil)
+		       (caselabels nil) (varlabels nil)
+		       (doc "no docs"))
+  "Helper function to use instead of make-instance to assure
+construction of proper DF-array. needs some thought so we don't have to use listoflist->array when creating a dataframe array so much"
+  (check-type newdata (or matrix-like array list ))
+  (check-type caselabels sequence)
+  (check-type varlabels sequence)
+  (check-type vartypes sequence)
+  (check-type doc string)
+  (let ((ncases (ncases newdata))
+	(nvars (nvars newdata)))
+    
+    (if caselabels (assert (= ncases (length caselabels))))
+    (if varlabels (assert (= nvars (length varlabels))))
+    (let ((newcaselabels (if caselabels
+			     caselabels
+			     (make-labels "C" ncases)))
+	  (newvarlabels (if varlabels
+			    varlabels
+			    (make-labels "V" nvars))))
+    
+      (etypecase newdata 
+	(list
+	 (make-instance 'dataframe-listoflist
+			:storage newdata
+			:nrows (length newcaselabels)
+			:ncols (length newvarlabels)
+			:case-labels newcaselabels
+			:var-labels newvarlabels
+			:var-types vartypes))
+	(array
+	 (make-instance 'dataframe-array
+			:storage newdata
+			:nrows (length newcaselabels)
+			:ncols (length newvarlabels)
+			:case-labels newcaselabels
+			:var-labels newvarlabels
+			:var-types vartypes))
+	
+	(matrix-like
+	 (make-instance 'dataframe-matrixlike
+			:storage newdata
+			:nrows (length newcaselabels)
+			:ncols (length newvarlabels)
+			:case-labels newcaselabels
+			:var-labels newvarlabels
+			:var-types vartypes))))))
+
+
+
+
 (defgeneric make-dataframe2 (data &key vartypes varlabels caselabels doc)
   (:documentation "testing generic dispatch.  Data should be in table format desired for use."))
 
@@ -507,105 +571,8 @@ be required."
  (make-dataframe (rand 10 5)) ;; ERROR, but should work!
 |#
 
-(defparameter *CLS-DATE-FORMAT* :UK
-  "should be one of :UK (d/m/y) :US (m/d/y) or maybe others as
-  required.  Giving a hint to the parsing routine.  Suffix with a
-  -TIME (is :US-TIME for MDY hhmmss. Or supply the ANTIK specification
-  as a list '(2 1 0 3 4 5) ")
-
-(defparameter *CLS-DATE-TEST-LIMIT* 5
-  "The number of rows to check when deciding if the column is a date
-  column or not.")
 
 
-;;; Why is this "ANTIK"?  We naturally will be including the antik
-;;; package within this framework. At this point we are heavy, heavy,
-;;; heavy, and done on purpose.  Need to be heavy before we are
-;;; light-weight.
-(defun antik-date-format-helper (date)
-  "provide decoding for shorthand notation in *CLS-DATE-FORMAT* or
-allow the full spec to be supplied "
-  (cond
-    ((equal date :UK) '(2 1 0))
-    ((equal date :UK-TIME) '(2 1 0 3 4 5))
-    ((equal date :US) '(2 0 1))
-    ((equal date :US-TIME) '(2 0 1 3 4 5))
-    (t date)))
-
-(defun date-conversion-fu (df)
-  "for any string column in the dataframe, try to parse the first n
-entries as a date according to the global format. If we can do that
-successfully for at least one entry, the convert the column,
-converting failures to nil"
-  (labels ((read-timepoint (row column)
-	     "read a timepoint. if there is an error return nil"
-	     (handler-case
-		 (antik:read-timepoint (xref df row column)
-				       (antik-date-format-helper *CLS-DATE-FORMAT*))
-	       (error () nil)))
-	 
-	   (date-column-detected (index)
-	     "guess if the column has dates or not"
-	     (loop
-		for i below *CLS-DATE-TEST-LIMIT*
-		collect  (read-timepoint i index) into result
-		finally (return (some #'identity result))))
-	 
-	   (convert-date-column (column )
-	     (loop for i below (nrows df) do
-		  (setf (xref df i column) (read-timepoint i column)))))
-    
-    (let ((maybe-dates
-	   (loop for i upto (length (vartypes df))
-	      and item in (var-types df)
-	      when (equal 'string item)
-	      collect i)))
-      
-      (when maybe-dates
-	(dolist (index maybe-dates)
-	  (when (date-column-detected index)
-	    (convert-date-column  index)
-	    (setf (nth index (vartypes df) ) 'date)))))))
-
-(defun classify-print-type (df column)
-  (labels ((integer-variable (variable)
-	     (member variable '(FIXNUM INTEGER RATIONAL)))
-	   (float-variable (variable)
-	     (member variable '(NUMBER FLOAT LONG-FLOAT SHORT-FLOAT SINGLE-FLOAT DOUBLE-FLOAT)))
-	   (string-variable (variable)
-	     (equal variable 'STRING))
-	   (keyword-variable (variable)
-	     (equal variable 'KEYWORD))
-	   (date-variable (variable)
-	     (member variable '(DATE ANTIK:TIMEPOINT))))
-
-    (let ((variable-type (elt (var-types df) column)))
-      
-      (cond
-	( (integer-variable variable-type) :INTEGER)
-	((float-variable variable-type) :FLOAT)
-	((keyword-variable variable-type) :KEYWORD)
-	((string-variable variable-type) :STRING)
-	((date-variable variable-type) :DATE)
-	(t (error "classify-print-type, unrecognized type ~a~%" variable-type))))))
-  
-(defun determine-print-width (df  column)
-  "build the format string by checking widths of each column. to be rewritten as a table "
-  (labels ((numeric-width (the-col)
-	     (reduce #'max (mapcar #'(lambda (x) (ceiling (log (abs x) 10))) (dfcolumn df the-col)) ))
-	   (string-width (the-col)
-	     (reduce  #'max (mapcar #'length (dfcolumn df the-col))))
-	   (keyword-width (the-col)
-	     (reduce #'max (mapcar #'(lambda (x) (length (symbol-name x))) (dfcolumn df the-col))))
-	   ;; FIXME - what is the print width of a timepoint?
-	   (date-width (the-col) 12))
-    
-    (case (classify-print-type df column)
-      ((:INTEGER :FLOAT) (numeric-width column))
-      (:KEYWORD          (keyword-width column))
-      (:STRING           (string-width column))
-      (:DATE             (date-width column))
-      (t (error "determine-print-width, unrecognized type ~%" )))))
 
 
 (defun make-variable-metadata (df)
@@ -622,7 +589,22 @@ I (DHodge?) figure out a convenient initiaslization method"
 	 :print-width (determine-print-width df index)) into variable-plist
 	finally (setf (slot-value df 'variables) variable-plist)))
 
-(defmethod initialize-instance :after ((df dataframe-like) &key)
+
+(defun make-variable-metadata-2 (df) ;; FIXME: which of this and the above are right?
+  " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists (varlabels etc) will disappear when I figure out a convenient initialization method"
+  
+  (loop for index below (nvars df) 
+	collect
+	(let ((type (column-type-classifier df index)))
+	  (list
+	   :name (elt (var-labels df) index) 
+	   :type type
+	   :print-type (classify-print-type  type)
+	   :print-width (determine-print-width df index type))) into variable-plist
+	finally (setf (slot-value df 'variables) variable-plist)))
+
+#| FIXME: Which one is right?  This or the above?
+ (defmethod initialize-instance :after ((df dataframe-like) &key)
   "Do post processing for variables after we initialize the object"
   ;; obviously I want to nuke var types & var labels at some point
   (unless (var-types df) 
@@ -633,6 +615,27 @@ I (DHodge?) figure out a convenient initiaslization method"
   (date-conversion-fu df)
   (make-variable-metadata df)
   (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df)))
+|#
+
+
+
+(defmethod initialize-instance :after ((df dataframe-like) &key)
+  "Do post processing for variables  after we initialize the object"
+ 
+ ;; only do the metadata stuff when all the information has been supplied 
+  (when  (var-labels df)
+    (FORMAT T "before metadata")
+    (setf (var-labels df)
+	  (mapcar #'(lambda (keyword)
+		      (if  (keywordp keyword)
+			   keyword
+			   (alexandria:make-keyword (string-upcase keyword))))
+		  (var-labels df)))
+    (make-variable-metadata df)
+    (date-conversion-fu df))
+  ;; actually I am finding this quite useful, so will leave it here for the moment
+  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (varlabels df) (vartypes df)))
+
 
 ;;; FIXME: the following two functions hurt the eyes.  I think that
 ;;;
