@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-15 09:15:30 tony>
+;;; Time-stamp: <2013-10-15 12:14:19 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -493,13 +493,17 @@ be required."
 		       &key  (vartypes nil)
 		       (caselabels nil) (varlabels nil)
 		       (doc "no docs"))
+
   "Helper function to use instead of make-instance to assure
-construction of proper DF-array. needs some thought so we don't have to use listoflist->array when creating a dataframe array so much"
+construction of proper DF-array. Needs some thought so we don't have
+to use listoflist->array when creating a dataframe array so much"
+
   (check-type newdata (or matrix-like array list ))
   (check-type caselabels sequence)
   (check-type varlabels sequence)
   (check-type vartypes sequence)
   (check-type doc string)
+
   (let ((ncases (ncases newdata))
 	(nvars (nvars newdata)))
     
@@ -539,8 +543,8 @@ construction of proper DF-array. needs some thought so we don't have to use list
 			:var-labels newvarlabels
 			:var-types vartypes))))))
 
-
-
+;;; The following would be a bit better, so that we can template the
+;;; use of a different underlying storage unit.
 
 (defgeneric make-dataframe2 (data &key vartypes varlabels caselabels doc)
   (:documentation "testing generic dispatch.  Data should be in table format desired for use."))
@@ -551,7 +555,7 @@ construction of proper DF-array. needs some thought so we don't have to use list
 
 ;;(defun dfquery (df ))
 
-(defmethod dfextract (df  &key ( head 5) (tail 5) )
+(defmethod dfextract (df  &key (head 5) (tail 5))
   "just for the moment "
   (let* ((rows (ncases df))
 	 (head-rows (loop for row below  (min head rows) collect (dfrow df row)))
@@ -578,30 +582,35 @@ construction of proper DF-array. needs some thought so we don't have to use list
 (defun make-variable-metadata (df)
   "This is a first attempt at consolidating the metadata for a
 variable. ultimately i expect that the other lists will disappear when
-I (DHodge?) figure out a convenient initiaslization method"
+I (DHodge?) figure out a convenient initiaslization method."
+
   (format t "vars = ~A~%" (nvars df))
   (loop for index below (nvars df) 
 	collect
 	(list
 	 :name (elt (var-labels df) index) 
-	 :type (elt (var-types df) index)
+	 :type (elt (var-types df) index)  ;;  (column-type-classifier df index)
 	 :print-type (classify-print-type df index)
 	 :print-width (determine-print-width df index)) into variable-plist
 	finally (setf (slot-value df 'variables) variable-plist)))
 
 
-(defun make-variable-metadata-2 (df) ;; FIXME: which of this and the above are right?
-  " this is a first attempt at consolidating the metadata for a variable. ultimately i expect that the other lists (varlabels etc) will disappear when I figure out a convenient initialization method"
-  
-  (loop for index below (nvars df) 
-	collect
-	(let ((type (column-type-classifier df index)))
-	  (list
-	   :name (elt (var-labels df) index) 
-	   :type type
-	   :print-type (classify-print-type  type)
-	   :print-width (determine-print-width df index type))) into variable-plist
-	finally (setf (slot-value df 'variables) variable-plist)))
+(defmethod initialize-instance :after ((df dataframe-like) &key)
+  "Do post processing for variables  after we initialize the object"
+ 
+  ;; only do the metadata stuff when all the information has been supplied 
+  (when  (var-labels df)
+    (FORMAT T "before metadata")
+    (setf (var-labels df)
+	  (mapcar #'(lambda (keyword)
+		      (if  (keywordp keyword)
+			   keyword
+			   (alexandria:make-keyword (string-upcase keyword))))
+		  (var-labels df)))
+    (make-variable-metadata df)
+    (date-conversion-fu df))
+  ;; actually I am finding this quite useful, so will leave it here for the moment
+  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (varlabels df) (vartypes df)))
 
 #| FIXME: Which one is right?  This or the above?
  (defmethod initialize-instance :after ((df dataframe-like) &key)
@@ -619,22 +628,6 @@ I (DHodge?) figure out a convenient initiaslization method"
 
 
 
-(defmethod initialize-instance :after ((df dataframe-like) &key)
-  "Do post processing for variables  after we initialize the object"
- 
- ;; only do the metadata stuff when all the information has been supplied 
-  (when  (var-labels df)
-    (FORMAT T "before metadata")
-    (setf (var-labels df)
-	  (mapcar #'(lambda (keyword)
-		      (if  (keywordp keyword)
-			   keyword
-			   (alexandria:make-keyword (string-upcase keyword))))
-		  (var-labels df)))
-    (make-variable-metadata df)
-    (date-conversion-fu df))
-  ;; actually I am finding this quite useful, so will leave it here for the moment
-  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (varlabels df) (vartypes df)))
 
 
 ;;; FIXME: the following two functions hurt the eyes.  I think that
