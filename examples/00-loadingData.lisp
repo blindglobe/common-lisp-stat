@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-07-31 07:40:31 tony>
+;;; Time-stamp: <2013-10-15 10:11:35 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -167,7 +167,10 @@ appropriate column(variable) typing.
 
 list-of-vartypes should look like:
    (list 'integer 'number 'string)
-"
+but it would be nice if it could look like:
+   (list :integer :number :string)
+also, i.e. a list of types or classes."
+
   (let ((fare-csv:*separator* #\, )) ;; default, but we are making a general example
     (let ((csv-file-data-as-listoflist (fare-csv:read-csv-file  filepath))
 	  (varnameheader T))
@@ -190,7 +193,6 @@ list-of-vartypes should look like:
    (xref *chickwts-array* 1 1) ; => 160
    (xref *chickwts-array* 40 2) ; => "sunflower"
    *chickwts-array*)
-
 
 (+ (xref *chickwts-array* 1 1)
    (xref *chickwts-array* 63 1))
