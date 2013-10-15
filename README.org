@@ -1,5 +1,5 @@
 
-Time-stamp: <2013-07-31 06:59:22 tony>
+Time-stamp: <2013-10-15 08:30:13 tony>
 
 * Current Status: SOMEWHAT BROKEN
 
@@ -35,8 +35,8 @@ git://github.com/blindglobe/common-lisp-stat.git
 
 #+name: loadIt
 #+begin_src lisp
-(ql:register-local-projects)
-(ql:quickload :cls)
+  (ql:register-local-projects)
+  (ql:quickload :cls)
 #+end_src
 
   6. get coffee, tea, water, beer, or a glass of wine, review the
@@ -47,7 +47,9 @@ git://github.com/blindglobe/common-lisp-stat.git
      or directly to Tony Rossini mail, i.e.  (
      mailto:blindglobe@gmail.com ) if you don't want to be public
      about it.
-  8. Start trying it out.
+  8. Start trying it out.  The examples/  directory is a good place
+     to start evaluating the files, one at a time.  Preferrably in
+     order! 
 
   More details can be fond in the subsequent sections.
 
@@ -214,24 +216,24 @@ git clone https://github.com/blindglobe/common-lisp-stat.git
 
 ** Compile and load dependencies.
 
-   Start up your Common Lisp implementation and type in:
+Start up your Common Lisp implementation and type in:
 
 #+begin_src lisp
-(ql:register-local-projects)
-(ql:quickload :cls)
+  (ql:register-local-projects)
+  (ql:quickload :cls)
 #+end_src
 
-   Retire for a well earned coffee and upon your return you should
-   find the package completely installed.  Obviously, potential errors
-   can creep in with spelling the filenames correctly, so be careful.
+Retire for a well earned coffee and upon your return you should find
+the package completely installed.  Obviously, potential errors can
+creep in with spelling the filenames correctly, so be careful.
 
-   And now, everything should be working.  This is the case for at least
-   one person, so data on failures is very welcome.
+And now, everything should be working.  This is the case for at least
+one person, so data on failures is very welcome.
 
 ** Start trying it out
 
-   Now, load into your IDE or lisp, the files in the examples
-   directory, such as:
+Now, load into your IDE or lisp, the files in the examples directory,
+such as:
 
 | 00-loadingData.lisp        |
 | 02-DSVloading.lisp         |
@@ -249,11 +251,11 @@ And more
 
 ** Example Usage steps
 
-How to use 
+Load the example lisp files 
   
 *** change directory into the CommonLispStat working directory.
 
-    This is just for directory convenience, not for any real reason.
+This is just for directory convenience, not for any real reason.
 
 #+begin_src sh
 cd ~/quicklisp/local-projects
