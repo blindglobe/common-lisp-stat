@@ -1,0 +1,52 @@
+
+
+* Overview
+
+* Computing Approaches
+
+It is not clear what the right approach is for computing statistical
+quantities.  So, for example, suppose that we have a data frame.  One
+might want to do something like the following:
+
+#+BEGIN_SRC lisp
+  (mean (column df i))
+  (mean df :column i)
+  (mean :data df :row i)
+  (mean :data df :column i)
+  (mean :data df :observation i)
+  (mean :data df :observation "index-key")
+  (mean :data df :observation 'index-key)
+  (mean :data df :observation :index-key)
+  (mean :data df :variable i)
+  (mean :data df :variable "age")
+  (mean :data df :variable 'age)
+  (mean :data df :variable :age)
+  (mean :data df-list)
+  (mean :data df) ; => throw error!  if sequence quantities are not specified, need to extract a sequence! 
+  (mean :data (observation df i))
+  (mean :data (observation df "index-key"))
+  (mean :data (observation df 'index-key))
+  (mean :data (observation df :index-key))
+  (mean :data (variable df i))
+  (mean :data (variable df "index-key"))
+  (mean :data (variable df 'index-key))
+  (mean :data (variable df :index-key))
+
+  (mean :data (subsequence (variable df "variable-name") (list-of-accession-keys-or-numbers)
+  (mean :data (variable df 'index-key))
+  (mean :data (variable df :index-key))
+  
+#+END_SRC
+
+So concept: if the data is a sequence, compute it.  
+
+
+cases/observations/keys/rows/number : index the row(s) or case(s)
+variables/columns/(?) : index the column(s) or variable
+
+names could be strings or quoted(?) or non-specified?
+
+So we need the following:
+
+conversion d
+
