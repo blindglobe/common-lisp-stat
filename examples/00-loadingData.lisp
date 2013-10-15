@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-10-15 10:11:35 tony>
+;;; Time-stamp: <2013-10-15 12:17:59 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -130,9 +130,11 @@ return a pathspec, not a string/namespec"
 ;; we need to try-catch-continue with the error here so we can load
 ;; this file directly in without an error.  Or ensure that if we let
 ;; the user know what to do when the error occurs (to just continue
-;; along merrily...)
-
-(data-format-validation:parse-input 'number (aref *test1* 5 2)) ;; error, but restarts are not quite right...
+;; along merrily...).  Otherwise simple loading will not work!
+;;
+;; (data-format-validation:parse-input 'number (aref *test1* 5 2))
+;; ;; => error, but restarts are not quite right...
+;;
 
 ;; inline conversion of array data
 
@@ -147,8 +149,13 @@ return a pathspec, not a string/namespec"
 (data-format-validation:parse-input 'integer (aref *test1* 2 1))
 
 
+
 (defparameter *test2* (make-array (array-dimensions *test1*)))
 
+;;; The next bit of code is an example for how to start column-typing
+;;; arrays, i.e. for use in making objects which start to resemble R's
+;;; dataframes.
+;;;
 ;;; Is there a cleaner approach using map?  For example, could we work
 ;;; on column-at-a-time?  and of course: is there a faster or
 ;;; less-consing version?
@@ -157,13 +164,21 @@ return a pathspec, not a string/namespec"
     (setf (aref *test2* i j)
 	  (data-format-validation:parse-input (nth j *test1-types*) (aref *test1* i j)))))
 
-
 *test1*
 *test2*
 
-(defun filename.dsv->array3 (filepath list-of-vartypes) 
-  "Take a filepath referencing a DSV file, and return an array with
-appropriate column(variable) typing.
+
+;;; This next bit is the preliminary loader.  It is all about
+;;; examples.  When we like it, it will get moved into the core.  More
+;;; importantly, it should just do the "file contents to lisp array +
+;;; extra metadata" reading.  FIXME: we don't have an "extra metadata"
+;;; concept defined yet, so it is not clear exactly what we will have
+;;; here.  That would be the statistical and typing information.
+;;; Which might be auto-generated, and might be user-spec'd.
+
+(defun filename.dsv->array3 (filepath list-of-vartypes)
+  "Take a filepath referencing a DSV file, and return a Lisp array
+with appropriate column(variable) typing.
 
 list-of-vartypes should look like:
    (list 'integer 'number 'string)
@@ -177,6 +192,7 @@ also, i.e. a list of types or classes."
       (let (;; (var-name-list (if varnameheader
 	    ;;		       (car csv-file-data-as-listoflist)
  	    ;;		       (make-labels "V"  (length (car csv-file-data-as-listoflist)))))
+	    ;; the above used to auto-create variable names in case there was no info about them.
 	    (data-array (if varnameheader
 			   (listoflist:listoflist->array (cdr csv-file-data-as-listoflist))
 			   (listoflist:listoflist->array csv-file-data-as-listoflist))))
@@ -186,7 +202,7 @@ also, i.e. a list of types or classes."
 		  (data-format-validation:parse-input (nth j list-of-vartypes) (aref data-array i j)))))
 	data-array))))
 
- (progn 
+ (progn
    (setf *chickwts-array* (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
 						(list 'integer 'number 'string)))
    ;; *chickwts-df*
