@@ -1,12 +1,13 @@
 ;;; -*- mode: lisp -*-
 
-;;; Copyright (c) 2005--2012, by A.J. Rossini <blindglobe@gmail.com>
-;;; Copyright (c) 2012, by David Hodge <davidbhodge@gmail.com>
+;;; Copyright (c) 2005--, by A.J. Rossini <blindglobe@gmail.com>
+;;; Copyright (c) 2012--, by David Hodge <davidbhodge@gmail.com>
 
 ;;; See COPYRIGHT file for any additional restrictions (BSD license).
 ;;; Since 1991, ANSI was finally finished.  Edited for ANSI Common Lisp.
 
 ;;; XLisp-ism's removed to focus on Common Lisp.  Original source from:
+
 ;;;; statistics.lsp XLISP-STAT statistics functions
 ;;;; XLISP-STAT 2.1 Copyright (c) 1990, by Luke Tierney
 ;;;; Additions to Xlisp 2.1, Copyright (c) 1989 by David Michael Betz
@@ -19,20 +20,24 @@
 ;;; Basic Summary Statistics
 ;;;
 
-(defgeneric mean (x)
+(defgeneric mean (x &opt idx)
   (:documentation "compute the mean of lists, vectors, various objects")
-  (:method ((x list) )
+  (:method ((x list) &opt idx)
     (/ (reduce #'+ x)
        (length x)))
-  (:method ((x sequence))
+  (:method ((x sequence) &opt idx)
    (/ (reduce #'+ x)
        (length x)) )
-  (:method ((x vector-like))
+  (:method ((x vector-like) &opt idx)
       ;; (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
     (/ (loop for i from 0 to (- (nelts x) 1)
 	  summing (vref x i))
        (nelts x)))
-#| ;; a more traditional versino of the above... 
+  ;; a more traditional version of the above... 
+  ;; Please don't remove -- the source should also provide lessons for
+  ;; common lisp programming for non-CL programmers, and provide
+  ;; examples of different programming paradigms and expressions.
+#| 
   (:method ((x vector-like))
     (let ((n (nelts x))
 	  (type (if (col-vector-p x) :column :row)))
@@ -47,7 +52,11 @@
 "Args: (x)
 Returns the mean of the elements x. Vector reducing.
 
-FIXME: Why is this so complex?  When figure out, put into generic."
+XLS style.
+
+FIXME: Why is this so complex?  When figure out, put into generic.
+possible reasons to confirm: stable algorithm selection.  typing.
+non-CL and more XLisp approach." 
   (let ((mean 0.0)
         (count 0.0))
     (labels ((add-to-mean (x)
@@ -78,6 +87,9 @@ FIXME: Why is this so complex?  When figure out, put into generic."
   "sum the vector v"
   (loop for i from 0 below (nelts v)
 	summing (vref v i)))
+
+
+;; the following two should become generic, and be called cls:reduce
 
 (defun reduce-vector (function v)
   "reduce a vector with function yielding a scalar"
