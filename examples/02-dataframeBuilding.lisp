@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-15 08:42:01 tony>
+;;; Time-stamp: <2013-10-15 12:28:05 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,8 +17,10 @@
 ;;; version..   Think, "21st Century Schizoid Man".
 
 
-;;;; BROKEN unless you are running your lisp in the examples/ directory.  Load from the right place. 
-(load "00-loadingData.lisp")
+
+;;;; BROKEN unless you are running your lisp in the CLS home
+;;;; directory.  Until we fix this, might have to edit so that you
+;;;; load from the right place.
 (load "examples/00-loadingData.lisp")
 
 (in-package :cls-examples)
