@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-16 08:25:48 tony>
+;;; Time-stamp: <2013-10-16 18:37:46 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -591,17 +591,19 @@ I (DHodge?) figure out a convenient initiaslization method."
        (list :name (elt (var-labels df) index) 
 	     :type (elt (var-types df) index)  ; also proposed:
 					       ; (column-type-classifier df index)
-	     :print-type (classify-print-type (type-of (xref df 0 index)))
+	     :print-type :STRING ; (classify-print-type (type-of (xref df 0 index)))
 	     :print-width 10) ; (determine-print-width df index)
      into variable-plist
      finally (setf (slot-value df 'variables) variable-plist)))
 
 (defmethod initialize-instance :after ((df dataframe-like) &key)
-  "Do post processing for variables after we initialize the object"
-  ;; only do the metadata stuff when all the information has been
-  ;; supplied
+  "Do post processing for variables after we initialize the object,
+regardless of which type of storage is used. Only do the metadata
+stuff when all the information has been supplied.  "
   (when  (var-labels df)
     (FORMAT T "before metadata")
+    ;; (unless (var-types df) ;; was in one version, is it the most recent?
+    ;;   (setf (vartypes df) (infer-dataframe-types df)))
     (setf (var-labels df)
 	  (mapcar #'(lambda (keyword)
 		      (if  (keywordp keyword)
@@ -610,27 +612,11 @@ I (DHodge?) figure out a convenient initiaslization method."
 		  (var-labels df)))
     (make-variable-metadata df)
     (date-conversion-fu df))
-  ;; actually I am finding this quite useful, so will leave it here
-  ;; for the moment
-  (format t
+  ;; probably need to flag this as optional.
+  (format t 
 	  "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%"
 	  (varlabels df)
 	  (vartypes df)))
-
-#| FIXME: Which one is right?  This or the above?
- (defmethod initialize-instance :after ((df dataframe-like) &key)
-  "Do post processing for variables after we initialize the object"
-  ;; obviously I want to nuke var types & var labels at some point
-  (unless (var-types df) 
-    (setf (vartypes df) (infer-dataframe-types df)))
-  (when (var-labels df)
-    (setf (var-labels df) (mapcar #'(lambda (keyword)
-				      (alexandria:make-keyword (string-upcase keyword))) (var-labels df))))
-  (date-conversion-fu df)
-  (make-variable-metadata df)
-  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (var-labels df) (var-types df)))
-|#
-
 
 
 
@@ -674,7 +660,7 @@ I (DHodge?) figure out a convenient initiaslization method."
 
 (defun vartypes (df)
   "list of types for each column"
-  (mapcar  (lambda (variable) (getf variable :name)) (variables  df))  )
+  (mapcar  (lambda (variable) (getf variable :type)) (variables  df))  )
 ;; or just:   (var-types df)  ??
 ;; something is not right about this...
 
@@ -684,7 +670,6 @@ I (DHodge?) figure out a convenient initiaslization method."
 
 ;;(defsetf vartypes set-vartypes)
 
-
 ;;; THE FOLLOWING 2 dual-sets done to provide error checking
 ;;; possibilities on top of the generic function structure.  Not
 ;;; intended as make-work!
@@ -692,7 +677,7 @@ I (DHodge?) figure out a convenient initiaslization method."
 
 (defun varlabels (df)
   "Variable-name handling for DATAFRAME-LIKE.  Needs error checking."
-  (mapcar  (lambda (variable) (getf variable :type)) (variables  df)))
+  (mapcar  (lambda (variable) (getf variable :name)) (variables  df)))
 ;; or just:   (var-labels df)  ??
 
 (defun set-varlabels (df vl)
