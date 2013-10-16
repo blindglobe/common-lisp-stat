@@ -1,11 +1,11 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-07-31 07:20:30 tony>
+;;; Time-stamp: <2013-10-15 12:26:08 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c) 2005--2013, by AJ Rossini <blindglobe@gmail.com>
 ;;; License:    MIT, see the file LICENSE.mit in this directory for details.
-;;; Purpose:    ASDF specification for Common Lisp Statistical System
+;;; Purpose:    ASDF specification for Common Lisp Statistical System (CLS)
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
@@ -63,7 +63,8 @@
   Computing with Common Lisp; based on Common LispStat (CLS alpha1) by
   Luke Tierney <luke@stat.uiowa.edu> (apparently originally written
   when Luke was at CMU, on leave at Bell Labs?).  Last touched by him
-  in 1991, then by AJR starting in 2005."
+  in 1991, then restarted by AJR in 2005.  Except for TeX/LaTeX, how
+  much 14 year old code can honestly stay stable?"
   :serial t
   :depends-on (;;  :cldoc  ;; documentation tool? (not Lit Prog, but coding support)
 	       ;;  :cffi   ;; only needed within lisp-matrix
@@ -292,7 +293,7 @@
 
 #|
 
-;;; NEED TO ADD A TEST OPERATION
+;;; NEED TO ADD A TEST OPERATION, THIS IS THE WRONG VARIANT OF IT.
  (defmethod perform ((o test-op) (c (eql (find-system :cls))))
     (describe (lift:run-tests :suite 'lisp-stat-unittests::lisp-stat-ut)))
 |#
