@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-07-31 07:16:38 tony>
+;;; Time-stamp: <2013-10-16 18:49:42 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -21,14 +21,6 @@
 (in-package :cls-user)
 
 ;;; Guidelines:
-
-;; use license accord to requirements (based on included packages, or 
-
-;; use DEFPARAMETER and special variables to define useful
-;; structures.
-
-;; Be prepared to have a clean-up function (or attach/wrap a cleanup
-;; hook.
 
 (defpackage :cls-ex-datamanip
   (:use :common-lisp
@@ -68,7 +60,8 @@
 
 ;;; Dataframes
 
-(make-dataframe *ex-ary*)
+;;; FIXME: BROKEN NEXT 2!!
+(defparameter *ex-ary-df* (make-dataframe *ex-ary*))
 (make-dataframe (listoflist:listoflist->array  *ex-lol*)) ;; FIXME
 ;; (make-dataframe *ex-lol*) ;; error
 
