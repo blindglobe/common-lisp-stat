@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-10-15 12:17:59 tony>
+;;; Time-stamp: <2013-10-16 18:06:37 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -203,8 +203,9 @@ also, i.e. a list of types or classes."
 	data-array))))
 
  (progn
-   (setf *chickwts-array* (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
-						(list 'integer 'number 'string)))
+   (defparameter *chickwts-array*
+     (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
+			   (list 'integer 'number 'string)))
    ;; *chickwts-df*
    (xref *chickwts-array* 1 1) ; => 160
    (xref *chickwts-array* 40 2) ; => "sunflower"
