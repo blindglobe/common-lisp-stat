@@ -75,12 +75,49 @@ allow the full spec to be supplied "
 
 ;;;;;;;; PRINTING (FIXME: move elsewhere)
 
-(defun classify-print-type ( variable-type)
-  " look at the type of each column, assuming that types are homogenous of course, and assign a descriptive type - number, date, string etc, to enable  for nice tabular printing"
+;; FIXME: in order to pretty print, we seem to be trying to get the
+;; different column types aligned.  I suspect it would be better just
+;; to ignore pretty-printing right now.
+;; 
+;; Current thinking, according to the code: LISP types map N:1 to a
+;; PRINT type.  However, this mapping could be built by having a
+;; default print-width for standard LISP types, CLS types, and then
+;; enforcing that data variable types would be required to also
+;; suggest a means to print.  i.e. having a DEF-STAT-VAR macro, which
+;; built the generic dispatch function.  
+;;
+;; Note that for future plans of having statistical theory encoded
+;; into the computation, we could easily have a DEF-STAT-VAR which is
+;; a kinetic series or a network or similar structure.
+;; 
+;; What is currently killing us is the confusion related to typing,
+;; and the different domains (LISP, STAT, PRINT) that may have N:M
+;; mappings.  I think this is solvable.
+
+
+(defun classify-print-type (variable-type)
+  "Look at the type of each column, assuming that types are homogenous
+of course, and assign a descriptive type - number, date, string etc,
+to enable for nice tabular printing.
+
+VARIABLE-TYPE should be a lisp type.  Which means that when we add a
+new lisp type for holding statistical/experimental data, we need to
+add dispatch here.  Perhaps this would be better as a generic
+function, so that types do the right thing.
+
+FIXME: These types are generally supposed to be LISP types, not
+STATISTICAL types.  Though we could imagine having a print-type
+category.
+
+FIXME: should we have a PRINT type classification? i.e. numbers,
+strings, factors, timeseries/longitudinal/kinetics category?"
   (labels ((integer-variable (variable)
 	     (member variable '(FIXNUM INTEGER RATIONAL)))
 	   (float-variable (variable)
-	     (member variable '(NUMBER FLOAT LONG-FLOAT SHORT-FLOAT SINGLE-FLOAT DOUBLE-FLOAT)))
+	     (member variable '(NUMBER
+				FLOAT
+				LONG-FLOAT SHORT-FLOAT
+				SINGLE-FLOAT DOUBLE-FLOAT)))
 	   (string-variable (variable)
 	     (equal variable 'STRING))
 	   (keyword-variable (variable)
@@ -89,28 +126,39 @@ allow the full spec to be supplied "
 	     (member variable '(DATE ANTIK:TIMEPOINT))))
     
     (cond
-      ( (integer-variable variable-type) :INTEGER)
+      ((integer-variable variable-type) :INTEGER)
       ((float-variable variable-type) :FLOAT)
       ((keyword-variable variable-type) :KEYWORD)
       ((string-variable variable-type) :STRING)
       ((date-variable variable-type) :DATE)
       (t (error "classify-print-type, unrecognized type ~a~%" variable-type)))))
   
-(defun determine-print-width (df  column type) 
-  "build the format string by checking widths of each column. "
+(defun determine-print-width (df column type) 
+  "build the format string by checking widths of each column in the
+dataframe DF based on COLUMN TYPE.
+
+FIXME: MAKE-VARIABLE-METADATA is busted with respect to this
+computation, so simply using 10 at this point.  See commentary above
+for the challenge."
   (labels ((numeric-width (the-col)
-	     (1+  (reduce #'max (mapcar #'(lambda (x) (ceiling (log (abs x) 10))) (dfcolumn df the-col)) )))
+	     (1+ (reduce #'max
+			 (mapcar #'(lambda (x)
+				     (ceiling (log (abs x) 10)))
+				 (dfcolumn df the-col)))))
 	   (string-width (the-col)
-	     (1+ (reduce  #'max (mapcar #'length (dfcolumn df the-col)))))
+	     (1+ (reduce #'max
+			 (mapcar #'length (dfcolumn df the-col)))))
 	   (keyword-width (the-col)
-	     (1+ (reduce #'max (mapcar #'(lambda (x) (length (symbol-name x))) (dfcolumn df the-col)))))
-	   ;; FIXME - what is the print width of a timepoint?
+	     (1+ (reduce #'max
+			 (mapcar #'(lambda (x)
+				     (length (symbol-name x)))
+				 (dfcolumn df the-col)))))
+	   ;; FIXME: what is the print width of a timepoint?
 	   (date-width (the-col) 12))
     
-    (case (classify-print-type  type)
+    (case (classify-print-type type)
       ((:INTEGER :FLOAT) (numeric-width column))
       (:KEYWORD          (keyword-width column))
       (:STRING           (string-width column))
       (:DATE             (date-width column))
       (t (error "determine-print-width, unrecognized type ~%" )))))
-

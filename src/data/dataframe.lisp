@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-15 12:14:19 tony>
+;;; Time-stamp: <2013-10-16 08:25:48 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -585,20 +585,21 @@ variable. ultimately i expect that the other lists will disappear when
 I (DHodge?) figure out a convenient initiaslization method."
 
   (format t "vars = ~A~%" (nvars df))
-  (loop for index below (nvars df) 
-	collect
-	(list
-	 :name (elt (var-labels df) index) 
-	 :type (elt (var-types df) index)  ;;  (column-type-classifier df index)
-	 :print-type (classify-print-type df index)
-	 :print-width (determine-print-width df index)) into variable-plist
-	finally (setf (slot-value df 'variables) variable-plist)))
-
+  (loop
+     for index below (nvars df) 
+     collect
+       (list :name (elt (var-labels df) index) 
+	     :type (elt (var-types df) index)  ; also proposed:
+					       ; (column-type-classifier df index)
+	     :print-type (classify-print-type (type-of (xref df 0 index)))
+	     :print-width 10) ; (determine-print-width df index)
+     into variable-plist
+     finally (setf (slot-value df 'variables) variable-plist)))
 
 (defmethod initialize-instance :after ((df dataframe-like) &key)
-  "Do post processing for variables  after we initialize the object"
- 
-  ;; only do the metadata stuff when all the information has been supplied 
+  "Do post processing for variables after we initialize the object"
+  ;; only do the metadata stuff when all the information has been
+  ;; supplied
   (when  (var-labels df)
     (FORMAT T "before metadata")
     (setf (var-labels df)
@@ -609,8 +610,12 @@ I (DHodge?) figure out a convenient initiaslization method."
 		  (var-labels df)))
     (make-variable-metadata df)
     (date-conversion-fu df))
-  ;; actually I am finding this quite useful, so will leave it here for the moment
-  (format t "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%" (varlabels df) (vartypes df)))
+  ;; actually I am finding this quite useful, so will leave it here
+  ;; for the moment
+  (format t
+	  "Dataframe created:~% Variables ~{ ~a ~} ~% types  ~{~a,~}~%"
+	  (varlabels df)
+	  (vartypes df)))
 
 #| FIXME: Which one is right?  This or the above?
  (defmethod initialize-instance :after ((df dataframe-like) &key)
