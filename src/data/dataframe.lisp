@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-16 18:37:46 tony>
+;;; Time-stamp: <2013-10-17 08:05:20 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -588,9 +588,12 @@ I (DHodge?) figure out a convenient initiaslization method."
   (loop
      for index below (nvars df) 
      collect
-       (list :name (elt (var-labels df) index) 
-	     :type (elt (var-types df) index)  ; also proposed:
-					       ; (column-type-classifier df index)
+       (list :name (if (var-labels df)
+		       (elt (var-labels df) index)
+		       "V") ; replace as appropriate
+	     :type (if (var-types df)
+		       (elt (var-types df) index)  ; also proposed: (column-type-classifier df index)
+		       "T")
 	     :print-type :STRING ; (classify-print-type (type-of (xref df 0 index)))
 	     :print-width 10) ; (determine-print-width df index)
      into variable-plist
