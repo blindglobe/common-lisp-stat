@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-17 08:14:34 tony>
+;;; Time-stamp: <2013-10-17 08:34:17 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -11,9 +11,6 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
-;;; This organization and structure is new to the 21st Century
-;;; version..   Think, "21st Century Schizoid Man".
 
 
 ;; we do this in the CLS user playground, so we have access to example
@@ -58,11 +55,16 @@
 (make-matrix 3 4 :initial-contents *ex-lol*)
 (make-matrix 3 4 :initial-contents *ex-ary*)
 
-;;; Dataframes
+;;; Dataframes: 3, all the same
 
 (defparameter *ex-ary-df* (make-dataframe *ex-ary*))
-(make-dataframe (listoflist:listoflist->array  *ex-lol*)) 
-(make-dataframe *ex-lol*) 
+(defparameter *ex-lol-ary-df* (make-dataframe (listoflist:listoflist->array  *ex-lol*)))
+(defparameter *ex-lol-df* (make-dataframe *ex-lol*))
+
+
+
+
+
 
 ;;; "make-dataframe2" is generic -- FIXME: but it is not yet exported!
 ;; FIXME: (make-dataframe2 *ex-ary*)
