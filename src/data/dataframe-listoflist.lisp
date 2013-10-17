@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-09 03:18:49 tony>
+;;; Time-stamp: <2013-10-17 08:11:56 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -45,12 +45,21 @@
   "specializes on inheritance from listoflist in lisp-matrix."
   (length (dataset df)))
 
+(defmethod nrows ((df list))
+  "specializes on inheritance from listoflist in lisp-matrix."
+  (length df))
 
 (defmethod ncols ((df dataframe-listoflist))
   "specializes on inheritance from listoflist. This approach assumes
 that the list of list is in a coherent form, that is that it maps
 naturally to a rectangular array."
   (length (elt (dataset df) 0)))
+
+(defmethod ncols ((df list))
+  "specializes on inheritance from listoflist. This approach assumes
+that the list of list is in a coherent form, that is that it maps
+naturally to a rectangular array."
+  (length (elt df 0)))
 
 (defmethod xref ((df dataframe-listoflist) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref,
