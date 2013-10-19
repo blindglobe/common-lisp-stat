@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-17 08:05:20 tony>
+;;; Time-stamp: <2013-10-18 14:29:33 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -592,8 +592,7 @@ I (DHodge?) figure out a convenient initiaslization method."
 		       (elt (var-labels df) index)
 		       "V") ; replace as appropriate
 	     :type (if (var-types df)
-		       (elt (var-types df) index)  ; also proposed: (column-type-classifier df index)
-		       "T")
+		       (elt (var-types df) index))  ; also proposed: (column-type-classifier df index)
 	     :print-type :STRING ; (classify-print-type (type-of (xref df 0 index)))
 	     :print-width 10) ; (determine-print-width df index)
      into variable-plist
@@ -712,112 +711,6 @@ stuff when all the information has been supplied.  "
 ;; (documentation 'dataframe-like  'type)
 
 
-;;; Do we establish methods for dataframe-like, which specialize to
-;;; particular instances of storage?
-
-(defparameter dataframe-print-formats
-  '((FIXNUM . "~7D")
-    (INTEGER . "~7D")
-    (STRING . "~7A")
-    (SIMPLE-STRING . "~A")
-    (CONS . "~a")
-    (SYMBOL . "~7a")
-    (KEYWORD . "~7a")
-    (RATIONAL . "~7a")
-    (NUMBER . "~7a")
-    (FLOAT . "~7a")
-    (DATE . "~9a")
-    (LONG-FLOAT . "~7,3G")
-    (SHORT-FLOAT . "~7,3G")
-    (SINGLE-FLOAT . "~7,3G")
-    (DOUBLE-FLOAT . "~7,3G")))
-
-(defparameter new-dataframe-print-formats
-  '((FIXNUM . "D")
-    (INTEGER . "D")
-    (STRING . "A")
-    (SIMPLE-STRING . "A")
-    (CONS . "a")
-    (SYMBOL . "7a")
-    (KEYWORD . "a")
-    (RATIONAL . "a")
-    (NUMBER . "a")
-    (FLOAT . "a")
-    (DATE . "a")
-    (LONG-FLOAT . "G")
-    (SHORT-FLOAT . "~G")
-    (SINGLE-FLOAT . "~G")
-    (DOUBLE-FLOAT . "~G")))
-
-(defun build-format-string (df)
-  "build the format string by checking widths of each column. to be rewritten as a table "
-  
-  (loop for  variable in  (variables df) 
-     collect (case (getf variable :print-type)
-	       ((:INTEGER :KEYWORD :STRING :DATE) (format nil "~~~AA " (getf variable :print-width)))
-	       (:FLOAT (format nil "~~~A,3G " (getf variable :print-width)))) into format-control
-       
-     finally  (return (format nil "~~{~{~a~}~~}~~%" format-control))))
-
-(defun print-directive (df col)
-  (cdr  (assoc (elt (vartypes df) col) DATAFRAME-PRINT-FORMATS)))
-
-(defun print-headings (df stream)
-  (loop for variable in (variables df)
-     nconc (list
-	    (1+ (max  (getf variable :print-width)
-		      (length (symbol-name  (getf variable :name)))))
-	    (getf variable :name) ) into control-string
-     finally  (format stream "~{~VA~}~%" control-string) ))
-
-(defun row (df row)
-  (loop for col  below (ncols df)
-     collect (xref df row col)))
-
-(defmethod print-object ((object dataframe-like) stream)
-  
-  (print-unreadable-object (object stream :type t)
-    (declare (optimize (debug 3)))
-    (format stream " ~d x ~d" (nrows object) (ncols object))
-    (terpri stream)
-    ;; (format stream "~T ~{~S ~T~}" (var-labels object))
-    (let ((format-control (build-format-string object))
-	  (case-format (format nil "~~~AA: " (reduce #'max (mapcar #'length (case-labels object))))))
-      (dotimes (j (ncols object))	; print labels
-	(write-char #\tab stream)
-	(write-char #\tab stream)
-	(format stream "~T~A~T" (nth j (var-labels object))))
-      (dotimes (i (nrows object))	; print obs row
-	(terpri stream)
-	(format stream case-format (nth i (case-labels object)))
-	(format stream format-control (row object i))))))
-
-#|
- (defun print-structure-relational (ds)
-  "example of what we want the methods to look like.  Should be sort
-of like a graph of spreadsheets if the storage is a relational
-structure."
-  (dolist (k (relations ds))
-    (let ((currentRelationSet (getRelation ds k)))
-      (print-as-row (var-labels currentRelationSet))
-      (let ((j -1))
-	(dolist (i (case-labels currentRelationSet))
-	  (print-as-row
-	   (append (list i)
-		   (xref-obsn (dataset currentRelationSet)
-                               (incf j)))))))))
-
- (defun testecase (s)
-   (ecase s
-     ((scalar) 1)
-     ((asd asdf) 2)))
-
- (testecase 'scalar)
- (testecase 'asd)
- (testecase 'asdf)
- (testecase 'as)
-|#
-
 
 ;;; Vector-like generalizations: we consider observation-like and
 ;;; variable-like to be abstract classes which provide row and column
@@ -861,52 +754,28 @@ function."
   (error "make-data-set-from-lists: proposed name exists"))
 
 
-
-
-;;; FIXME: THIS COMPLETELY OBSOLETE?
-;;; from dataframe-xarray experiment
-
-#| 
- (defmethod xref ((obj dataframe-like)  &rest subscripts)
-  "For data-frame-like, dispatch on storage object."
-  (xref (dataset obj) subscripts))
-
- (defmethod (setf xref) (value (obj dataframe-like) &rest subscripts)
-  (setf (xref (dataset obj) subscripts) value))
-  
- (defmethod xref ((obj matrix-like) &rest indices))
-  
- (defmethod xtype ((obj dataframe-like))
-  "Unlike the standard xtype, here we need to return a vector of the
-  types.  Vectors can have single types, but arrays have single type.
-  Dataframe-like have multiple types, variable-like single type,
-  case-like has multiple types, and matrix-like has single type.")
-
- (defmethod xdims ((obj dataframe-like))
-  (dataframe-dimensions obj))
-
- ;; use default methods at this point, except for potentially weird DFs
- (defmethod xdims* ())
-
- (defmethod xdim ((obj dataframe-like) index)
-  (dataframe-dimension index))
-
-
- (defmethod xrank ())
-
- (defmethod slice ())
-  
- (defmethod take ())
-
- (defmethod carray ())
-
- (defmacro with-dataframe (env &rest progn) 
-  "Compute using variable names with with.data.frame type semantics.")
-
- (defmacro with-data (body)
-  "Stream-handling, maintaining I/O through object typing.")
-
+(defmethod dfselect ((df dataframe-array) 
+		     &optional cases vars indices)
+  "Extract the OR of cases, vars, or have a list of indices to extract"
+  (if indices (error "Indicies not used yet"))
+  (let ((newdf (make-instance *default-dataframe-class*
+		:storage (make-array (list  (length cases) (length vars)))
+		:nrows (length cases)
+		:ncols (length vars)
+#|
+		:case-labels (select-list caselist (case-labels df))
+		:var-labels (select-list varlist (var-labels df))
+		:var-types (select-list varlist (vartypes df))
 |#
+		)))
+    (dotimes (i (length cases))
+      (dotimes (j (length vars))
+	(setf (xref newdf i j)
+	      (xref df
+		    (position (elt cases i) (case-labels df))
+		    (position (elt vars j) (var-labels df))))))))
+
+
 
 
 
@@ -922,3 +791,100 @@ function."
       (append (gen-seq (- n 1) start) (list n))))
 
 
+;;;;;;;;;; Stuff which is built on the generic function API (no low-level access functions used)
+
+(defmethod dfcolumn ((df dataframe-array) variable)
+  "return a column as a list. a quick hack until we decide what the array manipulations should be"
+  (loop for row below (nrows df) collect (xref df row variable)))
+
+(defun translate-column (df column)
+  "for production use, we would wrap this in a handler to enable entry of the correct column id"
+  (cond
+    ((typep column 'keyword)
+     (let ((col (position column (varlabels df))))
+       (if col
+	   col
+	   (error "Column name misspelt: try again ~a~%" column))))
+    ((typep column 'number) column)
+    (t (error "Invalid argument passed to translate-column ~a~%" column))))
+
+
+(defmethod dfhead ((df dataframe-array)
+		   &optional (rows 10))
+  (dotimes ( i rows)
+    (format t "~A: " i)
+    (dotimes ( j (ncols df))
+      (format t "~A~t" (xref df i j)) )
+    (format t "~%")))
+
+(defmethod dfgroupby ((df dataframe-array) variable)
+  "a quick hack for summarise."
+  (let ( (h (make-hash-table :test #'equal)))
+    (dotimes (i (nrows df))
+      (incf (gethash (xref df i variable) h 0)))
+    (maphash #'(lambda (k v) (format t "~a => ~a~%" k v)) h)))
+
+(defmethod dfsummarisebycategory ((df dataframe-array) category observation function)
+  "apply function to the observation in rows identifed by the category variable"
+  (let ((category (translate-column df category))
+	(observation (translate-column df observation))
+	(h (make-hash-table :test #'equal)))
+    (dotimes (i (nrows df))
+      (push i (gethash (xref df i category) h (list))))
+   (loop for k being the hash-keys in h using (hash-value rows)
+	 collect (cons k
+		       (loop for row in rows
+			     collect (xref df row observation) into g
+			     finally (return (funcall function g)))) into groups
+	 finally (return groups))) )
+
+
+
+(defun reduce-column (df function column )
+  "reduce a column of a df with function yielding a scalar"
+  (assert (and (>= column 0) (< column (ncols df))) )
+  (loop with result = (xref df 0 column)
+	for i from 1 below (nrows df) do
+	  (setf result (funcall function result (xref df i column)))
+	finally (return result)))
+
+(defun map-column (df function column)
+  (assert (and (>= column 0) (< column (ncols df))) )
+  (loop with result = (make-sequence 'vector (nrows df) )
+	for i from 1 below (nrows df) do
+	  (setf (xref result i ) (funcall function (xref df i column)))
+	finally (return result)))
+
+(defun column-type-classifier (df column)
+  "column type classifier, finds the smallest subtype that can
+  accomodate the elements of list, in the ordering fixnum < integer <
+  float < complex < t.  Rational, float (any kind) are classified as
+  double-float, and complex numbers as (complex double-float).  Meant
+  to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
+
+  (case (reduce #'max (map-column df #' 
+				  (lambda (x)
+				    (typecase x
+				      (fixnum 0)
+				      (integer 1)
+				      ((or rational double-float) 2)
+				      (complex 3)
+				      (simple-array 4)
+				      (keyword 5)
+				      (t 6))) column))
+    (0 'fixnum)
+    (1 'integer)
+    (2 'double-float)
+    (3 '(complex double-float))
+    (4 'string) ;; for the moment a categorical variable
+    (5 'keyword) ;; and likewise, regarded as a categorical varial
+    (6 t))) ;; nil will end up here.
+
+(defun infer-dataframe-types (df)
+  "infer the numeric types for each column in the dataframe. note that all non numerc types are lumped into T, so further discrimination will be required."
+  (let ((column-types (loop for col  below (ncols df)
+			    collect (column-type-classifier df col))))
+    column-types))
+
+
+(defmethod dfsummary (df dataframe-array))

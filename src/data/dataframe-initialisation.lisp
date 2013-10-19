@@ -8,20 +8,13 @@
 ;;;;;;;;;; DATE MANAGEMENT (FIXME: move elsewhere)
 
 (defparameter *CLS-DATE-FORMAT* :UK
-  "should be one of :UK (d/m/y) :US (m/d/y) or maybe others as required. Giving a hint to the parsing routine.SUffix with a -TIME (is :US-TIME for MDY hhmmss. Or supply the ANTIK specification as a list '(2 1 0 3 4 5)  ")
+  "should be one of :UK (d/m/y) :US (m/d/y) or maybe others as
+  required. Giving a hint to the parsing routine.SUffix with a
+  -TIME (is :US-TIME for MDY hhmmss. Or supply the ANTIK specification
+  as a list '(2 1 0 3 4 5) ")
 
 (defparameter *CLS-DATE-TEST-LIMIT* 5
   "the number of rows to check when deciding if the column is a date column or not.")
-(defun antik-date-format-helper (date)
-  "provide decoding for shorthand notation in *CLS-DATE-FORMAT*  or allow the full spec to be supplied "
-  (cond
-    ((equal date :UK) '(2 1 0))
-    ((equal date :UK-TIME) '(2 1 0 3 4 5))
-    ((equal date :US) '(2 0 1))
-    ((equal date :US-TIME) '(2 0 1 3 4 5))
-    (t date)))
-
-
 
 ;;; Why is this "ANTIK"?  We naturally will be including the antik
 ;;; package within this framework. At this point we are heavy, heavy,
@@ -29,7 +22,7 @@
 ;;; light-weight.
 (defun antik-date-format-helper (date)
   "provide decoding for shorthand notation in *CLS-DATE-FORMAT* or
-allow the full spec to be supplied "
+allow the full spec to be supplied."
   (cond
     ((equal date :UK) '(2 1 0))
     ((equal date :UK-TIME) '(2 1 0 3 4 5))
@@ -37,10 +30,11 @@ allow the full spec to be supplied "
     ((equal date :US-TIME) '(2 0 1 3 4 5))
     (t date)))
 
-
-
 (defun date-conversion-fu (df)
-  "for any string column in the dataframe, try to parse the first n entries as a date according to the global format. If we can do that successfully for at least one entry, the convert the column, converting failures to nil"
+  "for any string column in the dataframe, try to parse the first n
+entries as a date according to the global format. If we can do that
+successfully for at least one entry, the convert the column,
+converting failures to nil"
   (labels ((read-timepoint (row column)
 	   "read a timepoint. if there is an error return nil"
 	   (handler-case
@@ -93,6 +87,116 @@ allow the full spec to be supplied "
 ;; What is currently killing us is the confusion related to typing,
 ;; and the different domains (LISP, STAT, PRINT) that may have N:M
 ;; mappings.  I think this is solvable.
+
+
+
+
+;;; Do we establish methods for dataframe-like, which specialize to
+;;; particular instances of storage?
+
+(defparameter dataframe-print-formats
+  '((FIXNUM . "~7D")
+    (INTEGER . "~7D")
+    (STRING . "~7A")
+    (SIMPLE-STRING . "~A")
+    (CONS . "~a")
+    (SYMBOL . "~7a")
+    (KEYWORD . "~7a")
+    (RATIONAL . "~7a")
+    (NUMBER . "~7a")
+    (FLOAT . "~7a")
+    (DATE . "~9a")
+    (LONG-FLOAT . "~7,3G")
+    (SHORT-FLOAT . "~7,3G")
+    (SINGLE-FLOAT . "~7,3G")
+    (DOUBLE-FLOAT . "~7,3G")))
+
+(defparameter new-dataframe-print-formats
+  '((FIXNUM . "D")
+    (INTEGER . "D")
+    (STRING . "A")
+    (SIMPLE-STRING . "A")
+    (CONS . "a")
+    (SYMBOL . "7a")
+    (KEYWORD . "a")
+    (RATIONAL . "a")
+    (NUMBER . "a")
+    (FLOAT . "a")
+    (DATE . "a")
+    (LONG-FLOAT . "G")
+    (SHORT-FLOAT . "~G")
+    (SINGLE-FLOAT . "~G")
+    (DOUBLE-FLOAT . "~G")))
+
+(defun build-format-string (df)
+  "build the format string by checking widths of each column. to be rewritten as a table "
+  
+  (loop for  variable in  (variables df) 
+     collect (case (getf variable :print-type)
+	       ((:INTEGER :KEYWORD :STRING :DATE) (format nil "~~~AA " (getf variable :print-width)))
+	       (:FLOAT (format nil "~~~A,3G " (getf variable :print-width)))) into format-control
+       
+     finally  (return (format nil "~~{~{~a~}~~}~~%" format-control))))
+
+(defun print-directive (df col)
+  (cdr  (assoc (elt (vartypes df) col) DATAFRAME-PRINT-FORMATS)))
+
+(defun print-headings (df stream)
+  (loop for variable in (variables df)
+     nconc (list
+	    (1+ (max  (getf variable :print-width)
+		      (length (symbol-name  (getf variable :name)))))
+	    (getf variable :name) ) into control-string
+     finally  (format stream "~{~VA~}~%" control-string) ))
+
+(defun row (df row)
+  (loop for col  below (ncols df)
+     collect (xref df row col)))
+
+(defmethod print-object ((object dataframe-like) stream)
+  
+  (print-unreadable-object (object stream :type t)
+    (declare (optimize (debug 3)))
+    (format stream " ~d x ~d" (nrows object) (ncols object))
+    (terpri stream)
+    ;; (format stream "~T ~{~S ~T~}" (var-labels object))
+    (let ((format-control (build-format-string object))
+	  (case-format (format nil "~~~AA: " (reduce #'max (mapcar #'length (case-labels object))))))
+      (dotimes (j (ncols object))	; print labels
+	(write-char #\tab stream)
+	(write-char #\tab stream)
+	(format stream "~T~A~T" (nth j (var-labels object))))
+      (dotimes (i (nrows object))	; print obs row
+	(terpri stream)
+	(format stream case-format (nth i (case-labels object)))
+	(format stream format-control (row object i))))))
+
+#|
+ (defun print-structure-relational (ds)
+  "example of what we want the methods to look like.  Should be sort
+of like a graph of spreadsheets if the storage is a relational
+structure."
+  (dolist (k (relations ds))
+    (let ((currentRelationSet (getRelation ds k)))
+      (print-as-row (var-labels currentRelationSet))
+      (let ((j -1))
+	(dolist (i (case-labels currentRelationSet))
+	  (print-as-row
+	   (append (list i)
+		   (xref-obsn (dataset currentRelationSet)
+                               (incf j)))))))))
+
+ (defun testecase (s)
+   (ecase s
+     ((scalar) 1)
+     ((asd asdf) 2)))
+
+ (testecase 'scalar)
+ (testecase 'asd)
+ (testecase 'asdf)
+ (testecase 'as)
+|#
+
 
 
 (defun classify-print-type (variable-type)
