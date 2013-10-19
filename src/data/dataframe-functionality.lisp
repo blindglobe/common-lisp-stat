@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-19 15:59:42 tony>
+;;; Time-stamp: <2013-10-18 14:13:36 tony>
 ;;; Creation:   <2009 tony>
 ;;; File:       dataframe-functionality
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -12,10 +12,6 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
-;;; This organization and structure is new to the 21st Century
-;;; version..   Think, "21st Century Schizoid Man".
-
 
 ;; This file contains functions.  Most functionality is properly done
 ;; via generics, because Tony doesn't care about speed (and he is

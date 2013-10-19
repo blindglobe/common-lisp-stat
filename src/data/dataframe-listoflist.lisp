@@ -1,26 +1,24 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-17 08:11:56 tony>
+;;; Time-stamp: <2013-10-18 14:10:52 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
-;;; Copyright:  (c)2009--2012, AJ Rossini.  BSD, LLGPL, or GPLv2, depending
-;;;             on how it arrives.  
+;;; Copyright:  (c) 2009--, AJ Rossini.  MIT License, see README.mit
+;;;             in the top level directory.
 ;;; Purpose:    Instance of dataframe with the storage done using
-;;;             LISTOFLIST data storage.
+;;;             LISTOFLIST data storage found in the corresponding
+;;;             LISP package.
 
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-;;; This organization and structure is new to the 21st Century
-;;; version..   Think, "21st Century Schizoid Man".
-
 (in-package :cls-dataframe)
 
 ;;; DATAFRAME-LISTOFLIST
 ;;; 
-;;; example/implementatin of using listoflist datastructures for
+;;; example/implementation of using listoflist datastructures for
 ;;; dataframe storage.
 
 (defclass dataframe-listoflist (dataframe-like)
@@ -29,9 +27,8 @@
 	  :type list
 	  :accessor dataset
 	  :documentation "Data storage: typed as listoflist."))
-  (:documentation "example implementation of dataframe-like objects
+  (:documentation "Implementation of dataframe-like objects
   using list-of-list data storage."))
-
 
 (defmethod make-dataframe2 ((data dataframe-listoflist)
 			    &key vartypes varlabels caselabels doc 
@@ -39,7 +36,6 @@
 			      )
   (check-dataframe-params data vartypes varlabels caselabels doc)
   (build-dataframe 'dataframe-listoflist))
-
 
 (defmethod nrows ((df dataframe-listoflist))
   "specializes on inheritance from listoflist in lisp-matrix."
@@ -64,7 +60,7 @@ naturally to a rectangular array."
 (defmethod xref ((df dataframe-listoflist) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref,
 etc. idx1/2 is row/col or case/var."
-  (elt (elt (dataset df) (elt subscripts 0)) (elt subscripts 1))) ;; ??
+  (elt (elt (dataset df) (elt subscripts 0)) (elt subscripts 1)))
 
 (defmethod (setf xref) (value (df dataframe-listoflist) &rest subscripts)
   "Sets a value for df-ml."
