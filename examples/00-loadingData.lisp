@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-10-16 18:06:37 tony>
+;;; Time-stamp: <2013-10-18 08:54:06 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -18,7 +18,8 @@
 (ql:quickload :cls)
 
 ;;; create the package that we will be working in.
-(cl:defpackage :cls-examples  ;; similar setup to cls-user, without test data
+;; The CLS-EXAMPLES package is similar setup to CLS-USER package.
+(cl:defpackage :cls-examples  
   (:use :common-lisp
 	:lisp-matrix
 	:data-format-validation

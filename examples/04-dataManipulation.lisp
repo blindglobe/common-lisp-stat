@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-17 08:34:17 tony>
+;;; Time-stamp: <2013-10-18 09:11:40 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,61 +13,78 @@
 ;;; designers and quality assurance people in its wake.
 
 
+(load "examples/02-dataframeBuilding.lisp")
+
 ;; we do this in the CLS user playground, so we have access to example
 ;; data.
-(in-package :cls-user)
+(in-package :cls-examples)
 
-;;; Guidelines:
+;; We have the following variables to start from.  -TYPE* describes
+;; the structure, they are built in the previous files.
 
-(defpackage :cls-ex-datamanip
-  (:use :common-lisp
-	:lisp-matrix
-	:common-lisp-statistics)
+;; Same data
+*chickwts-array*
+*chickwts-df*
 
-  (:shadowing-import-from :lisp-stat call-method call-next-method
-			  
-      expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan
-      asin acos atan sinh cosh tanh asinh acosh atanh float random
-      truncate floor ceiling round minusp zerop plusp evenp oddp 
-      < <= = /= >= > > ;; complex
-      conjugate realpart imagpart phase
-      min max logand logior logxor lognot ffloor fceiling
-      ftruncate fround signum cis
+;; Same data (3x4 matrix)
 
-      <= float imagpart))
+*ex-array*
 
-(in-package :cls-ex-datamanip)
+*ex-lol*
 
-;;  There are two initial forms for most datasets which are in
-;;  cases-by-variables format -- listoflist structure and lisp
-;;  arrays.
+*ex-array-mat*
+*ex-lol-mat*
 
-(defparameter *ex-lol* '((11d0 12d0 13d0 14d0)
-			 (21d0 22d0 23d0 24d0)
-			 (31d0 32d0 33d0 34d0)))
+*ex-array-df*
+*ex-lol-array-df*
+*ex-lol-df*
 
-(defparameter *ex-ary* #2A((11d0 12d0 13d0 14d0)
-			   (21d0 22d0 23d0 24d0)
-			   (31d0 32d0 33d0 34d0)))
+;; now, to demonstrate manipulations (as well as experiment with
+;; non-implemented APIs that deserve to be implemented).
 
-;;; Matrices
+;; we have the following APIs that could be used.  
+;;
+;; XARRAY works with all, but has some overhead for dispatch and API
+;; munging.
+;;
+;; LISP-MATRIX works with the dataframe-like and matrix-like
+;; inheriting structures, which are dataframes, their subtypes, and
+;; the many homogeneous typed matrices from LISP-MATRIX.
+;;
+;; COMMON-LISP functions and methods can be used with the lisp array
+;; and list-of-list structures.
 
-(make-matrix 3 4 :initial-contents *ex-lol*)
-(make-matrix 3 4 :initial-contents *ex-ary*)
+;;; Element extraction
 
-;;; Dataframes: 3, all the same
+(=  (xref *ex-array-df* 1 2) ; dataframes
+    (xref *ex-lol-array-df* 1 2)
+    (xref *ex-lol-df* 1 2)
 
-(defparameter *ex-ary-df* (make-dataframe *ex-ary*))
-(defparameter *ex-lol-ary-df* (make-dataframe (listoflist:listoflist->array  *ex-lol*)))
-(defparameter *ex-lol-df* (make-dataframe *ex-lol*))
+    (xref *ex-array-mat* 1 2) ; FIXME
+    (xref *ex-lol-mat* 1 2); FIXME
+ 
+    (xref *ex-array* 1 2) ; lisp array
+    (xref *ex-lol-array* 1 2) 
 
-
-
-
-
-
-;;; "make-dataframe2" is generic -- FIXME: but it is not yet exported!
-;; FIXME: (make-dataframe2 *ex-ary*)
-;; FIXME: (make-dataframe2 *ex-lol*)) ;; FIXME
+    (xref *ex-lol* 1 2)) ; lol ; FIXME
 
 
+(=  (mref *ex-array-df* 1 2) ; dataframe-like
+    (mref *ex-lol-array-df* 1 2)
+    (mref *ex-lol-df* 1 2)
+
+    (mref *ex-array-mat* 1 2) ; matrix-like
+    (mref *ex-lol-mat* 1 2))
+
+(=  (aref *ex-array* 1 2) ; lisp array
+    (aref *ex-lol-array* 1 2))
+
+
+;;;FIXME: 
+;;;  (get-list-of-list-item *ex-lol* 1 2)) ; lol
+
+
+;;; Column and row extraction
+
+
+;;; sub-matrix-like, sub-array or sub-dataframe-like extraction
