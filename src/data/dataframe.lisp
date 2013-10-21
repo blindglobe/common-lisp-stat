@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 09:31:14 tony>
+;;; Time-stamp: <2013-10-21 09:40:39 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -341,6 +341,8 @@ value is returned indicating the success of the conversion.  Examples:
     (array-dimension df 1))
   (:method ((df dataframe-like))
     (xdim (store df) 1))
+  (:method ((df list))
+    (ncols df))
   (:method ((df array))
     (xdim df 1)))
 

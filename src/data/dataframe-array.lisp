@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 09:10:37 tony>
+;;; Time-stamp: <2013-10-21 09:41:33 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Authors:    AJ Rossini <blindglobe@gmail.com>
@@ -31,9 +31,6 @@
   (:documentation "example implementation of dataframe-like using
   storage based on lisp arrays.  An obvious alternative could be a
   dataframe-matrix-like which uses the lisp-matrix classes."))
-
-
-
 
 
 (defmethod dfcolumn ((df dataframe-array) variable)
@@ -83,6 +80,8 @@
   "specializes on inheritance from matrix-like in lisp-matrix."
   (array-dimension (dataset df) 1))
 
+(defmethod nvars ((df dataframe-array))
+    (ncols df))
 
 
 (defmethod xref ((df dataframe-array) &rest subscripts)

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 09:31:47 tony>
+;;; Time-stamp: <2013-10-21 09:40:37 tony>
 ;;; Creation:   <2009 tony>
 ;;; File:       dataframe-functionality
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -21,16 +21,6 @@
 
 (in-package :cls-dataframe)
 
-(defgeneric nvars (df)
-  (:documentation  "number of variables represented in storage type.")
-  (:method ((df matrix-like))
-    (ncols df))
-  (:method ((df dataframe-array))
-    (ncols df))
-  (:method ((df list))
-    (ncols df))
-  (:method ((df array))
-    (array-dimension  df 1)))
 
 (defgeneric ncases (df)
   (:documentation "number of cases (indep, or indep within context,
