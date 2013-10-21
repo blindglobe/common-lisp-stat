@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 10:15:29 tony>
+;;; Time-stamp: <2013-10-21 10:39:28 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Authors:    AJ Rossini <blindglobe@gmail.com>
@@ -95,7 +95,6 @@ idx1/2 is row/col or case/var."
 
 (defmethod dfselect ((df dataframe-array) 
 		     &optional cases vars indices)
-  "Extract the OR of cases, vars, or have a list of indices to extract"
   (if indices (error "Indicies not used yet"))
   (let ((newdf (make-instance *default-dataframe-class*
 		:storage (make-array (list  (length cases) (length vars)))
@@ -130,7 +129,6 @@ idx1/2 is row/col or case/var."
     (maphash #'(lambda (k v) (format t "~a => ~a~%" k v)) h)))
 
 (defmethod dfsummarisebycategory ((df dataframe-array) category observation function)
-  "apply function to the observation in rows identifed by the category variable"
   (let ((category (translate-column df category))
 	(observation (translate-column df observation))
 	(h (make-hash-table :test #'equal)))

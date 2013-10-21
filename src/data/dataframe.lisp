@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 10:03:18 tony>
+;;; Time-stamp: <2013-10-21 10:40:16 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -85,89 +85,6 @@
 ;;; cases"-by-variables format and that there would be other tools for
 ;;; other structures.  In particular, we should be able to insert
 
-;;; Misc Functions (to move into a lisp data manipulation support package)
-
-(defun strsym->indexnum (df strsym)
-  "Returns a number indicating the DF column labelled by STRSYM.
-Probably should be generic/methods dispatching on DATAFRAME-LIKE type."
-  (position strsym (varlabels df)))
-
-(defun string->number (str)
-  "Convert a string <str> representing a number to a number. A second
-value is returned indicating the success of the conversion.  Examples:
-   (string->number \"123\") ; =>  123 t
-   (string->number \"1.23\") ; =>  1.23 t"
-   (let ((*read-eval* nil)) ;; Q: replace nested let's with a let* (enforced serial eval)?
-     (let ((num (read-from-string str)))
-       (values num (numberp num)))))
-
-#|
-  (equal 'testme 'testme)
-  (defparameter *test-pos* 'testme)
-  (position *test-pos* (list 'a 'b 'testme 'c))
-  (position #'(lambda (x) (equal x "testme")) (list "a" "b" "testme" "c"))
-  (position #'(lambda (x) (equal x 1)) (list 2 1 3 4))
-|#
-
-
-(defun column-type-classifier (df column)
-  "column type classifier, finds the smallest subtype that can
-  accomodate the elements of list, in the ordering:
-
-     fixnum < integer < float < complex < t
-
-  Rational, float (any kind) are classified as double-float, and
-  complex numbers as (complex double-float).  Meant to be used by
-  dataframe constructors so we can guess at column data types. The
-  presence of a non numeric in a column implies the column is
-  represented as a non numeric, as reduces and numeric maps will
-  fail.
-
-  AJR: David made a great start, and what we need to do is construct
-  appropriate statistical types to support AI-style guidance for
-  appropriate statistical procedures, or at least give caveats for why
-  they are not appropriate.
-
-  By statistical types, I mean factors such as nominal, ordinal, as
-  well as grouped observation structures such as
-  profile-with-common-times, profile-with-heterogeneous-times,
-  nestable-networks, separated-networks.
-
-  So there could be:
-
-  nominal < ordinal < fixnum < integer < ... 
-  
-  and for heterogeneous statistical components:
-
-  profile-with-common-times < profile-with-heterogeneous-times <
-  profile-unrelated
-
-  nestable-networks < separated-networks
-
-  or we could call them:
-
-  network-with-common-features < network-with-no-common-features
-  
-  Please note that the above is NOT finalized, nor necessarily
-  correct."
-
-  (case (reduce #'max (map-column df #' 
-				  (lambda (x)
-				    (typecase x
-				      (fixnum 0)
-				      (integer 1)
-				      ((or rational double-float) 2)
-				      (complex 3)
-				      (simple-array 4)
-				      ((or symbol  keyword) 5)
-				      (t 6))) column))
-    (0 'fixnum)
-    (1 'integer)
-    (2 'double-float)
-    (3 '(complex double-float))
-    (4 'string) ;; for the moment a categorical variable
-    (5 'keyword) ;; and likewise, regarded as a categorical variable
-    (6 t))) ;; nil will end up here.
 
 ;;; abstract class: dataframe-like
 
@@ -382,13 +299,6 @@ nil on error is for non interactive use"
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
 
 
-(defun infer-dataframe-types (df)
-  "infer the numeric types for each column in the dataframe. note that
-all non numerc types are lumped into T, so further discrimination will
-be required."
-  (let ((column-types (loop for col  below (nvars df)
-			    collect (column-type-classifier df col))))
-    column-types))
 
 ;; Testing consistency/coherency.
 
@@ -500,12 +410,9 @@ be required."
 (defgeneric make-dataframe2 (data &key vartypes varlabels caselabels doc)
   (:documentation "testing generic dispatch.  Data should be in table format desired for use."))
 
-
 (defun make-comparison-function (df function field value)
+  (declare (ignore df))
   `#'(lambda (row) (funcall ,function (xref df row ,field) ,value)))
-
-
-;;(defun dfquery (df ))
 
 (defgeneric dfcolumn (df  variable)
   (:documentation "generic column getter")
@@ -517,8 +424,9 @@ be required."
   (:method (( df dataframe-like) row)
     (loop for column below (nvars df) collect (xref df row column) )))
 
-(defmethod dfextract (df  &key (head 5) (tail 5))
-  "just for the moment "
+
+(defun dfextract (df  &key (head 5) (tail 5))
+  "just for the moment.  (FIXME: resolve why originally a generic?)."
   (let* ((rows (ncases df))
 	 (head-rows (loop for row below  (min head rows) collect (dfrow df row)))
 	 (tail-rows (loop for row from (max 0 (- rows tail)) below rows collect (dfrow df row))))
@@ -526,6 +434,19 @@ be required."
     (make-dataframe (listoflist:listoflist->array  (append head-rows tail-rows))
 		    :vartypes (vartypes df)
 		    :varlabels (varlabels df))))
+
+
+(defgeneric dfselect (df &optional cases vars indices)
+  (:documentation "Extract the OR of cases, vars, or have a list of indices to extract"))
+
+(defgeneric dfhead (df &optional rows))
+
+(defgeneric dfgroupby (df variable)
+  (:documentation "quick hack for summarise"))
+
+(defgeneric dfsummarisebycategorie (df category observation function)
+  (:documentation "apply function to the observation in rows identifed by the category variable"))
+
 
 
 
@@ -619,7 +540,7 @@ stuff when all the information has been supplied.  "
 
 (defun set-vartypes (df vt)
   (assert (= (length vt) (ncols df)))
-  (setf (vartypes df) vt))
+  (setf (var-types df) vt))
 
 ;;(defsetf vartypes set-vartypes)
 
@@ -722,3 +643,96 @@ function."
 (defmethod dfcolumn ((df dataframe-like) variable) ;; was dataframe-array
   "return a column as a list. a quick hack until we decide what the array manipulations should be"
   (loop for row below (nrows df) collect (xref df row variable)))
+
+
+;;; Misc Functions (to move into a lisp data manipulation support package)
+
+(defun strsym->indexnum (df strsym)
+  "Returns a number indicating the DF column labelled by STRSYM.
+Probably should be generic/methods dispatching on DATAFRAME-LIKE type."
+  (position strsym (varlabels df)))
+
+(defun string->number (str)
+  "Convert a string <str> representing a number to a number. A second
+value is returned indicating the success of the conversion.  Examples:
+   (string->number \"123\") ; =>  123 t
+   (string->number \"1.23\") ; =>  1.23 t"
+   (let ((*read-eval* nil)) ;; Q: replace nested let's with a let* (enforced serial eval)?
+     (let ((num (read-from-string str)))
+       (values num (numberp num)))))
+
+#|
+  (equal 'testme 'testme)
+  (defparameter *test-pos* 'testme)
+  (position *test-pos* (list 'a 'b 'testme 'c))
+  (position #'(lambda (x) (equal x "testme")) (list "a" "b" "testme" "c"))
+  (position #'(lambda (x) (equal x 1)) (list 2 1 3 4))
+|#
+
+
+(defun column-type-classifier (df column)
+  "column type classifier, finds the smallest subtype that can
+  accomodate the elements of list, in the ordering:
+
+     fixnum < integer < float < complex < t
+
+  Rational, float (any kind) are classified as double-float, and
+  complex numbers as (complex double-float).  Meant to be used by
+  dataframe constructors so we can guess at column data types. The
+  presence of a non numeric in a column implies the column is
+  represented as a non numeric, as reduces and numeric maps will
+  fail.
+
+  AJR: David made a great start, and what we need to do is construct
+  appropriate statistical types to support AI-style guidance for
+  appropriate statistical procedures, or at least give caveats for why
+  they are not appropriate.
+
+  By statistical types, I mean factors such as nominal, ordinal, as
+  well as grouped observation structures such as
+  profile-with-common-times, profile-with-heterogeneous-times,
+  nestable-networks, separated-networks.
+
+  So there could be:
+
+  nominal < ordinal < fixnum < integer < ... 
+  
+  and for heterogeneous statistical components:
+
+  profile-with-common-times < profile-with-heterogeneous-times <
+  profile-unrelated
+
+  nestable-networks < separated-networks
+
+  or we could call them:
+
+  network-with-common-features < network-with-no-common-features
+  
+  Please note that the above is NOT finalized, nor necessarily
+  correct."
+
+  (case (reduce #'max (map-column df #' 
+				  (lambda (x)
+				    (typecase x
+				      (fixnum 0)
+				      (integer 1)
+				      ((or rational double-float) 2)
+				      (complex 3)
+				      (simple-array 4)
+				      ((or symbol  keyword) 5)
+				      (t 6))) column))
+    (0 'fixnum)
+    (1 'integer)
+    (2 'double-float)
+    (3 '(complex double-float))
+    (4 'string) ;; for the moment a categorical variable
+    (5 'keyword) ;; and likewise, regarded as a categorical variable
+    (6 t))) ;; nil will end up here.
+
+(defun infer-dataframe-types (df)
+  "infer the numeric types for each column in the dataframe. note that
+all non numerc types are lumped into T, so further discrimination will
+be required."
+  (let ((column-types (loop for col  below (nvars df)
+			    collect (column-type-classifier df col))))
+    column-types))
