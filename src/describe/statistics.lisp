@@ -20,15 +20,18 @@
 ;;; Basic Summary Statistics
 ;;;
 
-(defgeneric mean (x &opt idx)
-  (:documentation "compute the mean of lists, vectors, various objects")
-  (:method ((x list) &opt idx)
+
+(defgeneric mean (x)
+  (:documentation "compute the mean of lists, vectors, various
+  objects.  Further subsetting should be done by sending the subsetted
+  data")
+  (:method ((x list))
     (/ (reduce #'+ x)
        (length x)))
-  (:method ((x sequence) &opt idx)
+  (:method ((x sequence))
    (/ (reduce #'+ x)
        (length x)) )
-  (:method ((x vector-like) &opt idx)
+  (:method ((x vector-like))
       ;; (defparameter *x* (make-vector 5 :initial-contents '((1d0 2d0 3d0 4d0 5d0))))
     (/ (loop for i from 0 to (- (nelts x) 1)
 	  summing (vref x i))
