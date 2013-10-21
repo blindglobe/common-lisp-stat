@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-10-15 12:26:08 tony>
+;;; Time-stamp: <2013-10-21 09:32:54 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -157,14 +157,15 @@
 			     ;; "numerics-internal"
 			     )
 		:components
-		((:file "dataframe")
+		((:file "dataframe") ; basic -like structure
+		 ;; specific implementations based on different underlying storage structures
 		 (:file "dataframe-array")
 		 (:file "dataframe-matrixlike")
 		 (:file "dataframe-listoflist")
+		 ;; functions which use the basic structure AND specific implementations
 		 (:file "dataframe-functionality")
 		 (:file "dataframe-query")
 		 (:file "dataframe-initialisation")
-		 (:file "dataframe-utilities")
 
 		 (:file "data")
 		 (:file "data-xls-compat")
