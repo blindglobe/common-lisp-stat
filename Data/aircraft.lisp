@@ -24,7 +24,8 @@
 
 (def x (select failure-times 1))
 
-(defun gllik (theta)
+#|
+ (defun gllik (theta)
   (let* ((mu (select theta 0))
          (beta (select theta 1))
          (n (length x))
@@ -32,3 +33,4 @@
     (+ (* n (- (log beta) (log mu) (log-gamma beta)))
        (sum (* (- beta 1) (log bym)))
        (sum (- bym)))))
+|#
