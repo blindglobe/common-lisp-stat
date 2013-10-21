@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-18 14:29:33 tony>
+;;; Time-stamp: <2013-10-21 09:31:14 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,6 +19,11 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
+
+
+;;; This file should only contain generics and functions which use the
+;;; xarray API.  All other code should be either in the
+;;; storage-specific files, or in the combined functions files.
 
 (in-package #:cls-dataframe)
 
@@ -330,7 +335,6 @@ value is returned indicating the success of the conversion.  Examples:
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
 
-
 (defgeneric nvars (df)
   (:documentation "number of variables represented in storage type.")
   (:method ((df simple-array))
@@ -488,61 +492,6 @@ be required."
 
 ;;  (macroexpand '(build-dataframe 'test)))
 
-
-(defun make-dataframe (newdata
-		       &key  (vartypes nil)
-		       (caselabels nil) (varlabels nil)
-		       (doc "no docs"))
-
-  "Helper function to use instead of make-instance to assure
-construction of proper DF-array. Needs some thought so we don't have
-to use listoflist->array when creating a dataframe array so much"
-
-  (check-type newdata (or matrix-like array list ))
-  (check-type caselabels sequence)
-  (check-type varlabels sequence)
-  (check-type vartypes sequence)
-  (check-type doc string)
-
-  (let ((ncases (ncases newdata))
-	(nvars (nvars newdata)))
-    
-    (if caselabels (assert (= ncases (length caselabels))))
-    (if varlabels (assert (= nvars (length varlabels))))
-    (let ((newcaselabels (if caselabels
-			     caselabels
-			     (make-labels "C" ncases)))
-	  (newvarlabels (if varlabels
-			    varlabels
-			    (make-labels "V" nvars))))
-    
-      (etypecase newdata 
-	(list
-	 (make-instance 'dataframe-listoflist
-			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
-			:case-labels newcaselabels
-			:var-labels newvarlabels
-			:var-types vartypes))
-	(array
-	 (make-instance 'dataframe-array
-			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
-			:case-labels newcaselabels
-			:var-labels newvarlabels
-			:var-types vartypes))
-	
-	(matrix-like
-	 (make-instance 'dataframe-matrixlike
-			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
-			:case-labels newcaselabels
-			:var-labels newvarlabels
-			:var-types vartypes))))))
-
 ;;; The following would be a bit better, so that we can template the
 ;;; use of a different underlying storage unit.
 
@@ -553,7 +502,18 @@ to use listoflist->array when creating a dataframe array so much"
 (defun make-comparison-function (df function field value)
   `#'(lambda (row) (funcall ,function (xref df row ,field) ,value)))
 
+
 ;;(defun dfquery (df ))
+
+(defgeneric dfcolumn (df  variable)
+  (:documentation "generic column getter")
+  (:method ( (df dataframe-like) variable)
+    (loop for the-row below (ncases df) collect (xref df the-row variable))))
+
+(defgeneric dfrow (df row)
+  (:documentation "generic row getter")
+  (:method (( df dataframe-like) row)
+    (loop for column below (nvars df) collect (xref df row column) )))
 
 (defmethod dfextract (df  &key (head 5) (tail 5))
   "just for the moment "
@@ -564,17 +524,6 @@ to use listoflist->array when creating a dataframe array so much"
     (make-dataframe (listoflist:listoflist->array  (append head-rows tail-rows))
 		    :vartypes (vartypes df)
 		    :varlabels (varlabels df))))
-
-#| 
- (make-dataframe #2A((1.2d0 1.3d0) (2.0d0 4.0d0)))
- (make-dataframe #2A(('a 1) ('b 2)))
- (xref (make-dataframe #2A(('a 1) ('b 2))) 0 1)
- (xref (make-dataframe #2A(('a 1) ('b 2))) 1 0)
- (make-dataframe 4) ; ERROR, should we allow?
- (make-dataframe #2A((4)))
- (make-dataframe (rand 10 5)) ;; ERROR, but should work!
-|#
-
 
 
 
@@ -754,31 +703,6 @@ function."
   (error "make-data-set-from-lists: proposed name exists"))
 
 
-(defmethod dfselect ((df dataframe-array) 
-		     &optional cases vars indices)
-  "Extract the OR of cases, vars, or have a list of indices to extract"
-  (if indices (error "Indicies not used yet"))
-  (let ((newdf (make-instance *default-dataframe-class*
-		:storage (make-array (list  (length cases) (length vars)))
-		:nrows (length cases)
-		:ncols (length vars)
-#|
-		:case-labels (select-list caselist (case-labels df))
-		:var-labels (select-list varlist (var-labels df))
-		:var-types (select-list varlist (vartypes df))
-|#
-		)))
-    (dotimes (i (length cases))
-      (dotimes (j (length vars))
-	(setf (xref newdf i j)
-	      (xref df
-		    (position (elt cases i) (case-labels df))
-		    (position (elt vars j) (var-labels df))))))))
-
-
-
-
-
 (defun gen-seq (n &optional (start 1))
   "Generates an integer sequence of length N starting at START. Used
  for indexing.
@@ -793,7 +717,7 @@ function."
 
 ;;;;;;;;;; Stuff which is built on the generic function API (no low-level access functions used)
 
-(defmethod dfcolumn ((df dataframe-array) variable)
+(defmethod dfcolumn ((df dataframe-like) variable) ;; was dataframe-array
   "return a column as a list. a quick hack until we decide what the array manipulations should be"
   (loop for row below (nrows df) collect (xref df row variable)))
 
@@ -807,38 +731,6 @@ function."
 	   (error "Column name misspelt: try again ~a~%" column))))
     ((typep column 'number) column)
     (t (error "Invalid argument passed to translate-column ~a~%" column))))
-
-
-(defmethod dfhead ((df dataframe-array)
-		   &optional (rows 10))
-  (dotimes ( i rows)
-    (format t "~A: " i)
-    (dotimes ( j (ncols df))
-      (format t "~A~t" (xref df i j)) )
-    (format t "~%")))
-
-(defmethod dfgroupby ((df dataframe-array) variable)
-  "a quick hack for summarise."
-  (let ( (h (make-hash-table :test #'equal)))
-    (dotimes (i (nrows df))
-      (incf (gethash (xref df i variable) h 0)))
-    (maphash #'(lambda (k v) (format t "~a => ~a~%" k v)) h)))
-
-(defmethod dfsummarisebycategory ((df dataframe-array) category observation function)
-  "apply function to the observation in rows identifed by the category variable"
-  (let ((category (translate-column df category))
-	(observation (translate-column df observation))
-	(h (make-hash-table :test #'equal)))
-    (dotimes (i (nrows df))
-      (push i (gethash (xref df i category) h (list))))
-   (loop for k being the hash-keys in h using (hash-value rows)
-	 collect (cons k
-		       (loop for row in rows
-			     collect (xref df row observation) into g
-			     finally (return (funcall function g)))) into groups
-	 finally (return groups))) )
-
-
 
 (defun reduce-column (df function column )
   "reduce a column of a df with function yielding a scalar"
