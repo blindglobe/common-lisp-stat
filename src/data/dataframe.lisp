@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 09:40:39 tony>
+;;; Time-stamp: <2013-10-21 10:03:18 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -722,63 +722,3 @@ function."
 (defmethod dfcolumn ((df dataframe-like) variable) ;; was dataframe-array
   "return a column as a list. a quick hack until we decide what the array manipulations should be"
   (loop for row below (nrows df) collect (xref df row variable)))
-
-(defun translate-column (df column)
-  "for production use, we would wrap this in a handler to enable entry of the correct column id"
-  (cond
-    ((typep column 'keyword)
-     (let ((col (position column (varlabels df))))
-       (if col
-	   col
-	   (error "Column name misspelt: try again ~a~%" column))))
-    ((typep column 'number) column)
-    (t (error "Invalid argument passed to translate-column ~a~%" column))))
-
-(defun reduce-column (df function column )
-  "reduce a column of a df with function yielding a scalar"
-  (assert (and (>= column 0) (< column (ncols df))) )
-  (loop with result = (xref df 0 column)
-	for i from 1 below (nrows df) do
-	  (setf result (funcall function result (xref df i column)))
-	finally (return result)))
-
-(defun map-column (df function column)
-  (assert (and (>= column 0) (< column (ncols df))) )
-  (loop with result = (make-sequence 'vector (nrows df) )
-	for i from 1 below (nrows df) do
-	  (setf (xref result i ) (funcall function (xref df i column)))
-	finally (return result)))
-
-(defun column-type-classifier (df column)
-  "column type classifier, finds the smallest subtype that can
-  accomodate the elements of list, in the ordering fixnum < integer <
-  float < complex < t.  Rational, float (any kind) are classified as
-  double-float, and complex numbers as (complex double-float).  Meant
-  to be used by dataframe constructors so we can guess at column data types. The presence of a non numeric in a column implies the column is represented as a non numeric, as reduces and numeric maps will fail."
-
-  (case (reduce #'max (map-column df #' 
-				  (lambda (x)
-				    (typecase x
-				      (fixnum 0)
-				      (integer 1)
-				      ((or rational double-float) 2)
-				      (complex 3)
-				      (simple-array 4)
-				      (keyword 5)
-				      (t 6))) column))
-    (0 'fixnum)
-    (1 'integer)
-    (2 'double-float)
-    (3 '(complex double-float))
-    (4 'string) ;; for the moment a categorical variable
-    (5 'keyword) ;; and likewise, regarded as a categorical varial
-    (6 t))) ;; nil will end up here.
-
-(defun infer-dataframe-types (df)
-  "infer the numeric types for each column in the dataframe. note that all non numerc types are lumped into T, so further discrimination will be required."
-  (let ((column-types (loop for col  below (ncols df)
-			    collect (column-type-classifier df col))))
-    column-types))
-
-
-(defmethod dfsummary (df dataframe-array))
