@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-10-11 14:39:04 tony>
+;;; Time-stamp: <2013-11-01 08:56:01 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       template.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -101,7 +101,13 @@ names each is unbound and removed. Returns V."
                 (makunbound s)))
   v)
 
-(defun read-data-file (&optional (file (open-file-dialog)))
+
+#|
+ (defun open-file-dialog ()
+  "provide a selection of files and query user."
+  (error "open-file-dialog not implemented yet."))
+
+ (defun read-data-file (&optional (file (open-file-dialog)))
 "Args:  (file)
 Returns a list of all lisp objects in FILE. FILE can be a string or a symbol,
 in which case the symbol'f print name is used."
@@ -114,6 +120,7 @@ in which case the symbol'f print name is used."
 		    (tail x (cdr tail)))
 		   ((eq r eof) (cdr x))
 		   (setf (cdr tail) (list r))))))))
+|#
 
 ;;; New definition to avoid stack size limit in apply
 #|
@@ -142,9 +149,9 @@ Read in data file from the System DATA library.  Return true if success, failure
 (defun load-example (file)
   "Args: (file) as string
 Read in lisp example file from the System EXAMPLES library."
-  (if (load (path-string-to-path cls-config:*cls-examples-dir* file))
+  (if (load (path-string-to-path cls-config:*cls-data-dir* file))
       t
-      (load (path-string-to-path cls-config:*cls-examples-dir* file))))
+      (load (path-string-to-path cls-config:*cls-data-dir* file))))
 
 ;;;
 ;;; Saving Variables and Functions
