@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-18 14:03:46 tony>
+;;; Time-stamp: <2013-11-01 09:36:21 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -94,7 +94,9 @@
   (make-dataframe *ex-array*))
 (defparameter *ex-lol-array-df*
   (make-dataframe (listoflist:listoflist->array  *ex-lol*)))
-(defparameter *ex-lol-df* (make-dataframe *ex-lol*))
+
+;; FIXME:
+;; (defparameter *ex-lol-df* (make-dataframe *ex-lol*))
 
 ;;; Need examples with variables, perhaps case labels.
 
