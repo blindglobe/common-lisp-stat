@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-12-22 22:13:48 tony> 
+;;; Time-stamp: <2013-11-01 09:05:51 tony> 
 ;;; Creation:   <2005-08-xx 21:34:07 rossini> 
 ;;; File:       data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -91,9 +91,30 @@
 ;; one or the other is more critical (via naming convention of adding
 ;; description to class name)?
 
+;; Current class heirarchy is 
+;; statistical-variable         
+;; how described: empiricial or model-based
+;; modality (categorical -  nominal, ordinal, integral
+;;          (continuous -   real, rational, 
+;;
 
-(defclass empirical-statistical-variable
-    ()
+
+(defclass statistical-variable ()
+  ((number-of-observations
+    :initform 0
+    :initarg :nobs
+    :accessor nobs
+    ;; :type generalized-sequence ; sequence or
+    ;; array
+    :documentation "virtual class for statistical variables
+                    (assuming design, marginalization, and
+                    conditioning to create the current dataset from
+                    which this variable came from)."))
+  (:documentation "virtual class indicating that we are working with a
+    statistical variable (arising from a actual set of observation or
+    a virtual / hypothesized set)."))
+
+(defclass empirical-variable (statistical-variable)
   ((number-of-observations :initform 0
 			   :initarg :nobs
 			   :accessor nobs
@@ -103,12 +124,11 @@
     independent observations in the current context (assuming design,
     marginalization, and conditioning to create the current dataset
     from which this variable came from)."))
-  (:documentation "basic class indicating that we are working with a
-    statistical variable (arising from a actual set of observation or
+  (:documentation "mix-in class that  indicating that we are working with a
+    statistical variable which arises from a actual set of observation or
     a virtual / hypothesized set)."))
 
-(defclass modelbased-statistical-variable
-    ()
+(defclass modelbased-variable (statistical-variable)
   ((density/mass-function :initform nil
 			  :initarg :pdmf
 			  :accessor pdmf
