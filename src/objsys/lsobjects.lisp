@@ -696,6 +696,7 @@ a list of objects. IVARS and CVARS must be lists."
 "Method args: ()
 
 Do a NOP.  Used to quiet compiler warnings."
+  (list self args) ; dummy action to quiet compiler style issues
   (format nil "NOP"))
 
 (defmeth *object* :isnew (&rest args)
