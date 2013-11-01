@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-18 14:10:52 tony>
+;;; Time-stamp: <2013-11-01 10:45:22 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -32,7 +32,10 @@
 
 (defmethod make-dataframe2 ((data dataframe-listoflist)
 			    &key vartypes varlabels caselabels doc 
-			      ;; (vartypes sequence) (varlabels sequence) (caselabels sequence) (doc string)
+			      ;; (vartypes sequence)
+			      ;; (varlabels sequence)
+			      ;; (caselabels sequence)
+			      ;; (doc string)
 			      )
   (check-dataframe-params data vartypes varlabels caselabels doc)
   (build-dataframe 'dataframe-listoflist))
@@ -52,6 +55,18 @@ naturally to a rectangular array."
   (length (elt (dataset df) 0)))
 
 (defmethod ncols ((df list))
+  "specializes on inheritance from listoflist. This approach assumes
+that the list of list is in a coherent form, that is that it maps
+naturally to a rectangular array."
+  (length (elt df 0)))
+
+(defmethod nvars ((df dataframe-listoflist))
+  "specializes on inheritance from listoflist. This approach assumes
+that the list of list is in a coherent form, that is that it maps
+naturally to a rectangular array."
+  (length (elt (dataset df) 0)))
+
+(defmethod nvars ((df list))
   "specializes on inheritance from listoflist. This approach assumes
 that the list of list is in a coherent form, that is that it maps
 naturally to a rectangular array."
