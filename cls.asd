@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-11-01 09:33:22 tony>
+;;; Time-stamp: <2013-11-01 10:20:43 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -11,47 +11,23 @@
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
 
-
 (in-package :cl-user)
-
 
 (cl:defpackage #:cls-system
     (:use :common-lisp :asdf))
 
 (in-package #:cls-system)
 
-;; The following must be replaced with new ASDF approach.  
-;; We ONLY run on ASDF/QuickLisp enabled installations.
-
-;;; To avoid renaming everything from *.lsp to *.lisp...  borrowed
-;;; from Cyrus Harmon's work, for example for the ch-util.  NOT secure
-;;; against serving multiple architectures/hardwares from the same
-;;; file system (i.e. PPC and x86 would not be differentiated).
-;;; However, this might be more of a solution for quicklisp?
-
-;;(defclass cls-lsp-source-file (cl-source-file) ())
-
-#|
- (defparameter *fasl-directory*
-   (make-pathname :directory '(:relative
-			       #+sbcl "fasl-sbcl"
-			       #+openmcl "fasl-ccl"
-			       #+openmcl "fasl-ccl"
-			       #+cmu "fasl-cmucl"
-			       #+clisp "fasl-clisp"
-			       #-(or sbcl openmcl clisp cmucl) "fasl"
-			       )))
-|#
-
-;;; Was intended to handle Luke's *.lsp suffix
-;;; Now we just remove for ASDF3 issues.
-;;(defmethod source-file-type ((c cls-lsp-source-file) (s module)) "lsp")
-;;(defmethod asdf::output-files :around ((operation compile-op)
-;;				       (c cls-lsp-source-file))
-;;  (list (merge-pathnames *fasl-directory*
-;;			 (compile-file-pathname (component-pathname c)))))
-;;;; again, thanks to Cyrus for saving me time long ago, but no longer needed.
-
+;; FIXME: is this sane?  AJR: I use this for development across CL
+;; implementations, but it still strikes me as intrusive?
+(defparameter *fasl-directory*
+  (make-pathname :directory '(:relative
+			      #+sbcl "fasl-sbcl"
+			      #+openmcl "fasl-ccl"
+			      #+cmu "fasl-cmucl"
+			      #+clisp "fasl-clisp"
+			      #-(or sbcl openmcl clisp cmucl) "fasl"
+			      )))
 
 (defsystem "cls"
   :name "Common Lisp Statistical System"
@@ -70,27 +46,21 @@
   much 14 year old code can honestly stay stable?"
   :serial t
   :depends-on (;;  :cldoc  ;; documentation tool? (not Lit Prog, but coding support)
-	       ;;  :cffi   ;; only needed within lisp-matrix
 	       :alexandria
 	       :xarray
 	       :lift
-	       :lisp-matrix ; on fnv, cl-blapack, ffa
 	       :listoflist
+	       :lisp-matrix ; on fnv, cl-blapack, ffa, cffi
 	       :fare-csv
 	       ;;; need to select pRNG stream system
-	       ;; :cl-random ;; or cl-variates, or...?
-	       :cl-variates
- 	       ;;; if graphics exist, then...
-	       ;; :cl-cairo2  :cl-2d
-
-	       ;; we are experimenting with GSLL and Antik for the
-	       ;; numerical infrastructure.
+	       :cl-variates ;; or  :cl-random 
+	       ;; GSLL and Antik could provide numerical infrastructure.
 	       :gsll 
 	       :antik
-
+ 	       ;;; if graphics exist, then...
+	       ;; :cl-cairo2  :cl-2d
 	       ;; for David H's dataframe
-	       :data-format-validation
-	       )
+	       :data-format-validation)
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
 	       (:static-file "README")
@@ -128,31 +98,7 @@
 					     "lsmacros"
 					     "lsfloat"))))
 
-;; 	       (:module
-;; 		"numerics-internal"
-;; 		:pathname "src/numerics/"
-;; 		:depends-on ("packaging" "proto-objects" "cls-core")
-;; 		:components
-;; 		((:cls-lsp-source-file "cffiglue")
-;; 		 (:cls-lsp-source-file "dists"
-;; 					    :depends-on ("cffiglue"))
-;; #|
-;; 		 (:cls-lsp-source-file "matrices"
-;; 					    :depends-on ("cffiglue"))
-;; 		 (:cls-lsp-source-file "ladata"
-;; 					    :depends-on ("cffiglue"
-;; 							 "matrices"))
-;; 		 (:file "linalg"
-;; 			:depends-on ("cffiglue"
-;; 				     "matrices"
-;; 				     "ladata"))
-;; |#
-;; 		 ))
-
-
-	       ;; Dataframes and statistical structures.
-	       (:module
-		"stat-data"
+	       (:module "stat-data"
 		:pathname "src/data/"
 		:depends-on ("packaging"
 			     "proto-objects"
@@ -185,8 +131,6 @@
 		:components
 		((:file "lsbasics")))
 
-
-	       
 	       (:module
 		"descriptives"
 		:pathname "src/describe/"
@@ -199,48 +143,11 @@
 		:components
 		((:file "statistics")))
 #|
-	       (:module
-		"visualize"
+	       (:module "visualize"
 		:pathname "src/visualize/"
 		:depends-on ("cls-core")
 		:components
 		((:file "plot")))
-|#
-
-#|
-
-;;; FIXME:  OPTIMIZE USES ORIG CLS CFFI-based LIBCODE, NEED TO REPLACE WITH ALT MINIMIZERS
-	       (:module
-		"optimization"
-		:pathname "src/numerics/"
-		:depends-on ("packaging"
-			     "proto-objects"
-			     "cls-core"
-			     ;; "numerics-internal"
-			     "stat-data"
-			     "cls-basics")
-		:components
-		((:file "optimize")))
-		 
-	       
-	       ;; Applications
-	       (:module
-		"stat-models"
-		:pathname "src/stat-models/"
-		:depends-on ("packaging"
-			     "proto-objects"
-			     "cls-core"
-			     ;;   "numerics-internal"
-			     "cls-basics"
-			     "descriptives"
-			     "optimization")
-		:components
-		((:file "regression")
-		 ;; (:cls-lsp-source-file "nonlin"
-		 ;;	  :depends-on ("regression"))
-		 ;; (:cls-lsp-source-file "bayes"
-		 ;;	  :depends-on ("regression"))
-		 ))
 |#
 
 	       ;; Applications
@@ -250,11 +157,8 @@
 		:depends-on ("packaging"
 			     "proto-objects"
 			     "cls-core"
-			     ;; "numerics-internal"
 			     "cls-basics"
-			     "descriptives"
-			     ;;  "optimization"
-			     )
+			     "descriptives")
 		:components
 		((:file "examples")
 		 (:file "absorbtion")
@@ -276,12 +180,9 @@
 		 "lisp-stat-unittest"
 		:depends-on  ("packaging" "proto-objects"
 			      "cls-core"
-			      ;; "numerics-internal" 
 			      "stat-data"
 			      "cls-basics"
 			      "descriptives"
-			      ;; "optimization"
-			      ;; "stat-models"
 			      "example-data")
 		 :pathname "src/unittests/"
 		 :components ((:file "unittests")
@@ -289,11 +190,10 @@
 			      (:file "unittests-specfn" :depends-on ("unittests"))
 			      ;;    (:file "unittests-prob" :depends-on ("unittests"))
 			      (:file "unittests-proto" :depends-on ("unittests"))
-			      (:file "unittests-regression" :depends-on ("unittests"))
 			      (:file "unittests-listoflist" :depends-on ("unittests"))
 			      (:file "unittests-arrays" :depends-on ("unittests"))
 			      ;;(:file "unittests-dataframe" :depends-on ("unittests"))
-			      ))))
+			      (:file "unittests-regression" :depends-on ("unittests"))))))
 
 #|
 
