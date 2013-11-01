@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-10-21 09:32:54 tony>
+;;; Time-stamp: <2013-11-01 09:33:22 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -29,8 +29,10 @@
 ;;; file system (i.e. PPC and x86 would not be differentiated).
 ;;; However, this might be more of a solution for quicklisp?
 
-(defclass cls-lsp-source-file (cl-source-file) ())
-(defparameter *fasl-directory*
+;;(defclass cls-lsp-source-file (cl-source-file) ())
+
+#|
+ (defparameter *fasl-directory*
    (make-pathname :directory '(:relative
 			       #+sbcl "fasl-sbcl"
 			       #+openmcl "fasl-ccl"
@@ -39,6 +41,7 @@
 			       #+clisp "fasl-clisp"
 			       #-(or sbcl openmcl clisp cmucl) "fasl"
 			       )))
+|#
 
 ;;; Was intended to handle Luke's *.lsp suffix
 ;;; Now we just remove for ASDF3 issues.
@@ -106,24 +109,24 @@
 		:serial t
 		:depends-on ("packaging")
 		:components
-		((:cls-lsp-source-file "lsobjects")))
+		((:file "lsobjects")))
 
 	       (:module "cls-core"
 			:pathname "src/basics/"
 			:serial t
 			:depends-on ("packaging" "proto-objects")
 			:components
-			((:cls-lsp-source-file "lstypes")
-			 (:cls-lsp-source-file "lsfloat")
+			((:file "lstypes")
+			 (:file "lsfloat")
 			 
-			 (:cls-lsp-source-file "compound")
-			 (:cls-lsp-source-file "lsmacros" 
-						    :depends-on ("compound"))
+			 (:file "compound")
+			 (:file "lsmacros" 
+				:depends-on ("compound"))
 			 
-			 (:cls-lsp-source-file "lsmath"
-						    :depends-on ("compound"
-								 "lsmacros"
-								 "lsfloat"))))
+			 (:file "lsmath"
+				:depends-on ("compound"
+					     "lsmacros"
+					     "lsfloat"))))
 
 ;; 	       (:module
 ;; 		"numerics-internal"
@@ -180,7 +183,7 @@
 			     ;; "numerics-internal"
 			     "stat-data")
 		:components
-		((:cls-lsp-source-file "lsbasics")))
+		((:file "lsbasics")))
 
 
 	       
@@ -194,7 +197,7 @@
 			     "stat-data"
 			     "cls-basics")
 		:components
-		((:cls-lsp-source-file "statistics")))
+		((:file "statistics")))
 #|
 	       (:module
 		"visualize"
@@ -254,20 +257,20 @@
 			     )
 		:components
 		((:file "examples")
-		 (:cls-lsp-source-file "absorbtion")
-		 (:cls-lsp-source-file "diabetes")
-		 (:cls-lsp-source-file "leukemia")
-		 (:cls-lsp-source-file "randu")
-		 (:cls-lsp-source-file "aircraft")
-		 (:cls-lsp-source-file "metabolism")
-		 (:cls-lsp-source-file "book")
-		 (:cls-lsp-source-file "heating")
-		 (:cls-lsp-source-file "oxygen")
-		 (:cls-lsp-source-file "stackloss") 
-		 (:cls-lsp-source-file "car-prices")
-		 (:cls-lsp-source-file "iris")
-		 (:cls-lsp-source-file "puromycin")
-		 (:cls-lsp-source-file "tutorial")))
+		 (:file "absorbtion")
+		 (:file "diabetes")
+		 (:file "leukemia")
+		 (:file "randu")
+		 (:file "aircraft")
+		 (:file "metabolism")
+		 (:file "book")
+		 (:file "heating")
+		 (:file "oxygen")
+		 (:file "stackloss") 
+		 (:file "car-prices")
+		 (:file "iris")
+		 (:file "puromycin")
+		 (:file "tutorial")))
 
 	       (:module
 		 "lisp-stat-unittest"
