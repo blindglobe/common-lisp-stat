@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-11-01 10:20:43 tony>
+;;; Time-stamp: <2013-11-01 10:52:21 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,17 +17,6 @@
     (:use :common-lisp :asdf))
 
 (in-package #:cls-system)
-
-;; FIXME: is this sane?  AJR: I use this for development across CL
-;; implementations, but it still strikes me as intrusive?
-(defparameter *fasl-directory*
-  (make-pathname :directory '(:relative
-			      #+sbcl "fasl-sbcl"
-			      #+openmcl "fasl-ccl"
-			      #+cmu "fasl-cmucl"
-			      #+clisp "fasl-clisp"
-			      #-(or sbcl openmcl clisp cmucl) "fasl"
-			      )))
 
 (defsystem "cls"
   :name "Common Lisp Statistical System"
