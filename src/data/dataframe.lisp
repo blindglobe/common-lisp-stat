@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-21 10:40:16 tony>
+;;; Time-stamp: <2013-11-01 12:46:04 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -148,7 +148,15 @@
 ;;    matrix-like -> la-matrix -> real-la-matrix -> double-la-matrix
 ;;    or  
 ;;    matrix-like -> la-matrix -> complex-la-matrix -> complex-double-la-matrix
-;; 8. 
+;; 8. There is currently a sort-of problem in that we have ncols/nvars
+;;    and nrows/ncases.  This is due to the math/stat dichotomy, in
+;;    that ncols/nrows refers to the underlying table data structure and
+;;    the basic matrix-like setup, while nvars/ncases refers to the
+;;    underlying statistical structure, which is domain-specific to
+;;    statistical activties and of a very different thought process,
+;;    EVEN IF THEY OFTEN MATCH.
+;; 
+;;
 
 (defclass dataframe-like (matrix-like)
   (
@@ -259,7 +267,7 @@
   (:method ((df dataframe-like))
     (xdim (store df) 1))
   (:method ((df list))
-    (ncols df))
+    (length df)) ;; FIXME:AJR confirm change.  was ncols, but I think that is wrong?
   (:method ((df array))
     (xdim df 1)))
 
@@ -638,11 +646,7 @@ function."
       (append (gen-seq (- n 1) start) (list n))))
 
 
-;;;;;;;;;; Stuff which is built on the generic function API (no low-level access functions used)
-
-(defmethod dfcolumn ((df dataframe-like) variable) ;; was dataframe-array
-  "return a column as a list. a quick hack until we decide what the array manipulations should be"
-  (loop for row below (nrows df) collect (xref df row variable)))
+;;; Stuff built on the generic function API (use no low-level access)
 
 
 ;;; Misc Functions (to move into a lisp data manipulation support package)

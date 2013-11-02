@@ -258,7 +258,9 @@ for the challenge."
 				     (length (symbol-name x)))
 				 (dfcolumn df the-col)))))
 	   ;; FIXME: what is the print width of a timepoint?
-	   (date-width (the-col) 12))
+	   (date-width (the-col) 
+	     (declare (ignore the-col))
+	     12))
     
     (case (classify-print-type type)
       ((:INTEGER :FLOAT) (numeric-width column))
