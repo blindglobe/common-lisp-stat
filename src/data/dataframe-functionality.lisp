@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-01 12:18:35 tony>
+;;; Time-stamp: <2013-11-02 10:38:07 tony>
 ;;; Creation:   <2009 tony>
 ;;; File:       dataframe-functionality
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -83,7 +83,8 @@ to use listoflist->array when creating a dataframe array so much"
  (make-dataframe (rand 10 5)) ;; ERROR, but should work!
 |#
 
-(defun  df->grid (df &rest cols)
+#|
+ (defun  df->grid (df &rest cols)
   "A helper function that creates a foreign grid of (ncase df)
 and (length cols) specifically for passing to gsll. If a column is a
 date then it will be converted into the equivalent fixnum
@@ -104,4 +105,5 @@ keyword :all then just do all the cols."
     (grid:make-foreign-array
      'double-float
      :initial-contents (create-subset df (translate-columns cols)))))
+|#
 
