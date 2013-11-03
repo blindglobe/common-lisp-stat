@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-11-01 10:52:21 tony>
+;;; Time-stamp: <2013-11-02 10:34:38 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -34,22 +34,17 @@
   in 1991, then restarted by AJR in 2005.  Except for TeX/LaTeX, how
   much 14 year old code can honestly stay stable?"
   :serial t
-  :depends-on (;;  :cldoc  ;; documentation tool? (not Lit Prog, but coding support)
-	       :alexandria
-	       :xarray
-	       :lift
-	       :listoflist
+  :depends-on (:alexandria
+	       :lift ; unit testing -- use a different system?
+	       :xarray ; array-like access?
+	       :listoflist ; on xarray
 	       :lisp-matrix ; on fnv, cl-blapack, ffa, cffi
-	       :fare-csv
-	       ;;; need to select pRNG stream system
-	       :cl-variates ;; or  :cl-random 
-	       ;; GSLL and Antik could provide numerical infrastructure.
-	       :gsll 
+	       :fare-csv ; DSV stream processing
+	       :cl-variates ;; ? :cl-random  ;; need to select pRNG stream system
+	       :gsll ;; GSLL and Antik could provide numerical infrastructure.
 	       :antik
- 	       ;;; if graphics exist, then...
-	       ;; :cl-cairo2  :cl-2d
-	       ;; for David H's dataframe
-	       :data-format-validation)
+	       ;; :cl-cairo2  :cl-2d ;;; one option for graphics
+	       :data-format-validation) ;; for David H's dataframe
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
 	       (:static-file "README")
@@ -77,23 +72,18 @@
 			:components
 			((:file "lstypes")
 			 (:file "lsfloat")
-			 
 			 (:file "compound")
 			 (:file "lsmacros" 
 				:depends-on ("compound"))
-			 
 			 (:file "lsmath"
 				:depends-on ("compound"
 					     "lsmacros"
 					     "lsfloat"))))
-
 	       (:module "stat-data"
 		:pathname "src/data/"
 		:depends-on ("packaging"
 			     "proto-objects"
-			     "cls-core"
-			     ;; "numerics-internal"
-			     )
+			     "cls-core")
 		:components
 		((:file "dataframe") ; basic -like structure
 		 ;; specific implementations based on different underlying storage structures
@@ -131,14 +121,13 @@
 			     "cls-basics")
 		:components
 		((:file "statistics")))
-#|
+#| need to write this sometime
 	       (:module "visualize"
 		:pathname "src/visualize/"
 		:depends-on ("cls-core")
 		:components
 		((:file "plot")))
 |#
-
 	       ;; Applications
 	       (:module
 		"example-data"
@@ -184,9 +173,8 @@
 			      ;;(:file "unittests-dataframe" :depends-on ("unittests"))
 			      (:file "unittests-regression" :depends-on ("unittests"))))))
 
-#|
-
 ;;; NEED TO ADD A TEST OPERATION, THIS IS THE WRONG VARIANT OF IT.
+#|
  (defmethod perform ((o test-op) (c (eql (find-system :cls))))
     (describe (lift:run-tests :suite 'lisp-stat-unittests::lisp-stat-ut)))
 |#
