@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-01 12:46:04 tony>
+;;; Time-stamp: <2013-11-02 11:21:58 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -260,14 +260,18 @@
 ;;; type.  But here, just to point out that we've got a specializing
 ;;; virtual subclass (DATAFRAME-LIKE specializing MATRIX-LIKE).
 
+;;; required: that lisp-matrix and xarray are loaded.
+
 (defgeneric nvars (df)
   (:documentation "number of variables represented in storage type.")
   (:method ((df simple-array))
     (array-dimension df 1))
   (:method ((df dataframe-like))
     (xdim (store df) 1))
+  (:method ((df matrix-like))
+    (ncols df))
   (:method ((df list))
-    (length df)) ;; FIXME:AJR confirm change.  was ncols, but I think that is wrong?
+    (length (elt df 0)))
   (:method ((df array))
     (xdim df 1)))
 
