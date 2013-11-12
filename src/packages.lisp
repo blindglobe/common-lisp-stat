@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-01-28 09:10:03 tony>
+;;; Time-stamp: <2013-11-12 19:27:25 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -178,7 +178,7 @@
    ;; accessors
    varlabels caselabels  nrows ncols
    dataframe-dimension dataframe-dimensons
-   xref xtype xdims xdim xrank slice take carray
+   xref xelttype xdims xdim xrank slice take carray
    dfcolumn dfrow
 
 
@@ -526,7 +526,7 @@
    make-rv-function make-rv-function-1 
 
    ;; package XARRAY
-   xref xtype xdims xdim xdims* 
+   xref #| xtype |#  xelttype xdims xdim xdims* 
 
    ;; package LISTOFLIST
    sublists-of-same-size-p equal-listoflist transpose-listoflist
