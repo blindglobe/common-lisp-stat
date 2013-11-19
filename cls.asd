@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-11-02 10:34:38 tony>
+;;; Time-stamp: <2013-11-18 10:42:03 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -47,7 +47,7 @@
 	       :data-format-validation) ;; for David H's dataframe
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
 	       (:static-file "LICENSE.mit")
-	       (:static-file "README")
+	       (:static-file "README.org")
 
 	       (:module
 		"packaging"
