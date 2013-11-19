@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-01 10:46:23 tony>
+;;; Time-stamp: <2013-11-18 15:04:22 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -25,7 +25,7 @@
 ;;;; BROKEN unless you are running your lisp in the CLS home
 ;;;; directory.  Until we fix this, might have to edit so that you
 ;;;; load from the right place.
-(load "examples/00-loadingData.lisp")
+;(load "examples/00-loadingData.lisp")
 
 (in-package :cls-examples)
 

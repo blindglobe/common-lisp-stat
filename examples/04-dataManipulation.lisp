@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-01 10:39:46 tony>
+;;; Time-stamp: <2013-11-19 07:26:16 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,7 +13,7 @@
 ;;; designers and quality assurance people in its wake.
 
 
-(load "examples/02-dataframeBuilding.lisp")
+;(load "examples/02-dataframeBuilding.lisp")
 
 ;; Use the CLS examples playground for access to example data.
 (in-package :cls-examples)
@@ -85,15 +85,39 @@
 ;;; Setting/putting elements
 
 
-;;; Column and row extraction
+;; Individual array elements
+(= 23.0 (xref *ex-array* 1 2))   ; at this stage, T
+(setf (xref *ex-array* 1 2) 24.0)
+(= 23.0 (xref *ex-array* 1 2))  ; at this stage, NIL
+(setf (xref *ex-array* 1 2) 23.0)
+(= 23.0 (xref *ex-array* 1 2)) ; and T again...
 
 
-;;; Column and row setting
+
+;;; Column and row extraction, including sub-matrix-like, sub-array or
+;;; sub-dataframe-like extraction
+
+(xslice *ex-array* '(1) :all)
+(xslice *ex-array* '(1 2) :all)
+(xslice *ex-array* '(0 1) '(3))
+(xslice *ex-array* :all '(0 1))
+
+
+;;; FIXME: NOT WORKING YET WITH DATAFRAME-LIKE OR MATRIX-LIKE
+;;;
+;; (xslice *ex-array-df* '(1) :all)  ;; FIXME: error
+;; (xslice *ex-array-mat* '(1) '(2)) ;; FIXME: no subsetting
+;; (xslice *ex-lol-df* '(1) :all)  ;; FIXME: error
+;; (xslice *ex-array-mat* '(1) '(2)) ;; FIXME: no subsetting
+
+;;; Column and row setting, FIXME: NONE WORK!
+
+;; (setf (xslice *ex-array* '(1) :all) #2A((1.0 2.0 3.0 4.0)))
+;; (xslice *ex-array* '(1 2) :all)
 
 
 ;;; Column and row combining for new DFs
 
 
-;;; sub-matrix-like, sub-array or sub-dataframe-like extraction
 
 
