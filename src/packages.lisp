@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-12 19:27:25 tony>
+;;; Time-stamp: <2013-11-18 10:40:34 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -151,7 +151,6 @@
 
 (defpackage :cls-data
   (:use :common-lisp)
-  (:shadowing-import-from :xarray slice)
   (:export
    ;; must work out what is needed for stat variable metadata, support
    ;; functions, etc
@@ -163,7 +162,6 @@
 	:cls-data
 	:xarray
 	:lisp-matrix)
-  (:shadowing-import-from :xarray slice)
   (:export
    ;; generic container class for data -- if small enough
    ;; could be value, otherwise might be reference.
@@ -178,7 +176,7 @@
    ;; accessors
    varlabels caselabels  nrows ncols
    dataframe-dimension dataframe-dimensons
-   xref xelttype xdims xdim xrank slice take carray
+   xref xelttype xdims xdim xrank xslice take carray
    dfcolumn dfrow
 
 
@@ -233,7 +231,6 @@
   (:use :common-lisp
 	:lisp-matrix
 	:cls-dataframe)
-  (:shadowing-import-from :xarray slice)
   )
 #|
 
@@ -439,7 +436,6 @@
 	;; :cls-visualize-plplot
 	;; :cls-visualize-cl2d
 	)
-  (:shadowing-import-from :xarray slice)
   (:shadowing-import-from :lisp-stat-object-system
 			  call-method call-next-method)
   (:shadowing-import-from :lisp-stat-math
