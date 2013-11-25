@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-19 07:26:16 tony>
+;;; Time-stamp: <2013-11-20 14:56:20 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       data-manipulation.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -101,6 +101,12 @@
 (xslice *ex-array* '(1 2) :all)
 (xslice *ex-array* '(0 1) '(3))
 (xslice *ex-array* :all '(0 1))
+
+
+(xcreate 'array  '(2 3))
+;;(xcreate 'dataframe  '(2 3))
+;;(xcreate 'matrix  '(2 3))
+
 
 
 ;;; FIXME: NOT WORKING YET WITH DATAFRAME-LIKE OR MATRIX-LIKE
