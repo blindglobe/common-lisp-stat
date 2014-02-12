@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-01 10:45:22 tony>
+;;; Time-stamp: <2014-02-12 08:52:30 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-listoflist.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -66,22 +66,43 @@ that the list of list is in a coherent form, that is that it maps
 naturally to a rectangular array."
   (length (elt (dataset df) 0)))
 
-(defmethod nvars ((df list))
+(defmethod nvars ((pre-df list))
   "specializes on inheritance from listoflist. This approach assumes
 that the list of list is in a coherent form, that is that it maps
 naturally to a rectangular array."
-  (length (elt df 0)))
+  (length (elt pre-df 0)))
 
+
+;; For XREF and SETF XREF, we have the following list of list consideration:
+;; (list (list 11 12 13 14)
+;;       (list 21 22 23 24))
+;; for consideration (row/column).
+
+;;; We should make a better macro for this (ensuring valid subscripts
+;;; in a list, or BETTER YET, a subscripting data structure
+#|
+  (defmacro subscripts-valid-p (subscripts)
+     (check-type (elt subscripts 0) integer)
+     (check-type (elt subscripts 1) integer))
+|#
+  
 (defmethod xref ((df dataframe-listoflist) &rest subscripts)
   "Returns a scalar in array, in the same vein as aref, mref, vref,
 etc. idx1/2 is row/col or case/var."
+  (check-type (elt subscripts 0) integer)
+  (check-type (elt subscripts 1) integer)
   (elt (elt (dataset df) (elt subscripts 0)) (elt subscripts 1)))
 
 (defmethod (setf xref) (value (df dataframe-listoflist) &rest subscripts)
   "Sets a value for df-ml."
+  (check-type (elt subscripts 0) integer)
+  (check-type (elt subscripts 1) integer)
+
   ;; NEED TO CHECK TYPE!
   ;; (check-type val (elt (vartype df) index2))
-  (setf (elt (elt (dataset df) (elt subscripts 1)) (elt subscripts 0)) value))
+
+  ;; below was originally 1 0 ?  have I mixed something up?
+  (setf (elt (elt (dataset df) (elt subscripts 0)) (elt subscripts 1)) value))
 
 ;;;;;; IMPLEMENTATION INDEPENDENT FUNCTIONS AND METHODS
 ;;;;;; (use only xref, nrows, ncols and similar dataframe-like
