@@ -149,12 +149,11 @@ converting failures to nil"
 	    (getf variable :name) ) into control-string
      finally  (format stream "~{~VA~}~%" control-string) ))
 
-(defun row (df row)
+(defun extract-row (df row)
   (loop for col  below (ncols df)
      collect (xref df row col)))
 
 (defmethod print-object ((object dataframe-like) stream)
-  
   (print-unreadable-object (object stream :type t)
     (declare (optimize (debug 3)))
     (format stream " ~d x ~d" (nrows object) (ncols object))
@@ -169,7 +168,7 @@ converting failures to nil"
       (dotimes (i (nrows object))	; print obs row
 	(terpri stream)
 	(format stream case-format (nth i (case-labels object)))
-	(format stream format-control (row object i))))))
+	(format stream format-control (extract-row object i))))))
 
 #|
  (defun print-structure-relational (ds)
