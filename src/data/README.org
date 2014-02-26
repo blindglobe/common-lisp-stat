@@ -1,0 +1,66 @@
+* Overview
+
+Data is a central reason for data analysis.  The recent trend towards
+data science has lead to an interesting take on the intersection of
+statistics, mathematics, computer science and philosophy.
+
+With that, we need to think through the many components of data
+analysis.  Initially, we need to consider the hierarchy of storage
+structures, from completely general, to completely specified.
+
+Data element TYPES can be based on COMPUTER SCIENCE principles, or
+inherit also STATISTICAL principles, and often both. 
+
+1. LISP:ARRAY : a general random access lisp array.  
+
+   a. AREF is the common tool for access (element-wise)
+
+   b. ... is the common tool to create
+
+2. XARRAY : a variant which offers support for complex subsetting as
+   well as crafting new arrays.  Could use various (suboptimal)
+   storage backends, including LISP:ARRAY.   Commonly accessed by row
+   number and column number.
+
+   a. XREF is the common tool for access
+
+   b. XCREATE is common tool for creation.
+
+3. ModelFrame (also known as a dataframe): column-typed storage, where
+   column types can be any STATISTICAL type.  Commonly accessed by
+   variable name and/or subject id (key, id).
+
+   a. XREF /could be/ a common tool to access
+
+   b. XCREATE /could be/ a common tool to creation
+
+   c. XSLICE /could be/ a common tool for subsetting, reshapeing 
+ 
+   (what to use to put it all back together?).  The *KEY POINT* for
+   this object is the ability to take a ModelFrame along with a model
+   specification and produce matrices and functions which can be
+   computed with, which carry along (actual, or pointers back to) meta
+   information (variable names, subject IDs) so that the results can
+   be appropriately interpreted.
+
+4. numerical matrix:  whole-array-typed storage, where the storage
+   type is homogeneous
+
+   a. MREF, XREF, AREF /could be/ used for access, depending on
+      underlying tool kit. 
+
+   b. ?? /could be/ used to create.
+
+
+At this stage (<2014-02-26 Wed>) I still need to resolve the above
+heirarchy. 
+
+Commonly used numerical systems tend to have 1,4 -- with no means to
+really handle 3.   
+
+For me (AJ Rossini) the key to a statistical analysis system are the
+requirements in 3.  Which is what makes R and XLispStat prototypes of
+this genre.  But MATLAB and Julia are not so much, as they are more
+targetted for technical and numerical data analysis.  
+
+
