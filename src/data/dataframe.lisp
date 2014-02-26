@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-02 11:21:58 tony>
+;;; Time-stamp: <2014-02-26 11:08:31 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -19,7 +19,6 @@
 ;;; What is this talk of 'release'? Klingons do not make software
 ;;; 'releases'.  Our software 'escapes', leaving a bloody trail of
 ;;; designers and quality assurance people in its wake.
-
 
 ;;; This file should only contain generics and functions which use the
 ;;; xarray API.  All other code should be either in the
@@ -65,7 +64,7 @@
 ;;; of how adverbs and verbs relate, where to put which semantically
 ;;; to allow for general approach.
 
-;;; Need to consider modification APIs
+;;; Need to consider MODIFICATION APIs
 ;;; actions are:
 ;;; - import 
 ;;; - get/set row names (case names)
@@ -80,10 +79,16 @@
 ;;; - check consistency of resulting data with metadata and related
 ;;;           data information.
 
+;;; And need to consider USAGE APIs
+;;; - access by variable name
+;;; - access by id/key name
+
+
 ;;; Is there any need for an N-way dataframe (N>2) ?  Am currently
 ;;; assuming not, that this is specializing only the "independent
 ;;; cases"-by-variables format and that there would be other tools for
 ;;; other structures.  In particular, we should be able to insert
+;;; arbitrary objects into the array elements for later processing.
 
 
 ;;; abstract class: dataframe-like
@@ -158,7 +163,12 @@
 ;; 
 ;;
 
-(defclass dataframe-like (matrix-like)
+;;; CHANGE: originally, matrix-like inherited from dataframe-like.
+;;; HOWEVER, this is backwards, as matrices are more specialized
+;;; (homogeneous arrays intended with numerical values) where as 
+
+
+(defclass dataframe-like ()
   (
    ;; STORE and STORE-CLASS need to be defined in the real
    ;; (non-virtual) class, since they define the storage mode.
