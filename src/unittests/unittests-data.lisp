@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-10-30 08:01:50 tony>
+;;; Time-stamp: <2014-02-26 08:09:21 tony>
 ;;; Creation:   <2009-10-30 07:52:31 tony>
 ;;; File:       unittests-data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -159,8 +159,6 @@
 ;;;
 ;; (run-tests)
 ;; (describe (run-tests))
-
-
 
   (equalp (dataset
 	   (make-instance 'dataframe-array

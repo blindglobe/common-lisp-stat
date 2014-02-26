@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2013-11-18 10:42:03 tony>
+;;; Time-stamp: <2014-02-25 12:41:45 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -36,6 +36,7 @@
   :serial t
   :depends-on (:alexandria
 	       :lift ; unit testing -- use a different system?
+	       :clunit ; unit testing next system
 	       :xarray ; array-like access?
 	       :listoflist ; on xarray
 	       :lisp-matrix ; on fnv, cl-blapack, ffa, cffi
@@ -171,7 +172,27 @@
 			      (:file "unittests-listoflist" :depends-on ("unittests"))
 			      (:file "unittests-arrays" :depends-on ("unittests"))
 			      ;;(:file "unittests-dataframe" :depends-on ("unittests"))
-			      (:file "unittests-regression" :depends-on ("unittests"))))))
+			      (:file "unittests-regression" :depends-on ("unittests"))))
+
+	       (:module
+		 "lisp-stat-unittest2"
+		:depends-on  ("packaging" "proto-objects"
+			      "cls-core"
+			      "stat-data"
+			      "cls-basics"
+			      "descriptives"
+			      "example-data")
+		 :pathname "src/unittests2/"
+		 :components ((:file "unittests2")))))
+		              ;; (:file "unittests2-lstypes" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-specfn" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-prob" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-proto" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-listoflist" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-arrays" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-dataframe" :depends-on ("unittests2"))
+			      ;; (:file "unittests2-regression" :depends-on ("unittests2"))))))
+
 
 ;;; NEED TO ADD A TEST OPERATION, THIS IS THE WRONG VARIANT OF IT.
 #|
