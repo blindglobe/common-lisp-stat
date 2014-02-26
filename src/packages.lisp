@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-18 10:40:34 tony>
+;;; Time-stamp: <2014-02-25 12:44:40 tony>
 ;;; Creation:   <2008-03-11 19:18:34 user> 
 ;;; File:       packages.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -680,6 +680,27 @@
 	ftruncate fround signum cis)
   (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
 	   almost= almost=lists numerical=)) ; compare
+
+
+(defpackage :cls-clunit
+  (:use :common-lisp
+	:clunit
+	:lisp-matrix
+	:lisp-stat :lisp-stat-data-examples)
+  (:shadowing-import-from :lisp-stat
+			  call-method call-next-method ;; objects
+	expt + - * / ** mod rem abs 1+ 1- log exp sqrt sin cos tan ;; lsmath
+	asin acos atan sinh cosh tanh asinh acosh atanh float random
+	truncate floor ceiling round minusp zerop plusp evenp oddp 
+	< <= = /= >= > ;; complex
+	conjugate realpart imagpart phase
+	min max logand logior logxor lognot ffloor fceiling
+	ftruncate fround signum cis)
+  (:export run-lisp-stat-tests run-lisp-stat-test scoreboard ; exec
+	   almost= almost=lists numerical=)) ; compare
+
+
+
 
 (defpackage :cls-dataframe-example
   (:use :common-lisp
