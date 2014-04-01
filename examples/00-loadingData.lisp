@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2013-11-18 10:56:10 tony>
+;;; Time-stamp: <2014-03-31 11:30:31 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -13,13 +13,19 @@
 
 (in-package :cl-user) ; start in the CL user namespace (i.e. package)
 
+
 ;;; load the systems we need
+
 (ql:quickload :data-format-validation)
 (ql:quickload :antik) ;; for all the wrong reasons
 (ql:quickload :cls)
 
-;;; create the package that we will be working in.
+;;; create the package that we will be working in.  In general,
+;;; packages should be used for data and data analysis code, so as to
+;;; avoid polluting the namespace.
+
 ;; The CLS-EXAMPLES package is similar setup to CLS-USER package.
+
 (cl:defpackage :cls-examples  
   (:use :common-lisp
 	:xarray
