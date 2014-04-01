@@ -1,6 +1,6 @@
 ;;; -*- Mode:Lisp; Syntax:ANSI-Common-Lisp; Coding:utf-8 -*-
 
-;;; Time-stamp: <2014-02-25 13:53:58 tony>
+;;; Time-stamp: <2014-04-01 11:40:06 tony>
 ;;; Creation:   <2014-02-25 12:32:30 tony>
 ;;; File:       unittests2.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -27,10 +27,7 @@
 
 (defsuite cls-prob (common-lisp-stat))
 
-
-(defsuite cl-numerics-matrix (cls-numerics))
-
-
+(defsuite cls-numerics-matrix (cls-numerics))
 
 
 ;;; CLS-NUMERICS-MATRIX
