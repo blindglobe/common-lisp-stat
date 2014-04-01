@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-10-15 12:21:22 tony>
+;;; Time-stamp: <2014-04-01 10:49:47 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       XX-readMe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -38,6 +38,9 @@
 ;; consider the use of a demo or example package to avoid pollution of
 ;; the ls-user namespace to prevent the ls-user from becoming a luser.
 
-;; REFACTORING: As code in these files gets refined, it could get
-;; moved into the core system.  All methods should start here, and get
-;; refactored into the core as they become useful.
+;; REFACTORING: As code in these files gets refined, it should get
+;; moved into the core system as classes and functions demonstrate
+;; usefulness.  All methods should start here, and get refactored into
+;; the core as they become useful.
+;;
+;; Sometimes this is violated.
