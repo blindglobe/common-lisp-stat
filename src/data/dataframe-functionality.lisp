@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-02 10:38:07 tony>
+;;; Time-stamp: <2014-04-04 16:02:49 tony>
 ;;; Creation:   <2009 tony>
 ;;; File:       dataframe-functionality
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -50,16 +50,16 @@ to use listoflist->array when creating a dataframe array so much"
 	(list
 	 (make-instance 'dataframe-listoflist
 			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
+			:ncases (length newcaselabels)
+			:nvars (length newvarlabels)
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))
 	(array
 	 (make-instance 'dataframe-array
 			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
+			:ncases (length newcaselabels)
+			:nvars (length newvarlabels)
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))
@@ -67,8 +67,8 @@ to use listoflist->array when creating a dataframe array so much"
 	(matrix-like
 	 (make-instance 'dataframe-matrixlike
 			:storage newdata
-			:nrows (length newcaselabels)
-			:ncols (length newvarlabels)
+			:ncases (length newcaselabels)
+			:nvars (length newvarlabels)
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))))))
