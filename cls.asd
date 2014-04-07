@@ -1,5 +1,5 @@
 ;;  -*- mode: lisp -*-
-;;; Time-stamp: <2014-02-25 12:41:45 tony>
+;;; Time-stamp: <2014-04-03 16:06:01 tony>
 ;;; Created:    <2005-05-30 17:09:47 blindglobe>
 ;;; File:       cls.asd
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -44,6 +44,8 @@
 	       :cl-variates ;; ? :cl-random  ;; need to select pRNG stream system
 	       :gsll ;; GSLL and Antik could provide numerical infrastructure.
 	       :antik
+	       ;;
+	       :cl-data-frame
 	       ;; :cl-cairo2  :cl-2d ;;; one option for graphics
 	       :data-format-validation) ;; for David H's dataframe
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
