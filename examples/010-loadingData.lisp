@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2014-03-31 11:30:31 tony>
+;;; Time-stamp: <2014-04-02 16:12:23 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,12 +17,14 @@
 ;;; load the systems we need
 
 (ql:quickload :data-format-validation)
-(ql:quickload :antik) ;; for all the wrong reasons
+;(ql:quickload :antik) ;; might be needed for all the wrong reasons
 (ql:quickload :cls)
 
 ;;; create the package that we will be working in.  In general,
 ;;; packages should be used for data and data analysis code, so as to
-;;; avoid polluting the namespace.
+;;; avoid polluting the namespace.  In addition, it could be possible
+;;; for functions to rewrite other functions, so best to keep the
+;;; package as sparse as possible, within sensibility.
 
 ;; The CLS-EXAMPLES package is similar setup to CLS-USER package.
 
@@ -171,7 +173,8 @@ return a pathspec, not a string/namespec"
 (dotimes (i (array-dimension *test1* 0))
   (dotimes (j (array-dimension *test1* 1))
     (setf (aref *test2* i j)
-	  (data-format-validation:parse-input (nth j *test1-types*) (aref *test1* i j)))))
+	  (data-format-validation:parse-input (nth j *test1-types*)
+					      (aref *test1* i j)))))
 
 *test1*
 *test2*
