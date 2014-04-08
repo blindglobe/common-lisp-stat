@@ -1,5 +1,5 @@
 
-Time-stamp: <2014-02-12 15:06:56 tony>
+Time-stamp: <2014-04-07 16:28:57 tony>
 
 * Current Status: IMPROVING
 
@@ -11,7 +11,18 @@ Time-stamp: <2014-02-12 15:06:56 tony>
 
   1. Get access to a Common Lisp implementation on your platform.
      Make sure you have BLAS, LAPACK, and their corresponding
-     development environments on your system
+     development environments on your system.
+
+     For example, on a recent debian (testing), one may need:
+#+BEGIN_EXAMPLE
+libffi6
+libblas
+liblapack
+libgsl
+libRmath
+#+END_EXAMPLE
+     and the corresponding /-dev/ packages.
+
   2. if needed, install quicklisp (http://www.quicklisp.org)
   3. if wanted, install git (http://www.git-scm.org/)
   4. Use git to fetch common-lisp-statistics from the repository:
