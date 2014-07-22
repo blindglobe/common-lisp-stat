@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-18 15:04:22 tony>
+;;; Time-stamp: <2014-07-22 09:40:25 tony>
 ;;; Creation:   <2012-11-02 08:14:38 tony>
 ;;; File:       02-DSVloading.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -20,12 +20,10 @@
 ;;; table-like composite structure, though clearly there are other
 ;;; examples, such as networks as well as semi-structured datasets.
 
+(in-package :cl-user)
 
-
-;;;; BROKEN unless you are running your lisp in the CLS home
-;;;; directory.  Until we fix this, might have to edit so that you
-;;;; load from the right place.
-;(load "examples/00-loadingData.lisp")
+;; assumes that we have loaded 010 already.  This just confirms it.
+(load (cls-examples:localized-pathto "examples/010-loadingData.lisp"))
 
 (in-package :cls-examples)
 

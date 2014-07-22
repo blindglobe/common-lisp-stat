@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2009-07-14 15:09:33 tony>
+;;; Time-stamp: <2014-07-21 16:56:27 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       plotting-data.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -17,6 +17,10 @@
 
 ;; SETUP FOR PLOT EXAMPLE:
 (in-package :cl-user)
+
+
+;; (ql:quickload :cl-cairo2)
+;; (ql:quickload :cl-2d)
 
 (defpackage :cl-2d-user-x11
   (:use :cl :cl-cairo2  :cl-2d :cl-numlib :cl-colors :bind :cls)

@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2014-04-08 09:49:34 tony>
+;;; Time-stamp: <2014-04-08 09:54:25 tony>
 ;;; Creation:   <2014-04-08 09:49:19 tony>
 ;;; File:       024-dataframeBuilding-CLDATAFRAME.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -34,12 +34,23 @@
 ;;; Now provide examples of how they could be used.
 
 (in-package :cls-examples-cl-data-frame)
+;; for Tamas' dataframe package
 
 
 
 
 
 (in-package :cls-examples-data-table)
+;; for Mirko's data table package
 
 
 
+
+(in-package :cls-examples)
+;; for my extension of lisp-matrix
+
+
+
+
+
+;;; and more to come, hopefully Marco's version.
