@@ -669,7 +669,7 @@ Returns differences for a sequence X."
 (defun rseq (a b num)
 "Args: (a b num)
 Returns a list of NUM equally spaced points starting at A and ending at B."
-  (+ a (* (values-list (iseq 0 (1- num))) (/ (float (- b a)) (1- num)))))
+  (+ a (* (iseq 0 (1- num)) (/ (float (- b a)) (1- num)))))
 
 
 
