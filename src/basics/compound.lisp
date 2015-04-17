@@ -10,6 +10,9 @@
 
 (in-package :lisp-stat-compound-data)
 
+(eval-when (:compile-toplevel)
+  (declaim (optimize (speed 3) (safety 1) (space 0) (debug 0))))
+
 ;;; Sequences are part of ANSI CL, being a supertype of vector and
 ;;; list (ordered set of things).
 ;;; 
@@ -377,20 +380,19 @@ Returns a list of the indices where elements of sequence X are not NIL."
 
 (defun iseq (a &optional b)
   "Generate a sequence of consecutive integers from A to B.
-With one argumant returns a list of consecutive integers from 0 to N - 1.
+With one argument returns a list of consecutive integers from 0 to N - 1.
 With two returns a list of consecutive integers from A to B inclusive.
 Example: (iseq 4) returns (0 1 2 3)
          (iseq 3 7)  returns (3 4 5 6 7)
          (iseq 3 -3) returns (3 2 1 0 -1 -2 -3)"
-  (if b
-      (let ((n (+ 1 (abs (- b a))))
-	    (x nil))
-	(dotimes (i n x)
-	  (setq x (cons (if (< a b) (- b i) (+ b i)) x))))
-      (cond 
-	((= 0 a) nil)
-	((< a 0) (iseq (+ a 1) 0))
-	((< 0 a) (iseq 0 (- a 1))))))
+  (declare (type fixnum a)
+	   (type (or fixnum null) b))
+  (let ((start (if b a 0))
+	(end (if b b (cl:1- a))))
+    (declare (type fixnum start end))
+    (if (>= end start)
+	(loop for i from start to end collect i)
+	(loop for i from start downto end collect i))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -667,11 +669,13 @@ Returns differences for a sequence X."
     (- (select x (iseq 1 (1- n))) (select x (iseq 0 (- n 2))))))
 
 (defun rseq (a b num)
-"Args: (a b num)
+  "Args: (a b num)
 Returns a list of NUM equally spaced points starting at A and ending at B."
-  (+ a (* (iseq 0 (1- num)) (/ (float (- b a)) (1- num)))))
-
-
+  (declare (type number a b)
+  	   (type (integer 0 1000000000) num)
+  	   (values cons))
+  (let ((d (/ (float (- b a)) (1- num))))
+    (loop for i upto (1- num) collect (+ a (* i d)))))
 
 (defun split-list (x n)
 "Args: (list cols)
