@@ -19,7 +19,6 @@ libffi6
 libblas
 liblapack
 libgsl
-libRmath
 #+END_EXAMPLE
      and the corresponding /-dev/ packages.
 
