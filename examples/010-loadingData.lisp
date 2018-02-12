@@ -214,14 +214,14 @@ also, i.e. a list of types or classes."
 		  (data-format-validation:parse-input (nth j list-of-vartypes) (aref data-array i j)))))
 	data-array))))
 
- (progn
-   (defparameter *chickwts-array*
-     (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
-			   (list 'integer 'number 'string)))
-   ;; *chickwts-df*
-   (xref *chickwts-array* 1 1) ; => 160
-   (xref *chickwts-array* 40 2) ; => "sunflower"
-   *chickwts-array*)
+(progn
+  (defparameter *chickwts-array*
+    (filename.dsv->array3 (localized-pathto "Data/R-chickwts.csv")
+			  (list 'integer 'number 'string)))
+  ;; *chickwts-df*
+  (xref *chickwts-array* 1 1) ; => 160
+  (xref *chickwts-array* 40 2) ; => "sunflower"
+  *chickwts-array*)
 
 (+ (xref *chickwts-array* 1 1)
    (xref *chickwts-array* 63 1))
