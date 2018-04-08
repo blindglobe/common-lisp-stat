@@ -1,8 +1,8 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2012-11-13 13:41:17 tony>
+;;; Time-stamp: <2018-04-08 17:11:58 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
-;;; File:       template.lisp
+;;; File:       config.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
 ;;; Copyright:  (c)2009--, AJ Rossini.  Currently licensed under MIT
 ;;;             license.  See file LICENSE.mit in top-level directory
@@ -19,7 +19,9 @@
 ;;; enforce all floating reads as doubles; at least to the extent that
 ;;; we can.  People can change if there is a scalable reason to save
 ;;; bits.
-(setf *read-default-float-format* 'double-float)
+
+;; unfortunately not to be set by default!  Need to localise this a bit? 
+;; (setf *read-default-float-format* 'double-float)
 
 ;;; optimization settings: at this point, premature to optimize.
 ;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
