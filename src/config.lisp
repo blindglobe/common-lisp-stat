@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2018-04-08 17:11:58 tony>
+;;; Time-stamp: <2018-04-08 17:19:08 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       config.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -20,8 +20,14 @@
 ;;; we can.  People can change if there is a scalable reason to save
 ;;; bits.
 
-;; unfortunately not to be set by default!  Need to localise this a bit? 
+;;; unfortunately not to be set by default!  Need to localise this a bit? 
 ;; (setf *read-default-float-format* 'double-float)
+;;; should become something like
+;; (progn (setf cls/current-read-default-float-format *read-default-float-format*)
+;;        (setf *read-default-float-format* 'double-float) ;; or quad-float if possible?
+;;        ;; do stuff
+;;        (setf *read-default-float-format* cls/current-read-default-float-format)
+;;        
 
 ;;; optimization settings: at this point, premature to optimize.
 ;; (proclaim '(optimize (safety 2) (space 3) (speed 3)))
