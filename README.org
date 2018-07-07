@@ -1,5 +1,5 @@
 
-Time-stamp: <2018-04-01 09:38:56 tony>
+Time-stamp: <2018-07-07 13:36:08 tony>
 
 * Current Status: IMPROVING
 
@@ -449,6 +449,17 @@ dependent), or save text files.
 ** Common Lisp Statistics
 
    This system.
+   
+* Methodological Questions
+
+prime question: at what point do we abstract data structures into the higher level 
+relational domain-specific structures?  
+
+Classic example:  dataframe/datasheet "rows/cols" as "obsn/vars".  
+
+underlying structure (matrix, list-of-list, array)  could be managed through appropriate structures -- 
+however, we really want to have a notion of the statistical data concepts in the code (variables, 
+observations, correlations, etc.
 
 * Local modifications, Development, Contributions
 
