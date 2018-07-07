@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2014-04-04 16:02:49 tony>
+;;; Time-stamp: <2018-07-07 13:45:13 tony>
 ;;; Creation:   <2009 tony>
 ;;; File:       dataframe-functionality
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -34,8 +34,21 @@ to use listoflist->array when creating a dataframe array so much"
   (check-type varlabels sequence)
   (check-type vartypes sequence)
   (check-type doc string)
-  (let ((ncases (ncases newdata))
-	(nvars (nvars newdata)))
+  (let ((ncases 	     (ncases newdata))
+
+	 ;; (if (typep newdata 'matrix-like)
+	 ;;     (if (arrayp  newdata )
+	 ;; 	 (array-dimension newdata 0)
+	 ;; 	 (length newdata)))) ;; length of the list. 
+
+	(nvars	      (nvars newdata)))
+
+	  ;; (if (typep newdata 'matrix-like)
+	  ;;     (nvars newdata)
+	  ;;     (if (arrayp  newdata )
+	  ;; 	  (array-dimension newdata 1)
+          ;; 	  (length (elt newdata 0))))))
+    ;; this is the length of the first item in the list, not the list.
     
     (if caselabels (assert (= ncases (length caselabels))))
     (if varlabels (assert (= nvars (length varlabels))))
@@ -50,16 +63,16 @@ to use listoflist->array when creating a dataframe array so much"
 	(list
 	 (make-instance 'dataframe-listoflist
 			:storage newdata
-			:ncases (length newcaselabels)
-			:nvars (length newvarlabels)
+			;; :nrows (length newcaselabels) ;; ncases
+			;; :ncols (length newvarlabels) ;;  nvars
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))
 	(array
 	 (make-instance 'dataframe-array
 			:storage newdata
-			:ncases (length newcaselabels)
-			:nvars (length newvarlabels)
+			;; :nrows (length newcaselabels) ;; ncases
+			;; :ncols (length newvarlabels) ;; nvars
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))
@@ -67,8 +80,8 @@ to use listoflist->array when creating a dataframe array so much"
 	(matrix-like
 	 (make-instance 'dataframe-matrixlike
 			:storage newdata
-			:ncases (length newcaselabels)
-			:nvars (length newvarlabels)
+			;; :nrows (length newcaselabels) ;; ncases
+			;; :ncols (length newvarlabels) ;; nvars
 			:case-labels newcaselabels
 			:var-labels newvarlabels
 			:var-types vartypes))))))

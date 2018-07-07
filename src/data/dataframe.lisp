@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2014-02-26 11:08:31 tony>
+;;; Time-stamp: <2018-07-07 13:47:15 tony>
 ;;; Creation:   <2008-03-12 17:18:42 blindglobe@gmail.com>
 ;;; File:       dataframe.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -328,7 +328,14 @@ nil on error is for non interactive use"
   (:documentation "methods to check for consistency.  Mostly of
     internal interest, since ideally we'd have to use standard
     constructs to ensure that we do not get the dataframe structure
-    misaligned.")
+    misaligned.
+
+    The basic goal of this generic is to ensure all variables have the same number of relevant
+    observations, and that all observations have the same number of relevant variables.  
+    
+    Would be nice to ensure that variables have a consistent type -- if it turns out that the
+    type is T, then there is the default ANYTYPE that could be used.  But this is stupid.  Exercise 
+    left to the reader.")
   (:method (object) "General objects are not consistent dataframes!" nil)
   (:method ((df dataframe-like)) 
     "At minimum, must dispatch on virtual-class."
