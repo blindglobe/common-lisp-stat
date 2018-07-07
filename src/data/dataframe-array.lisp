@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-
 
-;;; Time-stamp: <2013-11-01 12:36:25 tony>
+;;; Time-stamp: <2018-06-10 13:37:02 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       dataframe-array.lisp
 ;;; Authors:    AJ Rossini <blindglobe@gmail.com>
@@ -65,10 +65,14 @@
   (array-dimension (dataset df) 1))
 
 (defmethod nvars ((df dataframe-array))
-    (ncols df))
+  "specializes on inheritance from matrix-like in lisp-matrix."
+  (array-dimension (dataset df) 1))
+;;    (ncols df))
 
 (defmethod ncases ((df dataframe-array))
-    (nrows df))
+  "specializes on inheritance from matrix-like in lisp-matrix."
+  (array-dimension (dataset df) 0))
+;;    (nrows df))
 
 
 (defmethod xref ((df dataframe-array) &rest subscripts)
