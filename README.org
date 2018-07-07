@@ -1,9 +1,9 @@
 
-Time-stamp: <2014-04-07 16:28:57 tony>
+Time-stamp: <2018-04-01 09:38:56 tony>
 
 * Current Status: IMPROVING
 
-  but we are rebuilding it.
+  Ok, hacking again for the first time in 4 years :(.
 
 * Fast Start
 
@@ -53,12 +53,12 @@ git clone git://github.com/blindglobe/lisp-matrix.git
 #+name: loadIt
 #+begin_src lisp
   (ql:register-local-projects)
-  (ql:quickload :antik)
   (ql:quickload :cls)
 #+end_src
 
      TODO: Unfortunately, it looks like ANTIK needs to be preloaded,
      or it gets confused.  I don't yet know why.
+     CURRENT: Looks like it is solved? 
 
   6. get coffee, tea, water, beer, or a glass of wine, review the
      Common Lisp Statistics mailing list, chat with friends, etc,
@@ -77,13 +77,13 @@ git clone git://github.com/blindglobe/lisp-matrix.git
 ** Common Lisp
 
    Current requirements are basically that you have a Common Lisp
-   implementation such as SBCL or CCL (though CLISP might work) and
+   implementation such as SBCL (though CCL or CLISP might work) and
    BLAS/LAPACK on your system.
 
-   SBCL and CCL are in active use by developers.  We are interested in
-   finding out details regarding successes with other distributions
-   and would be pleased to add such information here.
-
+   SBCL (not this year, yet: CCL) are in active use by developers.  We
+   are interested in finding out details regarding successes with
+   other distributions and would be pleased to add such information
+   here.
 
 *** TODO Microsoft Windows
 
@@ -95,8 +95,8 @@ git clone git://github.com/blindglobe/lisp-matrix.git
 
 *** Linux
 
-    Most distributions contain SBCL or CLISP.  The instructions for
-    getting and installing CCL are relatively straightforward.
+    Most distributions contain SBCL (or CLISP, but please send
+    fixes/instructions for CLISP or CCL if needed!)
 
 *** MacOSX
 
@@ -119,13 +119,6 @@ git clone git://github.com/blindglobe/lisp-matrix.git
    set up in the shell, by setting up your .bashrc (or equivalent
    shell init file, or equivalent environment variable settings).
 
-*** TODO [#A] Setting up BLAS/LAPACK on Microsoft OS
-
-    i.e. compilation environment and tools, if needed, on Microsoft Windows?
-
-    For windows, we recommend you use cygwin to get straightforward
-    access. I'll document the steps if there is a demand.
-
 *** Linux
 
     Get lapack-dev, blas-dev from your Linux distribution.
@@ -137,8 +130,8 @@ sudo apt-get install libblas
 sudo apt-get install liblapack
 #+END_SRC
 
-    For Linux, if installed in a weird place, you need to make sure
-    the loader looks for it.
+    For Linux, IF BLAS IS INSTALLED IN A WEIRD PLACE, you need to make
+    sure the loader looks for it.
 
 #+begin_src shell
 set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:???
@@ -148,9 +141,14 @@ set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:???
 
     SBCL is known to work (0.58+, 1.1.1+)
 
-    CCL is thought to work
+    (CCL, CMUCL, and CLISP may work, but not tested)
 
-    (CMUCL and CLISP may work, but not tested)
+*** TODO [#A] Setting up BLAS/LAPACK on Microsoft OS
+
+    i.e. compilation environment and tools, if needed, on Microsoft Windows?
+
+    For windows, we recommend you use cygwin to get straightforward
+    access. I'll document the steps if there is a demand.
 
 *** TODO MacOSX
 
@@ -552,3 +550,4 @@ this.  Since disk space is cheap, I´m intentionally forcing git to be
 part of this system.  Sorry if you hate it.  Org-mode, org-babel, and
 org-babel-lisp, and hypo are useful for making this file a literate
 and interactively executable piece of work. 
+ 
