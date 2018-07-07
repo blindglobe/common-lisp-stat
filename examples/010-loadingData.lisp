@@ -1,6 +1,6 @@
 ;;; -*- mode: lisp -*-    
 
-;;; Time-stamp: <2014-04-02 16:12:23 tony>
+;;; Time-stamp: <2018-06-10 13:30:05 tony>
 ;;; Creation:   <2009-03-12 17:14:56 tony>
 ;;; File:       00-loadingData.lisp
 ;;; Author:     AJ Rossini <blindglobe@gmail.com>
@@ -152,16 +152,16 @@ return a pathspec, not a string/namespec"
 (defparameter *test1-types* (list 'integer 'number 'string)) ; this works in the sequel
 (defparameter *test2-types* '('integer 'number 'string)) ; this used to fail but no longer?
 
-(nth 1 *test1-types*)
+(nth 1 *test1-types*) ;; => number
 
-(array-dimensions *test1*)
+(array-dimensions *test1*) ;; => (71 3)
 
-(data-format-validation:parse-input (nth 1 *test1-types*) (aref *test1* 2 1))
-(data-format-validation:parse-input 'integer (aref *test1* 2 1))
+(data-format-validation:parse-input (nth 1 *test1-types*) (aref *test1* 2 1)) ;; => 136
+(data-format-validation:parse-input 'integer (aref *test1* 2 1)) ;; => 136
 
 
 
-(defparameter *test2* (make-array (array-dimensions *test1*)))
+(defparameter *test2* (make-array (array-dimensions *test1*))) 
 
 ;;; The next bit of code is an example for how to start column-typing
 ;;; arrays, i.e. for use in making objects which start to resemble R's
@@ -211,7 +211,8 @@ also, i.e. a list of types or classes."
 	(dotimes (i (array-dimension data-array 0))
 	  (dotimes (j (array-dimension data-array 1))
 	    (setf (aref data-array i j)
-		  (data-format-validation:parse-input (nth j list-of-vartypes) (aref data-array i j)))))
+		  (data-format-validation:parse-input (nth j list-of-vartypes)
+						      (aref data-array i j)))))
 	data-array))))
 
  (progn
@@ -221,10 +222,10 @@ also, i.e. a list of types or classes."
    ;; *chickwts-df*
    (xref *chickwts-array* 1 1) ; => 160
    (xref *chickwts-array* 40 2) ; => "sunflower"
-   *chickwts-array*)
+   *chickwts-array*) 
 
 (+ (xref *chickwts-array* 1 1)
-   (xref *chickwts-array* 63 1))
+   (xref *chickwts-array* 63 1)) ;; => 564
 
 ;; now, off to the next part!  more loading examples, and we show how
 ;; to make a dataframe from an array.
