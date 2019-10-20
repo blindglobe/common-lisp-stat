@@ -86,11 +86,11 @@ git clone git://github.com/blindglobe/lisp-matrix.git
 
 *** TODO Microsoft Windows
 
-    Currently, LispCabinet would be the simplest way to get started,
+    Currently, ρEmacs would be the simplest way to get started,
     with either SBCL or CCL as the Lisp Implementation.  Need
     experiences from others using 
 
-    http://lispcabinet.sourceforge.net/
+    https://rho-emacs.sourceforge.io/
 
 *** Linux
 
